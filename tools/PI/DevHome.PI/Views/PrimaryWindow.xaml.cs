@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
@@ -12,6 +13,7 @@ using Microsoft.UI.Xaml;
 using Windows.System;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinUIEx;
 using static DevHome.PI.Helpers.WindowHelper;
 
@@ -22,6 +24,9 @@ public sealed partial class PrimaryWindow : WindowEx
     private const VirtualKey HotKey = VirtualKey.F12;
 
     private const HOT_KEY_MODIFIERS KeyModifier = HOT_KEY_MODIFIERS.MOD_WIN;
+
+    private readonly WERHelper _werHelper;
+
     private HotKeyHelper? _hotKeyHelper;
 
     public BarWindow? DBarWindow { get; private set; }
@@ -30,6 +35,8 @@ public sealed partial class PrimaryWindow : WindowEx
     {
         InitializeComponent();
         ExternalToolsHelper.Instance.Init();
+        _werHelper = Application.Current.GetService<WERHelper>();
+        _werHelper.Start();
     }
 
     public void ShowBarWindow()
@@ -40,6 +47,8 @@ public sealed partial class PrimaryWindow : WindowEx
         }
         else
         {
+            PInvoke.ShowWindow(DBarWindow.CurrentHwnd, SHOW_WINDOW_CMD.SW_RESTORE);
+
             // Activate is unreliable so use SetForegroundWindow
             PInvoke.SetForegroundWindow(DBarWindow.CurrentHwnd);
         }
@@ -89,9 +98,10 @@ public sealed partial class PrimaryWindow : WindowEx
                 return;
             }
 
+            TranslateUWPProcess(hWnd, ref process);
             TargetAppData.Instance.SetNewAppData(process, hWnd);
         }
 
-        DBarWindow ??= new();
+        ShowBarWindow();
     }
 }

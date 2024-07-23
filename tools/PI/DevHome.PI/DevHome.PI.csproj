@@ -45,10 +45,11 @@
     <None Remove="Pages\ProcessListPage.xaml" />
     <None Remove="Pages\ResourceUsagePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
-    <None Remove="Pages\WatsonsPage.xaml" />
+    <None Remove="Pages\WERPage.xaml" />
     <None Remove="Pages\WinLogsPage.xaml" />
     <None Remove="SettingsUi\AddToolControl.xaml" />
     <None Remove="SettingsUi\EditToolsControl.xaml" />
+    <None Remove="Styles\CommandBarStyle.xaml" />
   </ItemGroup>
 
   <!-- Needed to avoid conflicts with DevHome's App.xaml and to let
@@ -147,7 +148,7 @@
     <Page Update="Pages\ResourceUsagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Pages\WatsonsPage.xaml">
+    <Page Update="Pages\WERPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\WinLogsPage.xaml">
@@ -165,6 +166,9 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\CommandBarStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\ProgressTextRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

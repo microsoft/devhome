@@ -170,8 +170,6 @@ public class PackageProvider
                 {
                     _log.Debug($"Removing package [{packageViewModel.Package.Id}] from cache");
                     _packageViewModelCache.Remove(packageViewModel.UniqueKey);
-                    packageViewModel.SelectionChanged -= OnPackageSelectionChanged;
-                    packageViewModel.VersionChanged -= OnSelectedPackageVersionChanged;
                 }
 
                 // Remove from the selected package collection

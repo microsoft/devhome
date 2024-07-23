@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Management;
 using System.Text.Json;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -20,6 +21,10 @@ public class WslProvider : IComputeSystemProvider
 
     private readonly IWslManager _wslManager;
 
+    private readonly string? _wslEnablementError;
+
+    private const uint FeatureEnabledState = 1;
+
     public string DisplayName => WslProviderDisplayName;
 
     public Uri Icon { get; }
@@ -33,6 +38,11 @@ public class WslProvider : IComputeSystemProvider
         _stringResource = stringResource;
         _wslManager = wslManager;
         Icon = new(ExtensionIcon);
+
+        if (!IsVirtualMachinePlatformFeatureEnabled())
+        {
+            _wslEnablementError = _stringResource.GetLocalized("VirtualMachinePlatformNotInstalled");
+        }
     }
 
     /// <summary>
@@ -40,6 +50,12 @@ public class WslProvider : IComputeSystemProvider
     /// </summary>
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForDeveloperId(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind)
     {
+        if (!string.IsNullOrEmpty(_wslEnablementError))
+        {
+            _log.Error($"Virtual machine platform optional component not enabled. A reboot is needed.");
+            return new ComputeSystemAdaptiveCardResult(new InvalidOperationException(), _wslEnablementError, _wslEnablementError);
+        }
+
         var definitions = _wslManager.GetAllDistributionsAvailableToInstallAsync().GetAwaiter().GetResult();
         return new ComputeSystemAdaptiveCardResult(new RegisterAndInstallDistributionSession(definitions, _stringResource));
     }
@@ -96,5 +112,26 @@ public class WslProvider : IComputeSystemProvider
     {
         var notImplementedException = new NotImplementedException($"Method not implemented by WSL Compute System Provider");
         return new ComputeSystemAdaptiveCardResult(notImplementedException, notImplementedException.Message, notImplementedException.Message);
+    }
+
+    /// <summary>
+    /// Gets a boolean indicating whether the Virtual Machine Platform feature is enabled.
+    /// </summary>
+    /// <returns>True only when the feature is enabled. False otherwise.</returns>
+    private bool IsVirtualMachinePlatformFeatureEnabled()
+    {
+        var searcher = new ManagementObjectSearcher($"SELECT InstallState FROM Win32_OptionalFeature WHERE Name = 'VirtualMachinePlatform'");
+        var collection = searcher.Get();
+
+        foreach (var instance in collection)
+        {
+            var enablementState = instance?.GetPropertyValue("InstallState") as uint?;
+            _log.Information($"Found VirtualMachinePlatform feature with enablement state: '{enablementState}'");
+
+            return enablementState == FeatureEnabledState;
+        }
+
+        _log.Error($"The VirtualMachinePlatform feature wasn't found on the machine");
+        return false;
     }
 }

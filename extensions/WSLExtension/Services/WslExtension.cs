@@ -10,7 +10,13 @@ using WSLExtension.ClassExtensions;
 namespace WSLExtension.Services;
 
 [ComVisible(true)]
+#if CANARY_BUILD
+[Guid("EF2342AC-FF53-433D-9EDE-D395500F3B3E")]
+#elif STABLE_BUILD
 [Guid("121253AB-BA5D-4E73-99CF-25A2CB8BF173")]
+#else
+[Guid("7F572DC5-F40E-440F-B660-F579168B69B8")]
+#endif
 [ComDefaultInterface(typeof(IExtension))]
 public sealed class WslExtension : IExtension, IDisposable
 {

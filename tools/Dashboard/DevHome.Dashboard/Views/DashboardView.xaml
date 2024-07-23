@@ -85,7 +85,9 @@
                               ItemsSource="{x:Bind ViewModel.PinnedWidgets, Mode=OneWay}"
                               CanReorderItems="True"
                               CanDragItems="True"
-                              DragItemsStarting="WidgetGridView_DragItemsStarting">
+                              DragItemsStarting="WidgetGridView_DragItemsStarting"
+                              SelectionMode="Single"
+                              SingleSelectionFollowsFocus="True">
                         <GridView.ItemTemplate>
                             <DataTemplate x:DataType="vm:WidgetViewModel">
                                 <controls:WidgetControl WidgetSource="{x:Bind}"
@@ -99,7 +101,8 @@
                             <ItemsPanelTemplate>
                                 <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
                                                       XYFocusRightNavigationStrategy="RectilinearDistance"
-                                                      XYFocusLeftNavigationStrategy="RectilinearDistance"/>
+                                                      XYFocusLeftNavigationStrategy="RectilinearDistance"
+                                                      KeyUp="HandleKeyUpAsync" />
                             </ItemsPanelTemplate>
                         </GridView.ItemsPanel>
                         <GridView.ItemContainerStyle>

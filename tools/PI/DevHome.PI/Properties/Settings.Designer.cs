@@ -62,6 +62,18 @@ namespace DevHome.PI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsProcessFilterIncludeEdge {
+            get {
+                return ((bool)(this["IsProcessFilterIncludeEdge"]));
+            }
+            set {
+                this["IsProcessFilterIncludeEdge"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool IsProcessFilterIncludeWebview {
             get {
                 return ((bool)(this["IsProcessFilterIncludeWebview"]));
@@ -183,13 +195,37 @@ namespace DevHome.PI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size ExpandedLargeSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double ExpandedWindowHeight {
             get {
-                return ((global::System.Drawing.Size)(this["ExpandedLargeSize"]));
+                return ((double)(this["ExpandedWindowHeight"]));
             }
             set {
-                this["ExpandedLargeSize"] = value;
+                this["ExpandedWindowHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ApplyAppFilteringToData {
+            get {
+                return ((bool)(this["ApplyAppFilteringToData"]));
+            }
+            set {
+                this["ApplyAppFilteringToData"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double WindowWidth {
+            get {
+                return ((double)(this["WindowWidth"]));
+            }
+            set {
+                this["WindowWidth"] = value;
             }
         }
     }

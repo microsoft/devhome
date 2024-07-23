@@ -36,16 +36,25 @@
   <ItemGroup Condition="'$(BuildRing)' == 'Dev'">
     <Content Include="Assets\Dev\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="Assets\Dev\DevHome_Dev.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
+    <AppxManifest Include="Package-Dev.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
   </ItemGroup>
 
   <ItemGroup Condition="'$(BuildRing)' == 'Canary'">
     <Content Include="Assets\Canary\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="Assets\Canary\DevHome_Canary.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
+    <AppxManifest Include="Package-Can.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
   </ItemGroup>
 
   <ItemGroup Condition="'$(BuildRing)' == 'Stable'">
     <Content Include="Assets\Preview\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
     <Content Include="Assets\Preview\DevHome_Preview.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
   </ItemGroup>
 
   <ItemGroup>

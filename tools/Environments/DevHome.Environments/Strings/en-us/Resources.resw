@@ -173,10 +173,6 @@
     <value>Name: Ascending</value>
     <comment>Text for sorting in ascending order of name</comment>
   </data>
-  <data name="SortByAltName.Content" xml:space="preserve">
-    <value>Secondary Name: Ascending</value>
-    <comment>Text for sorting by secondary name</comment>
-  </data>
   <data name="SortByTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
     <comment>Text labeling sort by text block</comment>
@@ -224,10 +220,6 @@
   <data name="SortByNameDesc.Content" xml:space="preserve">
     <value>Name: Descending</value>
     <comment>Text for sorting in descending order of name</comment>
-  </data>
-  <data name="SortByAltNameDesc.Content" xml:space="preserve">
-    <value>Secondary Name: Descending</value>
-    <comment>Text for sorting by secondary name in descending order</comment>
   </data>
   <data name="SortByLastConnected.Content" xml:space="preserve">
     <value>Last Connected</value>
@@ -352,11 +344,19 @@
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
   <data name="MoreOptionsButtonName" xml:space="preserve">
-    <value>More Options</value>
+    <value>More options</value>
     <comment>The text narrator should say for the ... button</comment>
   </data>
   <data name="SyncEnvironmentsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Sync</value>
     <comment>Accessible name for the button to sync environments.</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>More options</value>
+    <comment>ToolTip for the button that displays "More Options" menu</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More options</value>
+    <comment>Name of the button that brings up the "More options" menu</comment>
   </data>
 </root>
