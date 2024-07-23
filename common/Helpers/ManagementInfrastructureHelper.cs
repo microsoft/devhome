@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Management.Infrastructure;
 using Serilog;
+using static DevHome.Common.Helpers.CommonConstants;
 using static DevHome.Common.Helpers.WindowsOptionalFeatures;
 
 namespace DevHome.Common.Helpers;
@@ -25,7 +26,7 @@ public static class ManagementInfrastructureHelper
 
     public static readonly Dictionary<string, string> ExtensionToFeatureNameMap = new()
     {
-        { CommonConstants.HyperVExtensionClassId, CommonConstants.HyperVWindowsOptionalFeatureName },
+        { HyperVExtensionClassId, HyperVWindowsOptionalFeatureName },
     };
 
     public static FeatureAvailabilityKind GetWindowsFeatureAvailability(string featureName)
