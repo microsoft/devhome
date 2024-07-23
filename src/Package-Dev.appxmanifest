@@ -9,9 +9,9 @@
       </ProxyStub>
     </Extension>
   </Extensions>
-  <Identity Name="Microsoft.Windows.DevHome" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
+  <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
   <Properties>
-    <DisplayName>Dev Home (Preview)</DisplayName>
+    <DisplayName>Dev Home (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\Logos\StoreLogo.png</Logo>
     <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
@@ -26,7 +26,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameStable" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
+      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Logos\WideTile.png" />
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
@@ -62,28 +62,28 @@
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="HyperVExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="HyperVExtensionServer">
-              <com:Class Id="F8B26528-976A-488C-9B40-7198FB425C9E" DisplayName="HyperVExtensionServer" />
+              <com:Class Id="28DD4098-162D-483C-9ED0-FB3887A22F61" DisplayName="HyperVExtensionServer" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="WslExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WslExtensionServer">
-              <com:Class Id="121253AB-BA5D-4E73-99CF-25A2CB8BF173" DisplayName="WslExtensionServer" />
+              <com:Class Id="7F572DC5-F40E-440F-B660-F579168B69B8" DisplayName="WslExtensionServer" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
-              <com:Class Id="F8B2DBB9-3687-4C6E-99B2-B92C82905937" DisplayName="CoreWidgetProvider" />
+              <com:Class Id="F20D97D4-CC52-4001-ACF0-8750FB3A2547" DisplayName="CoreWidgetProvider" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
-              <com:Class Id="426A52D6-8007-4894-A946-CF80F39507F1" DisplayName="Core Extension" />
+              <com:Class Id="1EAF0D53-0628-47F3-9C60-C70943FCA7CE" DisplayName="Core Extension" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -92,7 +92,7 @@
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
+                  <CreateInstance ClassId="1EAF0D53-0628-47F3-9C60-C70943FCA7CE" />
                 </Activation>
                 <!-- Best practice is to define SupportedInterfaces, even if it is empty -->
                 <SupportedInterfaces />
@@ -105,7 +105,7 @@
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="F8B26528-976A-488C-9B40-7198FB425C9E" />
+                  <CreateInstance ClassId="28DD4098-162D-483C-9ED0-FB3887A22F61" />
                 </Activation>
                 <SupportedInterfaces>
                   <ComputeSystem />
@@ -119,7 +119,7 @@
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="121253AB-BA5D-4E73-99CF-25A2CB8BF173" />
+                  <CreateInstance ClassId="7F572DC5-F40E-440F-B660-F579168B69B8" />
                 </Activation>
                 <SupportedInterfaces>
                   <ComputeSystem />
@@ -129,7 +129,7 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameStable" Id="CoreWidgetProvider" PublicFolder="Public">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
                 <ProviderIcons>
@@ -137,7 +137,7 @@
                 </ProviderIcons>
                 <Activation>
                   <!-- Apps exports COM interface which implements IWidgetProvider -->
-                  <CreateInstance ClassId="F8B2DBB9-3687-4C6E-99B2-B92C82905937" />
+                  <CreateInstance ClassId="F20D97D4-CC52-4001-ACF0-8750FB3A2547" />
                 </Activation>
                 <TrustedPackageFamilyNames>
                   <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
