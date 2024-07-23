@@ -64,7 +64,8 @@
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
                     <Button
-                        Style="{StaticResource HorizontalThreeDotsStyle}">
+                        x:Uid="MoreOptionsButton"
+                        Style="{StaticResource HorizontalThreeDotsStyle}"> 
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
                         </Button.Flyout>
@@ -76,7 +77,9 @@
             <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid>
                     <Button
-                        Style="{StaticResource HorizontalThreeDotsStyle}">
+                        Style="{StaticResource HorizontalThreeDotsStyle}"
+                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}"
+                        ToolTipService.ToolTip="{x:Bind MoreOptionsButtonName}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
