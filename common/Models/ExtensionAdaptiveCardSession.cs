@@ -2,7 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using DevHome.Common.Helpers;
 
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -16,6 +20,8 @@ namespace DevHome.Common.Models;
 public class ExtensionAdaptiveCardSession
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionAdaptiveCardSession));
+
+    private readonly string _componentName = "ExtensionAdaptiveCardSession";
 
     public IExtensionAdaptiveCardSession Session { get; private set; }
 
@@ -39,7 +45,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Initialize failed due to exception");
+            _log.Error(_componentName, $"Initialize failed due to exception", ex);
             return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
@@ -57,7 +63,7 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"Dispose failed due to exception");
+           _log.Error(_componentName, $"Dispose failed due to exception", ex);
         }
     }
 
@@ -69,8 +75,8 @@ public class ExtensionAdaptiveCardSession
         }
         catch (Exception ex)
         {
-            _log.Error(ex, $"OnAction failed due to exception");
-            return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
+           _log.Error(_componentName, $"OnAction failed due to exception", ex);
+           return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
         }
     }
 

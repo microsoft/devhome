@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HyperVExtensionServer": {
+      "commandName": "Project",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    }
+  }
+}

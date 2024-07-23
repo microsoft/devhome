@@ -5,12 +5,15 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     struct ComputeSystemOperationResult : ComputeSystemOperationResultT<ComputeSystemOperationResult>
     {
-        ComputeSystemOperationResult();
+        ComputeSystemOperationResult() = default;
 
-        ComputeSystemOperationResult(winrt::hresult const& e, hstring const& displayMessage, hstring const& diagnosticText);
+        ComputeSystemOperationResult(hstring const& jsonResponseData);
+        ComputeSystemOperationResult(winrt::hresult const& e, hstring const& diagnosticText, hstring const& jsonResponseData);
+        hstring JsonResponseData();
         ProviderOperationResult Result();
 
     private:
+        hstring m_jsonResponseData;
         ProviderOperationResult m_result;
     };
 }

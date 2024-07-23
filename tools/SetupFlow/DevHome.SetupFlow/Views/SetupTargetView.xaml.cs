@@ -14,9 +14,4 @@ public sealed partial class SetupTargetView : UserControl
     {
         this.InitializeComponent();
     }
-
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        ViewModel.Initialize(NotificationQueue);
-    }
 }

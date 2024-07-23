@@ -1,0 +1,12 @@
+﻿CoRegisterClassObject
+CoResumeClassObjects
+CoRevokeClassObject
+CoCreateInstance
+CLSCTX
+REGCLS
+HANDLE
+WIN32_ERROR
+S_OK
+E_NOINTERFACE
+CLASS_E_NOAGGREGATION
+E_ACCESSDENIED

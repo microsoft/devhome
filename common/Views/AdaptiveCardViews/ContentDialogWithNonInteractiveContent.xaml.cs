@@ -9,6 +9,7 @@ using DevHome.Contracts.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using WinUIEx;
 
 namespace DevHome.Common.Views.AdaptiveCardViews;
 
@@ -28,7 +29,7 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
         _themeSelector = Application.Current.GetService<IThemeSelectorService>();
 
         // Since we use the renderer service to allow the card to receive theming updates, we need to ensure the UI thread is used.
-        var dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
+        var dispatcherQueue = Application.Current.GetService<WindowEx>().DispatcherQueue;
         dispatcherQueue.TryEnqueue(async () =>
         {
             Title = content.Title;
@@ -38,7 +39,6 @@ public sealed partial class ContentDialogWithNonInteractiveContent : ContentDial
             // Set the theme of the content dialog box
             RequestedTheme = _themeSelector.IsDarkTheme() ? ElementTheme.Dark : ElementTheme.Light;
             SecondaryButtonText = content.SecondaryButtonText;
-            this.Focus(FocusState.Programmatic);
         });
 
         _themeSelector.ThemeChanged += OnThemeChanged;

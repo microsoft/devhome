@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
@@ -12,9 +14,7 @@ namespace DevHome.Environments.TestModels;
 
 public class TestExtensionWrapper : IExtensionWrapper
 {
-    public string PackageDisplayName => throw new NotImplementedException();
-
-    public string ExtensionDisplayName => throw new NotImplementedException();
+    public string Name => throw new NotImplementedException();
 
     public string PackageFullName => "Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe";
 

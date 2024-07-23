@@ -8,7 +8,7 @@ The Dev Home team is VERY active in this GitHub Repo. In fact, we live in it all
 
 When the team finds issues, we file them in the repo. When we propose new ideas or think-up new features, we file new feature requests. When we work on fixes or features, we create branches and work on those improvements. And when PRs are reviewed, we review in public - including all the good, the bad, and the ugly parts.
 
-The point of doing all this work in public is to ensure that we are holding ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality-bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
+The point of doing all this work in public is to ensure that we hold ourselves to a high degree of transparency, and so that the community sees that we apply the same processes and hold ourselves to the same quality bar as we do to community-submitted issues and PRs. We also want to make sure that we expose our team culture and "tribal knowledge" that is inherent in any closely-knit team, which often contains considerable value to those new to the project who are trying to figure out "why the heck does this thing look/work like this???"
 
 ### Repo bot
 
@@ -45,7 +45,7 @@ If no existing item describes your issue/feature, great - please file a new issu
 * Want to know if we're planning on building a particular feature? File an issue
 * Got a great idea for a new feature? File an issue/request/idea
 * Don't understand how to do something? File an issue
-* Found an existing issue that describes yours? Great - upvote and add additional commentary / info / repro-steps / etc.
+* Found an existing issue that describes yours? Great - upvote and add additional commentary/info/repro-steps/etc.
 
 When you hit "New Issue", select the type of issue closest to what you want to report/ask/request.
 
@@ -85,7 +85,7 @@ When you hit "New Issue", select the type of issue closest to what you want to r
 * Don't assume we're experts in setting up YOUR environment. Teach us to help you!
 * **We LOVE detailed repro steps!** What steps do we need to take to reproduce the issue? Assume we love to read repro steps. As much detail as you can stand is probably _barely_ enough detail for us!
 * Prefer error message text where possible or screenshots of errors if text cannot be captured.
-* **If you intend to implement the fix/feature yourself then say so!** If you do not indicate otherwise we will assume that the issue is our to solve, or may label the issue as `Help-Wanted`.
+* **If you intend to implement the fix/feature yourself then say so!** If you do not indicate otherwise we will assume that the issue is ours to solve, or may label the issue as `Help-Wanted`.
 
 ### DO NOT post "+1" comments
 
@@ -95,7 +95,7 @@ If you don't have any additional info/context to add but would like to indicate 
 
 ---
 
-## Contributing fixes / features
+## Contributing fixes/features
 
 If you're able & willing to help fix issues and/or implement features, we'd love your contribution!
 
@@ -106,11 +106,11 @@ Generally, we categorize issues in the following way, which is largely derived f
 * ["Tasks"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Task%22+) are usually new pieces of functionality that aren't yet implemented for Dev Home. These are usually smaller features, which we believe
   - could be a single, atomic PR
   - don't require much design consideration, or we've already written the spec for the larger feature they belong to.
-* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Often times, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
+* ["Features"](https://github.com/microsoft/devhome/issues?q=is%3Aopen+is%3Aissue+label%3A%22Issue-Feature%22+) are larger pieces of new functionality. These are usually things we believe would require a larger discussion of how they should be implemented, or they'll require some complicated new settings. They might just be features that are composed of many individual tasks. Oftentimes, with features, we like to have a spec written before development work is started, to make sure we're all on the same page (see below).
 
-Bugs and tasks are obviously the easiest to get started with, but don't feel afraid of features either!
+Bugs and tasks are the easiest to get started with, but don't feel afraid of features either!
 
-Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
+Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member who owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd be okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
 
 ### Contributing to Windows Customization
 
@@ -124,7 +124,7 @@ For bug fixes, please still use the existing [bug template](https://github.com/m
 
 Some issues/features may be quick and simple to describe and understand. For such scenarios, once a team member has agreed with your approach, skip ahead to the section headed "Fork, Branch, and Create your PR", below.
 
-Small issues that do not require a spec will be labelled `Issue-Bug` or `Issue-Task`.
+Small issues that do not require a spec will be labeled `Issue-Bug` or `Issue-Task`.
 
 However, some issues/features will require careful thought & formal design before implementation. For these scenarios, we'll request that a spec is written and the associated issue will be labeled `Issue-Feature`.
 
@@ -136,7 +136,7 @@ Specs will be managed in a very similar manner as code contributions so please f
 
 To write/contribute to a spec: fork, branch, and commit via PRs as you would with any code changes.
 
-Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder and named `[issue id] - [spec description].md`.
+Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder, and named `[issue id] - [spec description].md`.
 
 👉 **It is important to follow the spec templates and complete the requested information**. The available spec templates will help ensure that specs contain the minimum information & decisions necessary to permit development to begin. In particular, specs require you to confirm that you've already discussed the issue/idea with the team in an issue and that you provide the issue ID for reference.
 
@@ -150,7 +150,7 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ## Development
 
-### Fork, clone, branch and create your PR
+### Fork, clone, branch, and create your PR
 
 Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
 
@@ -169,7 +169,7 @@ Once you've discussed your proposed feature/fix/etc. with a team member and you'
      * Dev Home's machine configuration tool
      * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
    * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
-     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
+     * Open the Visual Studio Installer, select “More” on your product card, and then "Import configuration"
      * Specify the .vsconfig file at the root of the repo and select “Review Details”
 
 ## Running & debugging
@@ -193,7 +193,7 @@ Alternatively,
 
 ### Code review
 
-When you'd like the team to take a look (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.
+When you'd like the team to take a look (even if the work is not yet fully complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.
 
 ### Merge
 

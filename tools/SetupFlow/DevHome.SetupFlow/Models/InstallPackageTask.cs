@@ -5,15 +5,15 @@ extern alias Projection;
 
 using System;
 using System.Threading.Tasks;
-using DevHome.Services.WindowsPackageManager.Contracts;
-using DevHome.Services.WindowsPackageManager.Exceptions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
-using Serilog;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
 
@@ -21,11 +21,10 @@ namespace DevHome.SetupFlow.Models;
 
 public class InstallPackageTask : ISetupTask
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
     private static readonly string MSStoreCatalogId = "StoreEdgeFD";
 
-    private readonly IWinGet _winget;
-    private readonly IWinGetPackage _package;
+    private readonly IWindowsPackageManager _wpm;
+    private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly Guid _activityId;
     private readonly string _installVersion;
@@ -44,11 +43,6 @@ public class InstallPackageTask : ISetupTask
     // installation in the WinGet COM API, but we do get it after installation.
     public bool RequiresReboot { get; set; }
 
-    /// <summary>
-    /// Gets target device name. Inherited via ISetupTask but unused.
-    /// </summary>
-    public string TargetName => string.Empty;
-
     // May potentially be moved to a central list in the future.
     public bool WasInstallSuccessful
     {
@@ -60,24 +54,20 @@ public class InstallPackageTask : ISetupTask
         get;
     }
 
-    public ISummaryInformationViewModel SummaryScreenInformation { get; }
-
     public string PackageName => _package.Name;
-
-    public bool IsInstalled => _package.IsInstalled;
 
 #pragma warning disable 67
     public event ISetupTask.ChangeActionCenterMessageHandler UpdateActionCenterMessage;
 #pragma warning restore 67
 
     public InstallPackageTask(
-        IWinGet winget,
+        IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        IWinGetPackage package,
+        WinGetPackage package,
         string installVersion,
         Guid activityId)
     {
-        _winget = winget;
+        _wpm = wpm;
         _stringResource = stringResource;
         _package = package;
         _activityId = activityId;
@@ -124,26 +114,27 @@ public class InstallPackageTask : ISetupTask
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
             Version = _installVersion,
-            IsElevationRequired = _package.IsElevationRequired,
         };
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
+        ReportAppSelectedForInstallEvent();
         return Task.Run(async () =>
         {
             try
             {
-                _log.Information($"Starting installation of package {_package.Id}");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
-                var installResult = await _winget.InstallPackageAsync(packageUri, _activityId);
+                var installResult = await _wpm.InstallPackageAsync(packageUri);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
                 // Set the extended error code in case a reboot is required
                 _extendedErrorCode = installResult.ExtendedErrorCode;
 
+                ReportAppInstallSucceededEvent();
                 return TaskFinishedState.Success;
             }
             catch (InstallPackageException e)
@@ -151,12 +142,14 @@ public class InstallPackageTask : ISetupTask
                 _installResultStatus = e.Status;
                 _extendedErrorCode = e.ExtendedErrorCode;
                 _installerErrorCode = e.InstallerErrorCode;
-                _log.Error($"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                ReportAppInstallFailedEvent();
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
-                _log.Error(e, $"Exception thrown while installing package.");
+                ReportAppInstallFailedEvent();
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -164,23 +157,35 @@ public class InstallPackageTask : ISetupTask
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
+        ReportAppSelectedForInstallEvent();
         return Task.Run(async () =>
         {
             try
             {
-                _log.Information($"Starting installation with elevation of package {_package.Id}");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
-                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
+                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
                 _extendedErrorCode = elevatedResult.ExtendedErrorCode;
                 _installerErrorCode = elevatedResult.InstallerErrorCode;
-                return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+
+                if (elevatedResult.TaskSucceeded)
+                {
+                    ReportAppInstallSucceededEvent();
+                    return TaskFinishedState.Success;
+                }
+                else
+                {
+                    ReportAppInstallFailedEvent();
+                    return TaskFinishedState.Failure;
+                }
             }
             catch (Exception e)
             {
-                _log.Error(e, $"Exception thrown while installing package.");
+                ReportAppInstallFailedEvent();
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -213,14 +218,14 @@ public class InstallPackageTask : ISetupTask
     /// <remarks>https://learn.microsoft.com/windows/win32/api/winerror/nf-winerror-hresult_facility</remarks>
     private int HResultFacility(int hr) => (hr >> 16) & 0x1FFF;
 
-    public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == IWinGet.AppInstallerErrorFacility;
+    public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == WindowsPackageManager.AppInstallerErrorFacility;
 
     private string GetExtendedErrorCodeMessage()
     {
         var packageName = _package.Name;
         if (!IsAppInstallerErrorFacility(_extendedErrorCode))
         {
-            var errorMessage = _stringResource.GetLocalizedErrorMsg(_extendedErrorCode, Identity.Component.AppManagement);
+            var errorMessage = _stringResource.GetLocalizedErrorMsg(_extendedErrorCode, Log.Component.AppManagement);
             return _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageSystemMessage, packageName, errorMessage);
         }
 
@@ -268,5 +273,20 @@ public class InstallPackageTask : ISetupTask
                     _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCode, packageName, $"0x{_extendedErrorCode:X}") :
                     _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode, packageName, $"0x{_extendedErrorCode:X}", _installerErrorCode),
         };
+    }
+
+    private void ReportAppSelectedForInstallEvent()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+    }
+
+    private void ReportAppInstallSucceededEvent()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
+    }
+
+    private void ReportAppInstallFailedEvent()
+    {
+        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
     }
 }

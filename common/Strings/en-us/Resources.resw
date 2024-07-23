@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdaptiveCardDialogPrimaryButtonText" xml:space="preserve">
+    <value>Ok</value>
+    <comment>Primary button text that will be displayed to the user as the main action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogSecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Secondary button text that will be displayed to the user as a secondary action when they are presented with a content dialog with two buttons</comment>
+  </data>
+  <data name="AdaptiveCardDialogTitleErrorText" xml:space="preserve">
+    <value>Couldn't get title from the extension</value>
+    <comment>Error text to be displayed to the user when a dev home extension that wants a content dialog to be displayed does not provide Dev Home with a title for the content dialog</comment>
+  </data>
   <data name="BannerHideButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Close</value>
     <comment>Name of the button that hides the banner</comment>
@@ -205,49 +217,9 @@
     <value>Uptime:</value>
     <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
-  <data name="HyperVAdminAddUserButton" xml:space="preserve">
-    <value>Add user to group</value>
-    <comment>Text for the button to add user to the Hyper-V administrators group</comment>
-  </data>
-  <data name="HyperVAdminAddUserAndEnableHyperVButton" xml:space="preserve">
-    <value>Set up Hyper-V in Dev Home</value>
-    <comment>Locked="{Hyper-V}" Text for the button to add user to Hyper-V administrators group and enable the Hyper-V feature</comment>
-  </data>
-  <data name="HyperVEnableButton" xml:space="preserve">
-    <value>Enable Hyper-V</value>
-    <comment>Locked="{Hyper-V}" Text for the button to enable the Hyper-V feature</comment>
-  </data>
-  <data name="RestartButton" xml:space="preserve">
-    <value>Restart now</value>
-    <comment>Text for button that restarts the system.</comment>
-  </data>
-  <data name="RestartAfterChangesMessage" xml:space="preserve">
-    <value>Changes completed successfully. Please restart your machine for the changes to take effect</value>
-    <comment>Text explaining that a restart is needed after enabling the Hyper-V feature or adding the user to the Hyper-V Admin group</comment>
-  </data>
-  <data name="HyperVAdminAddUserAndEnableHyperVMessage" xml:space="preserve">
-    <value>The current user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve both issues please click the set up Hyper-V in Dev Home button and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group and the Hyper-V feature is not enabled</comment>
-  </data>
-  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
-    <value>The current user is not in the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue, click the add user to group button</value>
-    <comment>Locked="{Hyper-V}" Text explaining that the user is not in the Hyper-V administrators group</comment>
-  </data>
-  <data name="HyperVFeatureNotEnabledMessage" xml:space="preserve">
-    <value>The Hyper-V feature is not enabled. Hyper-V virtual machines will not load. To resolve the issue, click the enable Hyper-V button</value>
-    <comment>Locked="{Hyper-V}" Text explaining that the Hyper-V feature is not enabled</comment>
-  </data>
-  <data name="UnableToEnableHyperVFeatureMessage" xml:space="preserve">
-    <value>Unable to enable the Hyper-V feature. Hyper-V virtual machines will not load. To resolve the issue manually, enable Hyper-V manually and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that we were not able to enable the Hyper-V feature.</comment>
-  </data>
-  <data name="UnableToAddUserToHyperVAdminAndEnableHyperVMessage" xml:space="preserve">
-    <value>Unable to add the user to the Hyper-V administrators group or enable Hyper-V. Hyper-V virtual machines may not load. To resolve the issue manually, add the user to the Hyper-V administrators group, enable Hyper-V and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that we couldn't fully complete the operation that would have added the user to the Hyper-V Administrators group and enable Hyper-V</comment>
-  </data>
-  <data name="UserNotAddedToHyperVAdminGroupMessage" xml:space="preserve">
-    <value>Failed to add the user to the Hyper-V administrators group. Hyper-V virtual machines will not load. To resolve the issue add the user to the Hyper-V administrators group and reboot</value>
-    <comment>Locked="{Hyper-V}" Text explaining that we couldn't add the user to the Hyper-V Administrators group.</comment>
+  <data name="CreateComputeSystemOperationError" xml:space="preserve">
+    <value>We couldn't start the operation to create your environment. Please check the extensions logs for more information</value>
+    <comment>Error text to be displayed when we're unable to start the operation to create a new environment. An environment can be a cloud or virtual machine.</comment>
   </data>
   <data name="DevHomeActionDefaultText" xml:space="preserve">
     <value>Open</value>
@@ -309,54 +281,8 @@
     <value>No environments added yet</value>
     <comment>Text for when the environment page in Dev Home is empty</comment>
   </data>
-  <data name="NoEnvironmentsAndExtensionsNotInstalledCallToAction" xml:space="preserve">
-    <value>Install an extension that supports environments and refresh the page</value>
-    <comment>Text for when the environment page in Dev Home is empty and no extensions are installed that support environments</comment>
-  </data>
-  <data name="NoEnvironmentsAndExtensionsNotInstalledButton" xml:space="preserve">
-    <value>Go to extensions library</value>
-    <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
-  </data>
-  <data name="ChooseFileActionTitle" xml:space="preserve">
-    <value>Choose file</value>
-  </data>
-  <data name="ChooseFileActionToolTip" xml:space="preserve">
-    <value>Choose file</value>
-  </data>
-  <data name="ContainersDescription" xml:space="preserve">
-    <value>Provides services and tools to create and manage Windows Server Containers and their resources.</value>
-    <comment>Locked="{Windows Server Containers}" Description for the Containers optional feature.</comment>
-  </data>
-  <data name="GuardedHostDescription" xml:space="preserve">
-    <value>Enables the device to create and run Shielded Virtual Machine using remote attestation.</value>
-    <comment>Locked="{Shielded Virtual Machine}" Description for the HostGuardian optional feature.</comment>
-  </data>
-  <data name="HyperVDescription" xml:space="preserve">
-    <value>Provides services and management tools for creating and running virtual machines and their resources.</value>
-    <comment>Description for the Microsoft-Hyper-V-All optional feature.</comment>
-  </data>
-  <data name="HyperVManagementToolsDescription" xml:space="preserve">
-    <value>Includes GUI and command-line tools for managing Hyper-V.</value>
-    <comment>Description for the Microsoft-Hyper-V-Tools-All optional feature.</comment>
-  </data>
-  <data name="HyperVPlatformDescription" xml:space="preserve">
-    <value>Provides the services that you can use to create and manage virtual machines and their resources.</value>
-    <comment>Description for the Microsoft-Hyper-V optional feature.</comment>
-  </data>
-  <data name="VirtualMachinePlatformDescription" xml:space="preserve">
-    <value>Enables platform support for virtual machines.</value>
-    <comment>Description for the VirtualMachinePlatform optional feature.</comment>
-  </data>
-  <data name="WindowsHypervisorPlatformDescription" xml:space="preserve">
-    <value>Enables virtualization software to run on the Windows hypervisor.</value>
-    <comment>Description for the WindowsHypervisorPlatform optional feature.</comment>
-  </data>
-  <data name="WindowsSandboxDescription" xml:space="preserve">
-    <value>Enables the dependencies required to run Windows Sandbox scenarios.</value>
-    <comment>Locked="{Windows Sandbox}" Description for the Containers-DisposableClientVM optional feature.</comment>
-  </data>
-  <data name="WindowsSubsystemForLinuxDescription" xml:space="preserve">
-    <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
-    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  <data name="UserNotInHyperAdminGroupMessage" xml:space="preserve">
+    <value>The current user is not a Hyper-V administrator. Hyper-V Virtual machines will not load. Please add the user to the Hyper-V Administrators group and reboot.</value>
+    <comment>Text explaining that the user is not in the hyper-v admin group and that we need to add them.</comment>
   </data>
 </root>

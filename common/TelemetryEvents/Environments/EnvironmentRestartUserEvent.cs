@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.Tracing;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;

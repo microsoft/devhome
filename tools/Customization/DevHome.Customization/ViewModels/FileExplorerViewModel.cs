@@ -1,13 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
+using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -16,6 +26,12 @@ public partial class FileExplorerViewModel : ObservableObject
     private readonly ShellSettings _shellSettings;
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
+
+    public ObservableCollection<string> TrackedRepositories { get; } = new();
+
+    private RepositoryTracking RepoTracker { get; set; } = new(null);
+
+    public ObservableCollection<FileExplorerSourceControlIntegrationViewModel> LocalRepositoryProviders { get; } = new();
 
     public FileExplorerViewModel()
     {
@@ -27,6 +43,54 @@ public partial class FileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
+
+        var experimentationService = Application.Current.GetService<IExperimentationService>();
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        {
+            // Currently, the UI displays a drop down which allows the user to select from a list of source control providers avaiable to Dev Home. This is
+            // subject to change per UI design specifications.
+            var extensionService = Application.Current.GetService<IExtensionService>();
+            var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
+            sourceControlExtensions.Sort((a, b) => string.Compare(a.ExtensionDisplayName, b.ExtensionDisplayName, System.StringComparison.OrdinalIgnoreCase));
+            sourceControlExtensions.ForEach((sourceControlExtension) =>
+            {
+                LocalRepositoryProviders.Add(new FileExplorerSourceControlIntegrationViewModel(sourceControlExtension));
+            });
+        }
+
+        RefreshTrackedRepositories();
+    }
+
+    public void RefreshTrackedRepositories()
+    {
+        var experimentationService = Application.Current.GetService<IExperimentationService>();
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        {
+            TrackedRepositories.Clear();
+            var repoCollection = RepoTracker.GetAllTrackedRepositories();
+            foreach (KeyValuePair<string, string> data in repoCollection)
+            {
+                TrackedRepositories.Add(data.Key);
+            }
+        }
+    }
+
+    public bool AddRepositoryPath(string extensionCLSID, string rootPath)
+    {
+        var normalizedPath = rootPath.ToUpper(CultureInfo.InvariantCulture).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, normalizedPath);
+        if (result.Result == Helpers.ResultType.Success)
+        {
+            RepoTracker.AddRepositoryPath(extensionCLSID, normalizedPath);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void RemoveRepositoryPath(string rootPath)
+    {
+        RepoTracker.RemoveRepositoryPath(rootPath);
     }
 
     public bool ShowFileExtensions
