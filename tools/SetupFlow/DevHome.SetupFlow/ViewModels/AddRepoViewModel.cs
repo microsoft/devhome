@@ -579,6 +579,8 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private async Task AddAccountClicked()
     {
+        _addRepoDialog.Focus(FocusState.Programmatic);
+
         // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
         // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
         // to account 1 after logging into account 2.
