@@ -17,6 +17,7 @@ using DevHome.PI.Models;
 using IWshRuntimeLibrary;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.ApplicationModel;
@@ -196,8 +197,15 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         ClearValues();
     }
 
-    private async void AppListButton_Click(object sender, RoutedEventArgs e)
+    private void RefreshAppListButton_Click(object sender, RoutedEventArgs e)
     {
+        RefreshAppList();
+    }
+
+    public async void RefreshAppList()
+    {
+        RefreshAppListButton.IsEnabled = false;
+
         _allApps.Clear();
         SortedApps.Clear();
 
@@ -237,6 +245,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
         }
 
         IsLoading = false;
+        RefreshAppListButton.IsEnabled = true;
     }
 
     private int GetShortcuts()
@@ -436,6 +445,57 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             _selectedApp = null;
             ToolPathTextBox.Text = string.Empty;
             ToolNameTextBox.Text = string.Empty;
+        }
+    }
+
+    private void ToolPathTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        var isError = false;
+        if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Tab)
+        {
+            e.Handled = true;
+            var filePath = ToolPathTextBox.Text;
+            if (string.IsNullOrEmpty(filePath))
+            {
+                isError = true;
+            }
+            else
+            {
+                // If they copy/pasted from Explorer, the path will be in quotes.
+                filePath = filePath.Replace("\"", string.Empty);
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    isError = true;
+                }
+                else
+                {
+                    // Ensure the textbox contains an unquoted path.
+                    ToolPathTextBox.Text = filePath;
+                    try
+                    {
+                        // Validate the path.
+                        var fullPath = Path.GetFullPath(filePath);
+                        if (Path.IsPathRooted(fullPath) && System.IO.File.Exists(fullPath))
+                        {
+                            ToolNameTextBox.Text = Path.GetFileNameWithoutExtension(filePath);
+                        }
+                        else
+                        {
+                            isError = true;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        isError = true;
+                        _log.Error(ex, "Error validating file path");
+                    }
+                }
+            }
+        }
+
+        if (isError)
+        {
+            WindowHelper.ShowTimedMessageDialog(this, _invalidToolInfo, _messageCloseText);
         }
     }
 }

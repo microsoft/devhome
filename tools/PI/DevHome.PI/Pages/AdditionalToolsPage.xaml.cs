@@ -17,4 +17,9 @@ public sealed partial class AdditionalToolsPage : Page
         ViewModel = Application.Current.GetService<AdditionalToolsViewModel>();
         InitializeComponent();
     }
+
+    private void SettingsAddToolCard_Expanded(object sender, System.EventArgs e)
+    {
+        AddToolPanel.RefreshAppList();
+    }
 }
