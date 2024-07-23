@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
@@ -18,10 +19,16 @@ public sealed partial class AddRepositoriesView : UserControl
         get;
     }
 
+    private readonly IExperimentationService experimentationService = Application.Current.GetService<IExperimentationService>();
+
     public AddRepositoriesView()
     {
         ViewModel = Application.Current.GetService<FileExplorerViewModel>();
         this.InitializeComponent();
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        {
+            ItemsRepeaterForAllRepoPaths.Visibility = Visibility.Visible;
+        }
     }
 
     public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)

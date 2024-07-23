@@ -15,14 +15,14 @@
     <StackPanel>
         <TextBlock x:Uid="AddRepositoriesTextBlock"
                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
-        <ctControls:SettingsCard 
+        <ctControls:SettingsCard
                x:Uid="AddRepositoriesCard"
                Grid.Column="1">
             <Button x:Uid="AddFolderButton" 
                 Style="{ThemeResource AccentButtonStyle}" 
                 Click="{x:Bind ViewModel.AddFolderButton_ClickAsync, Mode=OneWay}" />
         </ctControls:SettingsCard>
-        <ItemsRepeater Name="ItemsRepeaterForAllRepoPaths" ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
+        <ItemsRepeater Name="ItemsRepeaterForAllRepoPaths" Visibility="Collapsed" ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
                     <ctControls:SettingsCard 
@@ -36,6 +36,8 @@
                             <DropDownButton Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout Placement="Bottom">
+                                        <!-- WinUI does not currently allow populating MenuFlyoutItems dynamically within a DataTemplate. -->
+                                        <!-- The items must be statically constructed. -->
                                         <MenuFlyoutItem Text="Git" Click="AssignSourceControlProviderButton_Click"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>

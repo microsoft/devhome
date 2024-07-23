@@ -36,6 +36,8 @@ public partial class FileExplorerViewModel : ObservableObject
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
 
+    private readonly IExperimentationService experimentationService = Application.Current.GetService<IExperimentationService>();
+
     public FileExplorerViewModel()
     {
         _shellSettings = new ShellSettings();
@@ -51,7 +53,6 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public void RefreshTrackedRepositories()
     {
-        var experimentationService = Application.Current.GetService<IExperimentationService>();
         if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
             TrackedRepositories.Clear();
@@ -125,21 +126,24 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public async void AddFolderButton_ClickAsync(object sender, RoutedEventArgs e)
     {
-        await Task.Run(async () =>
+        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
-            using var folderDialog = new WindowOpenFolderDialog();
-            var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<WindowEx>());
-            if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
+            await Task.Run(async () =>
             {
-                log.Information($"Selected '{repoRootfolder.Path}' as location to register");
-                RepoTracker.AddRepositoryPath(unassigned, repoRootfolder.Path);
-            }
-            else
-            {
-                log.Information("Didn't select a location to register");
-            }
-        });
-        RefreshTrackedRepositories();
+                using var folderDialog = new WindowOpenFolderDialog();
+                var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<WindowEx>());
+                if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
+                {
+                    log.Information($"Selected '{repoRootfolder.Path}' as location to register");
+                    RepoTracker.AddRepositoryPath(unassigned, repoRootfolder.Path);
+                }
+                else
+                {
+                    log.Information("Didn't select a location to register");
+                }
+            });
+            RefreshTrackedRepositories();
+        }
     }
 
     public void RemoveTrackedRepositoryFromDevHome(string rootPath)
