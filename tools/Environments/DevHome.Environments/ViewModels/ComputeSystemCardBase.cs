@@ -69,7 +69,7 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public ComputeSystemCardBase()
     {
-        _moreOptionsButtonName = _stringResource.GetLocalized("MoreOptionsButtonName");
+        _moreOptionsButtonName = _stringResource.GetLocalized("MoreOptions.AutomationProperties.Name");
     }
 
     public override string ToString()
