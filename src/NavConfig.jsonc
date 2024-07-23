@@ -19,95 +19,23 @@
             "icon": "f156"
           },
           {
-            "experimentalFeatureIdentity": "EnvironmentsManagementPage",
-            "identity": "DevHome.Environments",
-            "assembly": "DevHome.Environments",
-            "viewFullName": "DevHome.Environments.Views.LandingPage",
-            "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
-            "icon": "E83B"
+            "identity": "DevHome.ExtensionLibrary",
+            "assembly": "DevHome.ExtensionLibrary",
+            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
+            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
+            "icon": "ea86"
           },
           {
-            "identity": "DevHome.Customization",
-            "assembly": "DevHome.Customization",
-            "viewFullName": "DevHome.Customization.Views.MainPage",
-            "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
-            "icon": "EC7A"
-          },
-          {
-            "identity": "DevHome.Utilities",
-            "assembly": "DevHome.Utilities",
-            "viewFullName": "DevHome.Utilities.Views.UtilitiesMainPageView",
-            "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
-            "iconFontFamily": "DevHomeFluentIcons",
-            "icon": "ECED"
+            "identity": "DevHome.Projects",
+            "assembly": "DevHome.Projects",
+            "viewFullName": "DevHome.Projects.Views.ProjectsPage",
+            "viewModelFullName": "DevHome.Projects.ViewModels.ProjectsViewModel",
+            "icon": "f156",
+            "experimentId": "ProjectsPage"
           }
         ]
       }
     ]
   },
-  "experimentalFeatures": [
-    {
-      "identity": "QuietBackgroundProcessesExperiment",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
-    {
-      "identity": "QuickstartPlayground",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    },
-    {
-      "identity": "ProjectIronsidesExperiment",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ]
-    }
-  ]
+  "experiments": [ "ProjectsPage" ]
 }
