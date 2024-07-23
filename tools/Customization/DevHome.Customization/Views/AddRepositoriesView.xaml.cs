@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -23,8 +24,23 @@ public sealed partial class AddRepositoriesView : UserControl
         this.InitializeComponent();
     }
 
-    public void SourceControlProviderSelection_Click(object sender, RoutedEventArgs e)
+    public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)
     {
-        ViewModel.SourceControlProviderSelection_Click();
+        // Extract relevant data from view and give to view model for remove
+        MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
+        if (menuItem.DataContext is RepositoryInformation repoInfo)
+        {
+            ViewModel.RemoveTrackedRepositoryFromDevHome(repoInfo.RepositoryRootPath);
+        }
+    }
+
+    public void AssignSourceControlProviderButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Extract relevant data from view and give to view model for assign
+        MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
+        if (menuItem.DataContext is RepositoryInformation repoInfo)
+        {
+            ViewModel.AssignSourceControlProviderToRepository(menuItem.Text, repoInfo.RepositoryRootPath);
+        }
     }
 }

@@ -3,18 +3,20 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Windows.FileDialog;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
 
@@ -29,6 +31,8 @@ public partial class FileExplorerViewModel : ObservableObject
     public ObservableCollection<RepositoryInformation> TrackedRepositories { get; } = new();
 
     private RepositoryTracking RepoTracker { get; set; } = new(null);
+
+    private readonly string unassigned = "00000000-0000-0000-0000-000000000000";
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
 
@@ -128,20 +132,38 @@ public partial class FileExplorerViewModel : ObservableObject
             if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
             {
                 log.Information($"Selected '{repoRootfolder.Path}' as location to register");
+                RepoTracker.AddRepositoryPath(unassigned, repoRootfolder.Path);
             }
             else
             {
                 log.Information("Didn't select a location to register");
             }
         });
+        RefreshTrackedRepositories();
     }
 
-    public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)
+    public void RemoveTrackedRepositoryFromDevHome(string rootPath)
     {
+        RepoTracker.RemoveRepositoryPath(rootPath);
+        RefreshTrackedRepositories();
     }
 
-    public ICommand? SourceControlProviderSelection_Click()
+    public async void AssignSourceControlProviderToRepository(string extensionName, string rootPath)
     {
-        return null;
+        await Task.Run(async () =>
+        {
+            var extensionService = Application.Current.GetService<IExtensionService>();
+            var sourceControlExtensions = await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository);
+            var extensionCLSID = sourceControlExtensions.FirstOrDefault(extension => extension.ExtensionDisplayName == extensionName)?.ExtensionClassId ?? string.Empty;
+            var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
+            if (result.Result == ResultType.Failure)
+            {
+                log.Error("Failed to validate source control extension");
+                return;
+            }
+
+            RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
+        });
+        RefreshTrackedRepositories();
     }
 }

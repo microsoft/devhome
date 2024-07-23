@@ -36,7 +36,7 @@
                             <DropDownButton Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout Placement="Bottom">
-                                        <MenuFlyoutItem Text="Git" />
+                                        <MenuFlyoutItem Text="Git" Click="AssignSourceControlProviderButton_Click"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>
@@ -51,7 +51,7 @@
                                     <MenuFlyout>
                                         <MenuFlyoutItem
                                     x:Uid="RemoveFolder"
-                                    />
+                                     Click="RemoveFolderButton_Click" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>
