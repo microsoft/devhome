@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Serilog;
@@ -169,8 +170,6 @@ public class PackageProvider
                 {
                     _log.Debug($"Removing package [{packageViewModel.Package.Id}] from cache");
                     _packageViewModelCache.Remove(packageViewModel.UniqueKey);
-                    packageViewModel.SelectionChanged -= OnPackageSelectionChanged;
-                    packageViewModel.VersionChanged -= OnSelectedPackageVersionChanged;
                 }
 
                 // Remove from the selected package collection

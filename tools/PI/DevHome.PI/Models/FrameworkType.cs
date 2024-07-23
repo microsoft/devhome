@@ -19,9 +19,6 @@ public partial class FrameworkType : ObservableObject
         get; set;
     }
 
-    [ObservableProperty]
-    private bool isTypeSupported;
-
     public FrameworkType(string determinator, string name, bool isExactMatch = true)
     {
         Determinator = determinator;

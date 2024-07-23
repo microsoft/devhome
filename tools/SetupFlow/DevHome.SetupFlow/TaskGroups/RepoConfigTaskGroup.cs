@@ -32,7 +32,6 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _host = host;
         _stringResource = stringResource;
 
-        // TODO https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new(() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
         _repoConfigReviewViewModel = new(() => new RepoConfigReviewViewModel(stringResource, this));
         _activityId = setupFlowOrchestrator.ActivityId;

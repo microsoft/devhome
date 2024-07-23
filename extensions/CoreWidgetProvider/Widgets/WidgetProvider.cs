@@ -9,7 +9,13 @@ namespace CoreWidgetProvider.Widgets;
 
 [ComVisible(true)]
 [ClassInterface(ClassInterfaceType.None)]
+#if CANARY_BUILD
+[Guid("3D9C5DCD-FC4D-4B8F-8195-9478891D52E2")]
+#elif STABLE_BUILD
 [Guid("F8B2DBB9-3687-4C6E-99B2-B92C82905937")]
+#else
+[Guid("F20D97D4-CC52-4001-ACF0-8750FB3A2547")]
+#endif
 internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
 {
     private readonly Dictionary<string, IWidgetImplFactory> _widgetDefinitionRegistry = new();

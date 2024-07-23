@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -33,6 +33,8 @@
     <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
     <None Remove="Views\DevDriveInsightsView.xaml" />
+    <None Remove="Views\GeneralSystemPage.xaml" />
+    <None Remove="Views\GeneralSystemView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
   </ItemGroup>
@@ -46,11 +48,19 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\GeneralSystemView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\MainPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\VirtualizationFeatureManagementPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

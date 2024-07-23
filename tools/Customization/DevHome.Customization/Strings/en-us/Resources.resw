@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -255,7 +255,7 @@
   </data>
   <data name="SettingsAutoSuggestBox.PlaceholderText" xml:space="preserve">
     <value>Search</value>
-    <comment>The placholder text for the settings auto suggest box</comment>
+    <comment>The placeholder text for the settings auto suggest box</comment>
   </data>
   <data name="ShowEmptyDrivesCard.Header" xml:space="preserve">
     <value>Show empty drives</value>
@@ -300,5 +300,93 @@
   <data name="WindowsDeveloperCard.Header" xml:space="preserve">
     <value>Windows developer settings</value>
     <comment>The header for the Windows developer settings card</comment>
+  </data>
+  <data name="VirtualizationFeatureManagement_Header" xml:space="preserve">
+    <value>Virtualization feature management</value>
+    <comment>Header for main Windows customization page in the breadcrumb bar</comment>
+  </data>
+  <data name="VirtualizationFeatureManagementCard.Description" xml:space="preserve">
+    <value>Enable or disable optional Windows virtualization features</value>
+    <comment>The description for the virtualization feature management settings card</comment>
+  </data>
+  <data name="VirtualizationFeatureManagementCard.Header" xml:space="preserve">
+    <value>Virtualization feature management</value>
+    <comment>The header for the virtualization feature management settings card</comment>
+  </data>
+  <data name="ApplyFeaturesButton.Content" xml:space="preserve">
+    <value>Apply</value>
+    <comment>Apply changes to feature state.</comment>
+  </data>
+  <data name="CommittingChangesTitle" xml:space="preserve">
+    <value>Committing changes</value>
+    <comment>Title displayed during the process of applying changes</comment>
+  </data>
+  <data name="CommittingChangesMessage" xml:space="preserve">
+    <value>Please wait for the changes to take effect.</value>
+    <comment>Message indicating the user should wait for the changes to be applied</comment>
+  </data>
+  <data name="RestartNowButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button text to cancel the current operation</comment>
+  </data>
+  <data name="RestartRequiredTitle" xml:space="preserve">
+    <value>Restart required</value>
+    <comment>Title displayed when a restart is required to apply changes</comment>
+  </data>
+  <data name="RestartRequiredMessage" xml:space="preserve">
+    <value>Please restart your machine for your applied changes to take effect.</value>
+    <comment>Message instructing the user to restart their machine to apply changes</comment>
+  </data>
+  <data name="DontRestartNowButtonText" xml:space="preserve">
+    <value>Don't restart now</value>
+    <comment>Button text to postpone system restart</comment>
+  </data>
+  <data name="ChangesAppliedTitle" xml:space="preserve">
+    <value>Changes applied</value>
+    <comment>The title for a notification shown to the user to indicate that changes have been successfully applied.</comment>
+  </data>
+  <data name="FailedToApplyChangesMessage" xml:space="preserve">
+    <value>Restart the computer and try again.</value>
+    <comment>The message for a notification shown to the user to indicate that some changes failed to apply and that restarting the computer is the most likely solution.</comment>
+  </data>
+  <data name="FailedToApplyChangesTitle" xml:space="preserve">
+    <value>Failed to apply some changes</value>
+    <comment>The title for a notification shown to the user to indicate that some, but maybe not all, changes failed to apply. Usually this is due to the system being in an invalid state, such as a Windows Update being queued.</comment>
+  </data>
+  <data name="NonAdminUserMessage" xml:space="preserve">
+    <value>Only users with the Administrator role can modify optional features.</value>
+    <comment>The message for a notification shown to the user to further describe that only users with the Administrator role in Windows can modify optional feature state.</comment>
+  </data>
+  <data name="NonAdminUserTitle" xml:space="preserve">
+    <value>The current user is not an administrator</value>
+    <comment>The title for a notification shown to the user to indicate that the current Windows user is not an administrator, meaning they are not able to change certain settings.</comment>
+  </data>
+  <data name="GeneralSystemCard.Description" xml:space="preserve">
+    <value>Configure various system settings such as long paths and taskbar customization.</value>
+    <comment>The description for the General System settings card</comment>
+  </data>
+  <data name="GeneralSystemCard.Header" xml:space="preserve">
+    <value>General system</value>
+    <comment>The header for the General System settings card</comment>
+  </data>
+  <data name="GeneralSystem_Header" xml:space="preserve">
+    <value>General system</value>
+    <comment>Header for the General system page in the breadcrumb bar</comment>
+  </data>
+  <data name="LongPaths.Description" xml:space="preserve">
+    <value>Remove MAX_PATH limitations from common Win32 file and directory functions.</value>
+    <comment>Locked="{MAX_PATH}" The description for the long paths settings card</comment>
+  </data>
+  <data name="LongPaths.Header" xml:space="preserve">
+    <value>Enable long paths</value>
+    <comment>The header for the long paths settings card</comment>
+  </data>
+  <data name="LongPathsChangedRestartMessage" xml:space="preserve">
+    <value>A restart may be required for long path changes to take effect.</value>
+    <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
 </root>

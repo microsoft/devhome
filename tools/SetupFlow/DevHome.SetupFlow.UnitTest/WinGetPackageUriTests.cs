@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.UnitTest;

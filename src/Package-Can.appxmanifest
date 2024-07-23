@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5" xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio" xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6" IgnorableNamespaces="uap uap3 uap5 uap10 rescap genTemplate desktop6">
+  <Extensions>
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="00000355-0000-0000-C000-000000000046">
+        <Path>Microsoft.Windows.Widgets.winmd</Path>
+        <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider" InterfaceId="5C5774CC-72A0-452D-B9ED-075C0DD25EED" />
+        <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider2" InterfaceId="38C3A963-DD93-479D-9276-04BF84EE1816" />
+      </ProxyStub>
+    </Extension>
+  </Extensions>
+  <Identity Name="Microsoft.Windows.DevHome.Canary" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
+  <Properties>
+    <DisplayName>Dev Home (Canary)</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>Assets\Logos\StoreLogo.png</Logo>
+    <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+    <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
+    <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameCanary" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Logos\MedTile.png" Square44x44Logo="Assets\Logos\AppList.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Logos\WideTile.png" />
+        <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
+        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
+          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" RunFullTrust="true">
+            <uap5:Path>DevHome.QuietBackgroundProcesses.Server.exe</uap5:Path>
+            <uap5:Instancing>singleInstance</uap5:Instancing>
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
+          </uap5:OutOfProcessServer>
+        </uap5:Extension>
+        <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
+        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
+          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" RunFullTrust="true">
+            <uap5:Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</uap5:Path>
+            <uap5:Instancing>singleInstance</uap5:Instancing>
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
+            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
+          </uap5:OutOfProcessServer>
+        </uap5:Extension>
+        <uap3:Extension Category="windows.appExtensionHost">
+          <uap3:AppExtensionHost>
+            <uap3:Name>com.microsoft.devhome</uap3:Name>
+            <uap3:Name>com.microsoft.windows.widgets</uap3:Name>
+          </uap3:AppExtensionHost>
+        </uap3:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="ms-devhome">
+            <uap:DisplayName>Dev Home</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="HyperVExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="HyperVExtensionServer">
+              <com:Class Id="6B219EF0-E238-434C-952E-4DF3D452AC83" DisplayName="HyperVExtensionServer" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="WslExtensionServer.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WslExtensionServer">
+              <com:Class Id="EF2342AC-FF53-433D-9EDE-D395500F3B3E" DisplayName="WslExtensionServer" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
+              <com:Class Id="3D9C5DCD-FC4D-4B8F-8195-9478891D52E2" DisplayName="CoreWidgetProvider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
+              <com:Class Id="AED8A076-3C29-4783-8CFB-F629A5ADB748" DisplayName="Core Extension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="AED8A076-3C29-4783-8CFB-F629A5ADB748" />
+                </Activation>
+                <!-- Best practice is to define SupportedInterfaces, even if it is empty -->
+                <SupportedInterfaces />
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID2" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameHyperVExt" Description="ms-resource:AppDescriptionHyperVExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="6B219EF0-E238-434C-952E-4DF3D452AC83" />
+                </Activation>
+                <SupportedInterfaces>
+                  <ComputeSystem />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID3" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameWslExt" Description="ms-resource:AppDescriptionWslExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="EF2342AC-FF53-433D-9EDE-D395500F3B3E" />
+                </Activation>
+                <SupportedInterfaces>
+                  <ComputeSystem />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameCanary" Id="CoreWidgetProvider" PublicFolder="Public">
+            <uap3:Properties>
+              <WidgetProvider>
+                <ProviderIcons>
+                  <Icon Path="Assets\Logos\StoreLogo.png" />
+                </ProviderIcons>
+                <Activation>
+                  <!-- Apps exports COM interface which implements IWidgetProvider -->
+                  <CreateInstance ClassId="3D9C5DCD-FC4D-4B8F-8195-9478891D52E2" />
+                </Activation>
+                <TrustedPackageFamilyNames>
+                  <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
+                </TrustedPackageFamilyNames>
+                <Definitions>
+                  <Definition Id="SSH_Wallet" DisplayName="ms-resource:WidgetDisplayNameSSHKeychain" Description="ms-resource:WidgetDescriptionSSHKeychain" AllowMultiple="true" IsCustomizable="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotLight.png" DisplayAltText="SSH Keychain widget preview image" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotDark.png" DisplayAltText="SSH Keychain widget preview image" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="false" IsCustomizable="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\icons\mem_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotLight.png" DisplayAltText="Memory widget preview image" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\icons\mem_icon_dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotDark.png" DisplayAltText="Memory widget preview image" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_NetworkUsage" DisplayName="ms-resource:WidgetDisplayNameNetwork" Description="ms-resource:WidgetDescriptionNetwork" AllowMultiple="true" IsCustomizable="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\icons\net_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotLight.png" DisplayAltText="Network widget preview image" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\icons\net_icon_dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotDark.png" DisplayAltText="Network widget preview image" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_GPUUsage" DisplayName="ms-resource:WidgetDisplayNameGPU" Description="ms-resource:WidgetDescriptionGPU" AllowMultiple="true" IsCustomizable="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\icons\gpu_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotLight.png" DisplayAltText="GPU widget preview image" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\icons\gpu_icon_dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotDark.png" DisplayAltText="GPU widget preview image" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="false" IsCustomizable="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\icons\cpu_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotLight.png" DisplayAltText="CPU widget preview image" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\icons\cpu_icon_dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotDark.png" DisplayAltText="CPU widget preview image" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                </Definitions>
+              </WidgetProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="winget">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.winget</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:PIDisplayName" Description="ms-resource:PIAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
+        <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
+          <uap5:StartupTask TaskId="DevHome.PI.Hotkey" Enabled="true" DisplayName="ms-resource:PIStartupTaskDisplayName" />
+        </uap5:Extension>
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="devhome.pi.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:HostsFileEditorAppDisplayName" Description="ms-resource:HostsFileEditorAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\HostsFileEditor\Square150x150Logo.png" Square44x44Logo="Assets\HostsFileEditor\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\HostsFileEditor\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\HostsFileEditor\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.HostsFileEditorApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.RegistryPreview" Executable="DevHome.RegistryPreview.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:RegistryPreviewAppDisplayName" Description="ms-resource:RegistryPreviewAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\RegistryPreview\Square150x150Logo.png" Square44x44Logo="Assets\RegistryPreview\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\RegistryPreview\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\RegistryPreview\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.RegistryPreviewApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+    <Application Id="DevHome.EnvironmentVariables" Executable="DevHome.EnvironmentVariables.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:EnvironmentVariablesAppDisplayName" Description="ms-resource:EnvironmentVariablesAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\EnvironmentVariables\Square150x150Logo.png" Square44x44Logo="Assets\EnvironmentVariables\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\EnvironmentVariables\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\EnvironmentVariables\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.EnvironmentVariablesApp.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="unvirtualizedResources" />
+  </Capabilities>
+  <genTemplate:Metadata>
+    <genTemplate:Item Name="generator" Value="Template Studio" />
+    <genTemplate:Item Name="wizardVersion" Version="v5.2.1" />
+    <genTemplate:Item Name="projectType" Value="NavView" />
+    <genTemplate:Item Name="framework" Value="MVVMToolkit" />
+    <genTemplate:Item Name="platform" Value="WinUI" />
+    <genTemplate:Item Name="appmodel" Value="Desktop" />
+  </genTemplate:Metadata>
+</Package>

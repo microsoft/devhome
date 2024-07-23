@@ -11,7 +11,9 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.PI.ViewModels;
 
@@ -64,12 +66,15 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     [ObservableProperty]
     private Visibility appSettingsVisibility = Visibility.Collapsed;
 
+    [ObservableProperty]
+    private bool _applyAppFiltering;
+
     public INavigationService NavigationService { get; }
 
     private readonly PageNavLink appDetailsNavLink;
     private readonly PageNavLink resourceUsageNavLink;
     private readonly PageNavLink modulesNavLink;
-    private readonly PageNavLink watsonNavLink;
+    private readonly PageNavLink werNavLink;
     private readonly PageNavLink winLogsNavLink;
     private readonly PageNavLink processListNavLink;
     private readonly PageNavLink insightsNavLink;
@@ -84,12 +89,14 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
         resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
         modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
-        watsonNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WatsonsHeaderTextBlock/Text"), typeof(WatsonPageViewModel));
+        werNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));
         winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
         processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
         insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
 
         links = new();
+
+        ApplyAppFiltering = Settings.Default.ApplyAppFilteringToData;
 
         appSettingsVisibility = TargetAppData.Instance.TargetProcess is not null ? Visibility.Visible : Visibility.Collapsed;
 
@@ -200,6 +207,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         if (!Links.Contains(processListNavLink))
         {
             Links.Add(processListNavLink);
+            Links.Add(werNavLink);
+            Links.Add(insightsNavLink);
         }
 
         // If App Details is missing, add all other pages.
@@ -210,9 +219,12 @@ public partial class ExpandedViewControlViewModel : ObservableObject
                 Links.Insert(0, appDetailsNavLink);
                 Links.Insert(1, resourceUsageNavLink);
                 Links.Insert(2, modulesNavLink);
-                Links.Insert(3, watsonNavLink);
-                Links.Insert(4, winLogsNavLink);
-                Links.Insert(6, insightsNavLink);
+
+                // Process List #3
+                // WER #4
+                Links.Insert(5, winLogsNavLink);
+
+                // Insights #6;
             }
         }
     }
@@ -225,9 +237,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         Links.Remove(appDetailsNavLink);
         Links.Remove(resourceUsageNavLink);
         Links.Remove(modulesNavLink);
-        Links.Remove(watsonNavLink);
         Links.Remove(winLogsNavLink);
-        Links.Remove(insightsNavLink);
     }
 
     public void NavigateTo(Type viewModelType)
@@ -272,5 +282,13 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     public void DetachFromProcess()
     {
         TargetAppData.Instance.ClearAppData();
+    }
+
+    [RelayCommand]
+    public void ApplyAppFilteringToData()
+    {
+        // This command is called before the control has had a chance to toggle the ApplyAppFiltering setting.
+        Settings.Default.ApplyAppFilteringToData = !ApplyAppFiltering;
+        Settings.Default.Save();
     }
 }

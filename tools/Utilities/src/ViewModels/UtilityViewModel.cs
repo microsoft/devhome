@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,10 +18,9 @@ namespace DevHome.Utilities.ViewModels;
 public partial class UtilityViewModel : ObservableObject
 {
 #nullable enable
-
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(UtilityViewModel));
-    private readonly IExperimentationService? experimentationService;
-    private readonly string? experimentalFeature;
+    private readonly IExperimentationService? _experimentationService;
+    private readonly string? _experimentalFeature;
     private readonly string _exeName;
 #nullable disable
 
@@ -29,9 +29,9 @@ public partial class UtilityViewModel : ObservableObject
         get
         {
             // Query if there is an experimental feature and return its enabled value
-            if (experimentalFeature is not null)
+            if (_experimentalFeature is not null)
             {
-                var isExperimentalFeatureEnabled = experimentationService?.IsFeatureEnabled(experimentalFeature) ?? true;
+                var isExperimentalFeatureEnabled = _experimentationService?.IsFeatureEnabled(_experimentalFeature) ?? true;
                 return isExperimentalFeatureEnabled;
             }
 
@@ -60,9 +60,9 @@ public partial class UtilityViewModel : ObservableObject
 #nullable enable
     public UtilityViewModel(string exeName, IExperimentationService? experimentationService = null, string? experimentalFeature = null)
     {
-        this._exeName = exeName;
-        this.experimentationService = experimentationService;
-        this.experimentalFeature = experimentalFeature;
+        _exeName = exeName;
+        _experimentationService = experimentationService;
+        _experimentalFeature = experimentalFeature;
         LaunchCommand = new RelayCommand(Launch);
         _log.Information($"UtilityViewModel created for Title: {Title}, exe: {exeName}");
     }
@@ -89,14 +89,20 @@ public partial class UtilityViewModel : ObservableObject
             if (process is null)
             {
                 _log.Error($"Failed to start process {_exeName}");
-                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error));
+                TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, -2147467259 /* E_FAIL */));
                 throw new InvalidOperationException("Failed to start process");
             }
         }
         catch (Exception ex)
         {
+            int errorCode = ex.HResult;
+            if (ex.GetType() == typeof(Win32Exception))
+            {
+                errorCode = ((Win32Exception)ex).NativeErrorCode;
+            }
+
             _log.Error(ex, $"Failed to start process {_exeName}");
-            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, ex.ToString()));
+            TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Error, errorCode, ex.ToString()));
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesLaunchEvent", LogLevel.Critical, new UtilitiesLaunchEvent(activityId, Title, LaunchAsAdmin, UtilitiesLaunchEvent.Phase.Complete), null);

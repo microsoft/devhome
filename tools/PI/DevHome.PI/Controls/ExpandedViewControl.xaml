@@ -5,21 +5,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock
-            x:Uid="ExpandedViewHeaderTextBlock" x:Name="ExpandedViewTitleTextBlock" Text="{x:Bind viewModel.Title, Mode=OneWay}"
-            FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="Bold" FontFamily="Segoe UI"/>
-
-        <Grid Grid.Row="1" Margin="0,8,0,0">
+        <Grid Grid.Row="0" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>
                 <ColumnDefinition Width="Auto"/>
@@ -61,23 +59,7 @@
                         Visibility="{x:Bind viewModel.AppSettingsVisibility, Mode=OneWay}" 
                         Command="{x:Bind viewModel.DetachFromProcessCommand}"/>
                 </StackPanel>
-                <Button
-                    Grid.Row="1" x:Name="SettingsButton" Click="SettingsButton_Click"
-                    BorderThickness="0" Background="Transparent" Margin="4,0,0,0"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Center" HorizontalContentAlignment="Left">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock 
-                            Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}"
-                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock 
-                            Grid.Column="1" Text="{x:Bind viewModel.SettingsHeader, Mode=OneWay}"
-                            Margin="12,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                    </Grid>
-                </Button>
+               
             </Grid>
 
             <toolkit:GridSplitter 
@@ -92,69 +74,97 @@
 
                 <Frame x:Name="PageFrame"/>
 
-                <Expander
-                    x:Name="ClipboardErrorExpander" Grid.Row="1"
+            </Grid>
+        </Grid>
+
+        <!-- Bottom section -->
+        <StackPanel Orientation="Vertical" Grid.Row="2">
+            <Expander
+                    x:Name="ClipboardErrorExpander"
                     IsExpanded="False" ExpandDirection="Up"
                     HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" 
                     HorizontalContentAlignment="Stretch">
-                    <Expander.Header>
-                        <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
-                    </Expander.Header>
-                    <Grid>
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
-                                <Setter Property="Margin" Value="12,0,0,0"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                            <Style TargetType="TextBox">
-                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
-                                <Setter Property="IsReadOnly" Value="True"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Margin" Value="0,8,0,0"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </Grid.Resources>
+            <Expander.Header>
+                <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Expander.Header>
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                        <Setter Property="Margin" Value="12,0,0,0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                        <Setter Property="IsReadOnly" Value="True"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Margin" Value="0,8,0,0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </Grid.Resources>
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Uid="HexLabelTextBlock"/>
-                        <TextBox x:Name="ErrorHexTextBox" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsHex, Mode=OneWay}"/>
-                        <TextBlock x:Uid="DecLabelTextBlock" Grid.Row="1"/>
-                        <TextBox x:Name="ErrorDecTextBox" Grid.Row="1" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsDec, Mode=OneWay}"/>
-                        <TextBlock x:Uid="CodeLabelTextBlock" Grid.Row="2"/>
-                        <TextBox x:Name="ErrorCodeTextBox" Grid.Row="2" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsCode, Mode=OneWay}"/>
-                        <TextBlock x:Uid="HelpLabelTextBlock" Grid.Row="3"/>
-                        <TextBox x:Name="ErrorHelpTextBox" Grid.Row="3" Grid.Column="1" 
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Uid="HexLabelTextBlock"/>
+                <TextBox x:Name="ErrorHexTextBox" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsHex, Mode=OneWay}"/>
+                <TextBlock x:Uid="DecLabelTextBlock" Grid.Row="1"/>
+                <TextBox x:Name="ErrorDecTextBox" Grid.Row="1" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsDec, Mode=OneWay}"/>
+                <TextBlock x:Uid="CodeLabelTextBlock" Grid.Row="2"/>
+                <TextBox x:Name="ErrorCodeTextBox" Grid.Row="2" Grid.Column="1" Text="{x:Bind viewModel.ClipboardContentsCode, Mode=OneWay}"/>
+                <TextBlock x:Uid="HelpLabelTextBlock" Grid.Row="3"/>
+                <TextBox x:Name="ErrorHelpTextBox" Grid.Row="3" Grid.Column="1" 
                              ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="36" Text="{x:Bind viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
-                    </Grid>
-                </Expander>
-
-                <Grid Grid.Row="2">
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
-                                <Setter Property="Margin" Value="12,0,0,0"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                            </Style>
-                        </StackPanel.Resources>
-                        <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}"/>
-                        <TextBlock x:Uid="ExpandedViewAppCpuPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.CpuUsage, Mode=OneWay}"/>
-                        <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.RamUsage, Mode=OneWay}"/>
-                        <TextBlock x:Uid="ExpandedViewAppDiskPerf" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
-                    </StackPanel>
-                </Grid>
             </Grid>
-        </Grid>
+            </Expander>
+
+            <!-- Bottom status bar -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                </Grid.Resources>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="10" Visibility="{x:Bind viewModel.PerfMarkersVisibility, Mode=OneWay}">
+                    <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox"  Text="{x:Bind viewModel.ApplicationPid, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppCpuPerf" Text="{x:Bind viewModel.CpuUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Text="{x:Bind viewModel.RamUsage, Mode=OneWay}"/>
+                    <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind viewModel.DiskUsage, Mode=OneWay}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" Spacing="10" >
+                        <TextBlock x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
+                        <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind viewModel.ApplyAppFiltering, Mode=TwoWay}" MinWidth="0">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="Toggled">
+                                    <ic:InvokeCommandAction Command="{x:Bind viewModel.ApplyAppFilteringToDataCommand}" />
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ToggleSwitch>
+                    </StackPanel>
+
+                    <Button Click="SettingsButton_Click">
+                        <TextBlock Text="&#xe713;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource CaptionTextBlockFontSize}" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>

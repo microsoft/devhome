@@ -284,7 +284,7 @@ public sealed class DevDriveStorageOperator
         unsafe
         {
             partitionLayout.Info.PartitionCount = 1;
-            var partitionInfo = &partitionLayout.Info.PartitionEntry._0;
+            var partitionInfo = &partitionLayout.Info.PartitionEntry.e0;
             partitionInfo->PartitionStyle = PARTITION_STYLE.PARTITION_STYLE_GPT;
 
             // There are currently no partitions on the disk.  Start off the

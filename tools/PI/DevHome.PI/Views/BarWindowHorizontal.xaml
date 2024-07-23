@@ -9,16 +9,17 @@
     xmlns:controls="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="72" MinWidth="700" Height="72" Width="700" MaxHeight="72"
+    Title="" MinHeight="90" MinWidth="700" Height="90" Width="700" MaxHeight="90"
     TaskBarIcon="Images/pi.ico"
     Activated="Window_Activated"
+    WindowStateChanged="WindowEx_WindowStateChanged"
     Closed="WindowEx_Closed">
 
     <Window.SystemBackdrop>
         <MicaBackdrop/>
     </Window.SystemBackdrop>
 
-    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" SizeChanged="MainPanel_SizeChanged">
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -33,15 +34,15 @@
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}">
+            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
                     x:Uid="SnapButton" 
                     Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
                     x:Name="SnapButton" Style="{StaticResource ChromeButton}" 
                     FontSize="{StaticResource CaptionTextBlockFontSize}"
                     Command="{x:Bind _viewModel.ToggleSnapCommand}" 
-                    HorizontalAlignment="Left" 
+                    HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
@@ -66,90 +67,75 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel x:Name="AllControls" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
-            <StackPanel.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
-                    <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
-                </Style>
-                <Style TargetType="Button">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                </Style>
-                <Style TargetType="controls:ExternalToolsManagementButton">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                </Style>
-                <Style TargetType="controls:ProcessSelectionButton">
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                </Style>
-            </StackPanel.Resources>
-            
-            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Margin="0">
-                <TextBlock Text="&#xecaa;" Margin="0"/>
-            </controls:ProcessSelectionButton>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition x:Name="ToolColumn" Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <controls:PISeparator />
+            <StackPanel x:Name="AllControls" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
+                        <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                    <Style TargetType="controls:ExternalToolsManagementButton">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                    <Style TargetType="controls:ProcessSelectionButton">
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                </StackPanel.Resources>
 
-            <!-- Per App controls -->
-            <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
-                <StackPanel.ContextFlyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
-                            <MenuFlyoutItem.Icon>
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
-                            </MenuFlyoutItem.Icon>
-                        </MenuFlyoutItem>
-                    </MenuFlyout>
-                </StackPanel.ContextFlyout>
-                <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
-                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
-                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" VerticalAlignment="Center" />
-                <controls:PISeparator />
+                <!-- Process Chooser area -->
+                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
+                    <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center">
+                        <TextBlock Text="&#xe179;"/>
+                    </controls:ProcessSelectionButton>
+                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Per App controls -->
+                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10 0 0 0">
+                    <StackPanel.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </StackPanel.ContextFlyout>
+                    <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Height="20" Width="20" />
+                    <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                    <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                </StackPanel>
+                <CommandBar>
+                    <AppBarSeparator/>
+                </CommandBar>
             </StackPanel>
 
-            <!-- Per System controls -->
-              <controls:ExternalToolsManagementButton
-                x:Name="ManageExternalToolsButton"
-                x:Uid="ManageExternalToolsButton"
-                HorizontalAlignment="Center"
-                Command="{x:Bind _viewModel.ManageExternalToolsButtonCommand}"
-                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
-                <TextBlock Text="&#xEC7A;"/>
-            </controls:ExternalToolsManagementButton>
+            <CommandBar x:Name="MyCommandBar" Style="{StaticResource CustomCommandBar}" HorizontalAlignment="Left" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Collapsed" Grid.Column="1" />
 
-            <controls:PISeparator />
+            <CommandBar Grid.Column="2" >
+                <AppBarSeparator/>
+            </CommandBar>
 
-            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsHorizontalLayout}">
-                <DataTemplate x:DataType="helpers:ExternalTool">
-                    <Button Click="_viewModel.ExternalToolButton_Click" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
-                        <Image Source="{x:Bind ToolIcon, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform"/>
-                        <Button.ContextFlyout>
-                            <MenuFlyout x:Name="ToolContextMenu">
-                                <MenuFlyoutItem x:Uid="UnpinMenuItem" Name="UnpinMenuItem" Click="{x:Bind TogglePinnedState}">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE77A;"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                                <MenuFlyoutItem x:Uid="UnregisterMenuItem" Name="UnregisterMenuItem" Click="{x:Bind UnregisterTool}">
-                                    <MenuFlyoutItem.Icon>
-                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xECC9;"/>
-                                    </MenuFlyoutItem.Icon>
-                                </MenuFlyoutItem>
-                            </MenuFlyout>
-                        </Button.ContextFlyout>
-                    </Button>
-                </DataTemplate>
-            </ItemsRepeater>
-            <controls:PISeparator Visibility="{x:Bind _viewModel.ExternalToolSeparatorVisibility, Mode=OneWay}"/>
-        </StackPanel>
+            <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="3" Spacing="10" Margin="0 0 10 0">
+                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+            </StackPanel>
 
-        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1" Spacing="5">
-            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-        </StackPanel>
+        </Grid>
 
         <Border
             x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"

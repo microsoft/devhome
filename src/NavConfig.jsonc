@@ -31,7 +31,7 @@
             "assembly": "DevHome.Customization",
             "viewFullName": "DevHome.Customization.Views.MainPage",
             "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
-            "icon": "e9f5"
+            "icon": "EC7A"
           },
           {
             "identity": "DevHome.Utilities",

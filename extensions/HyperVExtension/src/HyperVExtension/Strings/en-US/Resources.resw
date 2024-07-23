@@ -339,7 +339,7 @@
   </data>
   <data name="UserNotInHyperVAdminGroup" xml:space="preserve">
     <value>User {0} is not a member of the Hyper-V Administrators group. If you have already added the user to the group you may need to log off and back on again.</value>
-    <comment>Locked="{Hyper-V}" Error text for when the user is not in the Hyper-V adminstrators group. {0} is the username of the user</comment>
+    <comment>Locked="{Hyper-V}" Error text for when the user is not in the Hyper-V administrators group. {0} is the username of the user</comment>
   </data>
   <data name="HyperVFeatureNotPresent" xml:space="preserve">
     <value>The Hyper-V Feature is not present on this SKU of Windows.</value>
@@ -356,5 +356,9 @@
   <data name="HyperVVirtualMachineManagementServiceError" xml:space="preserve">
     <value>Unable to start the virtual machine management service. The Hyper-V feature may have been recently enabled but a reboot has not been initiated. Please check that the service exists in the Windows Services snap-in if a reboot has already been done.</value>
     <comment>{Locked="{Hyper-V}", "{Windows}"} Error text to show the user that virtual machine management service can't be started by the extension</comment>
+  </data>
+  <data name="ImageLogoAltText" xml:space="preserve">
+    <value>{0} Logo</value>
+    <comment>Locked="{0}" The alt text for the Microsoft logo on the review tab. {0} is the name of the image.</comment>
   </data>
 </root>

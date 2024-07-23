@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;

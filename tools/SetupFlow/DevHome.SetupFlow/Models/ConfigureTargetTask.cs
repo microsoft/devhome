@@ -15,7 +15,8 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Common.Views;
-using DevHome.SetupFlow.Common.Exceptions;
+using DevHome.Services.DesiredStateConfiguration.Exceptions;
+using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
@@ -306,7 +307,7 @@ public class ConfigureTargetTask : ISetupTask
             if (!Result.OpenConfigSucceeded)
             {
                 AddMessage(Result.OpenResult.GetErrorMessage(), MessageSeverityKind.Error);
-                throw new OpenConfigurationSetException(Result.OpenResult.ResultCode, Result.OpenResult.Field, Result.OpenResult.Value);
+                throw new SDKOpenConfigurationSetResultException(Result.OpenResult.ResultCode, Result.OpenResult.Field, Result.OpenResult.Value);
             }
 
             // Gather the configuration results. We'll display these to the user in the summary page if they are available.

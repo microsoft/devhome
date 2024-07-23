@@ -5,7 +5,8 @@ using System.Web;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -23,7 +24,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private const string AppSearchUri = "add-apps-to-cart";
     private readonly INavigationService _navigationService;
     private readonly SetupFlowViewModel _setupFlowViewModel;
-    private readonly IWindowsPackageManager _windowsPackageManager;
+    private readonly IWinGet _winget;
     private readonly PackageProvider _packageProvider;
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly Window _mainWindow;
@@ -40,7 +41,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         INavigationService navigationService,
         SetupFlowViewModel setupFlowViewModel,
         PackageProvider packageProvider,
-        IWindowsPackageManager wpm,
+        IWinGet winget,
         SetupFlowOrchestrator setupFlowOrchestrator,
         ISetupFlowStringResource setupFlowStringResource,
         Window mainWindow)
@@ -48,7 +49,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
         _navigationService = navigationService;
         _setupFlowViewModel = setupFlowViewModel;
         _packageProvider = packageProvider;
-        _windowsPackageManager = wpm;
+        _winget = winget;
         _setupFlowOrchestrator = setupFlowOrchestrator;
         _setupFlowStringResource = setupFlowStringResource;
         _mainWindow = mainWindow;
@@ -107,7 +108,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
     private string[] SplitAndTrimIdentifiers(string query)
     {
         return query.Split(_separator, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(id => id.Trim(' ', '"'))
+                    .Select(id => id.Trim(' ', '"', '\''))
                     .ToArray();
     }
 
@@ -143,7 +144,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
         try
         {
-            var list = await _windowsPackageManager.GetPackagesAsync(uris);
+            var list = await _winget.GetPackagesAsync(uris);
             foreach (var item in list)
             {
                 var package = _packageProvider.CreateOrGet(item);
@@ -159,7 +160,7 @@ public class AppInstallActivationHandler : ActivationHandler<ProtocolActivatedEv
 
     private async Task SearchAndSelectAsync(string identifier)
     {
-        var searchResults = await _windowsPackageManager.SearchAsync(identifier, 1);
+        var searchResults = await _winget.SearchAsync(identifier, 1);
         if (searchResults.Count == 0)
         {
             _log.Warning($"No results found for the identifier: {identifier}");
