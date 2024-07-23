@@ -2,22 +2,30 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Helpers;
+using DevHome.Environments.Models;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinUIEx;
+using WinUIEx.Messaging;
 
 namespace DevHome.Environments.ViewModels;
 
@@ -25,18 +33,18 @@ namespace DevHome.Environments.ViewModels;
 /// View model for a compute system. Each 'card' in the UI represents a compute system.
 /// Contains an instance of the compute system object as well.
 /// </summary>
-public partial class ComputeSystemViewModel : ComputeSystemCardBase
+public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<ComputeSystemOperationStartedMessage>, IRecipient<ComputeSystemOperationCompletedMessage>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ComputeSystemViewModel));
+
+    private readonly StringResource _stringResource;
 
     private readonly WindowEx _windowEx;
 
     private readonly IComputeSystemManager _computeSystemManager;
 
-    public bool IsOperationInProgress { get; set; }
-
     // Launch button operations
-    public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; }
+    public ObservableCollection<OperationsViewModel> LaunchOperations { get; set; } = new();
 
     public ObservableCollection<CardProperty> Properties { get; set; } = new();
 
@@ -44,28 +52,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
     private readonly Func<ComputeSystemCardBase, bool> _removalAction;
 
-    [ObservableProperty]
-    private bool _shouldShowDotOperations;
-
-    [ObservableProperty]
-    private bool _shouldShowSplitButton;
-
-    private bool _disposedValue;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
-    /// This class requires a 3-step initialization:
-    /// 1. Create the instance of the class. Constructor saves the parameters, but doesn't make
-    ///    any OOP calls to IComputeSystem or initialize UX data which requires UI thread.
-    /// 2. Call <see cref="InitializeCardDataAsync"/> to fetch the compute system data from the extension and cache it in ComputeSystem property.
-    ///    This can be done on any thread and in parallel with other compute systems.
-    /// 3. Call <see cref="InitializeUXData"/> to initialize the UX controls with the data we fetched in step 2.
-    /// This allows us to avoid heavy calls on the UI thread and initialize data in parallel.
-    /// </summary>
     public ComputeSystemViewModel(
         IComputeSystemManager manager,
         IComputeSystem system,
         ComputeSystemProvider provider,
+        Func<ComputeSystemCardBase, bool> removalAction,
         string packageFullName,
         WindowEx windowEx)
     {
@@ -76,77 +67,38 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         ProviderDisplayName = provider.DisplayName;
         PackageFullName = packageFullName;
         Name = ComputeSystem.DisplayName;
+        AssociatedProviderId = ComputeSystem.AssociatedProviderId!;
+        ComputeSystemId = ComputeSystem.Id!;
+        _removalAction = removalAction;
 
         if (!string.IsNullOrEmpty(ComputeSystem.SupplementalDisplayName))
         {
             AlternativeName = new string("(" + ComputeSystem.SupplementalDisplayName + ")");
         }
 
-        LaunchOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillLaunchButtonOperations(ComputeSystem));
-        DotOperations = new ObservableCollection<OperationsViewModel>(DataExtractor.FillDotButtonOperations(ComputeSystem));
         HeaderImage = CardProperty.ConvertMsResourceToIcon(provider.Icon, packageFullName);
         ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
+
+        _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
     }
 
-    private async Task InitializeOperationDataAsync()
-    {
-        await _semaphoreSlimLock.WaitAsync();
-        try
-        {
-            ShouldShowDotOperations = false;
-            ShouldShowSplitButton = false;
-
-            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
-
-            _ = Task.Run(async () =>
-            {
-                var start = DateTime.Now;
-                List<OperationsViewModel> validData = new();
-                foreach (var data in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem))
-                {
-                    if ((!data.WasPinnedStatusSuccessful) || (data.ViewModel == null))
-                    {
-                        _log.Error($"Pinned status check failed: for '{Name}': {data?.PinnedStatusDisplayMessage}. DiagnosticText: {data?.PinnedStatusDiagnosticText}");
-                        continue;
-                    }
-
-                    validData.Add(data.ViewModel);
-                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, data.ViewModel);
-                    WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, data.ViewModel);
-                }
-
-                _log.Information($"Registering pin operations for {Name} in background took {DateTime.Now - start}");
-
-                // Add valid data to the DotOperations collection
-                _mainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    foreach (var data in validData)
-                    {
-                        DotOperations.Add(data);
-                    }
-
-                    // Only show dot operations when there are items in the list.
-                    ShouldShowDotOperations = DotOperations.Count > 0;
-
-                    // Only show Launch split button with operations when there are items in the list.
-                    ShouldShowSplitButton = LaunchOperations.Count > 0;
-                });
-            });
-
-            SetPropertiesAsync();
-        }
-        finally
-        {
-            _semaphoreSlimLock.Release();
-        }
-    }
-
-    private async Task RefreshOperationDataAsync()
+    public async Task InitializeCardDataAsync()
     {
         await InitializeStateAsync();
         await SetBodyImageAsync();
         await SetPropertiesAsync();
+        await InitializeOperationDataAsync();
+    }
+
+    private async Task InitializeOperationDataAsync()
+    {
+        RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem!, _windowEx), DataExtractor.FillLaunchButtonOperations(ComputeSystem!));
+
+        foreach (var operation in await DataExtractor.FillDotButtonPinOperationsAsync(ComputeSystem!))
+        {
+            DotOperations!.Add(operation);
+        }
     }
 
     private async Task InitializeStateAsync()
@@ -159,6 +111,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
 
         State = result.State;
         StateColor = ComputeSystemHelpers.GetColorBasedOnState(State);
+
+        SetupOperationProgressBasedOnState();
     }
 
     private async Task SetBodyImageAsync()
@@ -174,14 +128,20 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         }
     }
 
-    public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState state)
+    public void OnComputeSystemStateChanged(ComputeSystem sender, ComputeSystemState newState)
     {
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.EnqueueAsync(async () =>
         {
             if (sender.Id == ComputeSystem!.Id)
             {
-                State = state;
-                StateColor = ComputeSystemHelpers.GetColorBasedOnState(state);
+                // The supported operations for a compute system can change based on the current state of the compute system.
+                // So we need to rebuild the dot and launch operations that appear in the UI based on the current
+                // supported operations of the compute system. InitializeOperationDataAsync will take care of this for us, by using
+                // the DataExtractor helper.
+                await InitializeOperationDataAsync();
+                State = newState;
+                StateColor = ComputeSystemHelpers.GetColorBasedOnState(newState);
+                SetupOperationProgressBasedOnState();
             }
         });
     }
@@ -190,6 +150,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
     {
         ComputeSystem!.StateChanged -= _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged -= OnComputeSystemStateChanged;
+
+        // Unregister from all operation messages
+        WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
     [RelayCommand]
@@ -200,7 +163,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         // We'll need to disable the card UI while the operation is in progress and handle failures.
         Task.Run(async () =>
         {
-            IsOperationInProgress = true;
+            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            {
+                UiMessageToDisplay = _stringResource.GetLocalized("LaunchingEnvironmentText");
+                IsOperationInProgress = true;
+            });
 
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Launch_Event",
@@ -210,11 +177,17 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
             var operationResult = await ComputeSystem!.ConnectAsync(string.Empty);
 
             var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+            var completionMessage = _stringResource.GetLocalized("LaunchingEnvironmentSuccessText");
+            var operationFailed = (operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure);
 
-            if ((operationResult == null) || (operationResult.Result.Status == ProviderOperationStatus.Failure))
+            if (operationFailed)
             {
                 completionStatus = EnvironmentsTelemetryStatus.Failed;
                 LogFailure(operationResult);
+
+                var messageWhenNull = _stringResource.GetLocalized("LaunchingEnvironmentFailedUnKnownReasonText");
+                completionMessage =
+                    (operationResult != null) ? _stringResource.GetLocalized("LaunchingEnvironmentFailedText", operationResult.Result.DisplayMessage) : messageWhenNull;
             }
 
             TelemetryFactory.Get<ITelemetry>().Log(
@@ -222,7 +195,22 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
                 LogLevel.Critical,
                 new EnvironmentLaunchUserEvent(ComputeSystem!.AssociatedProviderId, completionStatus));
 
-            IsOperationInProgress = false;
+            _windowEx.DispatcherQueue.TryEnqueue(() =>
+            {
+                UiMessageToDisplay = completionMessage;
+                IsOperationInProgress = false;
+                UiMessageToDisplay = operationFailed ? UiMessageToDisplay : string.Empty;
+            });
+        });
+    }
+
+    private void RemoveComputeSystem()
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            _log.Information($"Removing Compute system with Name: {ComputeSystem!.DisplayName} from UI");
+            _removalAction(this);
+            RemoveStateChangedHandler();
         });
     }
 
@@ -235,6 +223,121 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase
         else
         {
             _log.Error(computeSystemOperationResult.Result.ExtendedError, $"Launch operation failed for {ComputeSystem} error: {computeSystemOperationResult.Result.DiagnosticText}");
+        }
+    }
+
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<ComputeSystemOperationStartedMessage> interface. When this message
+    /// is received we fire the first telemetry event to capture which operation and provider is starting.
+    /// </summary>
+    /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
+    public void Receive(ComputeSystemOperationStartedMessage message)
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            var data = message.Value;
+            IsOperationInProgress = true;
+
+            _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name} at {DateTime.Now}");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Measure,
+                new EnvironmentOperationUserEvent(data.TelemetryStatus, data.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, data.AdditionalContext, data.ActivityId));
+        });
+    }
+
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<ComputeSystemOperationCompletedMessage> interface. When this message
+    /// is received the operation is completed and we can log the result of the operation.
+    /// </summary>
+    /// <param name="message">The object that holds the data needed to capture the operationInvoked telemetry data</param>
+    public void Receive(ComputeSystemOperationCompletedMessage message)
+    {
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
+        {
+            var data = message.Value;
+            _log.Information($"operation '{data.ComputeSystemOperation}' completed for Compute System: {Name} at {DateTime.Now}");
+
+            var completionStatus = EnvironmentsTelemetryStatus.Succeeded;
+
+            if ((data.OperationResult == null) || (data.OperationResult.Result.Status == ProviderOperationStatus.Failure))
+            {
+                completionStatus = EnvironmentsTelemetryStatus.Failed;
+                LogFailure(data.OperationResult);
+            }
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Measure,
+                new EnvironmentOperationUserEvent(completionStatus, data.ComputeSystemOperation, ComputeSystem!.AssociatedProviderId, data.AdditionalContext, data.ActivityId));
+        });
+    }
+
+    /// <summary>
+    /// Register the ViewModel to receive messages for the start and completion of operations from all view models within the
+    /// DotOperation and LaunchOperation lists. When there is an operation this ViewModel will receive the started and
+    /// the completed messages.
+    /// </summary>
+    private void RegisterForAllOperationMessages(List<OperationsViewModel> dotOperations, List<OperationsViewModel> launchOperations)
+    {
+        _log.Information($"Registering ComputeSystemViewModel '{Name}' from provider '{ProviderDisplayName}' with WeakReferenceMessenger at {DateTime.Now}");
+
+        // Unregister from all operation messages
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+        LaunchOperations.Clear();
+        DotOperations!.Clear();
+
+        foreach (var dotOperation in dotOperations)
+        {
+            DotOperations.Add(dotOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, dotOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, dotOperation);
+        }
+
+        foreach (var launchOperation in launchOperations)
+        {
+            LaunchOperations.Add(launchOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationStartedMessage, OperationsViewModel>(this, launchOperation);
+            WeakReferenceMessenger.Default.Register<ComputeSystemOperationCompletedMessage, OperationsViewModel>(this, launchOperation);
+        }
+    }
+
+    private bool IsComputeSystemStateTransitioning(ComputeSystemState state)
+    {
+        switch (state)
+        {
+            case ComputeSystemState.Starting:
+            case ComputeSystemState.Saving:
+            case ComputeSystemState.Stopping:
+            case ComputeSystemState.Pausing:
+            case ComputeSystemState.Restarting:
+            case ComputeSystemState.Creating:
+            case ComputeSystemState.Deleting:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void SetupOperationProgressBasedOnState()
+    {
+        if (IsComputeSystemStateTransitioning(State))
+        {
+            IsOperationInProgress = true;
+        }
+        else
+        {
+            IsOperationInProgress = false;
+        }
+
+        if ((State != ComputeSystemState.Creating) && (State != ComputeSystemState.Deleting))
+        {
+            ShouldShowLaunchOperation = true;
+        }
+
+        if (State == ComputeSystemState.Deleted)
+        {
+            RemoveComputeSystem();
         }
     }
 }
