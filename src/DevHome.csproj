@@ -1,187 +1,125 @@
-﻿<!-- Copyright (c) Microsoft Corporation.. -->
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props" />
-  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+        <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
+        <RootNamespace>DevHome</RootNamespace>
+        <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Platforms>x86;x64;arm64</Platforms>
+        <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+        <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWinUI>true</UseWinUI>
+        <EnableMsixTooling>true</EnableMsixTooling>
+        <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+        <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+        <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+      <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
+    </ItemGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>DevHome</RootNamespace>
-    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
-    <ApplicationIcon Condition="'$(BuildRing)'=='Dev'">Assets\Dev\DevHome_Dev.ico</ApplicationIcon>
-    <ApplicationIcon Condition="'$(BuildRing)'=='Canary'">Assets\Canary\DevHome_Canary.ico</ApplicationIcon>
-    <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <UseWinUI>true</UseWinUI>
-    <EnableMsixTooling>true</EnableMsixTooling>
-    <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
-    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
-  </PropertyGroup>
+    <ItemGroup>
+        <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
 
-  <!-- To build with the correct logo assets, only include the ones for the current build ring.
-       Place them in a common location, so references to them don't need to adjust for build ring. -->
-  <ItemGroup>
-    <Content Remove="Assets\Preview\*" />
-    <Content Remove="Assets\Canary\*" />
-    <Content Remove="Assets\Dev\*" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+        <PackageReference Include="WinUIEx" Version="1.8.0" />
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+            <ExcludeAssets>contentFiles</ExcludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(BuildRing)' == 'Dev'">
-    <Content Include="Assets\Dev\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-    <Content Include="Assets\Dev\DevHome_Dev.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\common\DevHome.Common.csproj" />
+        <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+        <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+        <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
+        <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
+        <ProjectReference Include="..\tools\Projects\src\DevHome.Projects.csproj" />
+        <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+        <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="NavConfig.jsonc">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
+          <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Update="Styles\BreadcrumbBar.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(BuildRing)' == 'Canary'">
-    <Content Include="Assets\Canary\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-    <Content Include="Assets\Canary\DevHome_Canary.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+        <ProjectCapability Include="Msix" />
+    </ItemGroup>
 
-  <ItemGroup Condition="'$(BuildRing)' == 'Stable'">
-    <Content Include="Assets\Preview\**" Link="Assets\Logos\%(Filename)%(Extension)" CopyToOutputDirectory="Always" />
-    <Content Include="Assets\Preview\DevHome_Preview.ico" Link="Assets\DevHome.ico" CopyToOutputDirectory="Always" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+        <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
-    <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
-  </ItemGroup>
+    <PropertyGroup>
+        <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+        <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
+    <!-- PowerShell requires the content files from their nuget package to be next to System.Management.Automation.dll
+         This won't happen automatically for 'dotnet publish -r <RID>'
+         Here we explicitly exclude the content files, copy them manually to the output directory
+         and then add them as payload to the package to the right location.
+         https://github.com/PowerShell/PowerShell/issues/15274#issuecomment-984028028
+    -->
+    <Target Name="PwshFiles" AfterTargets="BeforeBuild">
+        <ItemGroup>
+            <RefFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\ref\*.*" />
+            <WinModuleFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\win\lib\net6.0\Modules\**\*.*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(RefFiles)" DestinationFolder="$(TargetDir)\ref\" />
+        <Copy SourceFiles="@(WinModuleFiles)" DestinationFolder="$(TargetDir)\Modules\%(RecursiveDir)\" />
+    </Target>
 
-  <ItemGroup>
-    <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
-    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
-    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.1.0-beta" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240709-x2135" />
-    <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="WinUIEx" Version="2.3.4" />
-  </ItemGroup>
+    <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
 
-  <ItemGroup>
-    <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
-    <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
-    <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-    <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
-    <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\PI\DevHome.PI\DevHome.PI.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
-    <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
-    <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
-    <ProjectReference Include="..\extensions\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
-    <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
-    <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
-    <ProjectReference Include="..\tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj" />
-    <ProjectReference Include="..\tools\Utilities\HostsUtility\DevHome.HostsFileEditor.csproj" />
-    <ProjectReference Include="..\tools\Utilities\RegPreviewUtility\DevHome.RegistryPreview.csproj" />
-    <ProjectReference Include="..\tools\Utilities\src\DevHome.Utilities.csproj" />
-  </ItemGroup>
+        <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
+        <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
+            <ModulePath>runtimes\win\lib\net6.0\</ModulePath>
+        </PropertyGroup>
 
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\InitializationPage\AppList.scale-400.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="NavConfig.jsonc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\BreadcrumbBar.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+        <ItemGroup>
+            <AdditionalPackageFile Include="$(TargetDir)\ref\*.*">
+                <PackagePath>ref</PackagePath>
+            </AdditionalPackageFile>
+            <AdditionalPackageFile Include="$(TargetDir)\Modules\**\*.*">
+              <PackagePath>$(ModulePath)Modules</PackagePath>
+            </AdditionalPackageFile>
+        </ItemGroup>
 
-  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <ProjectCapability Include="Msix" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
-    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-  </PropertyGroup>
-
-  <!-- Quiet background processes bins -->
-  <PropertyGroup>
-    <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
-    <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
-    <DevHomeInternal_Win32RuntimePath Condition="$(DevHomeInternal_Win32RuntimePath.EndsWith('native\\'))">$(DevHomeInternal_Win32RuntimePath)$(_DevHomeInternal_CppPlatform)\</DevHomeInternal_Win32RuntimePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <PropertyGroup>
-    <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
-    <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
-    <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
-  </PropertyGroup>
-
-  <!-- Third party notice file -->
-  <ItemGroup>
-    <Content Include="$(SolutionDir)NOTICE.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>Assets\NOTICE.txt</Link>
-    </Content>
-  </ItemGroup>
-
-  <!-- Workaround for Adaptive Cards not supporting correct RIDs when using .NET 8 -->
-  <ItemGroup>
-    <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">
-    <Copy SourceFiles="$(PkgAdaptiveCards_ObjectModel_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.ObjectModel.WinUI3.dll" DestinationFolder="$(TargetDir)" />
-    <Copy SourceFiles="$(PkgAdaptiveCards_Rendering_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.Rendering.WinUI3.dll" DestinationFolder="$(TargetDir)" />
-  </Target>
+        <ItemGroup>
+            <AppxPackagePayload Include="%(AdditionalPackageFile.Identity)" KeepDuplicates="false">
+                <TargetPath>%(AdditionalPackageFile.PackagePath)\%(AdditionalPackageFile.RecursiveDir)%(AdditionalPackageFile.Filename)%(AdditionalPackageFile.Extension)</TargetPath>
+            </AppxPackagePayload>
+        </ItemGroup>
+    </Target>
 </Project>

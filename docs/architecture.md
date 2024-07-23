@@ -72,7 +72,6 @@ Dev Home currently has the following tools:
 - [Setup flow](./tools.md#setup-flow-tool)
 - Extensions
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
-- Utilities
 
 ## Extensions
 
