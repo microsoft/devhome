@@ -38,16 +38,24 @@ public sealed class GitLocalRepository : ILocalRepository
         _repositoryCache = cache;
     }
 
-    private Repository? OpenRepository()
+    private Repository OpenRepository()
     {
-        if (_repositoryCache == null)
+        if (_repositoryCache != null)
         {
-            log.Debug("Cache is null. Return new repository object");
-            return new Repository(RootFolder);
+            return _repositoryCache.GetRepository(RootFolder);
         }
 
-        log.Debug("Obtained repository from cache");
-        return _repositoryCache.GetRepository(RootFolder);
+        return new Repository(RootFolder);
+    }
+
+    private IEnumerable<Commit> GetCommits(Repository repo)
+    {
+        if (_repositoryCache != null)
+        {
+            return _repositoryCache.GetCommitLog(repo);
+        }
+
+        return repo.Commits;
     }
 
     IPropertySet ILocalRepository.GetProperties(string[] properties, string relativePath)
@@ -183,26 +191,25 @@ public sealed class GitLocalRepository : ILocalRepository
 
     private Commit? FindLatestCommit(string relativePath, Repository repository)
     {
-        var commits = repository.Commits;
-
-        // Check the most recent commit and bail if the file is not present
-        {
-            var firstCommit = commits.FirstOrDefault();
-            if (firstCommit != null && firstCommit.Tree[relativePath] == null)
-            {
-                return null;
-            }
-        }
-
-        foreach (var currentCommit in commits)
+        var checkedFirstCommit = false;
+        foreach (var currentCommit in GetCommits(repository))
         {
             var currentTree = currentCommit.Tree;
             var currentTreeEntry = currentTree[relativePath];
             if (currentTreeEntry == null)
             {
-                continue;
+                if (checkedFirstCommit)
+                {
+                    continue;
+                }
+                else
+                {
+                    // If this file isn't present in the most recent commit, then it's of no interest
+                    return null;
+                }
             }
 
+            checkedFirstCommit = true;
             var parents = currentCommit.Parents;
             var count = parents.Count();
             if (count == 0)
