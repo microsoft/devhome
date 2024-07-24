@@ -156,8 +156,12 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
 
                 case "System.VersionControl.CurrentFolderStatus":
-                    var folderStatus = repository.Head.FriendlyName + " AheadBy: " + repository.Head.TrackingDetails.AheadBy + " BehindBy: " + repository.Head.TrackingDetails.BehindBy;
-                    result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                    var folderStatus = GetFolderStatus(relativePath, repository);
+                    if (folderStatus != null)
+                    {
+                        result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                    }
+
                     break;
             }
         }
@@ -171,17 +175,105 @@ public sealed class GitLocalRepository : ILocalRepository
         return ((ILocalRepository)this).GetProperties(properties, relativePath);
     }
 
+    private string? GetFolderStatus(string relativePath, Repository repository)
+    {
+        try
+        {
+            // TODO: Detect submodules
+            var branchName = repository.Info.IsHeadDetached ?
+                "Detached: " + repository.Head.Tip.Sha[..7] :
+                "Branch: " + repository.Head.FriendlyName;
+
+            var branchStatus = string.Empty;
+            if (repository.Head.IsTracking)
+            {
+                var behind = repository.Head.TrackingDetails.BehindBy;
+                var ahead = repository.Head.TrackingDetails.AheadBy;
+                if (behind == 0 && ahead == 0)
+                {
+                    branchStatus = " ≡";
+                }
+                else if (behind > 0 && ahead > 0)
+                {
+                    branchStatus = " ↓" + behind + " ↑" + ahead;
+                }
+                else if (behind > 0)
+                {
+                    branchStatus = " ↓" + behind;
+                }
+                else if (ahead > 0)
+                {
+                    branchStatus = " ↑" + ahead;
+                }
+            }
+
+            var repositoryStatus = repository.RetrieveStatus();
+            var fileStatus = $"| +{repositoryStatus.Added.Count()} ~{repositoryStatus.Staged.Count()} -{repositoryStatus.Removed.Count()} | +{repositoryStatus.Untracked.Count()} ~{repositoryStatus.Modified.Count()} -{repositoryStatus.Missing.Count()}";
+            var conflicted = 0;
+            foreach (var entry in repositoryStatus)
+            {
+                if (entry.State.HasFlag(FileStatus.Conflicted))
+                {
+                    ++conflicted;
+                }
+            }
+
+            if (conflicted > 0)
+            {
+                fileStatus += $" !{conflicted}";
+            }
+
+            return branchName + branchStatus + " " + fileStatus;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private string? GetStatus(string relativePath, Repository repository)
     {
         try
         {
-            var status = repository.RetrieveStatus(relativePath);
-            if (status == FileStatus.Unaltered)
+            // Skip directories while we're getting individual file status.
+            if (File.GetAttributes(Path.Combine(repository.Info.WorkingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
             {
                 return string.Empty;
             }
 
-            return status.ToString();
+            var status = repository.RetrieveStatus(relativePath);
+            if (status == FileStatus.Unaltered || status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
+            {
+                return string.Empty;
+            }
+            else if (status.HasFlag(FileStatus.Conflicted))
+            {
+                return "Merge conflict";
+            }
+            else if (status.HasFlag(FileStatus.NewInWorkdir))
+            {
+                return "Untracked";
+            }
+
+            string? statusString = null;
+            if (status.HasFlag(FileStatus.NewInIndex) || status.HasFlag(FileStatus.ModifiedInIndex) || status.HasFlag(FileStatus.RenamedInIndex) || status.HasFlag(FileStatus.TypeChangeInIndex))
+            {
+                statusString = "Staged";
+            }
+
+            if (status.HasFlag(FileStatus.ModifiedInWorkdir) || status.HasFlag(FileStatus.RenamedInWorkdir) || status.HasFlag(FileStatus.TypeChangeInWorkdir))
+            {
+                if (statusString == null)
+                {
+                    statusString = "Modified";
+                }
+                else
+                {
+                    statusString += ", Modified";
+                }
+            }
+
+            return statusString;
         }
         catch
         {
