@@ -108,7 +108,7 @@ public class GitDetect
 
     public bool ValidateGitConfigurationPath(string path)
     {
-        var result = GitExecute.ExecuteGitCommand(path, string.Empty, "--version", string.Empty);
+        var result = GitExecute.ExecuteGitCommand(path, string.Empty, "--version");
         if (result.Status == ProviderOperationStatus.Success && result.Output != null && result.Output.Contains("git version"))
         {
             return true;

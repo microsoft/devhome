@@ -11,14 +11,14 @@ namespace FileExplorerGitIntegration.Models;
 
 public class GitExecute
 {
-    public static GitCommandRunnerResultInfo ExecuteGitCommand(string gitApplication, string repositoryDirectory, string command, string arguments)
+    public static GitCommandRunnerResultInfo ExecuteGitCommand(string gitApplication, string repositoryDirectory, string arguments)
     {
         try
         {
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = gitApplication,
-                Arguments = $"{command} {arguments}",
+                Arguments = arguments,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -29,7 +29,9 @@ public class GitExecute
             if (process != null)
             {
                 var output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
+
+                // Add timeout for 1 minute
+                process.WaitForExit(60000);
                 return new GitCommandRunnerResultInfo(ProviderOperationStatus.Success, output);
             }
             else

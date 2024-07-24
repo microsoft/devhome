@@ -79,7 +79,7 @@ public class GitCommandRunnerTests
             return;
         }
 
-        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "--version", string.Empty);
+        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "--version");
         Assert.IsNotNull(result.Output);
         Assert.IsTrue(result.Output.Contains("git version"));
     }
@@ -94,7 +94,7 @@ public class GitCommandRunnerTests
             return;
         }
 
-        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "status", string.Empty);
+        var result = GitExecute.ExecuteGitCommand(GitDetector.GitConfiguration.ReadInstallPath(), RepoPath, "status");
         Assert.IsNotNull(result.Output);
         Assert.IsTrue(result.Output.Contains("On branch"));
     }

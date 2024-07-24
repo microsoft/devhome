@@ -16,8 +16,6 @@ public class GitConfiguration : IDisposable
 
     private string GitExeInstallPath { get; set; } = string.Empty;
 
-    private readonly FileSystemWatcher fileWatcher;
-
     private readonly object fileLock = new();
 
     private readonly ILogger log = Log.ForContext<GitDetect>();
@@ -43,25 +41,6 @@ public class GitConfiguration : IDisposable
 
         fileService = new FileService();
         EnsureConfigFileCreation();
-
-        fileWatcher = new FileSystemWatcher(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
-        FileWatcherSettings();
-    }
-
-    private void FileWatcherSettings()
-    {
-        fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
-        fileWatcher.Changed += OnFileChanged;
-        fileWatcher.EnableRaisingEvents = true;
-        log.Debug("FileSystemWatcher initialized for configuration file");
-    }
-
-    private void OnFileChanged(object sender, FileSystemEventArgs args)
-    {
-        if (args.Name == GitExecutableConfigOptions.GitExecutableConfigFileName)
-        {
-            ReadInstallPath();
-        }
     }
 
     public string ReadInstallPath()
@@ -112,7 +91,6 @@ public class GitConfiguration : IDisposable
 
     public void Dispose()
     {
-        fileWatcher.Dispose();
         GC.SuppressFinalize(this);
     }
 }
