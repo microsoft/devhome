@@ -29,7 +29,7 @@ public interface IExtensionService
     public void DisableExtension(string extensionUniqueId);
 
     /// <summary>
-    /// Gets a boolean indicating whether the extension was disabled due to its corresponding the Windows optional feature
+    /// Gets a boolean indicating whether the extension was disabled due to the corresponding Windows optional feature
     /// being absent from the machine or in an unknown state.
     /// </summary>
     /// <param name="extension">The out of proc extension object</param>
