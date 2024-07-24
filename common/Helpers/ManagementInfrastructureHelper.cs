@@ -128,7 +128,9 @@ public static class ManagementInfrastructureHelper
             return IsWindowsOptionalFeatureAvailable(featureName);
         }
 
-        // This isn't an internal Dev Home extension that we know about, so don't try to disable it.
+        // This isn't an internal Dev Home extension that we know about, so we don't know what features it depends on.
+        // Assume the features are available and let the extension handle this case.
+
         return true;
     }
 }
