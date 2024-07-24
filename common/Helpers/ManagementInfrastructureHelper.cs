@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Management.Infrastructure;
 using Serilog;
 using static DevHome.Common.Helpers.CommonConstants;
@@ -24,9 +25,9 @@ public static class ManagementInfrastructureHelper
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ManagementInfrastructureHelper));
 
-    public static readonly Dictionary<string, string> ExtensionToFeatureNameMap = new()
+    public static readonly Dictionary<string, List<string>> ExtensionToFeatureNameMap = new()
     {
-        { HyperVExtensionClassId, HyperVWindowsOptionalFeatureName },
+        { HyperVExtensionClassId, new() { HyperVWindowsOptionalFeatureName } },
     };
 
     public static FeatureAvailabilityKind GetWindowsFeatureAvailability(string featureName)
@@ -123,14 +124,13 @@ public static class ManagementInfrastructureHelper
     /// </returns>
     public static bool IsWindowsOptionalFeatureAvailableForExtension(string extensionClassId)
     {
-        if (ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureName))
+        if (ExtensionToFeatureNameMap.TryGetValue(extensionClassId, out var featureList))
         {
-            return IsWindowsOptionalFeatureAvailable(featureName);
+            return featureList.All(IsWindowsOptionalFeatureAvailable);
         }
 
         // This isn't an internal Dev Home extension that we know about, so we don't know what features it depends on.
         // Assume the features are available and let the extension handle this case.
-
         return true;
     }
 }

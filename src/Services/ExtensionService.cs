@@ -400,7 +400,7 @@ public class ExtensionService : IExtensionService, IDisposable
             return false;
         }
 
-        _log.Information($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent or unknown");
+        _log.Warning($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent or unknown");
 
         // Remove extension from list of enabled extensions to prevent Dev Home from re-querying for this extension
         // for the rest of its process lifetime.
