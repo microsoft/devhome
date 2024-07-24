@@ -152,7 +152,8 @@
                         VerticalAlignment="Center"
                         Command="{x:Bind AddRepoViewModel.CancelButtonPressedCommand, Mode=OneWay}"
                         DataContext="{x:Bind}"
-                        Style="{ThemeResource AlternateCloseButtonStyle}">
+                        Style="{ThemeResource AlternateCloseButtonStyle}"
+                        AutomationProperties.Name="Close (X)">
                         <Button.Content>
                             <SymbolIcon Symbol="Cancel" />
                         </Button.Content>
