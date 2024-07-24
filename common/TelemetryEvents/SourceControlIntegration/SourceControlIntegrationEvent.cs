@@ -10,7 +10,6 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Common.TelemetryEvents.SourceControlIntegration;
 
 [EventData]
-
 public class SourceControlIntegrationEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
