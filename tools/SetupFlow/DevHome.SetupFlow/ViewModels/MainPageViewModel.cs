@@ -233,7 +233,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     public void StartSetupForTargetEnvironmentWithTelemetry(string flowTitle, string navigationAction, string originPage, ComputeSystemReviewItem item)
     {
         var setupTask = _host.GetService<SetupTargetTaskGroup>();
-        setupTask.ConfigureTask.SetTargetComputeSystem(item);
 
         _log.Information("Starting setup for target environment from the Environments page");
         StartSetupFlowForTaskGroups(
@@ -243,6 +242,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>());
 
+        setupTask.ConfigureTask.SetTargetComputeSystem(item);
         Orchestrator.GoToNextPage().GetAwaiter().GetResult();
     }
 
