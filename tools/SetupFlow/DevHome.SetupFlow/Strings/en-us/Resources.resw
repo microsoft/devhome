@@ -2019,4 +2019,8 @@
     <value>Installation Notes</value>
     <comment>Text to introduce installation notes in the summary screen.</comment>
   </data>
+  <data name="LoginUIDialogCloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Close</value>
+	<comment>Close button automation name for the login UI dialog</comment>
+  </data>
 </root>

@@ -148,12 +148,12 @@
                         HorizontalAlignment="Left"
                         Style="{ThemeResource SubtitleTextBlockStyle}" />
                     <Button
+                        x:Uid="LoginUIDialogCloseButton"
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         Command="{x:Bind AddRepoViewModel.CancelButtonPressedCommand, Mode=OneWay}"
                         DataContext="{x:Bind}"
-                        Style="{ThemeResource AlternateCloseButtonStyle}"
-                        AutomationProperties.Name="Close (X)">
+                        Style="{ThemeResource AlternateCloseButtonStyle}">
                         <Button.Content>
                             <SymbolIcon Symbol="Cancel" />
                         </Button.Content>
