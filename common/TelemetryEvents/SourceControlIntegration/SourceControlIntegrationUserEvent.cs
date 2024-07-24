@@ -26,6 +26,7 @@ public class SourceControlIntegrationUserEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // The only sensitive strings is the repository root path. GetSafeRootPath is used to hash the root path.
+        // The only sensitive strings is the repository root path. GetSafeRootPath is used to potentially remove PII and
+        // keep last part of path.
     }
 }
