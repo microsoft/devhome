@@ -104,7 +104,7 @@ public class RepositoryTracking
             }
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("EnhanceRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID, rootPath));
+        TelemetryFactory.Get<ITelemetry>().Log("AddEnhancedRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID, rootPath));
     }
 
     public void RemoveRepositoryPath(string rootPath)
@@ -126,7 +126,7 @@ public class RepositoryTracking
             }
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("RemoveEnhanceRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID ?? string.Empty, rootPath));
+        TelemetryFactory.Get<ITelemetry>().Log("RemoveEnhancedRepository_Event", LogLevel.Critical, new SourceControlIntegrationEvent(extensionCLSID ?? string.Empty, rootPath));
     }
 
     public Dictionary<string, string> GetAllTrackedRepositories()
