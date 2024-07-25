@@ -90,7 +90,7 @@
                                 <TeachingTip x:Name="GenerateConfigInfoTeachingTip"
                                              x:Uid="Review_DownloadFileTooltip"
                                              Target="{x:Bind GenerateConfigInfoButton}"
-                                             IsLightDismissEnabled="True"/>
+                                             IsLightDismissEnabled="False"/>
                             </StackPanel>
                         </Grid>
                     </Expander.Header>
