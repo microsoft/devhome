@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -43,6 +44,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     private readonly IWinGet _winget;
     private readonly IDSC _dsc;
     private readonly IExperimentationService _experimentationService;
+    private readonly IComputeSystemManager _computeSystemManager;
 
     public MainPageBannerViewModel BannerViewModel { get; }
 
@@ -81,13 +83,15 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         IDSC dsc,
         IHost host,
         MainPageBannerViewModel bannerViewModel,
-        IExperimentationService experimentationService)
+        IExperimentationService experimentationService,
+        IComputeSystemManager computeSystemManager)
         : base(stringResource, orchestrator)
     {
         _host = host;
         _winget = winget;
         _dsc = dsc;
         _experimentationService = experimentationService;
+        _computeSystemManager = computeSystemManager;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -248,10 +252,15 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
             new EnvironmentRedirectionUserEvent(navigationAction: navigationAction, originPage),
             relatedActivityId: Orchestrator.ActivityId);
 
-        // We add the target environment to the setup task after because the constructor flow
-        // of the setup task group sets the target environment to null.
-        setupTask.ConfigureTask.SetTargetComputeSystem(item);
         Orchestrator.GoToNextPage().GetAwaiter().GetResult();
+
+        // We add the target environment to the setup task after because the constructor flow
+        // of the setup task group sets the target environment to null on the main thread.
+        // We move it to a background thread so that there isn't a race condition with the main thread.
+        Task.Run(() =>
+        {
+            _computeSystemManager.ComputeSystemSetupItem = item;
+        });
     }
 
     /// <summary>

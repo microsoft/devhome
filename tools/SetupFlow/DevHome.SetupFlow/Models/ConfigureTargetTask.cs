@@ -383,11 +383,6 @@ public class ConfigureTargetTask : ISetupTask
         });
     }
 
-    public void SetTargetComputeSystem(ComputeSystemReviewItem item)
-    {
-         _computeSystemManager.ComputeSystemSetupItem = item;
-    }
-
     public IAsyncOperation<TaskFinishedState> Execute()
     {
         return Task.Run(async () =>
