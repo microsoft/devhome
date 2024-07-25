@@ -1,12 +1,12 @@
 name: "Documentation issue 📄"
-description: Report issues on our documentation
+description: Report issues on our documentation.
 labels: 
 - Issue-Docs 
 body:
 - id: description
   type: textarea
   attributes: 
-    label: Provide a description of requested docs changes
+    label: Describe requested docs changes
     placeholder: Briefly describe which document needs to be corrected and why.
   validations:
     required: true
