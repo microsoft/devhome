@@ -242,6 +242,14 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>());
 
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Setup_Environment_button_Clicked",
+            LogLevel.Measure,
+            new EnvironmentRedirectionUserEvent(navigationAction: navigationAction, originPage),
+            relatedActivityId: Orchestrator.ActivityId);
+
+        // We add the target environment to the setup task after because the constructor flow
+        // of the setup task group sets the target environment to null.
         setupTask.ConfigureTask.SetTargetComputeSystem(item);
         Orchestrator.GoToNextPage().GetAwaiter().GetResult();
     }

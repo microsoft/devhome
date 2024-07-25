@@ -144,33 +144,31 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public void OnNavigatedTo(NavigationEventArgs args)
     {
-        // The setup flow isn't setup to support using the navigation service to navigate to specific
+        // The setup flow isn't set up to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
-        if (args.Parameter is object[] parameters && parameters.Length == 3)
+        var parameter = args.Parameter?.ToString();
+
+        if ((!string.IsNullOrEmpty(parameter)) &&
+            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase) &&
+            Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
         {
-            if (parameters[0] is string parameter && parameter.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            // We expect that when navigating from anywhere in Dev Home to the create environment page
+            // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+            // and the second value being the page name that redirection came from for telemetry purposes.
+            var parameters = parameter.Split(';');
+            Cancel();
+            StartCreationFlow(originPage: parameters[1]);
+        }
+        else if (args.Parameter is object[] configObjs && configObjs.Length == 3)
+        {
+            if (configObjs[0] is string configObj && configObj.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
             {
                 // We expect that when navigating from anywhere in Dev Home to the create environment page
                 // that the arg.Parameter variable be an object array with the the first value being 'StartCreationFlow',
                 // the second value being the page name that redirection came from for telemetry purposes, and
                 // the third value being the ComputeSystemReviewItem to setup.
                 Cancel();
-                StartSetupFlow(originPage: parameters[1] as string, item: parameters[2] as ComputeSystemReviewItem);
-            }
-        }
-        else
-        {
-            var parameter = args.Parameter?.ToString();
-            if (!string.IsNullOrEmpty(parameter) && Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
-            {
-                if (parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
-                {
-                    // We expect that when navigating from anywhere in Dev Home to the create environment page
-                    // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
-                    // and the second value being the page name that redirection came from for telemetry purposes.
-                    Cancel();
-                    StartCreationFlow(originPage: parameter.Split(';')[1]);
-                }
+                StartSetupFlow(originPage: configObjs[1] as string, item: configObjs[2] as ComputeSystemReviewItem);
             }
         }
     }
