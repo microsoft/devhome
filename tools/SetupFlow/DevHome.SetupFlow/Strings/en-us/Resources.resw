@@ -2023,4 +2023,8 @@
     <value>Close</value>
 	<comment>Close button automation name for the login UI dialog</comment>
   </data>
+  <data name="GenerateConfigInfoButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Generate configuration file info</value>
+	<comment>Narration for the informational icon next to the "Generate Configuration file" button</comment>
+  </data>
 </root>

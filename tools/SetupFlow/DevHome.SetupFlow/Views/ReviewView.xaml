@@ -79,6 +79,7 @@
                                         x:Uid="Review_GenerateConfigurationFileButton"/>
                                 <!-- Info icon -->
                                 <Button Style="{ThemeResource AlternateCloseButtonStyle}"
+                                        x:Uid="GenerateConfigInfoButton"
                                         x:Name="GenerateConfigInfoButton"
                                         PointerEntered="GenerateConfigInfoButton_PointerEntered"
                                         Click="GenerateConfigInfoButton_Click">
