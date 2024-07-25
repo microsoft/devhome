@@ -1,6 +1,6 @@
 id: labelManagement.issueUpdated
 name: GitOps.PullRequestIssueManagement
-description: GitOps.PullRequestIssueManagement primitive
+description: GitOps.PullRequestIssueManagement primitive.
 owner: 
 resource: repository
 disabled: false
@@ -9,7 +9,7 @@ configuration:
   resourceManagementConfiguration:
     eventResponderTasks:
     - description: >-
-          If an author responds to an issue which needs author feedback
+          If an author responds to an issue that needs author feedback
           * Remove the Needs-Author-Feedback Label
           * Add the Needs-Team-Response
       if:
