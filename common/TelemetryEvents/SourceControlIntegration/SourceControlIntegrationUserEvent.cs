@@ -19,9 +19,15 @@ public class SourceControlIntegrationUserEvent : EventBase
         get;
     }
 
-    public SourceControlIntegrationUserEvent(string sourceControlProviderClassId, string repositoryRootPath)
+    public int TrackedRepositoryCount
+    {
+        get;
+    }
+
+    public SourceControlIntegrationUserEvent(string sourceControlProviderClassId, string repositoryRootPath, int trackedRepositoryCount)
     {
         RepositoryRootPath = SourceControlIntegrationHelper.GetSafeRootPath(repositoryRootPath);
+        TrackedRepositoryCount = trackedRepositoryCount;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
