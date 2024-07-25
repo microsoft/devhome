@@ -27,4 +27,12 @@ public interface IExtensionService
     public void EnableExtension(string extensionUniqueId);
 
     public void DisableExtension(string extensionUniqueId);
+
+    /// <summary>
+    /// Gets a boolean indicating whether the extension was disabled due to the corresponding Windows optional feature
+    /// being absent from the machine or in an unknown state.
+    /// </summary>
+    /// <param name="extension">The out of proc extension object</param>
+    /// <returns>True only if the extension was disabled. False otherwise.</returns>
+    public Task<bool> DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension);
 }

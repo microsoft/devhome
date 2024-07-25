@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Contracts;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Services;
@@ -29,6 +30,8 @@ public class BaseSetupFlowTest
 
     protected Mock<ISetupFlowStringResource> StringResource { get; private set; }
 
+    protected Mock<ILocalSettingsService> LocalSettingsService { get; private set; }
+
     protected IHost TestHost { get; private set; }
 #pragma warning restore CS8618 // Non-nullable properties initialized in [TestInitialize]
 
@@ -39,6 +42,7 @@ public class BaseSetupFlowTest
         ThemeSelectorService = new Mock<IThemeSelectorService>();
         RestoreInfo = new Mock<IRestoreInfo>();
         StringResource = new Mock<ISetupFlowStringResource>();
+        LocalSettingsService = new Mock<ILocalSettingsService>();
         TestHost = CreateTestHost();
 
         // Configure string resource localization to return the input key by default
@@ -60,7 +64,7 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
                 services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator(null));
-                services.AddSingleton<IExtensionService>(new ExtensionService());
+                services.AddSingleton<IExtensionService>(new ExtensionService(LocalSettingsService.Object));
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
