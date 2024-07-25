@@ -1,6 +1,6 @@
 id: moderatorTriggers
 name: GitOps.PullRequestIssueManagement
-description: GitOps.PullRequestIssueManagement primitive
+description: GitOps.PullRequestIssueManagement primitive.
 owner: 
 resource: repository
 disabled: false
