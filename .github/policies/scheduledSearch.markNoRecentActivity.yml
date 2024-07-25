@@ -1,6 +1,6 @@
 id: scheduledSearch.markNoRecentActivity
 name: GitOps.PullRequestIssueManagement
-description: Marks issues that are inactive
+description: Marks issues that are inactive.
 owner: 
 resource: repository
 disabled: false
