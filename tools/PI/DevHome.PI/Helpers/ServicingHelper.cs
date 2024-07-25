@@ -37,11 +37,7 @@ public class ServicingHelper
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
     {
-        if (e.Message.MessageId == PInvoke.WM_QUERYENDSESSION)
-        {
-            // e.Handled = true;
-        }
-        else if (e.Message.MessageId == PInvoke.WM_ENDSESSION)
+        if (e.Message.MessageId == PInvoke.WM_ENDSESSION)
         {
             _onSessionEnd?.Invoke();
             e.Handled = true;
