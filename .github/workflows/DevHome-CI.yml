@@ -1,7 +1,6 @@
 #
 # This workflow will build and run all unit tests.
 #
-
 name: DevHome-CI
 on:
   pull_request:
