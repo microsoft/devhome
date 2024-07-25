@@ -1,6 +1,5 @@
 name: "Suggest a new setting/feature within Windows Customization"
-description: Suggest a new feature or improvement within Windows Customization (this does not mean you have to implement
-  it)
+description: Suggest a new feature or improvement within Windows Customization (this does not mean you have to implement it).
 labels:
 - Issue-Feature
 - Area-Windows-Customization
