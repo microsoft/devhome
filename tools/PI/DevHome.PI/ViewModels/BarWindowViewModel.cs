@@ -103,6 +103,12 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private SizeInt32 _requestedWindowSize;
 
+    [ObservableProperty]
+    private int _unreadInsightsCount;
+
+    [ObservableProperty]
+    private double _insightsBadgeOpacity;
+
     internal HWND? ApplicationHwnd { get; private set; }
 
     public BarWindowViewModel()
@@ -399,5 +405,19 @@ public partial class BarWindowViewModel : ObservableObject
     public void LaunchAdvancedAppsPageInWindowsSettings()
     {
         _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
+    }
+
+    public void UpdateUnreadInsightsCount(int count)
+    {
+        UnreadInsightsCount = count;
+        InsightsBadgeOpacity = count > 0 ? 1 : 0;
+    }
+
+    [RelayCommand]
+    private void ShowInsightsPage()
+    {
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+        barWindow.NavigateTo(typeof(InsightsPageViewModel));
     }
 }
