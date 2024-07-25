@@ -5,6 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:helpers="using:DevHome.PI.Helpers"
     xmlns:models="using:DevHome.PI.Models"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
@@ -20,9 +23,23 @@
         <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsList}" Grid.Row="1">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
-                    <Expander IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}" ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                        <interactivity:Interaction.Behaviors>
+                            <helpers:ExpanderBehavior />
+                        </interactivity:Interaction.Behaviors>
                         <Expander.Header>
-                            <TextBlock Text="{x:Bind Title}"/>
+                            <Grid>
+                                <TextBlock Text="{x:Bind Title}"/>
+                                <controls:InfoBadge 
+                                    VerticalAlignment="Top" 
+                                    HorizontalAlignment="Right"
+                                    MinWidth="16" 
+                                    MinHeight="16"
+                                    Opacity="{x:Bind BadgeOpacity, Mode=OneWay}"
+                                    Style="{StaticResource SuccessIconInfoBadgeStyle}">
+                                </controls:InfoBadge>
+                            </Grid>
+
                         </Expander.Header>
                         <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left">
                             <Paragraph>

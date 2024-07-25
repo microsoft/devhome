@@ -54,6 +54,7 @@ public partial class App : Application, IApp
                 // Views and ViewModels
                 services.AddSingleton<AppDetailsPage>();
                 services.AddSingleton<AppDetailsPageViewModel>();
+                services.AddSingleton<BarWindowViewModel>();
                 services.AddSingleton<InsightsPage>();
                 services.AddSingleton<InsightsPageViewModel>();
                 services.AddSingleton<ModulesPage>();
