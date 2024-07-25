@@ -29,6 +29,8 @@ public sealed partial class PrimaryWindow : WindowEx
 
     private HotKeyHelper? _hotKeyHelper;
 
+    private ServicingHelper? _servicingHelper;
+
     public BarWindow? DBarWindow { get; private set; }
 
     public PrimaryWindow()
@@ -62,6 +64,7 @@ public sealed partial class PrimaryWindow : WindowEx
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         App.Log("DevHome.PI_MainWindows_Loaded", LogLevel.Measure);
+        _servicingHelper = new(this, HandleSessionEnd);
         _hotKeyHelper = new(this, HandleHotKey);
         _hotKeyHelper.RegisterHotKey(HotKey, KeyModifier);
     }
@@ -70,6 +73,14 @@ public sealed partial class PrimaryWindow : WindowEx
     {
         DBarWindow?.Close();
         _hotKeyHelper?.UnregisterHotKey();
+        _servicingHelper?.Unregister();
+    }
+
+    public void HandleSessionEnd()
+    {
+        App.Log("DevHome.PI_SessionEnd", LogLevel.Info);
+        DBarWindow?.Close();
+        Process.GetCurrentProcess().Kill();
     }
 
     public void HandleHotKey(int keyId)
