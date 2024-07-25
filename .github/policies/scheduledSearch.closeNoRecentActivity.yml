@@ -1,6 +1,6 @@
 id: scheduledSearch.closeNoRecentActivity
 name: GitOps.PullRequestIssueManagement
-description: Closes issues that are inactive
+description: Closes issues that are inactive.
 owner: 
 resource: repository
 disabled: false
