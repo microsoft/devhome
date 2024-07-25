@@ -24,20 +24,20 @@ public class GitConfiguration : IDisposable
 
     public GitConfiguration(string? path)
     {
+        string folderPath;
         if (RuntimeHelper.IsMSIX)
         {
-            GitExecutableConfigOptions = new GitExecutableConfigOptions
-            {
-                GitExecutableConfigFolderPath = ApplicationData.Current.LocalFolder.Path,
-            };
+            folderPath = ApplicationData.Current.LocalFolder.Path;
         }
         else
         {
-            GitExecutableConfigOptions = new GitExecutableConfigOptions
-            {
-                GitExecutableConfigFolderPath = path ?? string.Empty,
-            };
+            folderPath = path ?? string.Empty;
         }
+
+        GitExecutableConfigOptions = new GitExecutableConfigOptions
+        {
+            GitExecutableConfigFolderPath = folderPath,
+        };
 
         fileService = new FileService();
         EnsureConfigFileCreation();

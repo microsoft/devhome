@@ -31,7 +31,7 @@ public class GitExecute
                 var output = process.StandardOutput.ReadToEnd();
 
                 // Add timeout for 1 minute
-                process.WaitForExit(60000);
+                process.WaitForExit(TimeSpan.FromMinutes(1));
                 return new GitCommandRunnerResultInfo(ProviderOperationStatus.Success, output);
             }
             else
