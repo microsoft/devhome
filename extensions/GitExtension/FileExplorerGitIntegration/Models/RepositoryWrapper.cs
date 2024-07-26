@@ -162,7 +162,7 @@ internal sealed class RepositoryWrapper : IDisposable
 
         if (status.HasFlag(FileStatus.ModifiedInWorkdir) || status.HasFlag(FileStatus.RenamedInWorkdir) || status.HasFlag(FileStatus.TypeChangeInWorkdir))
         {
-            if (statusString == null)
+            if (string.IsNullOrEmpty(statusString))
             {
                 statusString = "Modified";
             }
