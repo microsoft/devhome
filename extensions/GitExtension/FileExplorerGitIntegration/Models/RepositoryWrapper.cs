@@ -105,14 +105,7 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         var fileStatus = $"| +{repositoryStatus.Added.Count()} ~{repositoryStatus.Staged.Count()} -{repositoryStatus.Removed.Count()} | +{repositoryStatus.Untracked.Count()} ~{repositoryStatus.Modified.Count()} -{repositoryStatus.Missing.Count()}";
-        var conflicted = 0;
-        foreach (var entry in repositoryStatus)
-        {
-            if (entry.State.HasFlag(FileStatus.Conflicted))
-            {
-                ++conflicted;
-            }
-        }
+        var conflicted = repositoryStatus.Where(x => x.State.HasFlag(FileStatus.Conflicted)).Count();
 
         if (conflicted > 0)
         {

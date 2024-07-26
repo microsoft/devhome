@@ -199,6 +199,10 @@ public sealed class GitLocalRepository : ILocalRepository
         var checkedFirstCommit = false;
         foreach (var currentCommit in repository.GetCommits())
         {
+            // Now that CommitLogCache is caching the result of the revwalk, the next piece that is most expensive
+            // is obtaining relativePath's TreeEntry from the Tree (e.g. currentTree[relativePath].
+            // Digging into the git shows that number of directory entries and/or directory depth may play a factor.
+            // There may also be a lot of redundant lookups happening here, so it may make sense to do some LRU caching.
             var currentTree = currentCommit.Tree;
             var currentTreeEntry = currentTree[relativePath];
             if (currentTreeEntry == null)

@@ -23,13 +23,17 @@ internal sealed class CommitLogCache : IEnumerable<Commit>
 
     public CommitLogCache(Repository repo)
     {
-        foreach (var commit in repo.Commits)
-        {
-            // For now, greedily get the entire commit log for simplicity.
-            // PRO: No syncronization needed for the enumerator.
-            // CON: May take longer for the initial load and use more memory.
-            _commits.Add(commit);
-        }
+        // For now, greedily get the entire commit log for simplicity.
+        // PRO: No syncronization needed for the enumerator.
+        // CON: May take longer for the initial load and use more memory.
+        // For reference, I tested on my dev machine on a repo with an *enormous* number of commits
+        // https://github.com/python/cpython with > 120k commits. This was a one-time cost of 2-3 seconds, but also
+        // consumed several hundred MB of memory.
+
+        // Often, but not always, the root folder has some boilerplate/doc/config that rarely changes
+        // Therefore, populating the last commit for each file in the root folder often requires a large portion of the commit history anyway.
+        // This somewhat blunts the appeal of trying to load this incrementally.
+        _commits.AddRange(repo.Commits);
     }
 
     public IEnumerator<Commit> GetEnumerator()
