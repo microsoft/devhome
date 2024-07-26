@@ -355,4 +355,8 @@
     <value>More options</value>
     <comment>Name of the button that brings up the "More options" menu</comment>
   </data>
+  <data name="Operations_ApplyConfiguration" xml:space="preserve">
+    <value>Set up</value>
+    <comment>Value to be shown in the button option to start the configuration flow</comment>
+  </data>
 </root>

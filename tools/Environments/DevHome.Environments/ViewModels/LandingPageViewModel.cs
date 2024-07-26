@@ -152,6 +152,18 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }
 
+    public void ConfigureComputeSystem(ComputeSystemReviewItem item)
+    {
+        _log.Information("User clicked on the setup button. Navigating to the Setup an Environment page in Setup flow");
+        object[] parameters = { "StartConfigurationFlow", "EnvironmentsLandingPage", item };
+
+        // Run on the UI thread
+        _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            _navigationService.NavigateTo(KnownPageKeys.SetupFlow, parameters);
+        });
+    }
+
     // Updates the last sync time on the UI thread after set delay
     private async Task UpdateLastSyncTimeUI(string time, TimeSpan delay, CancellationToken token)
     {
@@ -337,6 +349,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                 computeSystem,
                 provider,
                 RemoveComputeSystemCard,
+                ConfigureComputeSystem,
                 packageFullName,
                 _mainWindow);
 

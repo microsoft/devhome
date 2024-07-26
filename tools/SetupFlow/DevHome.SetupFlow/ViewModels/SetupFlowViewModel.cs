@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -28,6 +29,8 @@ public partial class SetupFlowViewModel : ObservableObject
     private readonly PackageProvider _packageProvider;
 
     private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
+
+    private readonly string _configurationFlowNavigationParameter = "StartConfigurationFlow";
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
@@ -123,7 +126,7 @@ public partial class SetupFlowViewModel : ObservableObject
         await _mainPageViewModel.StartConfigurationFileAsync(file);
     }
 
-    public void StartCreationFlowAsync(string originPage)
+    public void StartCreationFlow(string originPage)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
 
@@ -131,9 +134,17 @@ public partial class SetupFlowViewModel : ObservableObject
         _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
     }
 
+    public void StartSetupFlow(string originPage, ComputeSystemReviewItem item)
+    {
+        Orchestrator.FlowPages = [_mainPageViewModel];
+
+        // This method is only called when the user clicks a button that redirects them to 'Setup' flow in the Environments page.
+        _mainPageViewModel.StartSetupForTargetEnvironmentWithTelemetry(string.Empty, _configurationFlowNavigationParameter, originPage, item);
+    }
+
     public void OnNavigatedTo(NavigationEventArgs args)
     {
-        // The setup flow isn't setup to support using the navigation service to navigate to specific
+        // The setup flow isn't set up to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
         var parameter = args.Parameter?.ToString();
 
@@ -146,7 +157,19 @@ public partial class SetupFlowViewModel : ObservableObject
             // and the second value being the page name that redirection came from for telemetry purposes.
             var parameters = parameter.Split(';');
             Cancel();
-            StartCreationFlowAsync(originPage: parameters[1]);
+            StartCreationFlow(originPage: parameters[1]);
+        }
+        else if (args.Parameter is object[] configObjs && configObjs.Length == 3)
+        {
+            if (configObjs[0] is string configObj && configObj.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            {
+                // We expect that when navigating from anywhere in Dev Home to the create environment page
+                // that the arg.Parameter variable be an object array with the the first value being 'StartCreationFlow',
+                // the second value being the page name that redirection came from for telemetry purposes, and
+                // the third value being the ComputeSystemReviewItem to setup.
+                Cancel();
+                StartSetupFlow(originPage: configObjs[1] as string, item: configObjs[2] as ComputeSystemReviewItem);
+            }
         }
     }
 
