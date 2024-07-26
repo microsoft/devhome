@@ -3,57 +3,67 @@
     x:Class="DevHome.Customization.Views.AddRepositoriesView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DevHome.Customization.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls" 
     xmlns:viewmodels="using:DevHome.Customization.ViewModels"
     mc:Ignorable="d">
-    <UserControl.DataContext>
-        <viewmodels:FileExplorerViewModel />
-    </UserControl.DataContext>
+
     <StackPanel>
-        <TextBlock x:Uid="AddRepositoriesTextBlock"
-               Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
+        <TextBlock 
+            x:Uid="AddRepositoriesTextBlock"
+            Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
         <ctControls:SettingsCard
-               x:Uid="AddRepositoriesCard"
-               Grid.Column="1">
-            <Button x:Uid="AddFolderButton" 
+            x:Uid="AddRepositoriesCard"
+            Grid.Column="1">
+            <Button 
+                x:Uid="AddFolderButton" 
                 Style="{ThemeResource AccentButtonStyle}" 
-                Click="{x:Bind ViewModel.AddFolderButton_ClickAsync, Mode=OneWay}" />
+                Command="{x:Bind ViewModel.AddFolderClickCommand}" />
         </ctControls:SettingsCard>
-        <ItemsRepeater Name="ItemsRepeaterForAllRepoPaths" Visibility="Collapsed" ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}">
+        <ItemsRepeater 
+            Name="ItemsRepeaterForAllRepoPaths" 
+            Visibility="{x:Bind ViewModel.Visibility}"
+            ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}"
+            Margin="{ThemeResource SettingsCardMargin}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
                     <ctControls:SettingsCard 
-                        Name="RepoPathCard"
                         Header="{Binding RepositoryRootPath}"
-                        Margin="{ThemeResource SettingsCardMargin}">
+                        Margin="0">
                         <ctControls:SettingsCard.HeaderIcon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xf12b;"/>
+                            <FontIcon 
+                                FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Glyph="&#xf12b;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <StackPanel Name="SettingCardMargin" Orientation="Horizontal">
-                            <DropDownButton Content="{Binding SourceControlProviderDisplayName}">
+                        <StackPanel 
+                            Orientation="Horizontal">
+                            <DropDownButton 
+                                Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
-                                    <MenuFlyout Placement="Bottom">
+                                    <MenuFlyout 
+                                        Placement="Bottom">
                                         <!-- WinUI does not currently allow populating MenuFlyoutItems dynamically within a DataTemplate. -->
                                         <!-- The items must be statically constructed. -->
-                                        <MenuFlyoutItem Text="Git" Click="AssignSourceControlProviderButton_Click"/>
+                                        <MenuFlyoutItem
+                                            Text="Git" 
+                                            Click="AssignSourceControlProviderButton_Click"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>
                             <Button 
-                        x:Name="MoreOptionsButton"
-                        Content="&#xe712;"
-                        Height="36" MinWidth="36"
-                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                        Background="Transparent"
-                        BorderThickness="0">
+                                x:Name="MoreOptionsButton"
+                                Content="&#xe712;"
+                                Height="36" 
+                                MinWidth="36"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Background="Transparent"
+                                BorderThickness="0">
                                 <Button.Flyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem
-                                    x:Uid="RemoveFolder"
-                                     Click="RemoveFolderButton_Click" />
+                                            x:Uid="RemoveFolder"
+                                            Click="RemoveFolderButton_Click" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

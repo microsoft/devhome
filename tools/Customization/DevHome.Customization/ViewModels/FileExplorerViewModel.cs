@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -30,17 +31,23 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public ObservableCollection<RepositoryInformation> TrackedRepositories { get; } = new();
 
+    public Visibility Visibility { get; set; }
+
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
     private readonly string unassigned = "00000000-0000-0000-0000-000000000000";
 
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
 
-    private readonly IExperimentationService experimentationService = Application.Current.GetService<IExperimentationService>();
+    public IExperimentationService ExperimentationService { get; }
 
-    public FileExplorerViewModel()
+    public IExtensionService ExtensionService { get; }
+
+    public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService)
     {
         _shellSettings = new ShellSettings();
+        ExperimentationService = experimentationService;
+        ExtensionService = extensionService;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
@@ -53,8 +60,9 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public void RefreshTrackedRepositories()
     {
-        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
+            Visibility = Visibility.Visible;
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
             foreach (KeyValuePair<string, string> data in repoCollection)
@@ -124,9 +132,10 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
-    public async void AddFolderButton_ClickAsync(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    public async Task AddFolderClick()
     {
-        if (experimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
             await Task.Run(async () =>
             {
@@ -156,8 +165,7 @@ public partial class FileExplorerViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-            var extensionService = Application.Current.GetService<IExtensionService>();
-            var sourceControlExtensions = await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository);
+            var sourceControlExtensions = await ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository);
             var extensionCLSID = sourceControlExtensions.FirstOrDefault(extension => extension.ExtensionDisplayName == extensionName)?.ExtensionClassId ?? string.Empty;
             var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
             if (result.Result == ResultType.Failure)

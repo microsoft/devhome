@@ -161,11 +161,11 @@ public class RepositoryTracking
     {
         lock (trackRepoLock)
         {
-            if (TrackedRepositories.ContainsKey(rootPath))
+            if (TrackedRepositories.TryGetValue(rootPath, out var existingExtensionCLSID))
             {
                 TrackedRepositories[rootPath] = extensionCLSID;
                 fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                log.Information("Tracked repository value modified");
+                log.Information("Source control extension for tracked repository modified");
             }
             else
             {
