@@ -10,19 +10,18 @@ namespace FileExplorerGitIntegration.Models;
 
 internal sealed class RepositoryCache : IDisposable
 {
-    private readonly ConcurrentDictionary<string, Repository> _repositoryCache = new();
-    private readonly ConcurrentDictionary<(Repository repo, Commit head), CommitLogCache> _logCache = new();
+    private readonly ConcurrentDictionary<string, RepositoryWrapper> _repositoryCache = new();
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(RepositoryCache));
     private bool disposedValue;
 
-    public Repository GetRepository(string rootFolder)
+    public RepositoryWrapper GetRepository(string rootFolder)
     {
-        if (_repositoryCache.TryGetValue(rootFolder, out Repository? repo))
+        if (_repositoryCache.TryGetValue(rootFolder, out RepositoryWrapper? repo))
         {
             return repo;
         }
 
-        var tempRepo = new Repository(rootFolder);
+        var tempRepo = new RepositoryWrapper(rootFolder);
         try
         {
             if (!_repositoryCache.TryAdd(rootFolder, tempRepo))
@@ -48,27 +47,6 @@ internal sealed class RepositoryCache : IDisposable
         }
 
         return repo;
-    }
-
-    public CommitLogCache GetCommitLog(Repository repo)
-    {
-        var head = repo.Head.Tip;
-        var key = (repo, head);
-        if (_logCache.TryGetValue(key, out CommitLogCache? cache))
-        {
-            return cache;
-        }
-
-        cache = new CommitLogCache(repo);
-        if (!_logCache.TryAdd(key, cache))
-        {
-            // Another thread beat us here. Dispose of the CommitLogCache we just created and get the one from the cache.
-            var result = _logCache.TryGetValue(key, out cache);
-            Debug.Assert(result, "Failed to get newly added CommitLogCache from cache");
-            Debug.Assert(cache != null, "CommitLogCache from cache should not be null");
-        }
-
-        return cache;
     }
 
     internal void Dispose(bool disposing)

@@ -38,24 +38,14 @@ public sealed class GitLocalRepository : ILocalRepository
         _repositoryCache = cache;
     }
 
-    private Repository OpenRepository()
+    private RepositoryWrapper OpenRepository()
     {
         if (_repositoryCache != null)
         {
             return _repositoryCache.GetRepository(RootFolder);
         }
 
-        return new Repository(RootFolder);
-    }
-
-    private IEnumerable<Commit> GetCommits(Repository repo)
-    {
-        if (_repositoryCache != null)
-        {
-            return _repositoryCache.GetCommitLog(repo);
-        }
-
-        return repo.Commits;
+        return new RepositoryWrapper(RootFolder);
     }
 
     IPropertySet ILocalRepository.GetProperties(string[] properties, string relativePath)
@@ -175,55 +165,11 @@ public sealed class GitLocalRepository : ILocalRepository
         return ((ILocalRepository)this).GetProperties(properties, relativePath);
     }
 
-    private string? GetFolderStatus(string relativePath, Repository repository)
+    private string? GetFolderStatus(string relativePath, RepositoryWrapper repository)
     {
         try
         {
-            // TODO: Detect submodules
-            var branchName = repository.Info.IsHeadDetached ?
-                "Detached: " + repository.Head.Tip.Sha[..7] :
-                "Branch: " + repository.Head.FriendlyName;
-
-            var branchStatus = string.Empty;
-            if (repository.Head.IsTracking)
-            {
-                var behind = repository.Head.TrackingDetails.BehindBy;
-                var ahead = repository.Head.TrackingDetails.AheadBy;
-                if (behind == 0 && ahead == 0)
-                {
-                    branchStatus = " ≡";
-                }
-                else if (behind > 0 && ahead > 0)
-                {
-                    branchStatus = " ↓" + behind + " ↑" + ahead;
-                }
-                else if (behind > 0)
-                {
-                    branchStatus = " ↓" + behind;
-                }
-                else if (ahead > 0)
-                {
-                    branchStatus = " ↑" + ahead;
-                }
-            }
-
-            var repositoryStatus = repository.RetrieveStatus();
-            var fileStatus = $"| +{repositoryStatus.Added.Count()} ~{repositoryStatus.Staged.Count()} -{repositoryStatus.Removed.Count()} | +{repositoryStatus.Untracked.Count()} ~{repositoryStatus.Modified.Count()} -{repositoryStatus.Missing.Count()}";
-            var conflicted = 0;
-            foreach (var entry in repositoryStatus)
-            {
-                if (entry.State.HasFlag(FileStatus.Conflicted))
-                {
-                    ++conflicted;
-                }
-            }
-
-            if (conflicted > 0)
-            {
-                fileStatus += $" !{conflicted}";
-            }
-
-            return branchName + branchStatus + " " + fileStatus;
+            return repository.GetRepoStatus();
         }
         catch
         {
@@ -231,49 +177,11 @@ public sealed class GitLocalRepository : ILocalRepository
         }
     }
 
-    private string? GetStatus(string relativePath, Repository repository)
+    private string? GetStatus(string relativePath, RepositoryWrapper repository)
     {
         try
         {
-            // Skip directories while we're getting individual file status.
-            if (File.GetAttributes(Path.Combine(repository.Info.WorkingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
-            {
-                return string.Empty;
-            }
-
-            var status = repository.RetrieveStatus(relativePath);
-            if (status == FileStatus.Unaltered || status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
-            {
-                return string.Empty;
-            }
-            else if (status.HasFlag(FileStatus.Conflicted))
-            {
-                return "Merge conflict";
-            }
-            else if (status.HasFlag(FileStatus.NewInWorkdir))
-            {
-                return "Untracked";
-            }
-
-            string? statusString = null;
-            if (status.HasFlag(FileStatus.NewInIndex) || status.HasFlag(FileStatus.ModifiedInIndex) || status.HasFlag(FileStatus.RenamedInIndex) || status.HasFlag(FileStatus.TypeChangeInIndex))
-            {
-                statusString = "Staged";
-            }
-
-            if (status.HasFlag(FileStatus.ModifiedInWorkdir) || status.HasFlag(FileStatus.RenamedInWorkdir) || status.HasFlag(FileStatus.TypeChangeInWorkdir))
-            {
-                if (statusString == null)
-                {
-                    statusString = "Modified";
-                }
-                else
-                {
-                    statusString += ", Modified";
-                }
-            }
-
-            return statusString;
+            return repository.GetFileStatus(relativePath);
         }
         catch
         {
@@ -281,10 +189,10 @@ public sealed class GitLocalRepository : ILocalRepository
         }
     }
 
-    private Commit? FindLatestCommit(string relativePath, Repository repository)
+    private Commit? FindLatestCommit(string relativePath, RepositoryWrapper repository)
     {
         var checkedFirstCommit = false;
-        foreach (var currentCommit in GetCommits(repository))
+        foreach (var currentCommit in repository.GetCommits())
         {
             var currentTree = currentCommit.Tree;
             var currentTreeEntry = currentTree[relativePath];
