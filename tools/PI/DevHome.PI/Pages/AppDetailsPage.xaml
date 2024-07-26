@@ -28,9 +28,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Uid="AppDetailsTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="AppDetailsTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+            <Button 
+                Grid.Column="1"
+                x:Uid="DetachAppButton" 
+                Height="40"
+                BorderThickness="0"
+                Visibility="{x:Bind ViewModel.AppSettingsVisibility, Mode=OneWay}" 
+                Command="{x:Bind ViewModel.DetachFromProcessCommand}">
+                <TextBlock Text="&#xe894;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
+            </Button>
+        </Grid>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

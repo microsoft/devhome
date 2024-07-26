@@ -161,6 +161,6 @@ internal sealed class PINavigationService : INavigationService
 
     public static object? GetPageViewModel(Frame frame)
     {
-        return frame.Content?.GetType().GetProperty("viewModel")?.GetValue(frame.Content, null);
+        return frame.Content?.GetType().GetProperty("_viewModel")?.GetValue(frame.Content, null);
     }
 }
