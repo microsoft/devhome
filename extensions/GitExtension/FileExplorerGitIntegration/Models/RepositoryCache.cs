@@ -10,41 +10,43 @@ namespace FileExplorerGitIntegration.Models;
 
 internal sealed class RepositoryCache : IDisposable
 {
-    private readonly ConcurrentDictionary<string, Repository> _repositoryCache = new();
+    private readonly ConcurrentDictionary<string, RepositoryWrapper> _repositoryCache = new();
     private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(RepositoryCache));
     private bool disposedValue;
 
-    public Repository? GetRepository(string rootFolder)
+    public RepositoryWrapper GetRepository(string rootFolder)
     {
-        if (_repositoryCache.TryGetValue(rootFolder, out Repository? repo))
+        if (_repositoryCache.TryGetValue(rootFolder, out RepositoryWrapper? repo))
         {
             return repo;
         }
 
+        var tempRepo = new RepositoryWrapper(rootFolder);
         try
         {
-            repo = new Repository(rootFolder);
-            if (!_repositoryCache.TryAdd(rootFolder, repo))
+            if (!_repositoryCache.TryAdd(rootFolder, tempRepo))
             {
                 // Another thread beat us here. Dispose of the repo we just created and get the one from the cache.
-                repo.Dispose();
+                tempRepo.Dispose();
                 var result = _repositoryCache.TryGetValue(rootFolder, out repo);
                 Debug.Assert(result, "Failed to get newly added repo from cache");
                 Debug.Assert(repo != null, "Repo from cache should not be null");
             }
-
-            return repo;
-        }
-        catch (Exception ex)
-        {
-            log.Error("RepositoryCache", "Failed to create Repository", ex);
-            if (repo != null)
+            else
             {
-                repo.Dispose();
+                repo = tempRepo;
+                tempRepo = null;
             }
-
-            return null;
         }
+        finally
+        {
+            if (tempRepo != null)
+            {
+                tempRepo.Dispose();
+            }
+        }
+
+        return repo;
     }
 
     internal void Dispose(bool disposing)

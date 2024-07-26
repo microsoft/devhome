@@ -29,25 +29,28 @@ public sealed class GitLocalRepository : ILocalRepository
 
     internal GitLocalRepository(string rootFolder, RepositoryCache? cache)
     {
-        if (!Repository.IsValid(rootFolder))
+        RootFolder = rootFolder;
+        _repositoryCache = cache;
+
+        try
+        {
+            // Rather than open the repo from scratch as validation, try to retrieve it from the cache
+            OpenRepository();
+        }
+        catch
         {
             throw new ArgumentException("Invalid repository path");
         }
-
-        RootFolder = rootFolder;
-        _repositoryCache = cache;
     }
 
-    private Repository? OpenRepository()
+    private RepositoryWrapper OpenRepository()
     {
-        if (_repositoryCache == null)
+        if (_repositoryCache != null)
         {
-            log.Debug("Cache is null. Return new repository object");
-            return new Repository(RootFolder);
+            return _repositoryCache.GetRepository(RootFolder);
         }
 
-        log.Debug("Obtained repository from cache");
-        return _repositoryCache.GetRepository(RootFolder);
+        return new RepositoryWrapper(RootFolder);
     }
 
     IPropertySet ILocalRepository.GetProperties(string[] properties, string relativePath)
@@ -148,8 +151,12 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
 
                 case "System.VersionControl.CurrentFolderStatus":
-                    var folderStatus = repository.Head.FriendlyName + " AheadBy: " + repository.Head.TrackingDetails.AheadBy + " BehindBy: " + repository.Head.TrackingDetails.BehindBy;
-                    result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                    var folderStatus = GetFolderStatus(relativePath, repository);
+                    if (folderStatus != null)
+                    {
+                        result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                    }
+
                     break;
             }
         }
@@ -163,17 +170,11 @@ public sealed class GitLocalRepository : ILocalRepository
         return ((ILocalRepository)this).GetProperties(properties, relativePath);
     }
 
-    private string? GetStatus(string relativePath, Repository repository)
+    private string? GetFolderStatus(string relativePath, RepositoryWrapper repository)
     {
         try
         {
-            var status = repository.RetrieveStatus(relativePath);
-            if (status == FileStatus.Unaltered)
-            {
-                return string.Empty;
-            }
-
-            return status.ToString();
+            return repository.GetRepoStatus();
         }
         catch
         {
@@ -181,28 +182,43 @@ public sealed class GitLocalRepository : ILocalRepository
         }
     }
 
-    private Commit? FindLatestCommit(string relativePath, Repository repository)
+    private string? GetStatus(string relativePath, RepositoryWrapper repository)
     {
-        var commits = repository.Commits;
-
-        // Check the most recent commit and bail if the file is not present
+        try
         {
-            var firstCommit = commits.FirstOrDefault();
-            if (firstCommit != null && firstCommit.Tree[relativePath] == null)
-            {
-                return null;
-            }
+            return repository.GetFileStatus(relativePath);
         }
-
-        foreach (var currentCommit in commits)
+        catch
         {
+            return null;
+        }
+    }
+
+    private Commit? FindLatestCommit(string relativePath, RepositoryWrapper repository)
+    {
+        var checkedFirstCommit = false;
+        foreach (var currentCommit in repository.GetCommits())
+        {
+            // Now that CommitLogCache is caching the result of the revwalk, the next piece that is most expensive
+            // is obtaining relativePath's TreeEntry from the Tree (e.g. currentTree[relativePath].
+            // Digging into the git shows that number of directory entries and/or directory depth may play a factor.
+            // There may also be a lot of redundant lookups happening here, so it may make sense to do some LRU caching.
             var currentTree = currentCommit.Tree;
             var currentTreeEntry = currentTree[relativePath];
             if (currentTreeEntry == null)
             {
-                continue;
+                if (checkedFirstCommit)
+                {
+                    continue;
+                }
+                else
+                {
+                    // If this file isn't present in the most recent commit, then it's of no interest
+                    return null;
+                }
             }
 
+            checkedFirstCommit = true;
             var parents = currentCommit.Parents;
             var count = parents.Count();
             if (count == 0)

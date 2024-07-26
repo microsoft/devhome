@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Diagnostics;
@@ -100,6 +100,6 @@ public class GitLocalRepositoryProviderUnitTests
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorEmail"], "a.u.thor@example.com");
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorName"], "A U Thor");
         Assert.AreEqual(result["System.VersionControl.LastChangeID"], "d0114ab8ac326bab30e3a657a0397578c5a1af88");
-        Assert.AreEqual(result["System.VersionControl.CurrentFolderStatus"], "master AheadBy: 0 BehindBy: 0");
+        Assert.AreEqual(result["System.VersionControl.CurrentFolderStatus"], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
     }
 }
