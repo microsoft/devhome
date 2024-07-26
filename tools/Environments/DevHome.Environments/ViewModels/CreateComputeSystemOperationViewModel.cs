@@ -160,6 +160,7 @@ public partial class CreateComputeSystemOperationViewModel : ComputeSystemCardBa
             result.ComputeSystem,
             Operation.ProviderDetails.ComputeSystemProvider,
             _removalAction,
+            null,
             Operation.ProviderDetails.ExtensionWrapper.PackageFullName,
             _mainWindow);
 

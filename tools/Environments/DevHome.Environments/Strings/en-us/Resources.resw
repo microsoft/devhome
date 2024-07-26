@@ -343,10 +343,6 @@
     <value>Go to extensions library</value>
     <comment>Text for when the environment page in Dev Home is empty and the user has no extensions installed that support environments</comment>
   </data>
-  <data name="MoreOptionsButtonName" xml:space="preserve">
-    <value>More options</value>
-    <comment>The text narrator should say for the ... button</comment>
-  </data>
   <data name="SyncEnvironmentsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Sync</value>
     <comment>Accessible name for the button to sync environments.</comment>
@@ -358,5 +354,9 @@
   <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>More options</value>
     <comment>Name of the button that brings up the "More options" menu</comment>
+  </data>
+  <data name="Operations_ApplyConfiguration" xml:space="preserve">
+    <value>Set up</value>
+    <comment>Value to be shown in the button option to start the configuration flow</comment>
   </data>
 </root>

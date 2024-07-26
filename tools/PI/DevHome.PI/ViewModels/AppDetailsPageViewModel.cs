@@ -38,6 +38,9 @@ public partial class AppDetailsPageViewModel : ObservableObject
     [ObservableProperty]
     private Visibility _processPackageVisibility = Visibility.Collapsed;
 
+    [ObservableProperty]
+    private Visibility _appSettingsVisibility = Visibility.Collapsed;
+
     private Process? _targetProcess;
 
     public AppDetailsPageViewModel()
@@ -48,7 +51,12 @@ public partial class AppDetailsPageViewModel : ObservableObject
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
         {
+            AppSettingsVisibility = Visibility.Visible;
             UpdateTargetProcess(process);
+        }
+        else
+        {
+            AppSettingsVisibility = Visibility.Collapsed;
         }
     }
 
@@ -123,7 +131,12 @@ public partial class AppDetailsPageViewModel : ObservableObject
         {
             if (TargetAppData.Instance.TargetProcess is not null)
             {
+                AppSettingsVisibility = Visibility.Visible;
                 UpdateTargetProcess(TargetAppData.Instance.TargetProcess);
+            }
+            else
+            {
+                AppSettingsVisibility = Visibility.Collapsed;
             }
         }
     }
@@ -135,6 +148,12 @@ public partial class AppDetailsPageViewModel : ObservableObject
         {
             CommonHelper.RunAsAdmin(_targetProcess.Id, nameof(AppDetailsPageViewModel));
         }
+    }
+
+    [RelayCommand]
+    public void DetachFromProcess()
+    {
+        TargetAppData.Instance.ClearAppData();
     }
 
     private void GetPackageInfo(ProcessDiagnosticInfo pdi)
