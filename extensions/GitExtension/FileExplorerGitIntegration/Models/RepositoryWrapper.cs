@@ -192,9 +192,10 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetRepoStatus()
     {
+        var repoStatus = new GitRepositoryStatus();
+
         if (_gitInstalled)
         {
-            var repoStatus = new GitRepositoryStatus();
             var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
             if (result.Status == ProviderOperationStatus.Success && result.Output != null)
             {
@@ -282,13 +283,11 @@ internal sealed class RepositoryWrapper : IDisposable
             }
         }
 
-        RepositoryStatus repositoryStatus;
         string branchName;
         var branchStatus = string.Empty;
         try
         {
             _repoLock.EnterWriteLock();
-            repositoryStatus = _repo.RetrieveStatus();
             branchName = _repo.Info.IsHeadDetached ?
                 "Detached: " + _repo.Head.Tip.Sha[..7] :
                 "Branch: " + _repo.Head.FriendlyName;
@@ -319,8 +318,8 @@ internal sealed class RepositoryWrapper : IDisposable
             _repoLock.ExitWriteLock();
         }
 
-        var fileStatus = $"| +{repositoryStatus.Added.Count()} ~{repositoryStatus.Staged.Count()} -{repositoryStatus.Removed.Count()} | +{repositoryStatus.Untracked.Count()} ~{repositoryStatus.Modified.Count()} -{repositoryStatus.Missing.Count()}";
-        var conflicted = repositoryStatus.Where(x => x.State.HasFlag(FileStatus.Conflicted)).Count();
+        var fileStatus = $"| +{repoStatus.Added.Count} ~{repoStatus.Staged.Count} -{repoStatus.Removed.Count} | +{repoStatus.Untracked.Count} ~{repoStatus.Modified.Count} -{repoStatus.Missing.Count}";
+        var conflicted = repoStatus.Conflicted.Count;
 
         if (conflicted > 0)
         {

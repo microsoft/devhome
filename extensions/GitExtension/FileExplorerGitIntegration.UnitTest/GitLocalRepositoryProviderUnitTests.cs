@@ -90,7 +90,7 @@ public class GitLocalRepositoryProviderUnitTests
             "System.VersionControl.CurrentFolderStatus",
         };
 
-        var relativePath = "a\\a1";
+        var relativePath = Path.Join("a", "a1");
         GitLocalRepository repo = new GitLocalRepository(RepoPath);
         var result = repo.GetProperties(properties, relativePath);
         Assert.IsNotNull(result);
@@ -101,5 +101,48 @@ public class GitLocalRepositoryProviderUnitTests
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorName"], "A U Thor");
         Assert.AreEqual(result["System.VersionControl.LastChangeID"], "d0114ab8ac326bab30e3a657a0397578c5a1af88");
         Assert.AreEqual(result["System.VersionControl.CurrentFolderStatus"], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
+    }
+
+    [TestMethod]
+    public void GitStatus()
+    {
+        const string repoStatusProperty = "System.VersionControl.CurrentFolderStatus";
+        var properties = new string[]
+        {
+            repoStatusProperty,
+        };
+        var localRepo = new GitLocalRepository(RepoPath);
+        var result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
+
+        // Add a file
+        var newFileName = "newfile.txt";
+        var newFilePath = Path.Join(RepoPath, newFileName);
+        File.WriteAllText(newFilePath, "Initial content");
+        result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +0 ~0 -0 | +1 ~0 -0");
+
+        // Stage that add
+        var modifiedRepo = new Repository(RepoPath);
+        modifiedRepo.Index.Add(newFileName);
+        modifiedRepo.Index.Write();
+        result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +1 ~0 -0 | +0 ~0 -0");
+
+        // Re-modify the staged file
+        File.WriteAllText(newFilePath, "New content");
+        result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +1 ~0 -0 | +0 ~1 -0");
+
+        // Delete the file, the index still shows the add
+        File.Delete(newFilePath);
+        result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +1 ~0 -0 | +0 ~0 -1");
+
+        // Remove from index, back to clean state
+        modifiedRepo.Index.Remove(newFileName);
+        modifiedRepo.Index.Write();
+        result = localRepo.GetProperties(properties, ".");
+        Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
     }
 }
