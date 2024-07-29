@@ -18,6 +18,7 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.Environments.ViewModels;
@@ -325,52 +326,63 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
-        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList() ?? [];
-        var loginId = data.DevIdToComputeSystemMap?.Keys.FirstOrDefault()?.DeveloperId.LoginId;
 
-        // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
-        // for now we'll show all the compute systems from a provider.
-        if (computeSystemList.Count == 0)
+        // List of ComputeSystemViewModels to be added to the view model
+        // that didn't have any errors during initialization
+        var loginComputeSystemMap = new Dictionary<string, List<ComputeSystemViewModel>>();
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(map =>
+            map.Value.Result.Status != ProviderOperationStatus.Failure))
         {
-            _log.Error($"No Compute systems found for provider: {provider.Id}");
+            var computeSystems = mapping.Value.ComputeSystems;
+            var loginId = mapping.Key.DeveloperId.LoginId;
+            var computeSystemViewModels = new List<ComputeSystemViewModel>();
+
+            // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
+            var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+            foreach (var computeSystem in computeSystems)
+            {
+                var computeSystemViewModel = new ComputeSystemViewModel(
+                    _computeSystemManager,
+                    computeSystem,
+                    provider,
+                    RemoveComputeSystemCard,
+                    ConfigureComputeSystem,
+                    packageFullName,
+                    _mainWindow);
+
+                computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                computeSystemViewModels.Add(computeSystemViewModel);
+            }
+
+            loginComputeSystemMap.Add(loginId, computeSystemViewModels);
         }
 
-        // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
-        var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-        var computeSystemViewModels = new List<ComputeSystemViewModel>();
-        foreach (var computeSystem in computeSystemList)
+        foreach (var loginComputeSystemPair in loginComputeSystemMap)
         {
-            var computeSystemViewModel = new ComputeSystemViewModel(
-                _computeSystemManager,
-                computeSystem,
-                provider,
-                RemoveComputeSystemCard,
-                ConfigureComputeSystem,
-                packageFullName,
-                _mainWindow);
-
-            computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
-            computeSystemViewModels.Add(computeSystemViewModel);
+            await Parallel.ForEachAsync(loginComputeSystemPair.Value, async (computeSystemModel, token) =>
+            {
+                await computeSystemModel.InitializeCardDataAsync();
+            });
         }
-
-        await Parallel.ForEachAsync(computeSystemViewModels, async (computeSystemModel, token) =>
-        {
-            await computeSystemModel.InitializeCardDataAsync();
-        });
 
         await _mainWindow.DispatcherQueue.EnqueueAsync(() =>
         {
             try
             {
                 Providers.Add(provider.DisplayName);
-                List<ComputeSystemCardBase> tempComputeSystemViewModels = new();
-                foreach (var computeSystemViewModel in computeSystemViewModels)
+                foreach (var loginComputeSystemPair in loginComputeSystemMap)
                 {
-                    computeSystemViewModel.InitializeUXData();
-                    tempComputeSystemViewModels.Add(computeSystemViewModel);
-                }
+                    var loginId = loginComputeSystemPair.Key;
+                    var computeSystemViewModels = loginComputeSystemPair.Value;
+                    List<ComputeSystemCardBase> tempComputeSystemViewModels = new();
+                    foreach (var computeSystemViewModel in computeSystemViewModels)
+                    {
+                        computeSystemViewModel.InitializeUXData();
+                        tempComputeSystemViewModels.Add(computeSystemViewModel);
+                    }
 
-                PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
+                    PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
+                }
             }
             catch (Exception ex)
             {
