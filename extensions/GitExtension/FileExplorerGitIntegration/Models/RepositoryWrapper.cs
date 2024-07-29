@@ -318,7 +318,7 @@ internal sealed class RepositoryWrapper : IDisposable
             _repoLock.ExitWriteLock();
         }
 
-        var fileStatus = $"| +{repoStatus.Added.Count} ~{repoStatus.Staged.Count} -{repoStatus.Removed.Count} | +{repoStatus.Untracked.Count} ~{repoStatus.Modified.Count} -{repoStatus.Missing.Count}";
+        var fileStatus = $"| +{repoStatus.Added.Count} ~{repoStatus.Staged.Count + repoStatus.RenamedInIndex.Count} -{repoStatus.Removed.Count} | +{repoStatus.Untracked.Count} ~{repoStatus.Modified.Count + repoStatus.RenamedInWorkDir.Count} -{repoStatus.Missing.Count}";
         var conflicted = repoStatus.Conflicted.Count;
 
         if (conflicted > 0)
