@@ -10,7 +10,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
 
-    <Grid x:Name="ClipboardMonitorPanel">
+    <Grid x:Name="ClipboardMonitorPanel" GotFocus="{x:Bind _viewModel.PauseClipboardMonitoring}" LostFocus="{x:Bind _viewModel.ResumeClipboardMonitoring}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>

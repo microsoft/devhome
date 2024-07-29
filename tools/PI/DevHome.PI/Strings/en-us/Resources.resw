@@ -461,10 +461,6 @@
     <value>See more</value>
     <comment>The contents of a text label.</comment>
   </data>
-  <data name="ClickboardErrorTextBlock.Text" xml:space="preserve">
-    <value>Error on clipboard</value>
-    <comment>This refers to error codes being detected on the clipboard (HRESULT/NTSTATUS failures etc)</comment>
-  </data>
   <data name="HexLabelTextBlock.Text" xml:space="preserve">
     <value>Hex</value>
     <comment>This refers to a short hand for hexadecimal number notation.</comment>
@@ -1009,13 +1005,9 @@
     <value>Name of the attached app</value>
     <comment>Refers to the app's name in the bar</comment>
   </data>
-  <data name="ClipboardMonitor.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open the Clipboard Monitor window</value>
-    <comment>Tooltip that tells users what the Clipboard Monitor button will do</comment>
-  </data>
-  <data name="ClipboardMonitorLabel.Text" xml:space="preserve">
+  <data name="ClipboardMonitorName" xml:space="preserve">
     <value>Clipboard Monitor</value>
-    <comment>A text label for the Clipboard Monitor button</comment>
+    <comment>A label for the Clipboard Monitor tool</comment>
   </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
     <value>See insights that Project Ironsides has gained</value>

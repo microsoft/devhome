@@ -1,11 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DevHome.PI.Properties;
 using DevHome.PI.Views;
 using Microsoft.UI.Xaml;
@@ -19,11 +14,12 @@ namespace DevHome.PI.Helpers;
 public class ClipboardMonitorInternalTool : Tool
 {
     private const string ClipboardButtonText = "\uf0e3"; // ClipboardList
+    private static readonly string _clipboardMonitorToolName = CommonHelper.GetLocalizedString("ClipboardMonitorName");
 
     private ClipboardMonitoringWindow? _clipboardMonitoringWindow;
 
     public ClipboardMonitorInternalTool()
-        : base("Clipboard Monitor", Settings.Default.IsClipboardMonitorToolPinned)
+        : base(_clipboardMonitorToolName, Settings.Default.IsClipboardMonitorToolPinned)
     {
     }
 

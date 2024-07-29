@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevHome.PI.Helpers;
 
@@ -20,6 +16,7 @@ internal sealed class InternalToolsHelper
 
     private InternalToolsHelper()
     {
+        // All internal tools should be in this list
         _allInternalTools = new List<Tool>
         {
             new ClipboardMonitorInternalTool(),
