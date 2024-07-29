@@ -33,8 +33,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly Window _mainWindow;
 
-    private readonly EnvironmentsExtensionsService _environmentExtensionsService;
-
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
@@ -95,11 +93,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
-        EnvironmentsExtensionsService extensionsService,
         Window mainWindow)
     {
         _computeSystemManager = manager;
-        _environmentExtensionsService = extensionsService;
         _mainWindow = mainWindow;
         _navigationService = navigationService;
 
@@ -263,7 +259,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         CallToActionHyperLinkButtonText = null;
         ShouldNavigateToExtensionsPage = false;
         ShowLoadingShimmer = true;
-        await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
+        await _computeSystemManager.GetComputeSystemsAsync(AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
         UpdateCallToActionText();
 
