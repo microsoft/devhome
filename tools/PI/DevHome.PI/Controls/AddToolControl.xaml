@@ -37,7 +37,13 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button
-                    x:Name="AppListButton" x:Uid="AppListButton" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="100" Click="AppListButton_Click"/>
+                    x:Name="RefreshAppListButton" 
+                    x:Uid="RefreshAppListButton" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    MinWidth="100" 
+                    Click="RefreshAppListButton_Click"
+                    IsEnabled="False"/>
                 <ListView 
                     x:Name="AppsListView" 
                     Grid.Column="1" 
@@ -74,7 +80,7 @@
                 <Button 
                     x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" HorizontalAlignment="Left" MinWidth="100" Click="ToolBrowseButton_Click"/>
                 <TextBox 
-                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" HorizontalAlignment="Stretch"/>
+                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" HorizontalAlignment="Stretch" KeyDown="ToolPathTextBox_KeyDown"/>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0,6,0,0">

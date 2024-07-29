@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.RegularExpressions;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.PI.Models;
 
@@ -16,7 +17,7 @@ internal enum InsightType
     MemoryViolation,
 }
 
-public sealed class Insight
+public partial class Insight : ObservableObject
 {
     internal string Title { get; set; } = string.Empty;
 
@@ -24,7 +25,12 @@ public sealed class Insight
 
     internal InsightType InsightType { get; set; } = InsightType.Unknown;
 
-    internal bool IsExpanded { get; set; }
+    [ObservableProperty]
+    private bool _hasBeenRead;
+
+    // We show the badge by default, as HasBeenRead is false by default.
+    [ObservableProperty]
+    private double _badgeOpacity = 1;
 }
 
 internal sealed class InsightRegex

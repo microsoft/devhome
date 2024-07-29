@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
 using DevHome.Environments.Models;
 using Microsoft.UI.Xaml;
@@ -37,6 +38,10 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private readonly string _additionalContext = string.Empty;
 
+    private readonly Window? _mainWindow;
+
+    private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+
     public string Name { get; }
 
     public ComputeSystemOperations ComputeSystemOperation { get; }
@@ -47,9 +52,9 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
 
     private Action? DevHomeAction { get; }
 
-    private readonly Window? _mainWindow;
+    private Action<ComputeSystemReviewItem>? DevHomeActionWithReviewItem { get; }
 
-    private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+    private ComputeSystemReviewItem? _item;
 
     public OperationsViewModel(
         string name,
@@ -89,6 +94,20 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         DevHomeAction = command;
     }
 
+    public OperationsViewModel(
+        string name,
+        string icon,
+        Action<ComputeSystemReviewItem>? command,
+        ComputeSystemProvider provider,
+        ComputeSystemCache cache)
+    {
+        _operationKind = OperationKind.DevHomeAction;
+        Name = name;
+        IconGlyph = icon;
+        DevHomeActionWithReviewItem = command;
+        _item = new(cache, provider);
+    }
+
     private void RunAction()
     {
         // To Do: Need to disable the card UI while the operation is in progress and handle failures.
@@ -96,7 +115,15 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         {
             if (_operationKind == OperationKind.DevHomeAction)
             {
-                DevHomeAction!();
+                if (DevHomeAction != null)
+                {
+                    DevHomeAction();
+                }
+                else if (DevHomeActionWithReviewItem != null && _item != null)
+                {
+                    DevHomeActionWithReviewItem(_item);
+                }
+
                 return;
             }
 

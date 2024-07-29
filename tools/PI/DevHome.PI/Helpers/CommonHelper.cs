@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Management;
 using System.Management.Automation;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
@@ -107,5 +109,37 @@ internal sealed class CommonHelper
         }
 
         return null;
+    }
+
+    public static string GetCommandLine(Process process)
+    {
+        var activationArgs = string.Empty;
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}");
+            if (searcher is null)
+            {
+                return activationArgs;
+            }
+
+            using var objects = searcher.Get();
+            if (objects is null)
+            {
+                return activationArgs;
+            }
+
+            var obj = objects.Cast<ManagementObject>().FirstOrDefault();
+            if (obj is not null)
+            {
+                activationArgs = obj["CommandLine"]?.ToString() ?? string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get command line for process {ProcessId}", process.Id);
+        }
+
+        return activationArgs;
     }
 }

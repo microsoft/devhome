@@ -19,7 +19,7 @@
                 </i:Interaction.Behaviors>
             </BreadcrumbBar>
 
-            <ctControls:SettingsExpander x:Uid="SettingsAddToolCard" IsExpanded="False">
+            <ctControls:SettingsExpander x:Name="SettingsAddToolCard" x:Uid="SettingsAddToolCard" IsExpanded="False" Expanded="SettingsAddToolCard_Expanded">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xED0E;"/>
                 </ctControls:SettingsExpander.HeaderIcon>

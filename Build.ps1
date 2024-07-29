@@ -113,66 +113,29 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 
 Try {
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix") -Or ($BuildStep -ieq "fullMsix")) {
-    $buildRing = "Dev"
-    $newPackageName = $null
-    $newPackageDisplayName = $null
-    $newAppDisplayNameResource = $null
-    $newWidgetProviderDisplayName = $null
-
-    if ($AzureBuildingBranch -ieq "release") {
-      $buildRing = "Stable"
-      $newPackageName = "Microsoft.Windows.DevHome"
-      $newPackageDisplayName = "Dev Home (Preview)"
-      $newAppDisplayNameResource = "ms-resource:AppDisplayNameStable"
-      $newWidgetProviderDisplayName = "ms-resource:WidgetProviderDisplayNameStable"
-    } elseif ($AzureBuildingBranch -ieq "staging") {
-      $buildRing = "Canary"
-      $newPackageName = "Microsoft.Windows.DevHome.Canary"
-      $newPackageDisplayName = "Dev Home (Canary)"
-      $newAppDisplayNameResource = "ms-resource:AppDisplayNameCanary"
-      $newWidgetProviderDisplayName = "ms-resource:WidgetProviderDisplayNameCanary"
-    }
-
-    [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
-    $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
-    $xProperties = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Properties");
-    $xDisplayName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}DisplayName");
-    $xApplications = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Applications");
-    $xApplication = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Application");
-    $uapVisualElements = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10}VisualElements");
-    $xExtensions = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Extensions");
-    $uapExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}Extension");
-    $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
-
     # Update C++ version resources and header
     $cppHeader = (Join-Path $env:Build_RootDirectory "build\cppversion\version.h")
     $updatebinverpath = (Join-Path $env:Build_RootDirectory "build\scripts\update-binver.ps1")
     & $updatebinverpath -TargetFile $cppHeader -BuildVersion $env:msix_version
 
+    $buildRing = "Dev"
+    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package-Dev.appxmanifest")
+
+    if ($AzureBuildingBranch -ieq "release") {
+      $buildRing = "Stable"
+      $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
+    } elseif ($AzureBuildingBranch -ieq "staging") {
+      $buildRing = "Canary"
+      $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package-Can.appxmanifest")
+    }
+
+    [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
+    $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+
     # Update the appxmanifest
-    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
-    if (-not ([string]::IsNullOrEmpty($newPackageName))) {
-      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
-    }
-    if (-not ([string]::IsNullOrEmpty($newPackageDisplayName))) {
-      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = $newPackageDisplayName
-    }
-    if (-not ([string]::IsNullOrEmpty($newAppDisplayNameResource))) {
-      $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = $newAppDisplayNameResource
-      $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
-      foreach ($extension in $extensions) {
-        if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
-          $appExtension = $extension.Element($uapAppExtension)
-          switch ($appExtension.Attribute("Name").Value) {
-            "com.microsoft.windows.widgets" {
-              $appExtension.Attribute("DisplayName").Value = $newWidgetProviderDisplayName
-            }
-          }
-        }
-      }
-    }
+
     Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
 
     # This is needed for vcxproj
@@ -217,20 +180,6 @@ Try {
     # Reset the appxmanifest to prevent unnecessary code changes
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
-    $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Dev"
-    $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Dev)"
-    $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-    $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
-    foreach ($extension in $extensions) {
-      if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
-        $appExtension = $extension.Element($uapAppExtension)
-        switch ($appExtension.Attribute("Name").Value) {
-          "com.microsoft.windows.widgets" {
-            $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetProviderDisplayNameDev"
-          }
-        }
-      }
-    }
     Write-XmlDocumentToFile -xmlDocument $appxmanifest -filePath $appxmanifestPath
   }
 

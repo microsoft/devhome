@@ -28,7 +28,6 @@
   <ItemGroup>
     <None Remove="Controls\ClipboardMonitorControl.xaml" />
     <None Remove="Controls\ExpandedViewControl.xaml" />
-    <None Remove="Controls\GlowButton.xaml" />
     <None Remove="Controls\PISeparator.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
     <None Remove="errors.db" />
@@ -197,9 +196,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\SettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Controls\GlowButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <None Update="Properties\Settings.settings">

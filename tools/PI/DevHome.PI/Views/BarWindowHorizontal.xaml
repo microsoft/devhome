@@ -8,7 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:controls="using:DevHome.PI.Controls"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:local="using:DevHome.PI.Controls"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
     Title="" MinHeight="90" MinWidth="700" Height="90" Width="700" MaxHeight="90"
@@ -88,11 +89,11 @@
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Background" Value="Transparent"/>
                     </Style>
-                    <Style TargetType="controls:ExternalToolsManagementButton">
+                    <Style TargetType="local:ExternalToolsManagementButton">
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Background" Value="Transparent"/>
                     </Style>
-                    <Style TargetType="controls:ProcessSelectionButton">
+                    <Style TargetType="local:ProcessSelectionButton">
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="Background" Value="Transparent"/>
                     </Style>
@@ -100,14 +101,14 @@
 
                 <!-- Process Chooser area -->
                 <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
-                    <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center">
+                    <local:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center">
                         <TextBlock Text="&#xe179;"/>
-                    </controls:ProcessSelectionButton>
+                    </local:ProcessSelectionButton>
                     <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <!-- Per App controls -->
-                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10 0 0 0">
+                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10,0,0,0">
                     <StackPanel.ContextFlyout>
                         <MenuFlyout>
                             <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
@@ -121,6 +122,24 @@
                     <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                     <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                 </StackPanel>
+                
+                <!-- Insights button -->
+                <Button x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" Margin="10,0,0,0">
+                    <Grid>
+                        <TextBlock Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+                        <controls:InfoBadge 
+                            VerticalAlignment="Top" 
+                            HorizontalAlignment="Right"
+                            Margin="16,0,0,0" 
+                            MinWidth="16" 
+                            MinHeight="16"
+                            Value="{x:Bind _viewModel.UnreadInsightsCount, Mode=OneWay}"
+                            Opacity="{x:Bind _viewModel.InsightsBadgeOpacity, Mode=OneWay}"
+                            Style="{StaticResource SuccessValueInfoBadgeStyle}">
+                        </controls:InfoBadge>
+                    </Grid>
+                </Button>
+
                 <CommandBar>
                     <AppBarSeparator/>
                 </CommandBar>
@@ -144,7 +163,7 @@
             x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
             BorderThickness="0" 
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <controls:ExpandedViewControl x:Name="ExpandedViewControl"/>
+            <local:ExpandedViewControl x:Name="ExpandedViewControl"/>
         </Border>
     </Grid>
 </winex:WindowEx>
