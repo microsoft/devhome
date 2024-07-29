@@ -21,17 +21,10 @@
     </Page.Resources>
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
-        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" VerticalAlignment="Top">
+        <Grid>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <views:FileExplorerView />
-            </StackPanel>
-            <StackPanel Grid.Row="1" VerticalAlignment="Top">
-                <views:AddRepositoriesView />
+                <views:AddRepositoriesView Visibility="{x:Bind ViewModel.IsFeatureEnabled}"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>

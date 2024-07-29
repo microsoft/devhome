@@ -31,8 +31,6 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public ObservableCollection<RepositoryInformation> TrackedRepositories { get; } = new();
 
-    public Visibility Visibility { get; set; }
-
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
     private readonly string unassigned = "00000000-0000-0000-0000-000000000000";
@@ -42,6 +40,8 @@ public partial class FileExplorerViewModel : ObservableObject
     public IExperimentationService ExperimentationService { get; }
 
     public IExtensionService ExtensionService { get; }
+
+    public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration");
 
     public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService)
     {
@@ -62,7 +62,6 @@ public partial class FileExplorerViewModel : ObservableObject
     {
         if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
         {
-            Visibility = Visibility.Visible;
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
             foreach (KeyValuePair<string, string> data in repoCollection)

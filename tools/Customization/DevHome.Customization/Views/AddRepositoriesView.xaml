@@ -23,7 +23,6 @@
         </ctControls:SettingsCard>
         <ItemsRepeater 
             Name="ItemsRepeaterForAllRepoPaths" 
-            Visibility="{x:Bind ViewModel.Visibility}"
             ItemsSource="{x:Bind ViewModel.TrackedRepositories, Mode=OneWay}"
             Margin="{ThemeResource SettingsCardMargin}">
             <ItemsRepeater.ItemTemplate>
