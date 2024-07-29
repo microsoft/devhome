@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DevHome.PI.Properties;
 using DevHome.PI.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -19,8 +20,10 @@ public class ClipboardMonitorInternalTool : Tool
 {
     private const string ClipboardButtonText = "\uf0e3"; // ClipboardList
 
+    private ClipboardMonitoringWindow? _clipboardMonitoringWindow;
+
     public ClipboardMonitorInternalTool()
-        : base("Clipboard Monitor", true)
+        : base("Clipboard Monitor", Settings.Default.IsClipboardMonitorToolPinned)
     {
     }
 
@@ -35,8 +38,10 @@ public class ClipboardMonitorInternalTool : Tool
 
     internal override void InvokeTool(Window? parent, int? targetProcessId, HWND hWnd)
     {
-        ClipboardMonitoringWindow clipboardMonitoringWindow = new();
-        clipboardMonitoringWindow.Activate();
+        if (_clipboardMonitoringWindow is null || _clipboardMonitoringWindow.AppWindow is null)
+        {
+            _clipboardMonitoringWindow = new ClipboardMonitoringWindow();
+        }
 
         if (parent is not null)
         {
@@ -44,14 +49,22 @@ public class ClipboardMonitorInternalTool : Tool
             rect.X = parent.AppWindow.Position.X;
             rect.Y = parent.AppWindow.Position.Y + 100;
             rect.Width = parent.AppWindow.Size.Width;
-            rect.Height = clipboardMonitoringWindow.AppWindow.Size.Height;
+            rect.Height = _clipboardMonitoringWindow.AppWindow.Size.Height;
 
-            clipboardMonitoringWindow.AppWindow.MoveAndResize(rect);
+            _clipboardMonitoringWindow.AppWindow.MoveAndResize(rect);
         }
+
+        _clipboardMonitoringWindow.Activate();
+    }
+
+    protected override void OnIsPinnedChange(bool newValue)
+    {
+        Settings.Default.IsClipboardMonitorToolPinned = newValue;
+        Settings.Default.Save();
     }
 
     public override void UnregisterTool()
     {
-        // Ignore this command for now
+        // Ignore this command for now until we have a way for the user to discover unregistered internal tools
     }
 }

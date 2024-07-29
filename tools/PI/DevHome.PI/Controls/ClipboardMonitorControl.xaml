@@ -10,7 +10,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
 
-    <Grid x:Name="ClipboardMonitorPanel" Grid.Row="2">
+    <Grid x:Name="ClipboardMonitorPanel">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -19,7 +19,6 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid.Resources>
             <Style TargetType="TextBlock">
@@ -32,13 +31,8 @@
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="IsReadOnly" Value="True"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Margin" Value="0 2 0 0"/>
                 <Setter Property="Height" Value="25"/>
-            </Style>
-            <Style TargetType="Button">
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
             </Style>
         </Grid.Resources>
         <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="1"/>
@@ -46,9 +40,6 @@
         <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="3"/>
         <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
         <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="5"/>
-        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" />
-        <Button Name="ClipboardMonitorPopOutButton" Grid.Column="7" Command="{x:Bind ClipboardMonitorPopOutCommand}" Visibility="{x:Bind ShowPopOutButton}">
-            <TextBlock Text="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-        </Button>
+        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" ToolTipService.ToolTip="{x:Bind _viewModel.ClipboardContentsHelp}"/>
     </Grid>
 </UserControl>

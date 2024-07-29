@@ -45,6 +45,11 @@ public abstract partial class Tool : ObservableObject
     partial void OnIsPinnedChanged(bool oldValue, bool newValue)
     {
         PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
+        OnIsPinnedChange(newValue);
+    }
+
+    protected virtual void OnIsPinnedChange(bool newValue)
+    {
     }
 
     [RelayCommand]

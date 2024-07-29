@@ -32,7 +32,7 @@ public partial class ClipboardMonitorControlViewModel : ObservableObject
     private string _clipboardContentsCode = string.Empty;
 
     [ObservableProperty]
-    private string _clipboardContentsHelp = string.Empty;
+    private string? _clipboardContentsHelp;
 
     private bool _listenForClipboardChanges = true;
 
@@ -61,7 +61,7 @@ public partial class ClipboardMonitorControlViewModel : ObservableObject
         ClipboardContentsHex = clipboardContents.Hex;
         ClipboardContentsDec = clipboardContents.Dec;
         ClipboardContentsCode = clipboardContents.Code;
-        ClipboardContentsHelp = clipboardContents.Help;
+        ClipboardContentsHelp = string.IsNullOrEmpty(clipboardContents.Help) ? null : clipboardContents.Help;
     }
 
     // For these pause/resume functions, we don't want to turn off clipboard monitoring wholesale, just the UI updates

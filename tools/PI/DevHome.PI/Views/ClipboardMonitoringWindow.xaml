@@ -17,6 +17,6 @@
     Title="Project Ironsides Clipboard Monitor">
 
     <Grid>
-        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" Visibility="Visible" ShowPopOutButton="false"/>
+        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" Visibility="Visible" />
     </Grid>
 </winex:WindowEx>

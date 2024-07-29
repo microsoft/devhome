@@ -28,8 +28,6 @@ public sealed partial class ClipboardMonitorControl : UserControl
 {
     private readonly ClipboardMonitorControlViewModel _viewModel = new();
 
-    public bool ShowPopOutButton { get; set; } = true;
-
     public ClipboardMonitorControl()
     {
         this.InitializeComponent();

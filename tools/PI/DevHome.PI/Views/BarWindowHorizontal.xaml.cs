@@ -163,8 +163,10 @@ public partial class BarWindowHorizontal : WindowEx
             AddToolToCommandBar(tool);
         }
 
-        ClipboardMonitorInternalTool clipboardMonitorInternalTool = new();
-        AddToolToCommandBar(clipboardMonitorInternalTool);
+        foreach (Tool tool in InternalToolsHelper.Instance.AllInternalTools)
+        {
+            AddToolToCommandBar(tool);
+        }
     }
 
     private AppBarButton CreateAppBarButton(Tool tool, PinOption pinOption)
