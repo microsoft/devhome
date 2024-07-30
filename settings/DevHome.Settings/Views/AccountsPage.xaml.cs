@@ -12,10 +12,12 @@ using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.Settings.Views;
 
@@ -191,4 +193,6 @@ public sealed partial class AccountsPage : DevHomePage
             accountProvider.RefreshLoggedInAccounts();
         }
     }
+
+    // drop UI code here?
 }

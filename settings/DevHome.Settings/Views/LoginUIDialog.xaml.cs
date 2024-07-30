@@ -3,8 +3,10 @@
 
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.Settings.Views;
 
@@ -21,4 +23,6 @@ public sealed partial class LoginUIDialog : ContentDialog
     {
         this.Hide();
     }
+
+    // drop UI code here?
 }
