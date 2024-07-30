@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using Serilog;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -12,6 +13,8 @@ internal sealed class CPUStats : IDisposable
     private readonly PerformanceCounter _procPerformance = new("Processor Information", "% Processor Performance", "_Total");
     private readonly PerformanceCounter _procFrequency = new("Processor Information", "Processor Frequency", "_Total");
     private readonly Dictionary<Process, PerformanceCounter> _cpuCounters = new();
+
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(CPUStats));
 
     internal sealed class ProcessStats
     {
@@ -70,8 +73,14 @@ internal sealed class CPUStats : IDisposable
                 // process might be terminated
                 processCPUUsages.Add(processCounter.Key, processCounter.Value.NextValue() / Environment.ProcessorCount);
             }
-            catch
+            catch (InvalidOperationException)
             {
+                _log.Information($"ProcessCounter Key {processCounter.Key} no longer exists, removing from _cpuCounters.");
+                _cpuCounters.Remove(processCounter.Key);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "Error going through process counters.");
             }
         }
 
