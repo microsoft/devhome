@@ -62,9 +62,19 @@ public class ComputeSystemManager : IComputeSystemManager
 
                 foreach (var devIdWrapper in providerDetails.DeveloperIds)
                 {
+                    var devId = devIdWrapper.DeveloperId.LoginId;
+                    if (devId.Contains("outlook", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId);
-                    wrapperDictionary.Add(devIdWrapper, result);
                     results.Add(result);
+                }
+
+                for (var i = 0; i < providerDetails.DeveloperIds.Count; i++)
+                {
+                    wrapperDictionary.Add(providerDetails.DeveloperIds[i], results[0]);
                 }
 
                 var loadedData = new ComputeSystemsLoadedData(providerDetails, wrapperDictionary);
