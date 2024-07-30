@@ -17,6 +17,7 @@ public sealed partial class LoginUIDialog : ContentDialog
         this.InitializeComponent();
         LoginUIContent.Content = extensionAdaptiveCardPanel;
         RequestedTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+        SetContentDialogMinWidth(500);
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -24,5 +25,8 @@ public sealed partial class LoginUIDialog : ContentDialog
         this.Hide();
     }
 
-    // drop UI code here?
+    private void SetContentDialogMinWidth(double width)
+    {
+        this.Resources["ContentDialogMinWidth"] = width;
+    }
 }
