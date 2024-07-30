@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <title>Page 1</title>
@@ -40,12 +40,19 @@
             window.location.assign('Page2.html');
         };
 
-        window.onresize = function() {
-            window.chrome.webview.postMessage("Webview resized.");
+        function devHomeGetNumberOfPages() {
+            var numPages = 3;
+            var obj = new Object();
+            obj.devHomeItemUpdated = "devHomeNumberOfPages";
+            obj.devHomeNumberOfPages = 3;
+            obj.devHomeFormCompleted = false;
+            var jsonStr = JSON.stringify(obj);
+            doPostMessage(jsonStr);
+            console.log(jsonStr);
         };
     </script>
 </head>
-<body id="body">
+<body id="body" onload="devHomeGetNumberOfPages()">
     <h1> Page 1 </h1>
     <div id="rectangle" style="width:100px; height:100px; background-color:#ff8000"></div>
     <input id="b1B" type="submit" name="button" onclick="navigateToNextPage()" value="Navigate Locally" />

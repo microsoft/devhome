@@ -23,18 +23,24 @@
             }
         };
 
-        function navigateToNextPage() {
-            window.location.assign('Page3.html');
+        function navigateToPreviousPage() {
+            window.location.assign('Page2.html');
         };
 
-        function navigateToPreviousPage() {
-            window.location.assign('Page1.html');
+        function checkboxChanged(value) {
+            var obj = new Object();
+            obj.devHomeItemUpdated = "devHomeFormCompleted";
+            obj.devHomeFormCompleted = false;
+            var jsonStr = JSON.stringify(obj);
+            doPostMessage(jsonStr);
+            console.log(jsonStr);
         };
     </script>
 </head>
 <body id="body">
-    <h1> Page 2 </h1>
-    <div id="rectangle" style="width:100px; height:100px; background-color:#80ff00"></div>
+    <h1> Page 3 </h1>
+    <div id="rectangle" style="width:100px; height:100px; background-color:#8000ff"></div>
+    <input type="checkbox" id="done" name="Done Configuring" oninput="checkboxChanged(this.checked)" />
     <input id="b1B" type="submit" name="button" onclick="navigateToPreviousPage()" value="Navigate Locally" />
 </body>
 </html>

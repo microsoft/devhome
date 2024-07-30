@@ -8,6 +8,7 @@
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
@@ -16,19 +17,24 @@
                      Grid.Row="0"
                      KeyDown="AddressBar_KeyDown"
                      VerticalAlignment="Center" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock>Web Message Received:</TextBlock>
+            <TextBlock Text="{x:Bind ViewModel.WebMessageReceived, Mode=OneWay}" />
+        </StackPanel>
         <WebView2 x:Name="webView2"
-                      Grid.Row="1"
+                      Grid.Row="2"
                       MaxHeight="800"
                       MinWidth="300"
                       MaxWidth="{ThemeResource MaxPageContentWidth}" 
                       MinHeight="300"
                       Margin="0,12,0,0" />
-        <StackPanel Grid.Row="2"
+        <StackPanel Grid.Row="3"
                     Margin="0,12,0,36" 
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"
-                    Spacing="100">
+                    Spacing="50">
             <Button Content="Previous" Click="GoToPrevious" Style="{ThemeResource AccentButtonStyle}" />
+            <ProgressBar x:Name="progressBar" Width="300" Value="{x:Bind ViewModel.Progress, Mode=OneWay}" />
             <Button Content="Next" Click="GoToNext" Style="{ThemeResource AccentButtonStyle}" />
         </StackPanel>
     </Grid>
