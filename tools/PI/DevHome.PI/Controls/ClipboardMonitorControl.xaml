@@ -40,6 +40,6 @@
         <TextBlock x:Uid="DecLabelTextBlock" Grid.Column="3"/>
         <TextBox x:Name="ErrorDecTextBox" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}" Grid.Column="4" />
         <TextBlock x:Uid="CodeLabelTextBlock" Grid.Column="5"/>
-        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" ToolTipService.ToolTip="{x:Bind _viewModel.ClipboardContentsHelp}"/>
+        <TextBox x:Name="ErrorCodeTextBox" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}" Grid.Column="6" ToolTipService.ToolTip="{x:Bind _viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
     </Grid>
 </UserControl>
