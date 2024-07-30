@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
+using System.Reflection;
 using DevHome.Common.Views;
 using Microsoft.UI.Xaml.Input;
 
@@ -14,7 +16,8 @@ public partial class WebView2ToolView : ToolPage
         this.InitializeComponent();
 
         addressBar.Text = "https://developer.microsoft.com/en-us/microsoft-edge/webview2/";
-        webView2.Source = new Uri(addressBar.Text);
+        ////webView2.Source = new Uri(addressBar.Text);
+        webView2.Source = GetTestPageUri("Page1.html");
 
         InitializeWebView2Async();
     }
@@ -68,5 +71,24 @@ public partial class WebView2ToolView : ToolPage
             result = null;
             return false;
         }
+    }
+
+    private async void GoToPrevious(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        await webView2.ExecuteScriptAsync("navigateToPreviousPage();");
+    }
+
+    private async void GoToNext(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        await webView2.ExecuteScriptAsync("navigateToNextPage();");
+    }
+
+    // [Desktop (Packaged)] Get a file:// URI for the test page from app's Assets folder
+    private static Uri GetTestPageUri(string testPageName)
+    {
+        var appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var fullUri = @"file:///" + appDirectory + @"/Assets/" + testPageName;
+
+        return new Uri(fullUri);
     }
 }

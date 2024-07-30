@@ -9,6 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <TextBox x:Name="addressBar"
@@ -21,6 +22,14 @@
                       MinWidth="300"
                       MaxWidth="{ThemeResource MaxPageContentWidth}" 
                       MinHeight="300"
-                      Margin="0,12,0,36" />
+                      Margin="0,12,0,0" />
+        <StackPanel Grid.Row="2"
+                    Margin="0,12,0,36" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="100">
+            <Button Content="Previous" Click="GoToPrevious" Style="{ThemeResource AccentButtonStyle}" />
+            <Button Content="Next" Click="GoToNext" Style="{ThemeResource AccentButtonStyle}" />
+        </StackPanel>
     </Grid>
 </commonviews:ToolPage>

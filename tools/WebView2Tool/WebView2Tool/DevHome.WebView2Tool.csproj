@@ -13,4 +13,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\Page1.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Page2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
