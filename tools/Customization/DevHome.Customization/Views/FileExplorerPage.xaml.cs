@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -24,9 +25,9 @@ public sealed partial class FileExplorerPage : DevHomePage
         get; set;
     }
 
-    private static readonly System.Buffers.SearchValues<char> InvalidChars = System.Buffers.SearchValues.Create("<>*?|");
+    private static readonly System.Buffers.SearchValues<char> _invalidChars = System.Buffers.SearchValues.Create("<>*?|");
 
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerPage));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(FileExplorerPage));
 
     public FileExplorerPage()
     {
@@ -58,22 +59,22 @@ public sealed partial class FileExplorerPage : DevHomePage
     {
         if (!Path.IsPathFullyQualified(rootPath))
         {
-            log.Warning("Path is not fully qualified or maybe a UNC path.");
+            _log.Warning("Path is not fully qualified or maybe a UNC path.");
             RootPathErrorBar.IsOpen = true;
             return false;
         }
 
         if (rootPath.IndexOfAny(Path.GetInvalidPathChars()) != -1 ||
-            rootPath.AsSpan().IndexOfAny(InvalidChars) != -1)
+            rootPath.AsSpan().IndexOfAny(_invalidChars) != -1)
         {
-            log.Warning("Path contains invalid chars");
+            _log.Warning("Path contains invalid chars");
             RootPathErrorBar.IsOpen = true;
             return false;
         }
 
         if (!Array.Exists(Environment.GetLogicalDrives(), d => d.Equals(Path.GetPathRoot(rootPath), StringComparison.OrdinalIgnoreCase)))
         {
-            log.Warning("Drive provided does not exist on users machine");
+            _log.Warning("Drive provided does not exist on users machine");
             RootPathErrorBar.IsOpen = true;
             return false;
         }
@@ -91,7 +92,7 @@ public sealed partial class FileExplorerPage : DevHomePage
             }
             else
             {
-                log.Information($"AddRepository_Click(): registerRepoButton.Tag is not FileExplorerSourceControlIntegrationViewModel - Sender: {sender} RoutedEventArgs: {e}");
+                _log.Information($"AddRepository_Click(): registerRepoButton.Tag is not FileExplorerSourceControlIntegrationViewModel - Sender: {sender} RoutedEventArgs: {e}");
                 return;
             }
         }

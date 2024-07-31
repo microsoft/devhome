@@ -41,24 +41,24 @@
                          Content="Add" 
                          Click="AddButton_Click" 
                          Margin="10, 27, 0, 0">
-                    <Button.Resources>
-                        <Flyout x:Name="LocalRepositoryProvidersFlyout" Placement="Bottom">
+                        <Button.Resources>
+                            <Flyout x:Name="LocalRepositoryProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.LocalRepositoryProviders}"
                                                ItemTemplate="{StaticResource LocalRepositoryProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                                <ItemsRepeater.Layout>
-                                    <StackLayout Orientation="Vertical" Spacing="8" />
-                                </ItemsRepeater.Layout>
-                            </ItemsRepeater>
-                            <Flyout.FlyoutPresenterStyle>
-                                <Style TargetType="FlyoutPresenter">
-                                    <Setter Property="IsTabStop" Value="True"/>
-                                    <Setter Property="TabNavigation" Value="Cycle"/>
-                                    <Setter Property="MinWidth" Value="150" />
-                                </Style>
-                            </Flyout.FlyoutPresenterStyle>
-                        </Flyout>
-                    </Button.Resources>
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical" Spacing="8" />
+                                    </ItemsRepeater.Layout>
+                                </ItemsRepeater>
+                                <Flyout.FlyoutPresenterStyle>
+                                    <Style TargetType="FlyoutPresenter">
+                                        <Setter Property="IsTabStop" Value="True"/>
+                                        <Setter Property="TabNavigation" Value="Cycle"/>
+                                        <Setter Property="MinWidth" Value="150" />
+                                    </Style>
+                                </Flyout.FlyoutPresenterStyle>
+                            </Flyout>
+                        </Button.Resources>
                     </Button>
                     <InfoBar x:Name="RootPathErrorBar"
                          x:Uid="ErrorRootPathValidation"
@@ -87,4 +87,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-</Page>
+</commonViews:DevHomePage>

@@ -1,6 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Diagnostics;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -86,5 +89,7 @@ public partial class DevDriveCardViewModel : ObservableObject
         DevDriveSizeText = stringResource.GetLocalized("DevDriveSizeText", DevDriveSize, DevDriveUnitOfMeasure);
         DevDriveUsedSizeText = stringResource.GetLocalized("DevDriveUsedSizeText", DevDriveUsedSize, DevDriveUnitOfMeasure);
         DevDriveFreeSizeText = stringResource.GetLocalized("DevDriveFreeSizeText", DevDriveFreeSize, DevDriveUnitOfMeasure);
+        IsDevDriveTrusted = devDrive.IsDevDriveTrusted;
+        DriveLetter = devDrive.DriveLetter;
     }
 }
