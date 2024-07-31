@@ -65,9 +65,7 @@ public abstract partial class Tool : ObservableObject
         InvokeTool(parent, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    internal async virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd) => throw new NotImplementedException();
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    internal virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd) => throw new NotImplementedException();
 
     [RelayCommand]
     public abstract void UnregisterTool();

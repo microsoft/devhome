@@ -51,6 +51,10 @@ public partial class ClipboardMonitorControlViewModel : ObservableObject
         ClipboardContentsHex = clipboardContents.Hex;
         ClipboardContentsDec = clipboardContents.Dec;
         ClipboardContentsCode = clipboardContents.Code;
+
+        // Ensure both null strings and empty strings have a null content. This is used to set
+        // tooltips, and a null string doesn't display a tooltip, while an empty string displays
+        // an empty tooltip.
         ClipboardContentsHelp = string.IsNullOrEmpty(clipboardContents.Help) ? null : clipboardContents.Help;
     }
 
