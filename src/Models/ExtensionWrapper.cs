@@ -107,11 +107,12 @@ public class ExtensionWrapper : IExtensionWrapper
                     try
                     {
                         var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var extensionObj);
-                        extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
+
+                        extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
 
                         _extensionObject = MarshalInterface<IExtension>.FromAbi(extensionPtr);
                     }
