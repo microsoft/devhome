@@ -133,6 +133,7 @@ internal sealed class ExternalToolsHelper
                     arguments,
                     string.Empty,
                     string.Empty,
+                    ToolType.Unknown,
                     oldTool.IsPinned);
 
                 _allExternalTools.Add(newTool);

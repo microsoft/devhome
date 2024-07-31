@@ -182,6 +182,13 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             activationType = ToolActivationType.Msix;
         }
 
+        ToolType toolType = ToolType.Unknown;
+
+        if (ToolTypeMenuItemDumpAnalyzer.IsChecked)
+        {
+            toolType |= ToolType.DumpAnalyzer;
+        }
+
         return new(
             ToolNameTextBox.Text,
             ToolPathTextBox.Text,
@@ -189,6 +196,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             ArgumentsTextBox.Text,
             _selectedApp?.AppUserModelId ?? string.Empty,
             _selectedApp?.IconFilePath ?? string.Empty,
+            toolType,
             IsPinnedToggleSwitch.IsOn);
     }
 

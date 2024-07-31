@@ -13,6 +13,13 @@ using Windows.Win32.Foundation;
 
 namespace DevHome.PI.Helpers;
 
+[Flags]
+public enum ToolType
+{
+    Unknown = 0,
+    DumpAnalyzer = 1,
+}
+
 public abstract partial class Tool : ObservableObject
 {
     [ObservableProperty]
@@ -28,9 +35,12 @@ public abstract partial class Tool : ObservableObject
 
     public string Name { get; private set; }
 
-    public Tool(string name, bool isPinned)
+    public ToolType Type { get; private set; }
+
+    public Tool(string name, ToolType type, bool isPinned)
     {
         Name = name;
+        Type = type;
         IsPinned = isPinned;
         PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
     }
@@ -56,17 +66,22 @@ public abstract partial class Tool : ObservableObject
     [RelayCommand]
     public void Invoke()
     {
-        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, null);
     }
 
     [RelayCommand]
     public void InvokeWithParent(Window parent)
     {
-        InvokeTool(parent, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+        InvokeTool(parent, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, null);
+    }
+
+    public void InvokeWithParams(string commandLine)
+    {
+        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, commandLine);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    internal async virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd) => throw new NotImplementedException();
+    internal async virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd, string? commandLineParams) => throw new NotImplementedException();
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     [RelayCommand]

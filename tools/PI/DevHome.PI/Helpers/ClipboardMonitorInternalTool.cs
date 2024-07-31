@@ -19,7 +19,7 @@ public class ClipboardMonitorInternalTool : Tool
     private ClipboardMonitoringWindow? _clipboardMonitoringWindow;
 
     public ClipboardMonitorInternalTool()
-        : base(_clipboardMonitorToolName, Settings.Default.IsClipboardMonitorToolPinned)
+        : base(_clipboardMonitorToolName, ToolType.Unknown, Settings.Default.IsClipboardMonitorToolPinned)
     {
     }
 
@@ -32,7 +32,7 @@ public class ClipboardMonitorInternalTool : Tool
         };
     }
 
-    internal override void InvokeTool(Window? parent, int? targetProcessId, HWND hWnd)
+    internal override void InvokeTool(Window? parent, int? targetProcessId, HWND hWnd, string? commandLineParams)
     {
         if (_clipboardMonitoringWindow is null || _clipboardMonitoringWindow.AppWindow is null)
         {

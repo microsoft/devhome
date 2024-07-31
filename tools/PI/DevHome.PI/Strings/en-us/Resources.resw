@@ -1177,4 +1177,20 @@
     <value>No issues</value>
     <comment>A message indicating that there are no issues with the given item.</comment>
   </data>
+  <data name="ToolTypeButton.Content" xml:space="preserve">
+    <value>Tool Type</value>
+    <comment>Button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Set the type of the tool being added.</value>
+    <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
+    <value>WER Dump Analyzer</value>
+    <comment>Describes type of tool used to analyze WER dumps</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <comment>Tooltip that describes what a WER Dump analyzer does</comment>
+  </data>
 </root>

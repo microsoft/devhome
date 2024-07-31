@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.PI.Helpers;
 
 namespace DevHome.PI.Models;
 
@@ -38,5 +39,35 @@ public partial class WERDisplayInfo : ObservableObject
     {
         // When we provide support for pluggable analysis of cabs, we should call the appropriate analysis tool here to create better failure buckets
         return Report.FailureBucket;
+    }
+}
+
+public class WERAnalysis
+{
+    public Tool AnalysisTool { get; private set; }
+
+    public string? Analysis { get; private set; }
+
+    public string? FailureBucket { get; private set; }
+
+    private readonly string _crashDumpPath;
+
+    public WERAnalysis(Tool analysisTool, string crashDumpPath)
+    {
+        AnalysisTool = analysisTool;
+        _crashDumpPath = crashDumpPath;
+
+        // See if we have a cached analysis
+        var analysisFilePath = Path.Combine(_crashDumpPath, analysisTool.Name, ".analysisresults");
+
+        if (File.Exists(analysisFilePath))
+        {
+            Analysis = File.ReadAllText(analysisFilePath);
+        }
+        else
+        {
+            // Generate the analysis
+            AnalysisTool.InvokeWithParams(_crashDumpPath);
+        }
     }
 }

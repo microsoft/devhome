@@ -57,8 +57,9 @@ public partial class ExternalTool : Tool
         string arguments = "",
         string appUserModelId = "",
         string iconFilePath = "",
+        ToolType toolType = ToolType.Unknown,
         bool isPinned = false)
-        : base(name, isPinned)
+        : base(name, toolType, isPinned)
     {
         Executable = executable;
         ActivationType = activationType;
@@ -105,11 +106,11 @@ public partial class ExternalTool : Tool
         };
     }
 
-    internal async override void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd)
+    internal async override void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd, string? commandLineParams)
     {
         try
         {
-            var process = await InvokeToolInternal(targetProcessId, hWnd);
+            var process = await InvokeToolInternal(targetProcessId, hWnd, commandLineParams);
         }
         catch (Exception ex)
         {
@@ -127,7 +128,7 @@ public partial class ExternalTool : Tool
         }
     }
 
-    internal async Task<Process?> InvokeToolInternal(int? pid, HWND? hwnd)
+    internal async Task<Process?> InvokeToolInternal(int? pid, HWND? hwnd, string? commandLineParams)
     {
         var process = default(Process);
 
@@ -143,6 +144,11 @@ public partial class ExternalTool : Tool
             if (hwnd.HasValue)
             {
                 argumentVariables.Add("hwnd", (int)hwnd.Value);
+            }
+
+            if (!string.IsNullOrEmpty(commandLineParams))
+            {
+                argumentVariables.Add("commandLineParams", commandLineParams.Length);
             }
 
             parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
