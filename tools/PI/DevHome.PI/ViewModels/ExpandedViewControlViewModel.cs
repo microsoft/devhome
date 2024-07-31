@@ -264,7 +264,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
         if (_additionalNavigationInfo is not null)
         {
-            Debug.Assert(Links[SelectedNavLinkIndex] == _settingsNavLink, "Addition Nav Info currently only supported for Settings");
+            Debug.Assert(Links[SelectedNavLinkIndex] == _settingsNavLink, "Additional Nav Info currently only supported for Settings");
             navigationService.NavigateTo(_additionalNavigationInfo);
             _additionalNavigationInfo = null;
             return;
