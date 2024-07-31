@@ -248,9 +248,6 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooser()
     {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
     }

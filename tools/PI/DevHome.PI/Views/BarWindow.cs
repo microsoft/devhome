@@ -26,7 +26,7 @@ public partial class BarWindow
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowHorizontal _horizontalWindow;
     private readonly BarWindowVertical _verticalWindow;
-    private readonly BarWindowViewModel _viewModel = Application.Current.GetService<BarWindowViewModel>();
+    private readonly BarWindowViewModel _viewModel = new();
 
     internal HWND CurrentHwnd
     {
@@ -175,5 +175,10 @@ public partial class BarWindow
     public bool IsBarSnappedToWindow()
     {
         return _viewModel.IsSnapped;
+    }
+
+    public void UpdateUnreadInsightsCount(int count)
+    {
+        _viewModel.UpdateUnreadInsightsCount(count);
     }
 }

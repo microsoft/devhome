@@ -14,7 +14,6 @@ namespace DevHome.PI.ViewModels;
 
 public partial class InsightsPageViewModel : ObservableObject
 {
-    private readonly BarWindowViewModel _barWindowViewModel;
     private Process? _targetProcess;
 
     [ObservableProperty]
@@ -25,8 +24,6 @@ public partial class InsightsPageViewModel : ObservableObject
 
     public InsightsPageViewModel()
     {
-        _barWindowViewModel = Application.Current.GetService<BarWindowViewModel>();
-
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
         _insightsList = [];
 
@@ -44,7 +41,10 @@ public partial class InsightsPageViewModel : ObservableObject
             _targetProcess = process;
             InsightsList.Clear();
             UnreadCount = 0;
-            _barWindowViewModel.UpdateUnreadInsightsCount(0);
+
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            Debug.Assert(barWindow != null, "BarWindow should not be null.");
+            barWindow.UpdateUnreadInsightsCount(0);
         }
     }
 
@@ -61,17 +61,20 @@ public partial class InsightsPageViewModel : ObservableObject
 
     internal void AddInsight(Insight insight)
     {
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+
         insight.PropertyChanged += (sender, e) =>
         {
             if (e.PropertyName == nameof(Insight.HasBeenRead))
             {
                 UnreadCount = InsightsList.Count(insight => !insight.HasBeenRead);
-                _barWindowViewModel.UpdateUnreadInsightsCount(UnreadCount);
+                barWindow.UpdateUnreadInsightsCount(UnreadCount);
             }
         };
 
         UnreadCount++;
-        _barWindowViewModel.UpdateUnreadInsightsCount(UnreadCount);
+        barWindow.UpdateUnreadInsightsCount(UnreadCount);
         InsightsList.Add(insight);
     }
 }
