@@ -33,7 +33,7 @@ public partial class PerProviderViewModel : ObservableObject
     private readonly Window _mainWindow;
 
     [ObservableProperty]
-    private bool _isVisible = true;
+    private bool _isVisible;
 
     public PerProviderViewModel(string name, string id, string associatedDevID, List<ComputeSystemCardBase> computeSystems, Window mainWindow)
     {
@@ -41,12 +41,16 @@ public partial class PerProviderViewModel : ObservableObject
         ProviderID = id;
         DecoratedDevID = associatedDevID.Length > 0 ? '(' + associatedDevID + ')' : string.Empty;
         ComputeSystems = new ObservableCollection<ComputeSystemCardBase>(computeSystems);
-        _mainWindow = mainWindow;
-        IsVisible = ComputeSystems.Count > 0;
-
-        _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
+        IsVisible = computeSystems.Count > 0;
         ComputeSystemAdvancedView = new AdvancedCollectionView(ComputeSystems);
         ComputeSystemAdvancedView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
+        _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
+        _mainWindow = mainWindow;
+    }
+
+    public bool IsEmpty()
+    {
+        return ComputeSystems.Count == 0;
     }
 
     /// <summary>

@@ -48,6 +48,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private bool _wasSyncButtonClicked;
 
+    private SortedList<string, PerProviderViewModel> _visibleProviderViewModels = new();
+
+    private List<PerProviderViewModel> _hiddenProviderViewModels = new();
+
+    // To be used for filtering the providers based on the index selected by the user
+    // To Do: Implement the usage for this dictionary
+    private Dictionary<string, List<PerProviderViewModel>> _indexToProviderViewModel= new();
+
     public bool IsLoading { get; set; }
 
     public ObservableCollection<PerProviderViewModel> PerProviderViewModels { get; set; } = new();
@@ -369,7 +377,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             try
             {
-                Providers.Add(provider.DisplayName);
+                var providerDisplayName = provider.DisplayName;
+                Providers.Add(providerDisplayName);
                 foreach (var loginComputeSystemPair in loginComputeSystemMap)
                 {
                     var loginId = loginComputeSystemPair.Key;
@@ -381,7 +390,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
                         tempComputeSystemViewModels.Add(computeSystemViewModel);
                     }
 
-                    PerProviderViewModels.Add(new PerProviderViewModel(provider.DisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
+                    UpdateComputeSystemsUI(new PerProviderViewModel(providerDisplayName, provider.Id, loginId ?? string.Empty, tempComputeSystemViewModels, _mainWindow));
                 }
             }
             catch (Exception ex)
@@ -391,6 +400,32 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         });
 
         _computeSystemLoadWait.Set();
+    }
+
+    private void UpdateComputeSystemsUI(PerProviderViewModel? newModel)
+    {
+        if (newModel is not null)
+        {
+            if (newModel.IsEmpty())
+            {
+                _hiddenProviderViewModels.Add(newModel);
+            }
+            else
+            {
+                _visibleProviderViewModels.Add(newModel.ProviderID + newModel.DecoratedDevID, newModel);
+            }
+        }
+
+        PerProviderViewModels.Clear();
+        foreach (var providerViewModel in _visibleProviderViewModels.Values)
+        {
+            PerProviderViewModels.Add(providerViewModel);
+        }
+
+        foreach (var providerViewModel in _hiddenProviderViewModels)
+        {
+            PerProviderViewModels.Add(providerViewModel);
+        }
     }
 
     /// <summary>
