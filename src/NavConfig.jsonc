@@ -40,6 +40,14 @@
             "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
             "iconFontFamily": "DevHomeFluentIcons",
             "icon": "ECED"
+          },
+          {
+            "identity": "DevHome.Repositories",
+            "assembly": "DevHome.Repositories",
+            "viewFullName": "DevHome.Repositories.Views.RepositoriesMainPageView",
+            "viewModelFullName": "DevHome.Repositories.ViewModels.RepositoriesMainPageViewModel",
+            "iconFontFamily": "DevHomeFluentIcons",
+            "icon": "F03F"
           }
         ]
       }
