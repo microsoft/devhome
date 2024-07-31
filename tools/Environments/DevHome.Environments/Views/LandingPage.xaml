@@ -173,42 +173,6 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Per Provider Card Template -->
-            <DataTemplate x:Key="PerProviderComputeSystemTemplate" x:DataType="vm:PerProviderViewModel">
-                <Grid
-                    Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <TextBlock
-                            Text="{x:Bind ProviderName}"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            Margin="0 0 0 3"
-                            IsTextSelectionEnabled="True"/>
-                        <TextBlock
-                            Text="{x:Bind DecoratedDevID}"
-                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                            Margin="5 0 0 3"
-                            IsTextSelectionEnabled="True"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1">
-                        <ListView
-                            ItemsSource="{x:Bind ComputeSystemAdvancedView, Mode=OneWay}"
-                            SelectionMode="None"
-                            ItemTemplate="{StaticResource ComputeSystemTemplate}"
-                            ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel></StackPanel>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
-                    </Grid>
-                </Grid>
-            </DataTemplate>
-
             <DataTemplate x:Key="CreateComputeSystemOperationTemplate" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
                     <Grid.RowDefinitions>
@@ -234,7 +198,7 @@
             </DataTemplate>
 
             <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
-                PerProviderComputeSystemTemplate="{StaticResource PerProviderComputeSystemTemplate}"
+                ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
                 CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
 
         </Grid.Resources>
@@ -341,13 +305,13 @@
             </StackPanel>
         </Grid>
 
+        <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid>
-                <!-- Per Compute System card -->
                 <StackPanel>
                     <ListView
                         MaxWidth="{ThemeResource MaxPageContentWidth}"
-                        ItemsSource="{x:Bind ViewModel.PerProviderViewModels}" SelectionMode="None"
+                        ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
                         ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
                         ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}">
                         <ListView.ItemsPanel>
