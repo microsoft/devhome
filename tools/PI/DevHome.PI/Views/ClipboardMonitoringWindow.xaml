@@ -13,10 +13,9 @@
     MaxHeight="80"
     MinHeight="80"
     IsMaximizable="False"
-    TaskBarIcon="Images/pi.ico"
-    Title="Project Ironsides Clipboard Monitor">
+    TaskBarIcon="Images/pi.ico">
 
     <Grid>
-        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" Visibility="Visible" />
+        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" />
     </Grid>
 </winex:WindowEx>

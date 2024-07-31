@@ -1177,4 +1177,8 @@
     <value>No issues</value>
     <comment>A message indicating that there are no issues with the given item.</comment>
   </data>
+  <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
+    <value>Project Ironsides Clipboard Monitor</value>
+    <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
+  </data>
 </root>
