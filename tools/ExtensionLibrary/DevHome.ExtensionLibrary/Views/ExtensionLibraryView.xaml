@@ -48,7 +48,7 @@
                                     Margin="0,0,0,28" />
 
                 <!-- Installed items -->
-                <StackPanel x:Uid="InstalledItemsStackPanel" IsTabStop="True">
+                <StackPanel x:Uid="InstalledItemsStackPanel">
                     <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
                         <TextBlock x:Uid="InstalledTextBlock"
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
@@ -112,7 +112,7 @@
                     
                 </StackPanel>
                 <!-- Available items -->
-                <StackPanel x:Uid="AvailableFromStoreStackPanel" IsTabStop="True">
+                <StackPanel x:Uid="AvailableFromStoreStackPanel">
                     <TextBlock x:Uid="AvailableFromStoreTextBlock"
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                                Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
