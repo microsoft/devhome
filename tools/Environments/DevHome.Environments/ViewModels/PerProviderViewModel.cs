@@ -42,6 +42,7 @@ public partial class PerProviderViewModel : ObservableObject
         DecoratedDevID = associatedDevID.Length > 0 ? '(' + associatedDevID + ')' : string.Empty;
         ComputeSystems = new ObservableCollection<ComputeSystemCardBase>(computeSystems);
         _mainWindow = mainWindow;
+        IsVisible = ComputeSystems.Count > 0;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
         ComputeSystemAdvancedView = new AdvancedCollectionView(ComputeSystems);
