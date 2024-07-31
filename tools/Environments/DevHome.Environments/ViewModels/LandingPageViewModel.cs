@@ -48,6 +48,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private bool _wasSyncButtonClicked;
 
+    private string _selectedProvider = string.Empty;
+
     public bool IsLoading { get; set; }
 
     public ObservableCollection<ComputeSystemCardBase> ComputeSystemCards { get; set; } = new();
@@ -382,11 +384,23 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
             {
+                var providerName = createComputeSystemOperationViewModel.ProviderDisplayName;
+                if (providerName != _selectedProvider)
+                {
+                    return false;
+                }
+
                 return createComputeSystemOperationViewModel.EnvironmentName.Contains(query, StringComparison.OrdinalIgnoreCase);
             }
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
+                var providerName = computeSystemViewModel.ProviderDisplayName;
+                if (providerName != _selectedProvider)
+                {
+                    return false;
+                }
+
                 var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
                 var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName.Value;
                 return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
@@ -403,22 +417,22 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void ProviderHandler(int selectedIndex)
     {
         SelectedProviderIndex = selectedIndex;
-        var currentProvider = Providers[SelectedProviderIndex];
+        _selectedProvider = Providers[SelectedProviderIndex];
         ComputeSystemCardsView.Filter = system =>
         {
-            if (currentProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
+            if (_selectedProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
             {
-                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(_selectedProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                return computeSystemViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return computeSystemViewModel.ProviderDisplayName.Equals(_selectedProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             return false;
