@@ -199,4 +199,7 @@
   <data name="AvailableFromStoreStackPanel.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Available in the Microsoft Store</value>
   </data>
+  <data name="AvailableFromStoreItemsRepeater.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Available in the Microsoft Store</value>
+  </data>
 </root>

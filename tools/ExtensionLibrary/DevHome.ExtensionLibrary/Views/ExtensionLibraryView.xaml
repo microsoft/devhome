@@ -52,7 +52,8 @@
                     <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
                         <TextBlock x:Uid="InstalledTextBlock"
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"
+                               AutomationProperties.HeadingLevel="2"/>
                         <Button x:Uid="GetUpdatesButton"
                             AutomationProperties.AutomationId="GetUpdatesButton"
                             HorizontalAlignment="Right"
@@ -115,8 +116,9 @@
                 <StackPanel x:Uid="AvailableFromStoreStackPanel">
                     <TextBlock x:Uid="AvailableFromStoreTextBlock"
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                               Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
+                               Margin="{StaticResource ExtensionLibrarySubTitleMargin}" 
+                               AutomationProperties.HeadingLevel="2"/>
+                    <ItemsRepeater x:Uid="AvailableFromStoreItemsRepeater" ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
                                 <ctControls:SettingsCard Header="{x:Bind Title}"
