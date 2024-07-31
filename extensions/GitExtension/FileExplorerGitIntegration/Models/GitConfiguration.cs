@@ -12,15 +12,15 @@ public class GitConfiguration : IDisposable
 {
     public GitExecutableConfigOptions GitExecutableConfigOptions { get; set; }
 
-    private readonly FileService fileService;
+    private readonly FileService _fileService;
 
     private string GitExeInstallPath { get; set; } = string.Empty;
 
-    private readonly object fileLock = new();
+    private readonly object _fileLock = new();
 
-    private readonly ILogger log = Log.ForContext<GitDetect>();
+    private readonly ILogger _log = Log.ForContext<GitDetect>();
 
-    private readonly string tempConfigurationFileName = "TemporaryGitConfiguration.json";
+    private readonly string _tempConfigurationFileName = "TemporaryGitConfiguration.json";
 
     public GitConfiguration(string? path)
     {
@@ -39,22 +39,22 @@ public class GitConfiguration : IDisposable
             GitExecutableConfigFolderPath = folderPath,
         };
 
-        fileService = new FileService();
+        _fileService = new FileService();
         EnsureConfigFileCreation();
     }
 
     public string ReadInstallPath()
     {
-        lock (fileLock)
+        lock (_fileLock)
         {
-            GitExeInstallPath = fileService.Read<string>(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
+            GitExeInstallPath = _fileService.Read<string>(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
             return GitExeInstallPath;
         }
     }
 
     public void EnsureConfigFileCreation()
     {
-        lock (fileLock)
+        lock (_fileLock)
         {
             if (!Directory.Exists(GitExecutableConfigOptions.GitExecutableConfigFolderPath))
             {
@@ -64,8 +64,8 @@ public class GitConfiguration : IDisposable
             var configFileFullPath = Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
             if (!File.Exists(configFileFullPath))
             {
-                fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName, string.Empty);
-                log.Information("The git configuration file did not exists and has just been created");
+                _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName, string.Empty);
+                _log.Information("The git configuration file did not exists and has just been created");
             }
         }
     }
@@ -77,14 +77,14 @@ public class GitConfiguration : IDisposable
 
     public bool StoreGitExeInstallPath(string path)
     {
-        lock (fileLock)
+        lock (_fileLock)
         {
-            log.Information("Setting Git Exe Install Path");
+            _log.Information("Setting Git Exe Install Path");
             GitExeInstallPath = path;
 
-            fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, tempConfigurationFileName, GitExeInstallPath);
-            File.Replace(Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, tempConfigurationFileName), Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName), null);
-            log.Information("Git Exe Install Path stored successfully");
+            _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, _tempConfigurationFileName, GitExeInstallPath);
+            File.Replace(Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, _tempConfigurationFileName), Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName), null);
+            _log.Information("Git Exe Install Path stored successfully");
             return true;
         }
     }

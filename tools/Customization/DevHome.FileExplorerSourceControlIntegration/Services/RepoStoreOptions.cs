@@ -15,13 +15,13 @@ public partial class RepoStoreOptions
 
     public string RepoStoreFileName { get; set; } = RepoStoreFileNameDefault;
 
-    private readonly string repoStoreFolderPathDefault = Path.Combine(Path.GetTempPath(), "FileExplorerSourceControlIntegration");
+    private readonly string _repoStoreFolderPathDefault = Path.Combine(Path.GetTempPath(), "FileExplorerSourceControlIntegration");
 
-    private string? repoStoreFolderPath;
+    private string? _repoStoreFolderPath;
 
     public string RepoStoreFolderPath
     {
-        get => repoStoreFolderPath is null ? repoStoreFolderPathDefault : repoStoreFolderPath;
-        set => repoStoreFolderPath = string.IsNullOrEmpty(value) ? repoStoreFolderPathDefault : value;
+        get => _repoStoreFolderPath is null ? _repoStoreFolderPathDefault : _repoStoreFolderPath;
+        set => _repoStoreFolderPath = string.IsNullOrEmpty(value) ? _repoStoreFolderPathDefault : value;
     }
 }

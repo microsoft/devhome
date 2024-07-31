@@ -12,31 +12,31 @@ public class RepositoryTrackingServiceUnitTest
 {
     private RepositoryTracking RepoTracker { get; set; } = new(Path.Combine(Path.GetTempPath()));
 
-    private readonly string extension = "testExtension";
+    private readonly string _extension = "testExtension";
 
-    private readonly string rootPath = "c:\\test\\rootPath";
+    private readonly string _rootPath = "c:\\test\\rootPath";
 
-    private readonly string caseAlteredRootPath = "C:\\TEST\\ROOTPATH";
+    private readonly string _caseAlteredRootPath = "C:\\TEST\\ROOTPATH";
 
     [TestMethod]
     public void AddRepository()
     {
-        RepoTracker.AddRepositoryPath(extension, rootPath);
+        RepoTracker.AddRepositoryPath(_extension, _rootPath);
         var result = RepoTracker.GetAllTrackedRepositories();
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
-        Assert.IsTrue(result.ContainsKey(rootPath));
-        Assert.IsTrue(result.ContainsValue(extension));
-        RepoTracker.RemoveRepositoryPath(rootPath);
+        Assert.IsTrue(result.ContainsKey(_rootPath));
+        Assert.IsTrue(result.ContainsValue(_extension));
+        RepoTracker.RemoveRepositoryPath(_rootPath);
     }
 
     [TestMethod]
     public void RemoveRepository()
     {
-        RepoTracker.AddRepositoryPath(extension, rootPath);
+        RepoTracker.AddRepositoryPath(_extension, _rootPath);
         var result = RepoTracker.GetAllTrackedRepositories();
         Assert.AreEqual(1, result.Count);
-        RepoTracker.RemoveRepositoryPath(rootPath);
+        RepoTracker.RemoveRepositoryPath(_rootPath);
         result = RepoTracker.GetAllTrackedRepositories();
         Assert.AreEqual(0, result.Count);
     }
@@ -46,18 +46,18 @@ public class RepositoryTrackingServiceUnitTest
     {
         for (var i = 0; i < 5; i++)
         {
-            RepoTracker.AddRepositoryPath(extension, string.Concat(rootPath, i));
+            RepoTracker.AddRepositoryPath(_extension, string.Concat(_rootPath, i));
         }
 
         var result = RepoTracker.GetAllTrackedRepositories();
         Assert.IsNotNull(result);
         Assert.AreEqual(5, result.Count);
-        Assert.IsTrue(result.ContainsKey(string.Concat(rootPath, 0)));
-        Assert.IsTrue(result.ContainsValue(extension));
+        Assert.IsTrue(result.ContainsKey(string.Concat(_rootPath, 0)));
+        Assert.IsTrue(result.ContainsValue(_extension));
 
         for (var i = 0; i < 5; i++)
         {
-            RepoTracker.RemoveRepositoryPath(string.Concat(rootPath, i));
+            RepoTracker.RemoveRepositoryPath(string.Concat(_rootPath, i));
         }
     }
 
@@ -72,29 +72,29 @@ public class RepositoryTrackingServiceUnitTest
     [TestMethod]
     public void GetSourceControlProviderFromRepositoryPath()
     {
-        RepoTracker.AddRepositoryPath(extension, rootPath);
-        var result = RepoTracker.GetSourceControlProviderForRootPath(rootPath);
+        RepoTracker.AddRepositoryPath(_extension, _rootPath);
+        var result = RepoTracker.GetSourceControlProviderForRootPath(_rootPath);
         Assert.IsNotNull(result);
-        Assert.AreEqual(extension, result);
-        RepoTracker.RemoveRepositoryPath(rootPath);
+        Assert.AreEqual(_extension, result);
+        RepoTracker.RemoveRepositoryPath(_rootPath);
     }
 
     [TestMethod]
     public void AddRepository_DoesNotAddDuplicateValues()
     {
-        RepoTracker.AddRepositoryPath(extension, rootPath);
+        RepoTracker.AddRepositoryPath(_extension, _rootPath);
 
         // Atempt to add duplicate entry that is altered in case
-        RepoTracker.AddRepositoryPath(extension, caseAlteredRootPath);
+        RepoTracker.AddRepositoryPath(_extension, _caseAlteredRootPath);
 
         // Ensure duplicate is not added and count is 1
         var result = RepoTracker.GetAllTrackedRepositories();
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
-        Assert.IsTrue(result.ContainsKey(rootPath));
-        Assert.IsTrue(result.ContainsValue(extension));
+        Assert.IsTrue(result.ContainsKey(_rootPath));
+        Assert.IsTrue(result.ContainsValue(_extension));
 
-        RepoTracker.RemoveRepositoryPath(rootPath);
+        RepoTracker.RemoveRepositoryPath(_rootPath);
     }
 
     [TestCleanup]

@@ -13,8 +13,8 @@ namespace FileExplorerSourceControlIntegration;
 
 public sealed class SourceControlProviderServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new();
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(SourceControlProviderServer));
+    private readonly HashSet<uint> _registrationCookies = new();
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(SourceControlProviderServer));
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
@@ -24,9 +24,9 @@ public sealed class SourceControlProviderServer : IDisposable
     {
         var clsid = typeof(SourceControlProvider).GUID;
 
-        log.Debug($"Registering class object:");
-        log.Debug($"CLSID: {clsid:B}");
-        log.Debug($"Type: {typeof(T)}");
+        _log.Debug($"Registering class object:");
+        _log.Debug($"CLSID: {clsid:B}");
+        _log.Debug($"Type: {typeof(T)}");
 
         uint cookie;
         var hr = PInvoke.CoRegisterClassObject(
@@ -41,8 +41,8 @@ public sealed class SourceControlProviderServer : IDisposable
             Marshal.ThrowExceptionForHR(hr);
         }
 
-        registrationCookies.Add(cookie);
-        log.Debug($"Cookie: {cookie}");
+        _registrationCookies.Add(cookie);
+        _log.Debug($"Cookie: {cookie}");
         hr = PInvoke.CoResumeClassObjects();
         if (hr < 0)
         {
@@ -63,10 +63,10 @@ public sealed class SourceControlProviderServer : IDisposable
 
     public void Dispose()
     {
-        log.Debug($"Revoking class object registrations:");
-        foreach (var cookie in registrationCookies)
+        _log.Debug($"Revoking class object registrations:");
+        foreach (var cookie in _registrationCookies)
         {
-            log.Debug($"Cookie: {cookie}");
+            _log.Debug($"Cookie: {cookie}");
             var hr = PInvoke.CoRevokeClassObject(cookie);
             Debug.Assert(hr >= 0, $"CoRevokeClassObject failed ({hr:x}). Cookie: {cookie}");
         }

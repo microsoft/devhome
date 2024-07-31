@@ -23,13 +23,13 @@ public class RepositoryTracking
         Removed,
     }
 
-    private readonly FileService fileService;
+    private readonly FileService _fileService;
 
-    private readonly object trackRepoLock = new();
+    private readonly object _trackRepoLock = new();
 
     private Dictionary<string, string> TrackedRepositories { get; set; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(RepositoryTracking));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryTracking));
 
     public event Windows.Foundation.TypedEventHandler<string, RepositoryChange>? RepositoryChanged;
 
@@ -43,7 +43,7 @@ public class RepositoryTracking
             {
                 RepoStoreFolderPath = ApplicationData.Current.LocalFolder.Path,
             };
-            log.Debug("Repo Store for File Explorer Integration created under ApplicationData");
+            _log.Debug("Repo Store for File Explorer Integration created under ApplicationData");
         }
         else
         {
@@ -53,21 +53,21 @@ public class RepositoryTracking
             };
         }
 
-        fileService = new FileService();
+        _fileService = new FileService();
         RestoreTrackedRepositoriesFomJson();
     }
 
     public void RestoreTrackedRepositoriesFomJson()
     {
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
-            var caseSensitiveDictionary = fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
+            var caseSensitiveDictionary = _fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
 
             // No repositories are currently being tracked. The file will be created on first add to repository tracking.
             if (caseSensitiveDictionary == null)
             {
                 TrackedRepositories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                log.Debug("Repo store cache has just been created");
+                _log.Debug("Repo store cache has just been created");
             }
             else
             {
@@ -77,30 +77,30 @@ public class RepositoryTracking
             LastRestore = DateTime.Now;
         }
 
-        log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
+        _log.Information($"Repositories retrieved from Repo Store, number of registered repositories: {TrackedRepositories.Count}");
     }
 
     public void AddRepositoryPath(string extensionCLSID, string rootPath)
     {
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
             if (!TrackedRepositories.ContainsKey(rootPath))
             {
                 TrackedRepositories[rootPath] = extensionCLSID!;
-                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                log.Information("Repository added to repo store");
+                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                _log.Information("Repository added to repo store");
                 try
                 {
                     RepositoryChanged?.Invoke(extensionCLSID, RepositoryChange.Added);
                 }
                 catch (Exception ex)
                 {
-                    log.Error(ex, $"Added event signaling failed: ");
+                    _log.Error(ex, $"Added event signaling failed: ");
                 }
             }
             else
             {
-                log.Warning("Repository root path already registered in the repo store");
+                _log.Warning("Repository root path already registered in the repo store");
             }
         }
 
@@ -110,19 +110,19 @@ public class RepositoryTracking
     public void RemoveRepositoryPath(string rootPath)
     {
         var extensionCLSID = string.Empty;
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
             TrackedRepositories.TryGetValue(rootPath, out extensionCLSID);
             TrackedRepositories.Remove(rootPath);
-            fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-            log.Information("Repository removed from repo store");
+            _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+            _log.Information("Repository removed from repo store");
             try
             {
                 RepositoryChanged?.Invoke(extensionCLSID ??= string.Empty, RepositoryChange.Removed);
             }
             catch (Exception ex)
             {
-                log.Error(ex, $"Removed event signaling failed: ");
+                _log.Error(ex, $"Removed event signaling failed: ");
             }
         }
 
@@ -131,27 +131,27 @@ public class RepositoryTracking
 
     public Dictionary<string, string> GetAllTrackedRepositories()
     {
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
             ReloadRepositoryStoreIfChangesDetected();
-            log.Information("All repositories retrieved from repo store");
+            _log.Information("All repositories retrieved from repo store");
             return TrackedRepositories;
         }
     }
 
     public string GetSourceControlProviderForRootPath(string rootPath)
     {
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
             ReloadRepositoryStoreIfChangesDetected();
             if (TrackedRepositories.TryGetValue(rootPath, out var value))
             {
-                log.Information("Source Control Provider returned for root path");
+                _log.Information("Source Control Provider returned for root path");
                 return TrackedRepositories[rootPath];
             }
             else
             {
-                log.Error("The root path is not registered for File Explorer Source Control Integration");
+                _log.Error("The root path is not registered for File Explorer Source Control Integration");
                 return string.Empty;
             }
         }
@@ -160,11 +160,11 @@ public class RepositoryTracking
     public void ReloadRepositoryStoreIfChangesDetected()
     {
         var lastTimeModified = System.IO.File.GetLastWriteTime(Path.Combine(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName));
-        log.Information("Last Time Modified: {0}", lastTimeModified);
+        _log.Information("Last Time Modified: {0}", lastTimeModified);
         if (DateTime.Compare(LastRestore, lastTimeModified) < 0)
         {
             RestoreTrackedRepositoriesFomJson();
-            log.Information("Tracked repositories restored from JSON at {0}", DateTime.Now);
+            _log.Information("Tracked repositories restored from JSON at {0}", DateTime.Now);
         }
     }
 }

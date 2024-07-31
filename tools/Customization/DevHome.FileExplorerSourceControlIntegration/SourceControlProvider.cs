@@ -20,12 +20,12 @@ public class SourceControlProvider :
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IExtraFolderPropertiesHandler,
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootSelector
 {
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(SourceControlProvider));
-    private readonly RepositoryTracking repositoryTracker;
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(SourceControlProvider));
+    private readonly RepositoryTracking _repositoryTracker;
 
     public SourceControlProvider()
     {
-        repositoryTracker = new RepositoryTracking(null);
+        _repositoryTracker = new RepositoryTracking(null);
     }
 
     public Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootPropertyProvider? GetProvider(string rootPath)
@@ -34,8 +34,8 @@ public class SourceControlProvider :
         GetLocalRepositoryResult result = localRepositoryProvider.GetRepository(rootPath);
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
-            log.Information("Could not open local repository.");
-            log.Information(result.Result.DisplayMessage);
+            _log.Information("Could not open local repository.");
+            _log.Information(result.Result.DisplayMessage);
             return null;
         }
 
@@ -49,7 +49,7 @@ public class SourceControlProvider :
         var providerPtr = IntPtr.Zero;
         try
         {
-            var activationGUID = repositoryTracker.GetSourceControlProviderForRootPath(rootPath);
+            var activationGUID = _repositoryTracker.GetSourceControlProviderForRootPath(rootPath);
 
             var hr = PInvoke.CoCreateInstance(Guid.Parse(activationGUID), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(ILocalRepositoryProvider).GUID, out var extensionObj);
             providerPtr = Marshal.GetIUnknownForObject(extensionObj);
@@ -79,8 +79,8 @@ public class SourceControlProvider :
         var localProviderResult = localProvider.GetRepository(rootFolderPath);
         if (localProviderResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            log.Warning("Could not open local repository.");
-            log.Warning(localProviderResult.Result.DisplayMessage);
+            _log.Warning("Could not open local repository.");
+            _log.Warning(localProviderResult.Result.DisplayMessage);
             throw new ArgumentException(localProviderResult.Result.DisplayMessage);
         }
 

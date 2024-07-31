@@ -15,13 +15,13 @@ public partial class GitExecutableConfigOptions
 
     public string GitExecutableConfigFileName { get; set; } = GitExecutableConfigFileNameDefault;
 
-    private readonly string gitExecutableConfigFolderPathDefault = Path.Combine(Path.GetTempPath(), "FileExplorerGitIntegration");
+    private readonly string _gitExecutableConfigFolderPathDefault = Path.Combine(Path.GetTempPath(), "FileExplorerGitIntegration");
 
-    private string? gitExecutableConfigFolderPath;
+    private string? _gitExecutableConfigFolderPath;
 
     public string GitExecutableConfigFolderPath
     {
-        get => gitExecutableConfigFolderPath is null ? gitExecutableConfigFolderPathDefault : gitExecutableConfigFolderPath;
-        set => gitExecutableConfigFolderPath = string.IsNullOrEmpty(value) ? gitExecutableConfigFolderPathDefault : value;
+        get => _gitExecutableConfigFolderPath is null ? _gitExecutableConfigFolderPathDefault : _gitExecutableConfigFolderPath;
+        set => _gitExecutableConfigFolderPath = string.IsNullOrEmpty(value) ? _gitExecutableConfigFolderPathDefault : value;
     }
 }

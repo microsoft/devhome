@@ -11,7 +11,7 @@ public class GitDetect
 {
     public GitConfiguration GitConfiguration { get; set; }
 
-    private readonly ILogger log = Log.ForContext<GitDetect>();
+    private readonly ILogger _log = Log.ForContext<GitDetect>();
 
     public GitDetect()
     {
@@ -74,13 +74,13 @@ public class GitDetect
             }
             else
             {
-                log.Warning("Install location does not exist: {InstallLocation}", installLocation);
+                _log.Warning("Install location does not exist: {InstallLocation}", installLocation);
                 return Array.Empty<string>();
             }
         }
         catch (Exception ex)
         {
-            log.Warning(ex, "Failed to find subdirectories in install location: {InstallLocation}", installLocation);
+            _log.Warning(ex, "Failed to find subdirectories in install location: {InstallLocation}", installLocation);
             return Array.Empty<string>();
         }
     }
@@ -97,12 +97,12 @@ public class GitDetect
             if (isValid)
             {
                 GitConfiguration.StoreGitExeInstallPath(gitPath);
-                log.Information("Git Exe Install Path found");
+                _log.Information("Git Exe Install Path found");
                 return true;
             }
         }
 
-        log.Debug("Git.exe not found in paths examined");
+        _log.Debug("Git.exe not found in paths examined");
         return false;
     }
 

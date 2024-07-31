@@ -11,8 +11,8 @@ namespace FileExplorerGitIntegration.Models;
 internal sealed class RepositoryCache : IDisposable
 {
     private readonly ConcurrentDictionary<string, RepositoryWrapper> _repositoryCache = new();
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(RepositoryCache));
-    private bool disposedValue;
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryCache));
+    private bool _disposedValue;
 
     public RepositoryWrapper GetRepository(string rootFolder)
     {
@@ -51,7 +51,7 @@ internal sealed class RepositoryCache : IDisposable
 
     internal void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -62,7 +62,7 @@ internal sealed class RepositoryCache : IDisposable
             }
 
             _repositoryCache.Clear();
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

@@ -15,7 +15,7 @@ public sealed class GitLocalRepository : ILocalRepository
 {
     private readonly RepositoryCache? _repositoryCache;
 
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(GitLocalRepository));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(GitLocalRepository));
 
     public string RootFolder
     {
@@ -63,7 +63,7 @@ public sealed class GitLocalRepository : ILocalRepository
 
         if (repository == null)
         {
-            log.Debug("GetProperties: Repository object is null");
+            _log.Debug("GetProperties: Repository object is null");
             return result;
         }
 
@@ -161,7 +161,7 @@ public sealed class GitLocalRepository : ILocalRepository
             }
         }
 
-        log.Debug("Returning source control properties from git source control extension");
+        _log.Debug("Returning source control properties from git source control extension");
         return result;
     }
 
