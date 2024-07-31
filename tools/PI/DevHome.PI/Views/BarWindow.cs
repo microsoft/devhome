@@ -177,6 +177,11 @@ public partial class BarWindow
         return _viewModel.IsSnapped;
     }
 
+    public void IncreaseUnreadInsightsCount()
+    {
+        _viewModel.UpdateUnreadInsightsCount(_viewModel.UnreadInsightsCount + 1);
+    }
+
     public void UpdateUnreadInsightsCount(int count)
     {
         _viewModel.UpdateUnreadInsightsCount(count);

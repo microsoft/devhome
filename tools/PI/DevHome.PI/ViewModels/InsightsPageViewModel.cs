@@ -19,9 +19,6 @@ public partial class InsightsPageViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<Insight> _insightsList;
 
-    [ObservableProperty]
-    private int _unreadCount;
-
     public InsightsPageViewModel()
     {
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
@@ -40,11 +37,6 @@ public partial class InsightsPageViewModel : ObservableObject
         {
             _targetProcess = process;
             InsightsList.Clear();
-            UnreadCount = 0;
-
-            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-            Debug.Assert(barWindow != null, "BarWindow should not be null.");
-            barWindow.UpdateUnreadInsightsCount(0);
         }
     }
 
@@ -68,13 +60,12 @@ public partial class InsightsPageViewModel : ObservableObject
         {
             if (e.PropertyName == nameof(Insight.HasBeenRead))
             {
-                UnreadCount = InsightsList.Count(insight => !insight.HasBeenRead);
-                barWindow.UpdateUnreadInsightsCount(UnreadCount);
+                var count = InsightsList.Count(insight => !insight.HasBeenRead);
+                barWindow.UpdateUnreadInsightsCount(count);
             }
         };
 
-        UnreadCount++;
-        barWindow.UpdateUnreadInsightsCount(UnreadCount);
+        barWindow.IncreaseUnreadInsightsCount();
         InsightsList.Add(insight);
     }
 }
