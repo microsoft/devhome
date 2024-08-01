@@ -318,4 +318,19 @@
     <value>Windows Subsystem for Linux</value>
     <comment>{Locked="Windows", "Linux"} Extension Description</comment>
   </data>
+  <data name="WidgetScreenshotAltDisplayCPU" xml:space="preserve">
+    <value>CPU widget preview image</value>
+  </data>
+  <data name="WidgetScreenshotAltDisplayGPU" xml:space="preserve">
+    <value>GPU widget preview image</value>
+  </data>
+  <data name="WidgetScreenshotAltDisplayMemory" xml:space="preserve">
+    <value>Memory widget preview image</value>
+  </data>
+  <data name="WidgetScreenshotAltDisplayNetwork" xml:space="preserve">
+    <value>Network widget preview image</value>
+  </data>
+  <data name="WidgetScreenshotAltDisplaySSKeychain" xml:space="preserve">
+    <value>SSH Keychain widget preview image</value>
+  </data>
 </root>
