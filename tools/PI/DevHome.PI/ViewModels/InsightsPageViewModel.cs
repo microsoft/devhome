@@ -17,6 +17,5 @@ public partial class InsightsPageViewModel : ObservableObject
     public InsightsPageViewModel()
     {
         _insightsService = Application.Current.GetService<PIInsightsService>();
-        Debug.Assert(_insightsService != null, "InsightsService should not be null.");
     }
 }
