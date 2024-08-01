@@ -111,6 +111,7 @@ public partial class ExternalTool : Tool
         try
         {
             var process = await InvokeToolInternal(targetProcessId, hWnd, commandLineParams);
+            return;
         }
         catch (Exception ex)
         {
@@ -135,20 +136,20 @@ public partial class ExternalTool : Tool
         var parsedArguments = string.Empty;
         if (!string.IsNullOrEmpty(Arguments))
         {
-            var argumentVariables = new Dictionary<string, int>();
+            var argumentVariables = new Dictionary<string, string>();
             if (pid.HasValue)
             {
-                argumentVariables.Add("pid", pid.Value);
+                argumentVariables.Add("pid", pid.Value.ToString(CultureInfo.InvariantCulture));
             }
 
             if (hwnd.HasValue)
             {
-                argumentVariables.Add("hwnd", (int)hwnd.Value);
+                argumentVariables.Add("hwnd", ((int)hwnd.Value).ToString(CultureInfo.InvariantCulture));
             }
 
-            if (!string.IsNullOrEmpty(commandLineParams))
+            if (Type.HasFlag(ToolType.DumpAnalyzer) && commandLineParams is not null)
             {
-                argumentVariables.Add("commandLineParams", commandLineParams.Length);
+                argumentVariables.Add("crashDumpPath", commandLineParams);
             }
 
             parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
@@ -250,7 +251,7 @@ public partial class ExternalTool : Tool
         return process;
     }
 
-    private string ReplaceKnownVariables(string input, Dictionary<string, int> argumentValues)
+    private string ReplaceKnownVariables(string input, Dictionary<string, string> argumentValues)
     {
         // Process the input string to replace any instance of defined variables with "real" values.
         // Eg, replace {pid} with 123, {hwnd} with 456.
@@ -263,7 +264,7 @@ public partial class ExternalTool : Tool
             // Check if the variable exists in the dictionary; if so, replace it.
             if (argumentValues.TryGetValue(variable, out var replacementValue))
             {
-                return replacementValue.ToString(CultureInfo.InvariantCulture);
+                return replacementValue;
             }
 
             // If the variable is not found, keep it as is.
