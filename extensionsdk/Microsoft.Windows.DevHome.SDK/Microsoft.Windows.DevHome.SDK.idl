@@ -1,16 +1,14 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(7)]
-    apicontract DevHomeContract {}
+    [contractversion(7)] apicontract DevHomeContract {}
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IExtension {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtension
+    {
         IInspectable GetProvider(ProviderType providerType);
         void Dispose();
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    enum ProviderType {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderType {
         Repository = 0,
         DeveloperId = 1,
         Settings = 2,
@@ -18,27 +16,22 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // Indicates the ComputeSystem provider type. Extensions that support this provider type must return
         // an object that implements the IComputeSystemProvider interface.
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-        ComputeSystem = 4,
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] ComputeSystem = 4,
 
         [experimental]
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
-        QuickStartProject = 5,
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] QuickStartProject = 5,
 
         [experimental]
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 7)] 
-        LocalRepository = 6,
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 7)] LocalRepository = 6,
     };
 
     // Definitions for exceptions.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    enum ProviderOperationStatus {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderOperationStatus {
         Success,
         Failure
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass ProviderOperationResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass ProviderOperationResult {
         ProviderOperationResult(ProviderOperationStatus status, HRESULT error, String displayMessage, String diagnosticText);
 
         ProviderOperationStatus Status
@@ -60,9 +53,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Repository Provider
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IRepositoryProvider
-        requires Windows.Foundation.IClosable
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepositoryProvider
+        requires Windows
+        .Foundation.IClosable
     {
         String DisplayName
         {
@@ -85,7 +78,7 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
     };
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] interface IRepositoryProvider2
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] interface IRepositoryProvider2
         requires IRepositoryProvider
     {
         String[] SearchFieldNames
@@ -105,12 +98,11 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // This should return a list of suggestions given fieldValues.
         // "Suggestions" is dependant on the extension and how it keeps track of repositories.
-        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<IVectorView<String>> GetValuesForSearchFieldAsync(IMapView<String, String> fieldValues, String requestedSearchField, IDeveloperId developerId);
         Windows.Foundation.IAsyncOperation<RepositoriesSearchResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass RepositoryResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryResult {
         RepositoryResult(IRepository repository);
         RepositoryResult(HRESULT e, String diagnosticText);
 
@@ -124,8 +116,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass RepositoriesResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoriesResult {
         RepositoriesResult(IIterable<IRepository> repositories);
         RepositoriesResult(HRESULT e, String diagnosticText);
 
@@ -139,7 +130,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] runtimeclass RepositoriesSearchResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)] runtimeclass RepositoriesSearchResult {
         RepositoriesSearchResult(IIterable<IRepository> repositories);
         RepositoriesSearchResult(IIterable<IRepository> repositories, String selectionsOptionsLabel, String[] selectionOptions, String selectionOptionsName);
         RepositoriesSearchResult(HRESULT e, String diagnosticText);
@@ -170,8 +161,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass RepositoryUriSupportResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryUriSupportResult {
         RepositoryUriSupportResult(Boolean isSupported);
         RepositoryUriSupportResult(HRESULT e, String diagnosticText);
 
@@ -185,8 +175,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IRepository {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepository {
         String DisplayName
         {
             get;
@@ -209,20 +198,17 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    enum AuthenticationState {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum AuthenticationState {
         LoggedIn = 0,
         LoggedOut = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    enum AuthenticationExperienceKind {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum AuthenticationExperienceKind {
         CustomProvider = 0,
         CardSession = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass AdaptiveCardSessionResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass AdaptiveCardSessionResult {
         AdaptiveCardSessionResult(IExtensionAdaptiveCardSession adaptiveCardSession);
         AdaptiveCardSessionResult(HRESULT e, String diagnosticText);
 
@@ -236,8 +222,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass DeveloperIdResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdResult {
         DeveloperIdResult(IDeveloperId developerId);
         DeveloperIdResult(HRESULT e, String diagnosticText);
 
@@ -251,8 +236,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass DeveloperIdsResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdsResult {
         DeveloperIdsResult(IIterable<IDeveloperId> developerIds);
         DeveloperIdsResult(HRESULT e, String diagnosticText);
 
@@ -267,8 +251,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // IDeveloperId is the basic interface for DeveloperId corresponding to each logged in user, used by the Dev Home Core app
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IDeveloperId {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperId {
         String LoginId
         {
             get;
@@ -281,9 +264,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Developer ID
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IDeveloperIdProvider
-        requires Windows.Foundation.IClosable
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperIdProvider
+        requires Windows
+        .Foundation.IClosable
     {
         String DisplayName
         {
@@ -310,9 +293,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Settings
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface ISettingsProvider
-        requires Windows.Foundation.IClosable
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISettingsProvider
+        requires Windows
+        .Foundation.IClosable
     {
         String DisplayName
         {
@@ -323,15 +306,13 @@ namespace Microsoft.Windows.DevHome.SDK
         AdaptiveCardSessionResult GetSettingsAdaptiveCardSession();
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IExtensionAdaptiveCardSession {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtensionAdaptiveCardSession {
         ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI);
         void Dispose();
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> OnAction(String action, String inputs);
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IExtensionAdaptiveCard {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtensionAdaptiveCard {
         String TemplateJson
         {
             get;
@@ -349,13 +330,11 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Interface to get the list of featured applications
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IFeaturedApplicationsProvider {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationsProvider {
         Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass GetFeaturedApplicationsGroupsResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationsGroupsResult {
         GetFeaturedApplicationsGroupsResult(IVectorView<IFeaturedApplicationsGroup> featuredApplicationsGroup);
         GetFeaturedApplicationsGroupsResult(HRESULT e, String diagnosticText);
 
@@ -369,8 +348,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    runtimeclass GetFeaturedApplicationsResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationsResult {
         GetFeaturedApplicationsResult(IVectorView<String> featuredApplications);
         GetFeaturedApplicationsResult(HRESULT e, String diagnosticText);
 
@@ -384,8 +362,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IFeaturedApplicationsGroup {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationsGroup
+    {
         String GetTitle(String preferredLocale);
         String GetDescription(String preferredLocale);
         GetFeaturedApplicationsResult GetApplications();
@@ -393,8 +371,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // IExtensionAdaptiveCardSession2 interface that extends IExtensionAdaptiveCardSession. It is used
     // to provide Dev Home with a way to know when an adaptive card session has stopped.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    interface IExtensionAdaptiveCardSession2 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IExtensionAdaptiveCardSession2
         requires IExtensionAdaptiveCardSession
     {
         // Event used to signal to Dev Home from the extension that the Adaptive Card session has stopped.
@@ -402,9 +379,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The event data that is sent back to Dev Home when an adaptive card session has completed.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ExtensionAdaptiveCardSessionStoppedEventArgs 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ExtensionAdaptiveCardSessionStoppedEventArgs {
         ExtensionAdaptiveCardSessionStoppedEventArgs(ProviderOperationResult result, String resultJson);
 
         // The json result   the extension sends back to Dev Home based on an interaction with the user. This
@@ -424,11 +399,10 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    // Start of Dev Environments feature.
+        // Start of Dev Environments feature.
 
-    // Result payload for ICreateComputeSystemOperation's StartAsync method that is returned to Dev Home when it attempts to create an IComputeSystem.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass CreateComputeSystemResult
+        // Result payload for ICreateComputeSystemOperation's StartAsync method that is returned to Dev Home when it attempts to create an IComputeSystem.
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass CreateComputeSystemResult
     {
         // Used when creating a compute system was successful.
         CreateComputeSystemResult(IComputeSystem computeSystem);
@@ -455,9 +429,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // These enums are used specifically for requesting an adaptive card sessions from the compute system
     // provider.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ComputeSystemAdaptiveCardKind
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ComputeSystemAdaptiveCardKind {
         CreateComputeSystem = 0,
         ModifyComputeSystemProperties = 1,
     };
@@ -465,17 +437,13 @@ namespace Microsoft.Windows.DevHome.SDK
     // Enumeration to indicate operations supported by the Compute System provider. Dev Home will used these
     // flags to know what operations the compute system providers support.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    [flags]
-    enum ComputeSystemProviderOperations
-    {
+        [flags] enum ComputeSystemProviderOperations {
             None = 0x0,
             CreateComputeSystem = 0x00000001,
-    };
+        };
 
     // The interface returned by the IComputeSystemProvider when the CreateCreateComputeSystemOperation method is called.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    interface ICreateComputeSystemOperation
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface ICreateComputeSystemOperation {
         // Event that DevHome can subscribe to to receive progress data from the operation.
         event Windows.Foundation.TypedEventHandler<ICreateComputeSystemOperation, CreateComputeSystemProgressEventArgs> Progress;
 
@@ -489,9 +457,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // The result object returned to Dev Home when it calls one of the IComputeSystemProviders
     // CreateAdaptiveCard methods.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemAdaptiveCardResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemAdaptiveCardResult {
         // Used when retrieving the adaptive card session was successful.
         ComputeSystemAdaptiveCardResult(IExtensionAdaptiveCardSession2 cardSession);
 
@@ -517,9 +483,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // Provider that Dev Home extensions can return to Dev Home. The provider is used to manage compute systems
     // within the extension.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    interface IComputeSystemProvider 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IComputeSystemProvider {
         // Name of Compute System provider that can be displayed within Dev Home's UI
         String DisplayName
         {
@@ -569,33 +533,27 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // Enumeration that defines operations supported by a ComputeSystem.
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    [flags]
-    enum ComputeSystemOperations
-    {
-        None = 0x0,
-        Start = 0x00000001,
-        ShutDown = 0x00000002,
-        Terminate = 0x00000004,
-        Delete = 0x00000008,
-        Save = 0x00000010,
-        Pause = 0x00000020,
-        Resume = 0x00000040,
-        Restart = 0x00000080,
-        CreateSnapshot = 0x00000100,
-        RevertSnapshot = 0x00000200,
-        DeleteSnapshot = 0x00000400,
-        ApplyConfiguration = 0x00000800,
-        ModifyProperties = 0x00001000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
-        PinToStartMenu = 0x00002000,
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
-        PinToTaskbar = 0x00004000,
-    };
+        [flags] enum ComputeSystemOperations {
+            None = 0x0,
+            Start = 0x00000001,
+            ShutDown = 0x00000002,
+            Terminate = 0x00000004,
+            Delete = 0x00000008,
+            Save = 0x00000010,
+            Pause = 0x00000020,
+            Resume = 0x00000040,
+            Restart = 0x00000080,
+            CreateSnapshot = 0x00000100,
+            RevertSnapshot = 0x00000200,
+            DeleteSnapshot = 0x00000400,
+            ApplyConfiguration = 0x00000800,
+            ModifyProperties = 0x00001000,
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] PinToStartMenu = 0x00002000,
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] PinToTaskbar = 0x00004000,
+        };
 
     // Enumeration that define a compute systems state.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ComputeSystemState
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ComputeSystemState {
         Unknown = 0,
         Creating = 1,
         Created = 2,
@@ -614,9 +572,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // The result object returned to Dev Home by an IComputeSystemProvider when its requested to retrieve a
     // list of IComputeSystems.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemsResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemsResult {
         // Used when retrieving the list of IComputeSystem's was successful.
         ComputeSystemsResult(IIterable<IComputeSystem> computeSystems);
 
@@ -641,9 +597,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The result object returned to Dev Home when it requests the state of a IComputeSystem.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemStateResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemStateResult {
         // Used when retrieving the state of the compute system was successful.
         ComputeSystemStateResult(ComputeSystemState computeSystemState);
 
@@ -670,9 +624,7 @@ namespace Microsoft.Windows.DevHome.SDK
     // The result object that is returned to Dev Home when it calls a method on the IComputeSystem interface.
     // Note: Not all operations located in the ComputeSystemOperations enum will return an
     // ComputeSystemOperationResult.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemOperationResult 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemOperationResult {
         // Used when the operation was successful.
         ComputeSystemOperationResult();
 
@@ -691,9 +643,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The result object returned to Dev Home when it requests for the ComputeSystems thumbnail image.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemThumbnailResult 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemThumbnailResult {
         // Used when retrieving the thumbnail image was successful.
         ComputeSystemThumbnailResult(UInt8[] thumbnailInBytes);
 
@@ -720,9 +670,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The result object returned to Dev Home when it requests to know if the Compute System is currently pinned
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)]
-    runtimeclass ComputeSystemPinnedResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] runtimeclass ComputeSystemPinnedResult {
         // Used when retrieval of the Pinned status was successful
         ComputeSystemPinnedResult(Boolean isPinned);
 
@@ -746,16 +694,13 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-
     // An enum value that extensions will use in the ComputeSystemProperty to tell Dev Home if the property is
     // one of the predefined properties or a custom property. Dev Home will use this value as a way to keep
     // predefined types formatted the same in the UI across compute system providers. The custom enum value
     // can be used for properties specific to a compute system's underlying technology. For example, a virtual
     // machine compute system may have a property for a network adapter with an IP address, while other compute
     // systems like a container may not.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ComputeSystemPropertyKind 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ComputeSystemPropertyKind {
         Custom = 0,
 
         // predefined properties should be added below.
@@ -768,9 +713,7 @@ namespace Microsoft.Windows.DevHome.SDK
     // The ComputeSystemProperty is read-only and is used to represent extension specific properties. It is up
     // Dev Home to determine how it wishes to use these properties. Extension do not have control over how/and
     // in which order they are used and/or displayed.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ComputeSystemProperty 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ComputeSystemProperty {
         // Used to create a ComputeSystemProperty that uses a predefined ComputeSystemPropertyKind. Passing a
         // ComputeSystemPropertyKind.Custom to this method will result in an empty ComputeSystemProperty
         // being created. The propertyName and icon are predefined by Dev Home. The use of the custom
@@ -811,9 +754,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // The data that is passed back to Dev Home for a compute system operation that requires returning
     // progress.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass CreateComputeSystemProgressEventArgs 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass CreateComputeSystemProgressEventArgs {
         CreateComputeSystemProgressEventArgs(String operationStatus, UInt32 percentageCompleted);
 
         // Allows extensions to provide intermediary status for the operation e.g "Downloading image file".
@@ -831,9 +772,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // The data that is passed back to Dev Home when the create compute system operation requires the user to
     // perform an action to continue the creation.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass CreateComputeSystemActionRequiredEventArgs 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass CreateComputeSystemActionRequiredEventArgs {
         CreateComputeSystemActionRequiredEventArgs(IExtensionAdaptiveCardSession2 correctiveActionCardSession);
 
         // An adaptive card that the extension can send to Dev Home to allow the user to perform a
@@ -848,9 +787,7 @@ namespace Microsoft.Windows.DevHome.SDK
     interface IApplyConfigurationOperation;
 
     // An interface that represents a remote machine, local VM or container.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    interface IComputeSystem 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IComputeSystem {
         // The name of the compute system that will appear in the UI.
         String DisplayName
         {
@@ -966,7 +903,7 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(String options);
 
         // Gets the properties associated with the compute system.
-        Windows.Foundation.IAsyncOperation<IIterable<ComputeSystemProperty> > GetComputeSystemPropertiesAsync(String options);
+        Windows.Foundation.IAsyncOperation<IIterable<ComputeSystemProperty>> GetComputeSystemPropertiesAsync(String options);
 
         // Connects to a compute system.
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(String options);
@@ -980,8 +917,8 @@ namespace Microsoft.Windows.DevHome.SDK
     // An interface that represents a remote machine, local VM or container. Specifically this interface
     // allows the extension to be pinned or unpinned from the Start Menu or Taskbar, and allows the calling
     // app to check whether or not the extension is pinned.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] 
-    interface IComputeSystem2 requires IComputeSystem
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 4)] interface IComputeSystem2
+        requires IComputeSystem
     {
         // Pins the Compute System to the Start Menu
         Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PinToStartMenuAsync();
@@ -1002,36 +939,32 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ComputeSystemPinnedResult> GetIsPinnedToTaskbarAsync();
     }
 
-    // The current state of a configuration set.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ConfigurationSetState 
-    {
-        // The state of the configuration set is unknown.
-        Unknown,
-        // The configuration set is in the queue to be applied.
-        Pending,
-        // The configuration set is actively being applied.
-        InProgress,
-        // The configuration set has completed being applied.
-        Completed,
-        // Shutting down device (e.g. for offline provisioning)
-        ShuttingDownDevice,
-        // Starting device (e.g. after offline provisioning)
-        StartingDevice,
-        // Restarting device (e.g. after online provisioning that requires restart)
-        RestartingDevice,
-        // Provisioning device with binaries needed for Configure operation.
-        ProvisioningDevice,
-        // Waiting for an admin logon (e.g. to complete operation that requires admin user)
-        WaitingForAdminUserLogon,
-        // Waiting for user's logon (e.g. to run "WinGet configure")
-        WaitingForUserLogon
-    };
+        // The current state of a configuration set.
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationSetState {
+            // The state of the configuration set is unknown.
+            Unknown,
+            // The configuration set is in the queue to be applied.
+            Pending,
+            // The configuration set is actively being applied.
+            InProgress,
+            // The configuration set has completed being applied.
+            Completed,
+            // Shutting down device (e.g. for offline provisioning)
+            ShuttingDownDevice,
+            // Starting device (e.g. after offline provisioning)
+            StartingDevice,
+            // Restarting device (e.g. after online provisioning that requires restart)
+            RestartingDevice,
+            // Provisioning device with binaries needed for Configure operation.
+            ProvisioningDevice,
+            // Waiting for an admin logon (e.g. to complete operation that requires admin user)
+            WaitingForAdminUserLogon,
+            // Waiting for user's logon (e.g. to run "WinGet configure")
+            WaitingForUserLogon
+        };
 
     // The current state of a configuration unit.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ConfigurationUnitState 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationUnitState {
         // The state of the configuration unit is unknown.
         Unknown,
         // The configuration unit is in the queue to be applied.
@@ -1045,9 +978,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The source of a result; for instance, the part of the system that generated a failure.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ConfigurationUnitResultSource 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationUnitResultSource {
         // The source is not known, or more likely, there was no failure.
         None,
         // The result came from inside the configuration system; this is likely a bug.
@@ -1065,9 +996,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Defines how the configuration unit is to be used within the configuration system.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    enum ConfigurationUnitIntent 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationUnitIntent {
         // The configuration unit will only be used to Test the current system state.
         Assert,
 
@@ -1084,9 +1013,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Information on a result for a single unit of configuration.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ConfigurationUnitResultInformation 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ConfigurationUnitResultInformation {
         ConfigurationUnitResultInformation(HRESULT resultCode, String description, String details, ConfigurationUnitResultSource resultSource);
 
         // The error code of the failure.
@@ -1114,9 +1041,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    // The result of calling OpenConfigurationSet, containing either the set or details about the failure.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass OpenConfigurationSetResult
+        // The result of calling OpenConfigurationSet, containing either the set or details about the failure.
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass OpenConfigurationSetResult
     {
         OpenConfigurationSetResult(HRESULT resultCode, String field, String fieldValue, UInt32 line, UInt32 column);
 
@@ -1152,16 +1078,14 @@ namespace Microsoft.Windows.DevHome.SDK
     }
 
     // A single unit of configuration.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ConfigurationUnit 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ConfigurationUnit {
         ConfigurationUnit(
             String type,
             String identifier,
-            ConfigurationUnitState state, 
-            Boolean isGroup, 
-            Windows.Foundation.Collections.IVector<ConfigurationUnit> units, 
-            Windows.Foundation.Collections.ValueSet settings, 
+            ConfigurationUnitState state,
+            Boolean isGroup,
+            Windows.Foundation.Collections.IVector<ConfigurationUnit> units,
+            Windows.Foundation.Collections.ValueSet settings,
             ConfigurationUnitIntent intent);
 
         // The type of the unit being configured; not a name for this instance.
@@ -1208,24 +1132,22 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    // The change event type that has occurred for a configuration set change.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationSetChangeEventType {
-        Unknown,
-        // The change event was for the set state. Only ConfigurationSetChangeData.SetState is valid.
-        SetStateChanged,
-        // The change event was for the unit state. All ConfigurationSetChangeData properties are valid.
-        UnitStateChanged,
-    };
+        // The change event type that has occurred for a configuration set change.
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] enum ConfigurationSetChangeEventType {
+            Unknown,
+            // The change event was for the set state. Only ConfigurationSetChangeData.SetState is valid.
+            SetStateChanged,
+            // The change event was for the unit state. All ConfigurationSetChangeData properties are valid.
+            UnitStateChanged,
+        };
 
     // The change data sent about changes to a specific set.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ConfigurationSetChangeData 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ConfigurationSetChangeData {
         ConfigurationSetChangeData(
-            ConfigurationSetChangeEventType change, 
-            ConfigurationSetState setState, 
-            ConfigurationUnitState unitState, 
-            ConfigurationUnitResultInformation resultInformation, 
+            ConfigurationSetChangeEventType change,
+            ConfigurationSetState setState,
+            ConfigurationUnitState unitState,
+            ConfigurationUnitResultInformation resultInformation,
             ConfigurationUnit unit);
 
         // The change event type that occurred.
@@ -1259,14 +1181,13 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ApplyConfigurationUnitResult
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ApplyConfigurationUnitResult
     {
         ApplyConfigurationUnitResult(
-            ConfigurationUnit unit, 
-            ConfigurationUnitState state, 
-            Boolean previouslyInDesiredState, 
-            Boolean rebootRequired, 
+            ConfigurationUnit unit,
+            ConfigurationUnitState state,
+            Boolean previouslyInDesiredState,
+            Boolean rebootRequired,
             ConfigurationUnitResultInformation resultInformation);
 
         // The configuration unit that was applied.
@@ -1301,9 +1222,7 @@ namespace Microsoft.Windows.DevHome.SDK
     }
 
     // The result of applying the settings for a configuration set.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ApplyConfigurationSetResult 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ApplyConfigurationSetResult {
         ApplyConfigurationSetResult(HRESULT resultCode, Windows.Foundation.Collections.IVectorView<ApplyConfigurationUnitResult> unitResults);
 
         // Results for each configuration unit in the set.
@@ -1319,9 +1238,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    // The entire result of applying the configuration operation.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ApplyConfigurationResult
+        // The entire result of applying the configuration operation.
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ApplyConfigurationResult
     {
         ApplyConfigurationResult(OpenConfigurationSetResult openConfigurationSetResult, ApplyConfigurationSetResult applyConfigurationSetResult);
 
@@ -1347,9 +1265,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The data that is passed back to Dev Home when the apply configuration operation requires the user to perform an action to continue the configuration.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ApplyConfigurationActionRequiredEventArgs
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ApplyConfigurationActionRequiredEventArgs {
         ApplyConfigurationActionRequiredEventArgs(IExtensionAdaptiveCardSession2 correctiveActionCardSession);
 
         // An adaptive card that the extension can send to Dev Home to allow the user to perform an action.
@@ -1360,9 +1276,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The data that is passed back to Dev Home that contains the progress data of the the apply configuration operation.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    runtimeclass ConfigurationSetStateChangedEventArgs 
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] runtimeclass ConfigurationSetStateChangedEventArgs {
         ConfigurationSetStateChangedEventArgs(ConfigurationSetChangeData configurationSetChangeData);
 
         // Allows extensions to provide intermediary status for the operation.
@@ -1373,9 +1287,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // The interface returned by the IComputeSystem when the CreateApplyConfigurationOperation method is called.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
-    interface IApplyConfigurationOperation
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IApplyConfigurationOperation {
         // Event that Dev Home can subscribe to to receive data that the user needs to take action on.
         event Windows.Foundation.TypedEventHandler<IApplyConfigurationOperation, ApplyConfigurationActionRequiredEventArgs> ActionRequired;
 
@@ -1392,9 +1304,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // This interface is responsible for obtaining and relaying information on the repository
     // from source control technology
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    interface ILocalRepository
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)] interface ILocalRepository {
         // This function returns the requested information on a relative file path (under a
         // tracked repository root folder) from the source control management technology.
         // The requested information includes a predefined set of properties FE is aware of.
@@ -1403,11 +1313,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // This interface defines the result objects that can be returned to DevHome when it tries to
-    // obtain an enhanced repository. Enhanced repository is the term given to repositories for 
+    // obtain an enhanced repository. Enhanced repository is the term given to repositories for
     // which File Explorer can display property information from version control technologies.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    runtimeclass GetLocalRepositoryResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)] runtimeclass GetLocalRepositoryResult {
         GetLocalRepositoryResult(ILocalRepository repository);
 
         GetLocalRepositoryResult(HRESULT e, String displayMessage, String diagnosticText);
@@ -1424,12 +1332,211 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // This interface is responsible for obtaining the ILocalRepository object given a root path
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)]
-    interface ILocalRepositoryProvider
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 5)] interface ILocalRepositoryProvider {
         // The method responsible for validating and returning the ILocalRepository object given its root path
         GetLocalRepositoryResult GetRepository(String rootPath);
     };
 
     // End FileExplorerSourceControlIntegration APIs
+
+    // Beginning of QuickStartProject APIs
+
+    // Used to indicate an application such as an IDE which can be used to launch the generated quick start project.
+    [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] interface IQuickStartProjectHost {
+            // Name of the QuickStart project host that shows up on the UI.
+            String DisplayName
+            {
+                get;
+            };
+
+            // Uri for icon to represent the QuickStart project host.
+            // This is currently not shown anywhere but can be shown
+            // in the future such as on the UI alongside the display name.
+            // This Uri path needs to be located in a resource.pri file
+            // and be in the format of the ms-resource:// schema.
+            // E.g "ms-resource://Contoso.Extension/Files/Extension/Assets/icon.png"
+            // It is also recommended to be 16x16px for best appearance
+            // when displayed within the button for launching the project host.
+            Windows.Foundation.Uri Icon
+            {
+                get;
+            };
+
+            // Launches the project host for the quick start project that it was created for.
+            ProviderOperationResult Launch();
+        }
+
+            // Used by the extension to get any feedback provided by the user on the generated project.
+            [experimental]
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] interface IQuickStartProjectResultFeedbackHandler
+    {
+        // Handler to get any feedback provided to Dev Home by the user on the generated project.
+        ProviderOperationResult ProvideFeedback(Boolean isPositive, String feedback);
+    }
+
+    // Used by the extension to provide information on the generated quickstart project.
+    [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] runtimeclass QuickStartProjectResult {
+            // Used when generating the project was successful.
+            QuickStartProjectResult(IQuickStartProjectHost[] projectHosts, Windows.Foundation.Uri[] referenceSamples);
+
+            // Used when generating the quickstart project was unsuccessful.
+            // The extension can provide Dev Home with an error message to be displayed in the UI by providing
+            // a non-empty value for the displayMessage. diagnosticText can be used to send non-localized error
+            // information back to Dev Home.
+            QuickStartProjectResult(HRESULT e, String displayMessage, String diagnosticText);
+
+            // Used when generating the project was successful and
+            // the extension would like to be get any feedback
+            // provided by the user on it.
+            static QuickStartProjectResult CreateWithFeedbackHandler(IQuickStartProjectHost[] projectHosts, Windows.Foundation.Uri[] referenceSamples, IQuickStartProjectResultFeedbackHandler feedbackHandler);
+
+            // The array of hosts that support launching the project.
+            IQuickStartProjectHost[] ProjectHosts
+            {
+                get;
+            };
+
+            // The result of the operation. This contains the ProviderOperationStatus enum value that tells Dev Home
+            // whether the result was successful or failed. It is created based on the constructor that was used.
+            ProviderOperationResult Result
+            {
+                get;
+            };
+
+            // Used to provide to Dev Home the references / samples that were used
+            // by the AI in the extension or by the extension itself to generate
+            // the quick start project.  Dev Home shows this to the user as the
+            // references that this project was generated based on.
+            Windows.Foundation.Uri[] ReferenceSamples
+            {
+                get;
+            };
+
+            // Used to provide Dev Home a way to pass feedback back to the
+            // extension if the user provides one on the generated project.
+            IQuickStartProjectResultFeedbackHandler FeedbackHandler
+            {
+                get;
+            };
+        }
+
+            // Passed back to Dev Home to provide the progress in generating a quick start project.
+            // This is used by Dev Home to show progress to the user while the project is being generated.
+            [experimental]
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] struct QuickStartProjectProgress
+    {
+        // Allows extensions to provide intermediary status for the operation e.g "Generating project".
+        String DisplayStatus;
+
+        // Allows extensions to provide progress for the operation.
+        // Value should be in the range of 0 through 1.0.
+        Double Progress;
+    };
+
+    // The result object returned to Dev Home when it calls one of the IQuickStartProjectProvider
+    // CreateAdaptiveCard methods.
+    [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] runtimeclass QuickStartProjectAdaptiveCardResult {
+            // Used when retrieving the adaptive card session was successful.
+            QuickStartProjectAdaptiveCardResult(IExtensionAdaptiveCardSession2 adaptiveCardSession);
+
+            // Used when retrieving the adaptive card session was unsuccessful.
+            // The extension can provide Dev Home with an error message to be displayed in the UI by providing
+            // a non-empty value for the displayMessage. diagnosticText can be used to send non-localized error
+            // information back to Dev Home.
+            QuickStartProjectAdaptiveCardResult(HRESULT e, String displayMessage, String diagnosticText);
+
+            // The adaptive card session object.
+            IExtensionAdaptiveCardSession2 AdaptiveCardSession
+            {
+                get;
+            };
+
+            // The result of the operation. This contains the ProviderOperationStatus enum value that tells Dev Home
+            // whether the result was successful or failed. It is created based on the constructor that was used.
+            ProviderOperationResult Result
+            {
+                get;
+            };
+        }
+
+            // Extensions implement this and is provided to Dev Home when CreateProjectGenerationOperation is called.
+            // This allows to have an async operation can be started but also additional context reported back to Dev Home
+            // as progress is being made such as a detailed log out output through the adaptive card session.
+            [experimental]
+            [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] interface IQuickStartProjectGenerationOperation
+    {
+        // Adaptive card session that can be provided by the extension to supplement
+        // the progress shown by Dev Home.  This can be used where the extension
+        // may want to provide more progress information such as build output.
+        // Extension may return null if they don't want to show any custom progress
+        // other than the one based on Status and Progress.  If one is
+        // provided when a progress is reported, it would be shown in a ScrollViewer
+        // on the Dev Home UI scrolled to the bottom as if it is some form of log output.
+        IExtensionAdaptiveCardSession2 AdaptiveCardSession
+        {
+            get;
+        };
+
+        // Starts the operation which generates a project based on a given prompt by the user in the
+        // given output folder. The generated content in the output folder can be anything that is needed
+        // for the project based on the technology it uses.  Dev Home just displays the generated content
+        // in a file viewer.
+        Windows.Foundation.IAsyncOperationWithProgress<QuickStartProjectResult, QuickStartProjectProgress> GenerateAsync();
+    }
+
+    // Extensions can implement this provider to provide a way to
+    // create a project based on a prompt as part of the Dev Home
+    // quick start project feature.
+    [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)] interface IQuickStartProjectProvider {
+            // Name of the QuickStart project provider that shows up on the UI.
+            String DisplayName
+            {
+                get;
+            };
+
+            // Used to provide the URI to the terms of service for the extension
+            // and its AI endpoint.  This is shown on the Dev Home UI as a link
+            // and should be able to be protocol launched into the browser.
+            Windows.Foundation.Uri TermsOfServiceUri
+            {
+                get;
+            };
+
+            // Used to provide the URI to the privacy statement for the extension
+            // and its AI endpoint.  This is shown on the Dev Home UI as a link
+            // and should be able to be protocol launched into the browser.
+            Windows.Foundation.Uri PrivacyPolicyUri
+            {
+                get;
+            };
+
+            // Used to provide the sample prompts to guide the user on what types of
+            // things they can generate with the extension. This is shown on the
+            // Dev Home UI.
+            String[] SamplePrompts
+            {
+                get;
+            };
+
+            // Adaptive card UI flow that can be provided by the extension to initialize or
+            // setup anything required by it such as to install any dependencies
+            // it needs or to setup its AI endpoint.  In addition, to showing the user the dependencies,
+            // this flow can be used to install them through OnAction in the adaptive card session.
+            // Extension may return null if there is nothing to do here.
+            // This is called when the user selects in the extension provider that they want to use
+            // this extension to generate the project.
+            QuickStartProjectAdaptiveCardResult CreateAdaptiveCardSessionForExtensionInitialization();
+
+            // Creates an operation which allows to generate a project based on a given prompt by the
+            // user in the given output folder.  The generated content in the output folder can be anything that
+            // is needed for the project based on the technology it uses.  Dev Home just displays the generated content
+            // in a file viewer.
+            IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(String prompt, Windows.Storage.StorageFolder outputFolder);
+        }
+
+    // End of QuickStartProject APIs
 }

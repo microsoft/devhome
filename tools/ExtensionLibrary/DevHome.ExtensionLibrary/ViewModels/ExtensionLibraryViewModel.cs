@@ -40,13 +40,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         WSLExtensionClassId,
     };
 
-    // All internal Dev Home extensions that should allow users to enable/disable them, should add
-    // their class Ids to this set.
-    private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
-    {
-        CommonConstants.HyperVExtensionClassId,
-    };
-
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
     public ObservableCollection<InstalledPackageViewModel> InstalledPackagesList { get; set; }

@@ -11,15 +11,6 @@
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <Page.Resources>
-        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
-
-        <DataTemplate x:Key="LocalRepositoryProviderButtonTemplate" x:DataType="viewmodels:FileExplorerSourceControlIntegrationViewModel">
-            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddRepository_Click" Tag="{x:Bind}"/>
-        </DataTemplate>
-
-    </Page.Resources>
-
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <Grid>
             <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">

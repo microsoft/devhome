@@ -159,17 +159,17 @@ public class RepositoryTracking
 
     public void ModifySourceControlProviderForTrackedRepository(string extensionCLSID, string rootPath)
     {
-        lock (trackRepoLock)
+        lock (_trackRepoLock)
         {
             if (TrackedRepositories.TryGetValue(rootPath, out var existingExtensionCLSID))
             {
                 TrackedRepositories[rootPath] = extensionCLSID;
-                fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
-                log.Information("Source control extension for tracked repository modified");
+                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                _log.Information("Source control extension for tracked repository modified");
             }
             else
             {
-                log.Error("The root path is not registered for File Explorer Source Control Integration");
+                _log.Error("The root path is not registered for File Explorer Source Control Integration");
             }
         }
     }

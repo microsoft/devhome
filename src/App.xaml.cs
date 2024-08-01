@@ -22,6 +22,7 @@ using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using DevHome.Utilities.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -169,6 +170,9 @@ public partial class App : Application, IApp
 
             // Windows customization
             services.AddWindowsCustomization(context);
+
+            // Utilities
+            services.AddUtilities(context);
         }).
         Build();
 

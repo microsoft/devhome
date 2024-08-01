@@ -33,9 +33,9 @@ public partial class FileExplorerViewModel : ObservableObject
 
     private RepositoryTracking RepoTracker { get; set; } = new(null);
 
-    private readonly string unassigned = "00000000-0000-0000-0000-000000000000";
+    private readonly string _unassigned = "00000000-0000-0000-0000-000000000000";
 
-    private readonly Serilog.ILogger log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(FileExplorerViewModel));
 
     public IExperimentationService ExperimentationService { get; }
 
@@ -139,15 +139,15 @@ public partial class FileExplorerViewModel : ObservableObject
             await Task.Run(async () =>
             {
                 using var folderDialog = new WindowOpenFolderDialog();
-                var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<WindowEx>());
+                var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<Window>());
                 if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
                 {
-                    log.Information($"Selected '{repoRootfolder.Path}' as location to register");
-                    RepoTracker.AddRepositoryPath(unassigned, repoRootfolder.Path);
+                    _log.Information($"Selected '{repoRootfolder.Path}' as location to register");
+                    RepoTracker.AddRepositoryPath(_unassigned, repoRootfolder.Path);
                 }
                 else
                 {
-                    log.Information("Didn't select a location to register");
+                    _log.Information("Didn't select a location to register");
                 }
             });
             RefreshTrackedRepositories();
@@ -169,7 +169,7 @@ public partial class FileExplorerViewModel : ObservableObject
             var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
             if (result.Result == ResultType.Failure)
             {
-                log.Error("Failed to validate source control extension");
+                _log.Error("Failed to validate source control extension");
                 return;
             }
 
