@@ -67,7 +67,17 @@ public class WERAnalysis
         else
         {
             // Generate the analysis
-            AnalysisTool.InvokeWithParams(_crashDumpPath);
+            ToolLaunchOptions options = new();
+            options.CommandLineParams = _crashDumpPath;
+
+            AnalysisTool.Invoke(options);
+
+            if (options.LaunchedProcess is not null)
+            {
+                string output = options.LaunchedProcess.StandardOutput.ReadToEnd();
+                File.WriteAllText(analysisFilePath, output);
+                Analysis = File.ReadAllText(analysisFilePath);
+            }
         }
     }
 }

@@ -115,7 +115,7 @@
             <controls:PISeparator Orientation="Horizontal"/>
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind helpers:ExternalToolsHelper.Instance.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
                 <DataTemplate x:DataType="helpers:Tool">
-                    <Button Click="{x:Bind Invoke}" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
+                    <Button Command="{x:Bind InvokeCommand}" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
                         <Image Source="{x:Bind ToolIconSource, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform" />
                         <Button.ContextFlyout>
                             <MenuFlyout x:Name="ToolContextMenu">

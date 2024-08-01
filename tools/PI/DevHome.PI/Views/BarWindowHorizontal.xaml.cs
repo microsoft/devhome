@@ -176,7 +176,7 @@ public partial class BarWindowHorizontal : WindowEx
         };
 
         button.Icon = tool.GetIcon();
-        button.Command = tool.InvokeWithParentCommand;
+        button.Command = tool.InvokeCommand;
         button.CommandParameter = this;
         button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 

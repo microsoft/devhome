@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,13 +13,6 @@ using Microsoft.UI.Xaml.Media;
 using Windows.Win32.Foundation;
 
 namespace DevHome.PI.Helpers;
-
-[Flags]
-public enum ToolType
-{
-    Unknown = 0,
-    DumpAnalyzer = 1,
-}
 
 public abstract partial class Tool : ObservableObject
 {
@@ -63,25 +57,44 @@ public abstract partial class Tool : ObservableObject
         IsPinned = !IsPinned;
     }
 
+    public void Invoke(ToolLaunchOptions options)
+    {
+        InvokeTool(options);
+    }
+
     [RelayCommand]
     public void Invoke()
     {
-        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, null);
+        ToolLaunchOptions options = new();
+        options.TargetProcessId = TargetAppData.Instance.TargetProcess?.Id;
+        options.TargetHWnd = TargetAppData.Instance.HWnd;
+        InvokeTool(options);
     }
 
-    [RelayCommand]
-    public void InvokeWithParent(Window parent)
-    {
-        InvokeTool(parent, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, null);
-    }
-
-    public void InvokeWithParams(string commandLine)
-    {
-        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, commandLine);
-    }
-
-    internal virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd, string? commandLineParams) => throw new NotImplementedException();
+    internal virtual void InvokeTool(ToolLaunchOptions options) => throw new NotImplementedException();
 
     [RelayCommand]
     public abstract void UnregisterTool();
+}
+
+[Flags]
+public enum ToolType
+{
+    Unknown = 0,
+    DumpAnalyzer = 1,
+}
+
+public class ToolLaunchOptions
+{
+    public Window? ParentWindow { get; set; }
+
+    public bool RedirectStandardOut { get; set; } /* = false; */
+
+    public string? CommandLineParams { get; set; }
+
+    public int? TargetProcessId { get; set; }
+
+    internal HWND TargetHWnd { get; set; }
+
+    public Process? LaunchedProcess { get; set; }
 }

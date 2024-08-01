@@ -353,7 +353,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
-        tool.InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, null);
+        tool.Invoke();
     }
 
     [RelayCommand]
