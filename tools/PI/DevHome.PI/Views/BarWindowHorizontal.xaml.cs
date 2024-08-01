@@ -146,7 +146,7 @@ public partial class BarWindowHorizontal : WindowEx
         SetRegionsForTitleBar();
 
         PopulateCommandBar();
-        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
+        ((INotifyCollectionChanged)Application.Current.GetService<ExternalToolsHelper>().AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
 
         // Now that the position is set correctly show the window
         this.Show();

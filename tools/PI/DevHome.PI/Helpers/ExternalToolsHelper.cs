@@ -21,8 +21,6 @@ internal sealed class ExternalToolsHelper
     private readonly JsonSerializerOptions _serializerOptions = new() { WriteIndented = true };
     private readonly string _toolInfoFileName;
 
-    public static readonly ExternalToolsHelper Instance = new();
-
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalToolsHelper));
 
     private readonly ObservableCollection<ExternalTool> _filteredExternalTools = [];
