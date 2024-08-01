@@ -14,7 +14,7 @@ using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
-using DevHome.Repositories.ViewModels;
+using DevHome.RepositoryManagement.ViewModels;
 using DevHome.Services;
 using DevHome.Services.Core.Extensions;
 using DevHome.Services.DesiredStateConfiguration.Extensions;
@@ -150,7 +150,8 @@ public partial class App : Application, IApp
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
             services.AddTransient<InitializationViewModel>();
-            services.AddTransient<RepositoriesMainPageViewModel>();
+            services.AddTransient<RepositoryManagementMainPageViewModel>();
+            services.AddTransient<RepositoryManagementItemViewModel>();
 
             // Settings
             services.AddSettings(context);

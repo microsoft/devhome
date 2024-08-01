@@ -42,10 +42,10 @@
             "icon": "ECED"
           },
           {
-            "identity": "DevHome.Repositories",
-            "assembly": "DevHome.Repositories",
-            "viewFullName": "DevHome.Repositories.Views.RepositoriesMainPageView",
-            "viewModelFullName": "DevHome.Repositories.ViewModels.RepositoriesMainPageViewModel",
+            "identity": "DevHome.RepositoryManagement",
+            "assembly": "DevHome.RepositoryManagement",
+            "viewFullName": "DevHome.RepositoryManagement.Views.RepositoryManagementMainPageView",
+            "viewModelFullName": "DevHome.RepositoryManagement.ViewModels.RepositoryManagementMainPageViewModel",
             "iconFontFamily": "DevHomeFluentIcons",
             "icon": "F03F"
           }
