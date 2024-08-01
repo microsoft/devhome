@@ -14,6 +14,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
@@ -199,8 +200,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             _dispatcher.TryEnqueue(() =>
             {
-                var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
-                insightsPageViewModel.AddInsight(newInsight);
+                var insightsService = Application.Current.GetService<PIInsightsService>();
+                insightsService.AddInsight(newInsight);
             });
         }
     }

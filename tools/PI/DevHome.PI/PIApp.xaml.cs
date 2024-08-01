@@ -46,6 +46,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<INavigationService, PINavigationService>();
                 services.AddSingleton<TelemetryReporter>();
                 services.AddSingleton<PIAppInfoService>();
+                services.AddSingleton<PIInsightsService>();
                 services.AddSingleton<WERHelper>();
 
                 // Window
