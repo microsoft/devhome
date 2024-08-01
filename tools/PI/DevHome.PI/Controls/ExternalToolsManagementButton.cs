@@ -141,11 +141,7 @@ internal sealed class ExternalToolsManagementButton : Button
         var unRegisterMenuSubItemItem = new MenuFlyoutItem
         {
             Text = _unregisterMenuItemText,
-<<<<<<< HEAD
-            Icon = GetFontIcon(UnregisterButtonText),
-=======
             Icon = GetFontIcon(UnregisterButtonGlyph),
->>>>>>> main
             Tag = tool,
         };
         unRegisterMenuSubItemItem.Click += UnregisterMenuItem_Click;

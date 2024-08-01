@@ -1177,7 +1177,6 @@
     <value>No issues</value>
     <comment>A message indicating that there are no issues with the given item.</comment>
   </data>
-<<<<<<< HEAD
   <data name="ToolTypeButton.Content" xml:space="preserve">
     <value>Tool Type</value>
     <comment>Button text allowing the user to select the type of tool</comment>
@@ -1193,10 +1192,9 @@
   <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
     <value>Tool that will be used to analyze WER dumps generated on the system</value>
     <comment>Tooltip that describes what a WER Dump analyzer does</comment>
-=======
+  </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
     <value>Project Ironsides Clipboard Monitor</value>
     <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
->>>>>>> main
   </data>
 </root>
