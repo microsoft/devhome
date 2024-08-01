@@ -256,20 +256,8 @@ public partial class BarWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void LaunchInsights()
-    {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
-        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-        barWindow?.NavigateTo(typeof(InsightsPageViewModel));
-    }
-
-    [RelayCommand]
     public void ManageExternalToolsButton()
     {
-        ToggleExpandedContentVisibility();
-
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }

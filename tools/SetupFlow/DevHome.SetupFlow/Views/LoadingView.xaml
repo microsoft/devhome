@@ -181,6 +181,7 @@
                 <ListView
                     x:Name="NonExecutingTasks"
                     Grid.Row="0"
+                    IsEnabled="False"
                     ItemsSource="{x:Bind ViewModel.NonExecutingMessages, Mode=OneWay}"
                     SelectionMode="Single">
                     <ListView.ItemTemplate>
@@ -208,6 +209,7 @@
                 <ListView
                     x:Name="ExecutingTasks"
                     Grid.Row="1"
+                    IsEnabled="False"
                     ItemsSource="{x:Bind ViewModel.ExecutingMessages, Mode=OneWay}"
                     SelectionMode="None">
                     <ListView.ItemTemplate>
@@ -253,6 +255,7 @@
             <ListView
                 Grid.Row="1"
                 Margin="0,0,0,5"
+                IsEnabled="False"
                 ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}"
                 SelectionMode="None">
                 <ListView.ItemTemplate>

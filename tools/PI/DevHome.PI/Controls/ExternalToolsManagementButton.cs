@@ -15,7 +15,7 @@ namespace DevHome.PI.Controls;
 
 internal sealed class ExternalToolsManagementButton : Button
 {
-    private const string UnregisterButtonText = "\uECC9";
+    private const string UnregisterButtonGlyph = "\uECC9";
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
@@ -141,7 +141,11 @@ internal sealed class ExternalToolsManagementButton : Button
         var unRegisterMenuSubItemItem = new MenuFlyoutItem
         {
             Text = _unregisterMenuItemText,
+<<<<<<< HEAD
             Icon = GetFontIcon(UnregisterButtonText),
+=======
+            Icon = GetFontIcon(UnregisterButtonGlyph),
+>>>>>>> main
             Tag = tool,
         };
         unRegisterMenuSubItemItem.Click += UnregisterMenuItem_Click;

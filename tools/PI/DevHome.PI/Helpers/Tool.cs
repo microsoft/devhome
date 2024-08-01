@@ -13,6 +13,7 @@ using Windows.Win32.Foundation;
 
 namespace DevHome.PI.Helpers;
 
+<<<<<<< HEAD
 [Flags]
 public enum ToolType
 {
@@ -20,6 +21,8 @@ public enum ToolType
     DumpAnalyzer = 1,
 }
 
+=======
+>>>>>>> main
 public abstract partial class Tool : ObservableObject
 {
     [ObservableProperty]
@@ -35,12 +38,18 @@ public abstract partial class Tool : ObservableObject
 
     public string Name { get; private set; }
 
+<<<<<<< HEAD
     public ToolType Type { get; private set; }
 
     public Tool(string name, ToolType type, bool isPinned)
     {
         Name = name;
         Type = type;
+=======
+    public Tool(string name, bool isPinned)
+    {
+        Name = name;
+>>>>>>> main
         IsPinned = isPinned;
         PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
     }
@@ -80,9 +89,7 @@ public abstract partial class Tool : ObservableObject
         InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd, commandLine);
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     internal virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd, string? commandLineParams) => throw new NotImplementedException();
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     [RelayCommand]
     public abstract void UnregisterTool();

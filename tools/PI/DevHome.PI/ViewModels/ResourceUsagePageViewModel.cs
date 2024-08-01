@@ -92,7 +92,7 @@ public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
         {
             dispatcher.TryEnqueue(() =>
             {
-                GpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
+                GpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.GpuUsage);
             });
         }
     }

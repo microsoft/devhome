@@ -57,9 +57,14 @@ public partial class ExternalTool : Tool
         string arguments = "",
         string appUserModelId = "",
         string iconFilePath = "",
+<<<<<<< HEAD
         ToolType toolType = ToolType.Unknown,
         bool isPinned = false)
         : base(name, toolType, isPinned)
+=======
+        bool isPinned = false)
+        : base(name, isPinned)
+>>>>>>> main
     {
         Executable = executable;
         ActivationType = activationType;

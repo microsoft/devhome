@@ -50,6 +50,8 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     [ObservableProperty]
     private bool _applyAppFiltering;
 
+    private string? _additionalNavigationInfo;
+
     public INavigationService NavigationService { get; }
 
     private readonly PageNavLink _appDetailsNavLink;
@@ -211,7 +213,21 @@ public partial class ExpandedViewControlViewModel : ObservableObject
             var link = Links[i];
             if (link.PageViewModel == viewModelType)
             {
-                SelectedNavLinkIndex = i;
+                if (SelectedNavLinkIndex == i)
+                {
+                    // Navigation between pages is a bit convoluted, as we set SelectedNavLinkIndex, which triggers a change
+                    // event on a ListView that calls Navigate() to perform the actual navigation.
+                    //
+                    // If we're trying to navigate to the same Listview item, we need to call Navigate() directly. ListViewItems != Pages (for example, Settings
+                    // is a ListView Item, but there are several pages under Settings). If we end up navigating to the same page,
+                    // the NavService will no-op it
+                    Navigate();
+                }
+                else
+                {
+                    SelectedNavLinkIndex = i;
+                }
+
                 break;
             }
         }
@@ -219,22 +235,25 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
     public void Navigate()
     {
-        if (SelectedNavLinkIndex != -1)
+        var navigationService = Application.Current.GetService<INavigationService>();
+
+        if (_additionalNavigationInfo is not null)
         {
-            var navigationService = Application.Current.GetService<INavigationService>();
+            Debug.Assert(Links[SelectedNavLinkIndex] == _settingsNavLink, "Additional Nav Info currently only supported for Settings");
+            navigationService.NavigateTo(_additionalNavigationInfo);
+            _additionalNavigationInfo = null;
+            return;
+        }
+        else
+        {
             navigationService.NavigateTo(Links[SelectedNavLinkIndex]?.PageViewModel?.FullName!);
         }
     }
 
     public void NavigateToSettings(string viewModelType)
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
-        var mainSettingsPage = typeof(SettingsPageViewModel).FullName!;
-        navigationService.NavigateTo(mainSettingsPage);
-        if (!string.Equals(mainSettingsPage, viewModelType, StringComparison.OrdinalIgnoreCase))
-        {
-            navigationService.NavigateTo(viewModelType);
-        }
+        _additionalNavigationInfo = viewModelType;
+        NavigateTo(typeof(SettingsPageViewModel));
     }
 
     [RelayCommand]
