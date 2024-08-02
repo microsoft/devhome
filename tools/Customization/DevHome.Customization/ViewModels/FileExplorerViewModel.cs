@@ -15,7 +15,9 @@ using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
+using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -77,8 +79,17 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public bool AddRepositoryPath(string extensionCLSID, string rootPath)
     {
-        var normalizedPath = rootPath.ToUpper(CultureInfo.InvariantCulture).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var normalizedPath = rootPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, normalizedPath);
+        if (ExtraFolderPropertiesWrapper.IsSupported())
+        {
+            var wrapperResult = ExtraFolderPropertiesWrapper.Register(normalizedPath, typeof(SourceControlProvider).GUID);
+            if (!wrapperResult.Succeded)
+            {
+                return false;
+            }
+        }
+
         if (result.Result == Helpers.ResultType.Success)
         {
             RepoTracker.AddRepositoryPath(extensionCLSID, normalizedPath);
@@ -90,6 +101,11 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public void RemoveRepositoryPath(string rootPath)
     {
+        if (ExtraFolderPropertiesWrapper.IsSupported())
+        {
+            ExtraFolderPropertiesWrapper.Unregister(rootPath);
+        }
+
         RepoTracker.RemoveRepositoryPath(rootPath);
     }
 
