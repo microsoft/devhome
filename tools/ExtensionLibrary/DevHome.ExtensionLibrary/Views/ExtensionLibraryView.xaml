@@ -29,6 +29,18 @@
                 FalseValue="Collapsed"
                 GreaterThan="0"
                 TrueValue="Visible" />
+            <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="0,0,0,4" />
+                <Setter Property="Padding" Value="0" />
+
+                <!--
+                    Include a false tabstop because the buttons on each menu item is a tab stop.
+                    This creates an odd behavior because each item can be tabbed into.
+                    Remove the tab stop from the list item.
+                -->
+                <Setter Property="IsTabStop" Value="False" />
+            </Style>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="ExtensionsBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
@@ -156,6 +168,7 @@
                         Grid.Row="1"
                         AutomationProperties.AutomationControlType="Group"
                         AutomationProperties.Name="Avalible in the Microsoft Store"
+                        ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
                         ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}"
                         SelectionMode="None">
                         <ListView.ItemTemplate>
