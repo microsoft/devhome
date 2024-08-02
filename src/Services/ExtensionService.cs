@@ -225,8 +225,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public IExtensionWrapper? GetInstalledExtension(string extensionUniqueId)
     {
-        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
-        return extension.First() ?? null;
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
+        return extension.FirstOrDefault();
     }
 
     private async Task<IEnumerable<string>> GetInstalledWidgetExtensionsAsync()
@@ -369,13 +369,13 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public void EnableExtension(string extensionUniqueId)
     {
-        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
         _enabledExtensions.Add(extension.First());
     }
 
     public void DisableExtension(string extensionUniqueId)
     {
-        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
         _enabledExtensions.Remove(extension.First());
     }
 

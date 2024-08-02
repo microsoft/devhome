@@ -24,7 +24,8 @@ internal sealed class WidgetExtensionService : IWidgetExtensionService
         _extensionService = extensionService;
     }
 
-    public bool IsCoreWidgetExtension(string providerDefinitionId)
+    /// <inheritdoc/>
+    public bool IsCoreWidgetProvider(string providerDefinitionId)
     {
         return providerDefinitionId.Equals(ProviderDefinitionStable, StringComparison.Ordinal) ||
                providerDefinitionId.Equals(ProviderDefinitionCanary, StringComparison.Ordinal) ||

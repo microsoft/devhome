@@ -597,7 +597,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
                 // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
                 // tell the extension to dispose later.
-                if (_widgetExtensionService.IsCoreWidgetExtension(comSafeWidgetDefinition.ProviderDefinitionId))
+                if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
                 {
                     await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
                 }

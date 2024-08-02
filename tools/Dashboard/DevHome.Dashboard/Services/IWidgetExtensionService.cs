@@ -7,7 +7,11 @@ namespace DevHome.Dashboard.Services;
 
 internal interface IWidgetExtensionService
 {
-    bool IsCoreWidgetExtension(string providerDefinitionId);
+    /// <summary>
+    /// Gets whether the given providerDefinitionId represents a CoreWidgetProvider of any build ring
+    /// </summary>
+    /// <returns>True if the given providerDefinitionId represents a CoreWidgetProvider, otherwise false.</returns>
+    bool IsCoreWidgetProvider(string providerDefinitionId);
 
     Task EnsureCoreWidgetExtensionStarted(string providerDefinitionId);
 }
