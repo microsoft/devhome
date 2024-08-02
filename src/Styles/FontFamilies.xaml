@@ -1,11 +1,11 @@
-<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- Format to adding a new font: [location].ttf#[Font family name]-->
-    <!-- Cascadia Mono (font included), with fallback options for non-compatible characters
-         https://github.com/microsoft/cascadia-code/issues/55-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--  Format to adding a new font: [location].ttf#[Font family name]  -->
+    <!--
+        Cascadia Mono (font included), with fallback options for non-compatible characters
+        https://github.com/microsoft/cascadia-code/issues/55
+    -->
     <FontFamily x:Key="CascadiaMonoFontFamily">ms-appx:///Assets/Fonts/CascadiaMono.ttf#Cascadia Mono,MS Gothic, NSimSun</FontFamily>
     <FontFamily x:Key="DevHomeFluentIcons">ms-appx:///Assets/Fonts/DevHome.ttf#DevHome Fluent Icons</FontFamily>
-    <!-- Needed for icons on Windows Customization -> Dev Drive Insights page -->
+    <!--  Needed for icons on Windows Customization -> Dev Drive Insights page  -->
     <FontFamily x:Key="AmcFluentIcons">ms-appx:///Assets/Fonts/AmcIcons.ttf#Amc Fluent Icons</FontFamily>
 </ResourceDictionary>

@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:behaviors="using:DevHome.Common.Behaviors">
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:i="using:Microsoft.Xaml.Interactivity">
 
     <x:Double x:Key="BreadcrumbBarChevronFontSize">12</x:Double>
 
@@ -15,17 +15,15 @@
 
     <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
 
-    <!-- Applies to all items but the last (current) item -->
+    <!--  Applies to all items but the last (current) item  -->
     <ThemeResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
 
     <DataTemplate x:Key="BreadcrumbBarDataTemplate">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <BreadcrumbBar
-                    x:Name="BreadcrumbBar"
-                    ItemsSource="{Binding Breadcrumbs}">
+            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{Binding Breadcrumbs}">
                 <BreadcrumbBar.Resources>
-                    <!-- Setting BreadcrumbBarNormalForegroundBrush outside of DataTemplate results in the value not being used inside the DataTemplate. -->
-                    <!-- In order for DataTemplate to use the correct brushes, they must be set this way. -->
+                    <!--  Setting BreadcrumbBarNormalForegroundBrush outside of DataTemplate results in the value not being used inside the DataTemplate.  -->
+                    <!--  In order for DataTemplate to use the correct brushes, they must be set this way.  -->
                     <ResourceDictionary>
                         <ResourceDictionary.ThemeDictionaries>
                             <ResourceDictionary x:Key="Light">

@@ -1,50 +1,112 @@
-<!-- Copyright (c) Microsoft Corporation.. -->
-<!-- Licensed under the MIT License. -->
+<!--  Copyright (c) Microsoft Corporation..  -->
+<!--  Licensed under the MIT License.  -->
 
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:controls="using:DevHome.SetupFlow.Controls">
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters">
     <x:Double x:Key="AppManagementIconDisabledOpacity">0.4</x:Double>
 
-    <!-- Package title style -->
-    <Style x:Key="AppManagementPackageTitleTextBlock" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+    <!--  Package title style  -->
+    <Style
+        x:Key="AppManagementPackageTitleTextBlock"
+        BasedOn="{StaticResource BodyTextBlockStyle}"
+        TargetType="TextBlock">
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
         <Setter Property="MaxLines" Value="1" />
     </Style>
 
-    <!-- Package description style -->
-    <Style x:Key="AppManagementPackageDescriptionTextBlock" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+    <!--  Package description style  -->
+    <Style
+        x:Key="AppManagementPackageDescriptionTextBlock"
+        BasedOn="{StaticResource CaptionTextBlockStyle}"
+        TargetType="TextBlock">
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
         <Setter Property="MaxLines" Value="1" />
     </Style>
 
-    <!-- Selectable package template -->
+    <!--  Selectable package template  -->
     <ControlTemplate x:Key="AppManagementSelectablePackageTemplate">
         <Grid>
             <Grid.Resources>
                 <ResourceDictionary>
                     <converters:BoolToObjectConverter x:Key="LearnMoreInstalledConverter">
                         <converters:BoolToObjectConverter.FalseValue>
-                            <HyperlinkButton Name="LearnMoreButton" Command="{Binding LearnMoreCommand,Mode=OneWay}">
-                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+                            <HyperlinkButton Name="LearnMoreButton" Command="{Binding LearnMoreCommand, Mode=OneWay}">
+                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" />
                             </HyperlinkButton>
                         </converters:BoolToObjectConverter.FalseValue>
                         <converters:BoolToObjectConverter.TrueValue>
                             <TextBlock
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"
                                 Padding="0,0,12,0"
-                                Foreground="{ThemeResource TextFillColorDisabled}"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
+                                Foreground="{ThemeResource TextFillColorDisabled}" />
                         </converters:BoolToObjectConverter.TrueValue>
                     </converters:BoolToObjectConverter>
-                    <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
+                    <converters:BoolToObjectConverter
+                        x:Name="SelectButtonGlyphConverter"
+                        FalseValue="&#xE710;"
+                        TrueValue="&#xE845;" />
                 </ResourceDictionary>
             </Grid.Resources>
 
-            <!-- Visual state for installed/selected packages -->
+            <!--  Package details settings card  -->
+            <controls:PackageDetailsSettingsCard>
+                <ToolTipService.ToolTip>
+                    <controls:PackageDetailsTooltip Package="{Binding}" />
+                </ToolTipService.ToolTip>
+                <controls:PackageDetailsSettingsCard.Header>
+                    <TextBlock
+                        Name="Title"
+                        Style="{ThemeResource AppManagementPackageTitleTextBlock}"
+                        Text="{Binding PackageTitle}" />
+                </controls:PackageDetailsSettingsCard.Header>
+                <controls:PackageDetailsSettingsCard.Description>
+                    <StackPanel Orientation="Horizontal" Spacing="3">
+                        <TextBlock
+                            Name="Version"
+                            Style="{ThemeResource AppManagementPackageDescriptionTextBlock}"
+                            Text="{Binding PackageShortDescription}" />
+                        <TextBlock Name="Divider" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}">|</TextBlock>
+                        <ContentControl Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" IsTabStop="False" />
+                    </StackPanel>
+                </controls:PackageDetailsSettingsCard.Description>
+                <controls:PackageDetailsSettingsCard.HeaderIcon>
+                    <ImageIcon
+                        Name="Image"
+                        AutomationProperties.Name="{Binding PackageTitle}"
+                        Source="{Binding Icon, Mode=OneWay}" />
+                </controls:PackageDetailsSettingsCard.HeaderIcon>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <ComboBox
+                        x:Uid="VersionComboBox"
+                        HorizontalAlignment="Left"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSearchEnabled="True"
+                        ItemsSource="{Binding AvailableVersions}"
+                        SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
+                        Visibility="{Binding ShowVersionList}" />
+                    <Button
+                        Padding="5"
+                        AutomationProperties.AutomationId="{Binding ButtonAutomationId}"
+                        AutomationProperties.Name="{Binding ActionButtonDescription}"
+                        Command="{Binding ToggleSelectionCommand, Mode=OneWay}"
+                        ToolTipService.ToolTip="{Binding ActionButtonDescription}">
+                        <FontIcon
+                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                            FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                            Glyph="{Binding IsSelected, Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}" />
+                    </Button>
+                </StackPanel>
+            </controls:PackageDetailsSettingsCard>
+
+            <!--  Visual state for installed/selected packages  -->
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState>
@@ -52,58 +114,14 @@
                             <StateTrigger IsActive="{Binding IsSelected}" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
-                            <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
-                            <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                            <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                            <Setter Target="Divider.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                            <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}" />
+                            <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}" />
+                            <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}" />
+                            <Setter Target="Divider.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-
-            <!-- Package details settings card -->
-            <controls:PackageDetailsSettingsCard>
-                <ToolTipService.ToolTip>
-                    <controls:PackageDetailsTooltip Package="{Binding}" />
-                </ToolTipService.ToolTip>
-                <controls:PackageDetailsSettingsCard.Header>
-                    <TextBlock Name="Title" Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{Binding PackageTitle}"/>
-                </controls:PackageDetailsSettingsCard.Header>
-                <controls:PackageDetailsSettingsCard.Description>
-                    <StackPanel Orientation="Horizontal" Spacing="3">
-                        <TextBlock Name="Version" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageShortDescription}"/>
-                        <TextBlock Name="Divider" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}">|</TextBlock>
-                        <ContentControl IsTabStop="False" Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
-                    </StackPanel>
-                </controls:PackageDetailsSettingsCard.Description>
-                <controls:PackageDetailsSettingsCard.HeaderIcon>
-                    <ImageIcon AutomationProperties.Name="{Binding PackageTitle}" Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
-                </controls:PackageDetailsSettingsCard.HeaderIcon>
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <ComboBox
-                        x:Uid="VersionComboBox"
-                        Visibility="{Binding ShowVersionList}"
-                        BorderThickness="0"
-                        FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        IsTextSearchEnabled="True"
-                        Background="Transparent"
-                        HorizontalAlignment="Left"
-                        SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
-                        ItemsSource="{Binding AvailableVersions}" />
-                    <Button
-                        ToolTipService.ToolTip="{Binding ActionButtonDescription}"
-                        AutomationProperties.Name="{Binding ActionButtonDescription}"
-                        AutomationProperties.AutomationId="{Binding ButtonAutomationId}"
-                        Padding="5"
-                        Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
-                        <FontIcon
-                            Glyph="{Binding IsSelected,Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
-                            FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                            FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-                    </Button>
-                </StackPanel>
-            </controls:PackageDetailsSettingsCard>
         </Grid>
     </ControlTemplate>
 </ResourceDictionary>

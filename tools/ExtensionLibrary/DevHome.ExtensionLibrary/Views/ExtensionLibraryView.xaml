@@ -1,16 +1,16 @@
-<!-- Copyright (c) Microsoft Corporation.. -->
-<!-- Licensed under the MIT License. -->
+<!--  Copyright (c) Microsoft Corporation..  -->
+<!--  Licensed under the MIT License.  -->
 
 <commonviews:ToolPage
     x:Class="DevHome.ExtensionLibrary.Views.ExtensionLibraryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:commonviews="using:DevHome.Common.Views">
+    xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
@@ -19,8 +19,16 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
-            <converters:DoubleToVisibilityConverter x:Key="InverseCountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
+            <converters:DoubleToVisibilityConverter
+                x:Key="CountToVisibilityConverter"
+                FalseValue="Visible"
+                GreaterThan="0"
+                TrueValue="Collapsed" />
+            <converters:DoubleToVisibilityConverter
+                x:Key="InverseCountToVisibilityConverter"
+                FalseValue="Collapsed"
+                GreaterThan="0"
+                TrueValue="Visible" />
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="ExtensionsBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
@@ -37,118 +45,159 @@
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <commonviews:Banner x:Uid="ExtensionsBanner"
-                                    TextWidth="350"
-                                    Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner,Mode=OneWay}"
-                                    HideButtonVisibility="true"
-                                    HideButtonCommand="{x:Bind BannerViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"
-                                    ButtonCommand="{x:Bind BannerViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
-                                    BackgroundSource="{ThemeResource ExtensionsBannerBack}"
-                                    OverlaySource="{ThemeResource ExtensionsBannerFront}"
-                                    Margin="0,0,0,28" />
+                <commonviews:Banner
+                    x:Uid="ExtensionsBanner"
+                    Margin="0,0,0,28"
+                    BackgroundSource="{ThemeResource ExtensionsBannerBack}"
+                    ButtonCommand="{x:Bind BannerViewModel.ExtensionsBannerButtonCommand, Mode=OneWay}"
+                    HideButtonCommand="{x:Bind BannerViewModel.HideExtensionsBannerButtonCommand, Mode=OneWay}"
+                    HideButtonVisibility="true"
+                    OverlaySource="{ThemeResource ExtensionsBannerFront}"
+                    TextWidth="350"
+                    Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner, Mode=OneWay}" />
 
-                <!-- Installed items -->
-                <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
-                    <TextBlock x:Uid="InstalledTextBlock"
-                               Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                               VerticalAlignment="Center"/>
-                    <Button x:Uid="GetUpdatesButton"
-                            AutomationProperties.AutomationId="GetUpdatesButton"
-                            HorizontalAlignment="Right"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}"
-                            Command="{x:Bind ViewModel.GetUpdatesButtonCommand}"/>
-                </Grid>
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
-                            <ctControls:SettingsExpander Header="{x:Bind DisplayName}"
-                                                   Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
-                                                   Margin="{ThemeResource SettingsCardMargin}"
-                                                   ItemsSource="{x:Bind InstalledExtensionsList}"
-                                                   IsExpanded="False">
-                                <ctControls:SettingsExpander.HeaderIcon>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
-                                </ctControls:SettingsExpander.HeaderIcon>
-                                <StackPanel>
-                                    <!-- This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396 -->
-                                    <Button x:Uid="MoreOptionsButton"
+                <!--  Installed items  -->
+                <Grid x:Uid="InstalledExtensionsGrid" Margin="{StaticResource SettingsPageSubTitleMargin}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        x:Uid="InstalledTextBlock"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+                    <Button
+                        x:Uid="GetUpdatesButton"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        AutomationProperties.AutomationId="GetUpdatesButton"
+                        Command="{x:Bind ViewModel.GetUpdatesButtonCommand}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}" />
+                    <ItemsRepeater
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
+                                <ctControls:SettingsExpander
+                                    Margin="{ThemeResource SettingsCardMargin}"
+                                    Description="{x:Bind GeneratePackageDetails(Version, Publisher, InstalledDate), Mode=OneWay}"
+                                    Header="{x:Bind DisplayName}"
+                                    IsExpanded="False"
+                                    ItemsSource="{x:Bind InstalledExtensionsList}">
+                                    <ctControls:SettingsExpander.HeaderIcon>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;" />
+                                    </ctControls:SettingsExpander.HeaderIcon>
+                                    <StackPanel>
+                                        <!--  This StackPanel is a workaround for the bug https://github.com/CommunityToolkit/Windows/issues/396  -->
+                                        <Button
+                                            x:Uid="MoreOptionsButton"
+                                            Height="36"
+                                            MinWidth="36"
                                             AutomationProperties.AutomationId="{x:Bind AutomationMoreOptionsPfn}"
-                                            Content="&#xe712;"
-                                            Height="36" MinWidth="36"
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                             Background="Transparent"
-                                            BorderThickness="0">
-                                        <Button.Flyout>
-                                            <MenuFlyout>
-                                                <MenuFlyoutItem
-                                                    x:Uid="UninstallItem"
-                                                    Command="{x:Bind UninstallButtonCommand}">
-                                                </MenuFlyoutItem>
-                                            </MenuFlyout>
-                                        </Button.Flyout>
-                                    </Button>
-                                </StackPanel>
-                                <ctControls:SettingsExpander.ItemTemplate>
-                                    <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
-                                        <ctControls:SettingsCard Header="{x:Bind DisplayName}"
-                                                           CornerRadius="0,0,3,3"
-                                                           IsClickEnabled="{x:Bind HasSettingsProvider}"
-                                                           Command="{x:Bind NavigateSettingsCommand}">
-                                            <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
-                                        </ctControls:SettingsCard>
-                                    </DataTemplate>
-                                </ctControls:SettingsExpander.ItemTemplate>
-                            </ctControls:SettingsExpander>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-                <!-- No extensions message -->
-                <TextBlock x:Uid="NoExtensionsAdded"
-                           Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
-                           Margin="0,50" 
-                           HorizontalAlignment="Center" />
+                                            BorderThickness="0"
+                                            Content="&#xe712;"
+                                            FontFamily="{StaticResource SymbolThemeFontFamily}">
+                                            <Button.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem x:Uid="UninstallItem" Command="{x:Bind UninstallButtonCommand}" />
+                                                </MenuFlyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </StackPanel>
+                                    <ctControls:SettingsExpander.ItemTemplate>
+                                        <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
+                                            <ctControls:SettingsCard
+                                                Command="{x:Bind NavigateSettingsCommand}"
+                                                CornerRadius="0,0,3,3"
+                                                Header="{x:Bind DisplayName}"
+                                                IsClickEnabled="{x:Bind HasSettingsProvider}">
+                                                <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}" />
+                                            </ctControls:SettingsCard>
+                                        </DataTemplate>
+                                    </ctControls:SettingsExpander.ItemTemplate>
+                                </ctControls:SettingsExpander>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </Grid>
+                <!--  No extensions message  -->
+                <TextBlock
+                    x:Uid="NoExtensionsAdded"
+                    Margin="0,50"
+                    HorizontalAlignment="Center"
+                    Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}" />
 
-                <!-- Available items -->
-                <TextBlock x:Uid="AvailableFromStoreTextBlock"
-                           Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
-                            <ctControls:SettingsCard Header="{x:Bind Title}"
-                                               Description="{x:Bind Publisher}"
-                                               Margin="{ThemeResource SettingsCardMargin}"
-                                               CornerRadius="3"
-                                               AutomationProperties.Name="{x:Bind Title}"
-                                               IsClickEnabled="False">
-                                <ctControls:SettingsCard.HeaderIcon>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
-                                </ctControls:SettingsCard.HeaderIcon>
-                                <Button x:Uid="GetButton"
-                                        AutomationProperties.AutomationId="{x:Bind AutomationInstallPfn}"
-                                        Padding="25 4 25 6"
+                <!--  Available items  -->
+                <Grid
+                    x:Name="AvalibleFromStoreGrid"
+                    Margin="{StaticResource SettingsPageSubTitleMargin}"
+                    AutomationProperties.AutomationControlType="Group"
+                    AutomationProperties.Name="Avalible in the Microsoft Store">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        x:Uid="AvailableFromStoreTextBlock"
+                        Grid.Row="0"
+                        Margin="{StaticResource ExtensionLibrarySubTitleMargin}"
+                        Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+                    <ListView
+                        Grid.Row="1"
+                        AutomationProperties.AutomationControlType="Group"
+                        AutomationProperties.Name="Avalible in the Microsoft Store"
+                        ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}"
+                        SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
+                                <ctControls:SettingsCard
+                                    Margin="{ThemeResource SettingsCardMargin}"
+                                    AutomationProperties.Name="{x:Bind Title}"
+                                    CornerRadius="3"
+                                    Description="{x:Bind Publisher}"
+                                    Header="{x:Bind Title}"
+                                    IsClickEnabled="False">
+                                    <ctControls:SettingsCard.HeaderIcon>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;" />
+                                    </ctControls:SettingsCard.HeaderIcon>
+                                    <Button
+                                        x:Uid="GetButton"
                                         MinWidth="118"
+                                        Padding="25,4,25,6"
+                                        AutomationProperties.AutomationId="{x:Bind AutomationInstallPfn}"
                                         Command="{x:Bind LaunchStoreButtonCommand}"
                                         CommandParameter="{x:Bind ProductId}" />
-                            </ctControls:SettingsCard>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-                <!-- No available items messages -->
-                <TextBlock x:Uid="NoAvailableExtensions"
-                           Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
-                           Margin="0,20,0,48"
-                           HorizontalAlignment="Center" />
-                <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
-                    <TextBlock x:Uid="StoreErrorMessage"
-                               Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                               Margin="0,50,0,0"
-                               HorizontalAlignment="Center" />
-                    <HyperlinkButton x:Uid="SendFeedback"
-                                     HorizontalAlignment="Center"
-                                     Command="{x:Bind ViewModel.SendFeedbackClickCommand}">
-                    </HyperlinkButton>
+                                </ctControls:SettingsCard>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+                <!--  No available items messages  -->
+                <TextBlock
+                    x:Uid="NoAvailableExtensions"
+                    Margin="0,20,0,48"
+                    HorizontalAlignment="Center"
+                    Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}" />
+                <StackPanel HorizontalAlignment="Center" Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}">
+                    <TextBlock
+                        x:Uid="StoreErrorMessage"
+                        Margin="0,50,0,0"
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                    <HyperlinkButton
+                        x:Uid="SendFeedback"
+                        HorizontalAlignment="Center"
+                        Command="{x:Bind ViewModel.SendFeedbackClickCommand}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
