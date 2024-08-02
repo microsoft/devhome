@@ -38,9 +38,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
-
-    [ObservableProperty]
-    private PIInsightsService _insightsService;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -355,7 +353,7 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(PIInsightsService.UnreadCount))
         {
-            UnreadInsightsCount = InsightsService.UnreadCount;
+            UnreadInsightsCount = _insightsService.UnreadCount;
             InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
         }
     }
