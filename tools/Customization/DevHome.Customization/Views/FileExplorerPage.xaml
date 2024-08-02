@@ -6,84 +6,16 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Customization.Views" 
     xmlns:converters="using:CommunityToolkit.WinUI.Converters" 
-    xmlns:viewmodels="using:DevHome.Customization.ViewModels"
+    xmlns:viewmodels="using:DevHome.Customization.ViewModels" 
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <Page.Resources>
-        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
-
-        <DataTemplate x:Key="LocalRepositoryProviderButtonTemplate" x:DataType="viewmodels:FileExplorerSourceControlIntegrationViewModel">
-            <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddRepository_Click" Tag="{x:Bind}"/>
-        </DataTemplate>
-
-    </Page.Resources>
-
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
-        <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <!-- This is initial experimental UI. The UI will be updated in future and is temporary -->
-            <StackPanel x:Name="TrackRepository" Visibility="Collapsed">
+        <Grid>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <views:FileExplorerView />
-                <TextBlock x:Uid="EnhanceRepository" Margin="0,20,0,0"/>
-                <StackPanel Orientation="Horizontal" Margin="0,20,0,20">
-                    <TextBox x:Name="RootPathTextBox"
-                  x:Uid="RootPathTextBox"
-                  PlaceholderText="Path"
-                  MinWidth="300" 
-                  HorizontalAlignment="Left"/>
-
-                    <Button  
-                         Content="Add" 
-                         Click="AddButton_Click" 
-                         Margin="10, 27, 0, 0">
-                        <Button.Resources>
-                            <Flyout x:Name="LocalRepositoryProvidersFlyout" Placement="Bottom">
-                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.LocalRepositoryProviders}"
-                                               ItemTemplate="{StaticResource LocalRepositoryProviderButtonTemplate}"
-                                               HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                                    <ItemsRepeater.Layout>
-                                        <StackLayout Orientation="Vertical" Spacing="8" />
-                                    </ItemsRepeater.Layout>
-                                </ItemsRepeater>
-                                <Flyout.FlyoutPresenterStyle>
-                                    <Style TargetType="FlyoutPresenter">
-                                        <Setter Property="IsTabStop" Value="True"/>
-                                        <Setter Property="TabNavigation" Value="Cycle"/>
-                                        <Setter Property="MinWidth" Value="150" />
-                                    </Style>
-                                </Flyout.FlyoutPresenterStyle>
-                            </Flyout>
-                        </Button.Resources>
-                    </Button>
-                    <InfoBar x:Name="RootPathErrorBar"
-                         x:Uid="ErrorRootPathValidation"
-                         Title="Error"
-                         Margin="10, 10, 10, 0"
-                         IsOpen="False"
-                         Severity="Error">
-                    </InfoBar>
-                </StackPanel>
-                <StackPanel  x:Name="RemoveRepository" Orientation="Horizontal" Margin="0,20,0,20">
-                    <TextBox x:Name="RemovePathTextBox"
-                             x:Uid="RemoveRepository"
-                             MinWidth="300"
-                             VerticalAlignment="Center"
-                             HorizontalAlignment="Left"/>
-                    <Button  Content="Remove" 
-                             Click="RemoveButton_Click" 
-                             Margin="10, 5, 0, 0"/>
-                </StackPanel>
-                <StackPanel x:Name="DisplayTrackRepository" Visibility="Collapsed">
-                    <TextBlock Text="Git" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.TrackedRepositories}"
-                               HorizontalAlignment="Stretch" 
-                               VerticalAlignment="Center" />
-                </StackPanel>
+                <views:AddRepositoriesView Visibility="{x:Bind ViewModel.IsFeatureEnabled}"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>

@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Views\AddRepositoriesView.xaml" />
     <None Remove="Views\FileExplorerPage.xaml" />
     <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
@@ -74,4 +75,8 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
     <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Remove="Views\AddRepositoriesView.xaml" />
+  </ItemGroup>
 </Project>

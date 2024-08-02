@@ -157,6 +157,23 @@ public class RepositoryTracking
         }
     }
 
+    public void ModifySourceControlProviderForTrackedRepository(string extensionCLSID, string rootPath)
+    {
+        lock (_trackRepoLock)
+        {
+            if (TrackedRepositories.TryGetValue(rootPath, out var existingExtensionCLSID))
+            {
+                TrackedRepositories[rootPath] = extensionCLSID;
+                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                _log.Information("Source control extension for tracked repository modified");
+            }
+            else
+            {
+                _log.Error("The root path is not registered for File Explorer Source Control Integration");
+            }
+        }
+    }
+
     public void ReloadRepositoryStoreIfChangesDetected()
     {
         var lastTimeModified = System.IO.File.GetLastWriteTime(Path.Combine(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName));
