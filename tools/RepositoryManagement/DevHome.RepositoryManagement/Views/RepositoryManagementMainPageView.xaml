@@ -14,7 +14,24 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <commonviews:ToolPage.Resources>
-        <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
+        <ResourceDictionary>
+            <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style x:Key="HorizontalThreeDotsStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Content" Value="&#xE712;" />
+                <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Width" Value="50" />
+                <Setter Property="Height" Value="36" />
+                <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+            </Style>
+        </ResourceDictionary>
     </commonviews:ToolPage.Resources>
     <Grid>
         <Grid.Resources>
@@ -83,21 +100,27 @@
                 <ComboBoxItem Content="Z to A" />
             </ComboBox>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Padding="0,10,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <ListView Margin="{ThemeResource HeaderMargin}" ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}">
+            <ListView
+                Margin="{ThemeResource HeaderMargin}"
+                ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
+                ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                SelectionMode="None">
                 <ListView.Header>
                     <Grid
+                        Margin="0,0,0,5"
                         Padding="0,0,0,5"
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                         BorderThickness="0,0,0,1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
+                            <ColumnDefinition Width="2*" />
                             <ColumnDefinition />
                             <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="40" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Name" />
                         <TextBlock Grid.Column="1" Text="Clone path" />
@@ -107,28 +130,34 @@
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:RepositoryManagementItemViewModel">
-                        <Grid>
+                        <Grid ColumnSpacing="10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
+                                <ColumnDefinition Width="2*" />
                                 <ColumnDefinition />
                                 <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="35" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{x:Bind RepositoryName}" />
+                            <TextBlock
+                                Grid.Column="0"
+                                Text="{x:Bind RepositoryName}"
+                                ToolTipService.ToolTip="{x:Bind RepositoryName}" />
                             <TextBlock
                                 Grid.Column="1"
                                 Text="{x:Bind ClonePath}"
                                 ToolTipService.ToolTip="{x:Bind ClonePath}" />
-                            <TextBlock Grid.Column="2" Text="{x:Bind LatestCommit}" />
-                            <TextBlock Grid.Column="3" Text="{x:Bind Branch}" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Text="{x:Bind LatestCommit}"
+                                ToolTipService.ToolTip="{x:Bind LatestCommit}" />
+                            <TextBlock
+                                Grid.Column="3"
+                                Text="{x:Bind Branch}"
+                                ToolTipService.ToolTip="{x:Bind Branch}" />
                             <Button
                                 x:Uid="MoreOptionsButton"
                                 Grid.Column="4"
                                 Style="{StaticResource HorizontalThreeDotsStyle}">
-                                <Button.Content>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE712;" />
-                                </Button.Content>
                                 <Button.Flyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Text="Open in File Explorer" />
