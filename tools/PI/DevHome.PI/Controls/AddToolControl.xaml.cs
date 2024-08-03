@@ -41,6 +41,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     private readonly string _allFilesFilter = CommonHelper.GetLocalizedString("FileDialogFilterAllFiles");
 
     private readonly char[] _fileDialogFilter;
+    private readonly ExternalToolsHelper _externalTools;
 
     // We have 3 sets of operations, and we arbitrarily divide the progress timing into 3 equal segments.
     private const int ShortcutProcessingEndIndex = 33;
@@ -83,6 +84,9 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
     public AddToolControl()
     {
         _fileDialogFilter = CreateFileDialogFilter().ToCharArray();
+
+        _externalTools = Application.Current.GetService<ExternalToolsHelper>();
+
         InitializeComponent();
         LoadingProgressTextRing.DataContext = this;
     }
@@ -148,7 +152,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             return;
         }
 
-        ExternalToolsHelper.Instance.AddExternalTool(tool);
+        _externalTools.AddExternalTool(tool);
         var toolRegisteredMessage = CommonHelper.GetLocalizedString("ToolRegisteredMessage", ToolNameTextBox.Text);
         WindowHelper.ShowTimedMessageDialog(this, toolRegisteredMessage, _messageCloseText);
         ClearValues();

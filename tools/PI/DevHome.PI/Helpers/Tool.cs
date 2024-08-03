@@ -29,6 +29,7 @@ public abstract partial class Tool : ObservableObject
 
     public string Name { get; private set; }
 
+    [JsonConverter(typeof(EnumStringConverter<ToolType>))]
     public ToolType Type { get; private set; }
 
     public Tool(string name, ToolType type, bool isPinned)
@@ -51,6 +52,7 @@ public abstract partial class Tool : ObservableObject
     {
     }
 
+    [property: JsonIgnore]
     [RelayCommand]
     public void TogglePinnedState()
     {
@@ -62,6 +64,7 @@ public abstract partial class Tool : ObservableObject
         InvokeTool(options);
     }
 
+    [property: JsonIgnore]
     [RelayCommand]
     public void Invoke()
     {
@@ -73,6 +76,7 @@ public abstract partial class Tool : ObservableObject
 
     internal virtual void InvokeTool(ToolLaunchOptions options) => throw new NotImplementedException();
 
+    [property: JsonIgnore]
     [RelayCommand]
     public abstract void UnregisterTool();
 }

@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -58,9 +58,9 @@ public partial class ExternalTool : Tool
         string arguments = "",
         string appUserModelId = "",
         string iconFilePath = "",
-        ToolType toolType = ToolType.Unknown,
+        ToolType type = ToolType.Unknown,
         bool isPinned = false)
-        : base(name, toolType, isPinned)
+        : base(name, type, isPinned)
     {
         Executable = executable;
         ActivationType = activationType;
@@ -230,7 +230,9 @@ public partial class ExternalTool : Tool
                     {
                         FileName = finalExecutable,
                         Arguments = finalArguments,
-                        UseShellExecute = true,
+
+                        // If we want to redirect standard out, we can't use shell execute
+                        UseShellExecute = !options.RedirectStandardOut,
                         RedirectStandardOutput = options.RedirectStandardOut,
                     };
                     process = Process.Start(startInfo);
@@ -303,6 +305,6 @@ public partial class ExternalTool : Tool
 
     public override void UnregisterTool()
     {
-        ExternalToolsHelper.Instance.RemoveExternalTool(this);
+        Application.Current.GetService<ExternalToolsHelper>().RemoveExternalTool(this);
     }
 }

@@ -84,7 +84,7 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
        ...but sequences like "cab", "bee", "fed" could be false positives. We need
        more logic to exclude these.
     */
-    private static readonly Regex FindNumbersRegex =
+    private static readonly Regex _findNumbersRegex =
         new(
             pattern: @"(?:0[xX][0-9A-Fa-f]+|-?\b(?:\d+|\d*\.\d+)\b|\b[0-9A-Fa-f]+\b)",
             options: RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -94,7 +94,7 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
         ClipboardContents newContents = new();
 
         // If this text contains a number, show it in different number bases.
-        var matches = FindNumbersRegex.Matches(text);
+        var matches = _findNumbersRegex.Matches(text);
         var converter = new Int32Converter();
 
         foreach (var match in matches.Cast<Match>())

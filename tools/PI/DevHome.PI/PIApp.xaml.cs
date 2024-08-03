@@ -48,7 +48,9 @@ public partial class App : Application, IApp
                 services.AddSingleton<TelemetryReporter>();
                 services.AddSingleton<PIAppInfoService>();
                 services.AddSingleton<WERHelper>();
+                services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
+                services.AddSingleton<InternalToolsHelper>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();

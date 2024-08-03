@@ -51,6 +51,9 @@ public partial class BarWindowHorizontal : WindowEx
     private readonly BarWindowViewModel _viewModel;
     private readonly UISettings _uiSettings = new();
 
+    private readonly ExternalToolsHelper _externalTools;
+    private readonly InternalToolsHelper _internalTools;
+
     private readonly SolidColorBrush _darkModeActiveCaptionBrush;
     private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
     private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
@@ -77,7 +80,8 @@ public partial class BarWindowHorizontal : WindowEx
     public BarWindowHorizontal(BarWindowViewModel model)
     {
         _viewModel = model;
-
+        _externalTools = Application.Current.GetService<ExternalToolsHelper>();
+        _internalTools = Application.Current.GetService<InternalToolsHelper>();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         InitializeComponent();
@@ -156,12 +160,12 @@ public partial class BarWindowHorizontal : WindowEx
     {
         AddManageToolsOptionToCommandBar();
 
-        foreach (ExternalTool tool in ExternalToolsHelper.Instance.AllExternalTools)
+        foreach (ExternalTool tool in _externalTools.AllExternalTools)
         {
             AddToolToCommandBar(tool);
         }
 
-        foreach (Tool tool in InternalToolsHelper.Instance.AllInternalTools)
+        foreach (Tool tool in _internalTools.AllInternalTools)
         {
             AddToolToCommandBar(tool);
         }

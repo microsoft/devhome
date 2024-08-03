@@ -8,13 +8,11 @@ namespace DevHome.PI.Helpers;
 
 internal sealed class InternalToolsHelper
 {
-    public static readonly InternalToolsHelper Instance = new();
-
     private readonly List<Tool> _allInternalTools;
 
     public ReadOnlyCollection<Tool> AllInternalTools => _allInternalTools.AsReadOnly();
 
-    private InternalToolsHelper()
+    public InternalToolsHelper()
     {
         // All internal tools should be in this list
         _allInternalTools = new List<Tool>

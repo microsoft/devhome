@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -9,8 +10,11 @@ namespace DevHome.PI.Controls;
 
 public sealed partial class EditToolsControl : UserControl
 {
+    private readonly ExternalToolsHelper _externalTools;
+
     public EditToolsControl()
     {
+        _externalTools = Application.Current.GetService<ExternalToolsHelper>();
         InitializeComponent();
         EnableUnregisterButton();
     }
@@ -22,7 +26,7 @@ public sealed partial class EditToolsControl : UserControl
         {
             if (selectedItems[i] is ExternalTool tool)
             {
-                ExternalToolsHelper.Instance.RemoveExternalTool(tool);
+                _externalTools.RemoveExternalTool(tool);
             }
         }
 

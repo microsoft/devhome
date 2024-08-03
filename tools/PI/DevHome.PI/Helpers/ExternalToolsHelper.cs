@@ -60,7 +60,7 @@ internal sealed class ExternalToolsHelper
 
     internal static int ToolsCollectionVersion { get; private set; } = 2;
 
-    private ExternalToolsHelper()
+    public ExternalToolsHelper()
     {
         string localFolder;
         if (RuntimeHelper.IsMSIX)
