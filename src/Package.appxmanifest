@@ -90,7 +90,7 @@
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="DevHome.FileExplorerSourceControlIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Source Control Core">
-              <com:Class Id="40FE4D6E-C9A0-48b4-A83E-AAA1D002C0D5" DisplayName="Core Extension" />
+              <com:Class Id="1212F95B-257E-414e-B44F-F26634BD2627" DisplayName="Core Extension" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
