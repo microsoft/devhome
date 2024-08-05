@@ -15,7 +15,13 @@ namespace FileExplorerSourceControlIntegration;
 
 #nullable enable
 [ComVisible(true)]
+#if CANARY_BUILD
+[Guid("8DDE51FC-3AE8-4880-BD85-CA57DF7E2889")]
+#elif STABLE_BUILD
+[Guid("1212F95B-257E-414e-B44F-F26634BD2627")]
+#else
 [Guid("40FE4D6E-C9A0-48B4-A83E-AAA1D002C0D5")]
+#endif
 public class SourceControlProvider :
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IExtraFolderPropertiesHandler,
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootSelector
