@@ -18,13 +18,13 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private readonly string _workingDirectory;
 
+    private readonly GitDetect _gitDetect = new();
+    private readonly bool _gitInstalled;
+
     private Commit? _head;
     private CommitLogCache? _commits;
 
     private bool _disposedValue;
-
-    private GitDetect _gitDetect = new();
-    private bool _gitInstalled;
 
     public RepositoryWrapper(string rootFolder)
     {
@@ -111,7 +111,6 @@ internal sealed class RepositoryWrapper : IDisposable
         private readonly List<GitStatusEntry> _untracked = new();
         private readonly List<GitStatusEntry> _modified = new();
         private readonly List<GitStatusEntry> _missing = new();
-        private readonly List<GitStatusEntry> _ignored = new();
         private readonly List<GitStatusEntry> _renamedInIndex = new();
         private readonly List<GitStatusEntry> _renamedInWorkDir = new();
         private readonly List<GitStatusEntry> _conflicted = new();
