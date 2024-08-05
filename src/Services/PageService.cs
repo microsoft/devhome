@@ -56,6 +56,7 @@ public class PageService : IPageService
         foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;
+            var isFeaturePresentCheck = experimentalFeature.IsFeaturePresentCheck;
             var isVisible = true;
             foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
             {
@@ -67,7 +68,7 @@ public class PageService : IPageService
                 }
             }
 
-            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
+            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isFeaturePresentCheck, isVisible));
         }
     }
 

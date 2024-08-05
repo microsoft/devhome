@@ -49,6 +49,7 @@
     {
       "identity": "QuietBackgroundProcessesExperiment",
       "enabledByDefault": false,
+      "isFeaturePresentCheck": true,
       "buildTypeOverrides": [
         {
           "buildType": "dev",
