@@ -160,9 +160,14 @@ public partial class BarWindowHorizontal : WindowEx
         {
             AddToolToCommandBar(tool);
         }
+
+        foreach (Tool tool in InternalToolsHelper.Instance.AllInternalTools)
+        {
+            AddToolToCommandBar(tool);
+        }
     }
 
-    private AppBarButton CreateAppBarButton(ExternalTool tool, PinOption pinOption)
+    private AppBarButton CreateAppBarButton(Tool tool, PinOption pinOption)
     {
         AppBarButton button = new AppBarButton
         {
@@ -170,12 +175,9 @@ public partial class BarWindowHorizontal : WindowEx
             Tag = tool,
         };
 
-        button.Icon = new ImageIcon
-        {
-            Source = tool.ToolIcon,
-        };
-
-        button.Click += _viewModel.ExternalToolButton_Click;
+        button.Icon = tool.GetIcon();
+        button.Command = tool.InvokeWithParentCommand;
+        button.CommandParameter = this;
         button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 
         ToolTipService.SetToolTip(button, tool.Name);
@@ -183,7 +185,7 @@ public partial class BarWindowHorizontal : WindowEx
         return button;
     }
 
-    private MenuFlyout CreateMenuFlyout(ExternalTool tool, PinOption pinOption)
+    private MenuFlyout CreateMenuFlyout(Tool tool, PinOption pinOption)
     {
         MenuFlyout menu = new MenuFlyout();
         menu.Items.Add(CreatePinMenuItem(tool, pinOption));
@@ -192,7 +194,7 @@ public partial class BarWindowHorizontal : WindowEx
         return menu;
     }
 
-    private void AddToolToCommandBar(ExternalTool tool)
+    private void AddToolToCommandBar(Tool tool)
     {
         // We create 2 copies of the button, one for the primary commands list and one for the secondary commands list.
         // We're not allowed to put the same button in both lists.
@@ -210,20 +212,13 @@ public partial class BarWindowHorizontal : WindowEx
 
         tool.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(ExternalTool.ToolIcon))
+            if (args.PropertyName == nameof(Tool.ToolIconSource))
             {
                 // An ImageIcon can only be set once, so we can't share it with both buttons
-                primaryCommandButton.Icon = new ImageIcon
-                {
-                    Source = tool.ToolIcon,
-                };
-
-                secondaryCommandButton.Icon = new ImageIcon
-                {
-                    Source = tool.ToolIcon,
-                };
+                primaryCommandButton.Icon = tool.GetIcon();
+                secondaryCommandButton.Icon = tool.GetIcon();
             }
-            else if (args.PropertyName == nameof(ExternalTool.IsPinned))
+            else if (args.PropertyName == nameof(Tool.IsPinned))
             {
                 // If a tool is pinned, we'll add it to the primary commands list, otherwise the secondary commands list
                 secondaryCommandButton.ContextFlyout = CreateMenuFlyout(tool, tool.IsPinned ? PinOption.UnPin : PinOption.Pin);
@@ -255,7 +250,7 @@ public partial class BarWindowHorizontal : WindowEx
         MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
     }
 
-    private MenuFlyoutItem CreatePinMenuItem(ExternalTool tool, PinOption pinOption)
+    private MenuFlyoutItem CreatePinMenuItem(Tool tool, PinOption pinOption)
     {
         MenuFlyoutItem item = new MenuFlyoutItem
         {
@@ -267,7 +262,7 @@ public partial class BarWindowHorizontal : WindowEx
         return item;
     }
 
-    private MenuFlyoutItem CreateUnregisterMenuItem(ExternalTool tool)
+    private MenuFlyoutItem CreateUnregisterMenuItem(Tool tool)
     {
         MenuFlyoutItem unRegister = new MenuFlyoutItem
         {

@@ -39,18 +39,6 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     private string _diskUsage = string.Empty;
 
     [ObservableProperty]
-    private string _clipboardContentsHex = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsDec = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsCode = string.Empty;
-
-    [ObservableProperty]
-    private string _clipboardContentsHelp = string.Empty;
-
-    [ObservableProperty]
     private string _title = string.Empty;
 
     [ObservableProperty]
@@ -80,7 +68,6 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
-        ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
 
         _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
         _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
@@ -178,18 +165,6 @@ public partial class ExpandedViewControlViewModel : ObservableObject
                 });
             }
         }
-    }
-
-    private void Clipboard_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var clipboardContents = ClipboardMonitor.Instance.Contents;
-        _dispatcher.TryEnqueue(() =>
-        {
-            ClipboardContentsHex = clipboardContents.Hex;
-            ClipboardContentsDec = clipboardContents.Dec;
-            ClipboardContentsCode = clipboardContents.Code;
-            ClipboardContentsHelp = clipboardContents.Help;
-        });
     }
 
     private void AddPagesIfNecessary(Process? process)

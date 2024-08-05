@@ -51,70 +51,11 @@
             <toolkit:GridSplitter 
                 Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
 
-            <!-- Page content -->
-            <Grid Grid.Column="2" Margin="16,0,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Frame x:Name="PageFrame"/>
-
-                <Expander
-                    x:Name="ClipboardErrorExpander"
-                    Grid.Row="1"
-                    IsExpanded="False" 
-                    ExpandDirection="Up"
-                    HorizontalAlignment="Stretch" 
-                    VerticalAlignment="Top" 
-                    Padding="0,6" 
-                    HorizontalContentAlignment="Stretch">
-                    <Expander.Header>
-                        <TextBlock x:Uid="ClickboardErrorTextBlock" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
-                    </Expander.Header>
-                    <Grid>
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
-                                <Setter Property="Margin" Value="12,0,0,0"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                            <Style TargetType="TextBox">
-                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
-                                <Setter Property="IsReadOnly" Value="True"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Margin" Value="0,8,0,0"/>
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                            </Style>
-                        </Grid.Resources>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Uid="HexLabelTextBlock"/>
-                        <TextBox x:Name="ErrorHexTextBox" Grid.Column="1" Text="{x:Bind _viewModel.ClipboardContentsHex, Mode=OneWay}"/>
-                        <TextBlock x:Uid="DecLabelTextBlock" Grid.Row="1"/>
-                        <TextBox x:Name="ErrorDecTextBox" Grid.Row="1" Grid.Column="1" Text="{x:Bind _viewModel.ClipboardContentsDec, Mode=OneWay}"/>
-                        <TextBlock x:Uid="CodeLabelTextBlock" Grid.Row="2"/>
-                        <TextBox x:Name="ErrorCodeTextBox" Grid.Row="2" Grid.Column="1" Text="{x:Bind _viewModel.ClipboardContentsCode, Mode=OneWay}"/>
-                        <TextBlock x:Uid="HelpLabelTextBlock" Grid.Row="3"/>
-                        <TextBox x:Name="ErrorHelpTextBox" Grid.Row="3" Grid.Column="1" 
-                         ScrollViewer.HorizontalScrollBarVisibility="Auto" Height="36" Text="{x:Bind _viewModel.ClipboardContentsHelp, Mode=OneWay}"/>
-                    </Grid>
-                </Expander>
-
-            </Grid>
+            <Frame x:Name="PageFrame" Grid.Column="2" Margin="16,0,0,0"/>
         </Grid>
 
         <!-- Status bar -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -147,6 +88,5 @@
                 </ToggleSwitch>
             </StackPanel>
         </Grid>
-
     </Grid>
 </UserControl>

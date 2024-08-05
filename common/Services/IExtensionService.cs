@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.AppExtensions;
 
 namespace DevHome.Common.Services;
 
@@ -16,11 +15,9 @@ public interface IExtensionService
 
     Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledExtensions = false);
 
-    Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync();
+    IExtensionWrapper? GetInstalledExtension(string extensionUniqueId);
 
     Task SignalStopExtensionsAsync();
-
-    Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync();
 
     public event EventHandler OnExtensionsChanged;
 

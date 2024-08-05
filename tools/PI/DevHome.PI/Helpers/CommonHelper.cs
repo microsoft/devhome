@@ -4,10 +4,10 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
-using System.Management.Automation;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel;
 using Windows.Wdk.System.Threading;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
 using PInvokeWdk = Windows.Wdk.PInvoke;
@@ -141,5 +140,32 @@ internal sealed class CommonHelper
         }
 
         return activationArgs;
+    }
+
+    private static readonly Int32Converter _converter = new();
+
+    public static int? ParseStringToInt(string value)
+    {
+        int? valueAsInt;
+
+        try
+        {
+            if (_converter.IsValid(value))
+            {
+                // Int32Converter.ConvertFromString() does a pretty good job of parsing numbers, except when given a hex
+                // number that isn't prefixed with 0x. If it fails, try parsing it using int.Parse().
+                valueAsInt = (int?)_converter.ConvertFromString(value);
+            }
+            else
+            {
+                valueAsInt = int.Parse(value, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
+            }
+        }
+        catch
+        {
+            return null;
+        }
+
+        return valueAsInt;
     }
 }
