@@ -20,7 +20,7 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
 
     public ExperimentalFeaturesViewModel(IExperimentationService experimentationService)
     {
-        ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsVisible && (!x.IsFeaturePresentCheck || IsFeaturePresent(x))).OrderBy(x => x.Id).ToList();
+        ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsVisible && (!x.NeedsFeaturePresenceCheck || IsFeaturePresent(x))).OrderBy(x => x.Id).ToList();
 
         var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
@@ -30,10 +30,15 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
         };
     }
 
-    // A crude function to check for feature presence
+    /// <summary>
+    /// Checks if the specified experimental feature is present on the machine.
+    /// This method should be extended to handle new features by adding the corresponding
+    /// feature check logic. If a feature is supported on the current machine, it should
+    /// return false here.
+    /// </summary>
     private bool IsFeaturePresent(ExperimentalFeature experimentalFeature)
     {
-        if (experimentalFeature.Id == "QuietBackgroundProcessesExperiment")
+        if (string.Equals(experimentalFeature.Id, "QuietBackgroundProcessesExperiment", StringComparison.OrdinalIgnoreCase))
         {
             return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
         }

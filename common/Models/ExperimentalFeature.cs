@@ -21,7 +21,7 @@ public partial class ExperimentalFeature : ObservableObject
 
     public string Id { get; init; }
 
-    public bool IsFeaturePresentCheck { get; init; }
+    public bool NeedsFeaturePresenceCheck { get; init; }
 
     public bool IsVisible { get; init; }
 
@@ -29,11 +29,11 @@ public partial class ExperimentalFeature : ObservableObject
 
     public static IQuickstartSetupService? QuickstartSetupService { get; set; }
 
-    public ExperimentalFeature(string id, bool enabledByDefault, bool isFeaturePresentCheck, bool visible = true)
+    public ExperimentalFeature(string id, bool enabledByDefault, bool needsFeaturePresenceCheck, bool visible = true)
     {
         Id = id;
         _isEnabledByDefault = enabledByDefault;
-        IsFeaturePresentCheck = isFeaturePresentCheck;
+        NeedsFeaturePresenceCheck = needsFeaturePresenceCheck;
         IsVisible = visible;
 
         IsEnabled = CalculateEnabled();

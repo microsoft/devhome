@@ -42,6 +42,7 @@ graph TD;
     DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow;
     DevHome.Services.WindowsPackageManager-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow.ElevatedComponent;
+    DevHome.QuietBackgroundProcesses.ElevatedServer.Projection-->DevHome.Settings;
 ```
 
 ## Dev Home Core
