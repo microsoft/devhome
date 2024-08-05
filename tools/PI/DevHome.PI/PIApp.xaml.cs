@@ -47,6 +47,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<INavigationService, PINavigationService>();
                 services.AddSingleton<TelemetryReporter>();
                 services.AddSingleton<PIAppInfoService>();
+                services.AddSingleton<PIInsightsService>();
                 services.AddSingleton<WERHelper>();
                 services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
@@ -58,7 +59,6 @@ public partial class App : Application, IApp
                 // Views and ViewModels
                 services.AddSingleton<AppDetailsPage>();
                 services.AddSingleton<AppDetailsPageViewModel>();
-                services.AddSingleton<BarWindowViewModel>();
                 services.AddSingleton<InsightsPage>();
                 services.AddSingleton<InsightsPageViewModel>();
                 services.AddSingleton<ModulesPage>();

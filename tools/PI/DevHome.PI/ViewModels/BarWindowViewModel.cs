@@ -1,27 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.Graphics;
 using Windows.System;
-using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.ViewModels;
 
@@ -43,6 +39,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -147,6 +144,9 @@ public partial class BarWindowViewModel : ObservableObject
         _externalToolsHelper = Application.Current.GetService<ExternalToolsHelper>();
         ((INotifyCollectionChanged)_externalToolsHelper.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+
+        _insightsService = Application.Current.GetService<PIInsightsService>();
+        _insightsService.PropertyChanged += InsightsService_PropertyChanged;
     }
 
     partial void OnShowingExpandedContentChanged(bool value)
@@ -250,9 +250,6 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooser()
     {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
     }
@@ -303,6 +300,7 @@ public partial class BarWindowViewModel : ObservableObject
 
                 // Conversely, the result chooser is only visible if we're not attached to a result
                 IsProcessChooserVisible = process is null;
+                UnreadInsightsCount = 0;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))
@@ -353,6 +351,15 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
+    private void InsightsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(PIInsightsService.UnreadCount))
+        {
+            UnreadInsightsCount = _insightsService.UnreadCount;
+            InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
+        }
+    }
+
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
         tool.Invoke();
@@ -362,12 +369,6 @@ public partial class BarWindowViewModel : ObservableObject
     public void LaunchAdvancedAppsPageInWindowsSettings()
     {
         _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
-    }
-
-    public void UpdateUnreadInsightsCount(int count)
-    {
-        UnreadInsightsCount = count;
-        InsightsBadgeOpacity = count > 0 ? 1 : 0;
     }
 
     [RelayCommand]
