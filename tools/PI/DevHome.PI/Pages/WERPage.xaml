@@ -83,7 +83,13 @@
 
         <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="10">
             <SelectorBar x:Name="InfoSelector" SelectionChanged="SelectorBar_SelectionChanged">
-                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True"/>
+                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True">
+                    <SelectorBarItem.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Uid="BucketUsingThisToolStringDefault" Command="{x:Bind ViewModel.ResetBucketingToolCommand}"/>
+                        </MenuFlyout>
+                    </SelectorBarItem.ContextFlyout>
+                </SelectorBarItem>
             </SelectorBar>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <TextBox

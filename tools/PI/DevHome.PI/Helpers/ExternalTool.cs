@@ -47,6 +47,8 @@ public partial class ExternalTool : Tool
 
     public string Arguments { get; private set; }
 
+    public string ExtraInfo { get; private set; }
+
     public string AppUserModelId { get; private set; }
 
     public string IconFilePath { get; private set; }
@@ -56,6 +58,7 @@ public partial class ExternalTool : Tool
         string executable,
         ToolActivationType activationType,
         string arguments = "",
+        string extraInfo = "",
         string appUserModelId = "",
         string iconFilePath = "",
         ToolType type = ToolType.Unknown,
@@ -65,6 +68,7 @@ public partial class ExternalTool : Tool
         Executable = executable;
         ActivationType = activationType;
         Arguments = arguments;
+        ExtraInfo = extraInfo;
         AppUserModelId = appUserModelId;
         IconFilePath = iconFilePath;
 

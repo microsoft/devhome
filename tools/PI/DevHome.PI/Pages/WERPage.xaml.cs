@@ -18,6 +18,8 @@ namespace DevHome.PI.Pages;
 
 public sealed partial class WERPage : Page
 {
+    private readonly string _bucketUsingThisToolString = CommonHelper.GetLocalizedString("BucketUsingThisToolString");
+
     private WERPageViewModel ViewModel { get; }
 
     public WERPage()
@@ -34,6 +36,7 @@ public sealed partial class WERPage : Page
                 Tag = tool,
             };
 
+            selectorBarItem.ContextFlyout = CreateMenuFlyoutForDebugginAnalyzerSelector(tool);
             InfoSelector.Items.Add(selectorBarItem);
         }
 
@@ -52,7 +55,7 @@ public sealed partial class WERPage : Page
                     Text = tool.Name,
                     Tag = tool,
                 };
-
+                selectorBarItem.ContextFlyout = CreateMenuFlyoutForDebugginAnalyzerSelector(tool);
                 InfoSelector.Items.Add(selectorBarItem);
             }
         }
@@ -72,6 +75,23 @@ public sealed partial class WERPage : Page
                 }
             }
         }
+    }
+
+    private MenuFlyout CreateMenuFlyoutForDebugginAnalyzerSelector(Tool tool)
+    {
+        MenuFlyout menuFlyout = new();
+        MenuFlyoutItem item = new()
+        {
+            Text = "Use this for bucketing",
+            Tag = tool,
+        };
+        item.Click += (sender, e) =>
+        {
+            ViewModel.SetBucketingTool(tool);
+        };
+        menuFlyout.Items.Add(item);
+
+        return menuFlyout;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

@@ -19,6 +19,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Grid>
@@ -138,7 +139,16 @@
                 HorizontalAlignment="Left" IsOn="True" Margin="0,0,0,0"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="6" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
+        <Grid Grid.Row="6" Margin="0,6,0,0" x:Name="WERDumpAnalyzerProperties" Visibility="{x:Bind ToolTypeMenuItemDumpAnalyzer.IsChecked, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="OutputRegularExpressionTextBoxLabel" VerticalAlignment="Center" MinWidth="100"/>
+            <TextBox x:Name="OutputRegularExpressionTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,0,0,0" />
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="7" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
             <Button 
                 x:Uid="AddToolsOkButton" x:Name="OkButton" MinWidth="100"
                 Click="OkButton_Click"/>

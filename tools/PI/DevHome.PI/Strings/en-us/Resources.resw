@@ -1206,4 +1206,16 @@
 Dump File creation time: {1}</value>
     <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
   </data>
+  <data name="BucketUsingThisToolString" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
+    <value>Regular Expression for WER bucket</value>
+    <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
+  </data>
 </root>

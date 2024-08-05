@@ -198,6 +198,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
             ToolPathTextBox.Text,
             activationType,
             ArgumentsTextBox.Text,
+            OutputRegularExpressionTextBox.Text,
             _selectedApp?.AppUserModelId ?? string.Empty,
             _selectedApp?.IconFilePath ?? string.Empty,
             toolType,

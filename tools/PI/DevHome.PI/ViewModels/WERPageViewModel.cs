@@ -18,6 +18,7 @@ using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
+using Windows.Win32.Foundation;
 
 namespace DevHome.PI.ViewModels;
 
@@ -26,7 +27,7 @@ public partial class WERPageViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly WERHelper _werHelper;
     private readonly WERAnalyzer _werAnalyzer;
-    private readonly Tool? _selectedAnalysisTool;
+    private Tool? _selectedAnalysisTool;
 
     [ObservableProperty]
     private string _werInfoText;
@@ -125,21 +126,23 @@ public partial class WERPageViewModel : ObservableObject
         });
     }
 
-    private string GetFailureBucket(WERAnalysisReport report)
+    public void SetBucketingTool(Tool tool)
     {
-        // See if this has a failure bucket using the currently selected tool
-        // if not, just return an empty string
-        if (_selectedAnalysisTool is not null)
+        _selectedAnalysisTool = tool;
+        foreach (WERAnalysisReport report in DisplayedReports)
         {
-            WERAnalysis? analysis = report.ToolAnalyses[_selectedAnalysisTool];
-
-            if (analysis is not null && analysis.FailureBucket is not null)
-            {
-                return analysis.FailureBucket;
-            }
+            report.SetFailureBucketTool(tool);
         }
+    }
 
-        return string.Empty;
+    [RelayCommand]
+    public void ResetBucketingTool()
+    {
+        _selectedAnalysisTool = null;
+        foreach (WERAnalysisReport report in DisplayedReports)
+        {
+            report.SetFailureBucketTool(null);
+        }
     }
 
     private void FilterWERReportList(System.Collections.IList? reportList)
@@ -247,11 +250,11 @@ public partial class WERPageViewModel : ObservableObject
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => GetFailureBucket(x)));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => x.FailureBucket));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => GetFailureBucket(x)));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
         }
 
         DisplayedReports = sortedCollection;
@@ -264,11 +267,11 @@ public partial class WERPageViewModel : ObservableObject
     {
         if (sortAscending)
         {
-            return string.Compare(GetFailureBucket(info1), GetFailureBucket(info2), StringComparison.OrdinalIgnoreCase);
+            return string.Compare(info1.FailureBucket, info2.FailureBucket, StringComparison.OrdinalIgnoreCase);
         }
         else
         {
-            return string.Compare(GetFailureBucket(info2), GetFailureBucket(info1), StringComparison.OrdinalIgnoreCase);
+            return string.Compare(info2.FailureBucket, info1.FailureBucket, StringComparison.OrdinalIgnoreCase);
         }
     }
 

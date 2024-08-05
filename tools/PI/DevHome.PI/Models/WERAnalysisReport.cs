@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.UI.Xaml;
 using Serilog;
 
@@ -21,6 +23,9 @@ public partial class WERAnalysisReport : ObservableObject
 
     public WERReport Report { get; }
 
+    [ObservableProperty]
+    private string _failureBucket = string.Empty;
+
     public ReadOnlyDictionary<Tool, WERAnalysis> ToolAnalyses { get; private set; }
 
     public WERAnalysisReport(WERReport report)
@@ -28,6 +33,26 @@ public partial class WERAnalysisReport : ObservableObject
         Report = report;
         ToolAnalyses = new(_toolAnalyses);
         _externalTools = Application.Current.GetService<ExternalToolsHelper>();
+        FailureBucket = report.FailureBucket;
+    }
+
+    public void SetFailureBucketTool(Tool? tool)
+    {
+        if (tool is null)
+        {
+            // Resetting to the internal failure bucket
+            FailureBucket = Report.FailureBucket;
+            return;
+        }
+
+        if (_toolAnalyses.TryGetValue(tool, out WERAnalysis? analysis) && analysis is not null)
+        {
+            FailureBucket = string.IsNullOrEmpty(analysis.FailureBucket) ? string.Empty : analysis.FailureBucket;
+        }
+        else
+        {
+            FailureBucket = string.Empty;
+        }
     }
 
     public void RunToolAnalysis(Tool tool)
@@ -46,9 +71,7 @@ public partial class WERAnalysisReport : ObservableObject
     {
         Debug.Assert(tool.Type.HasFlag(ToolType.DumpAnalyzer), "We should only be running dump analyzers on dumps");
 
-        WERAnalysis? analysis;
-
-        if (_toolAnalyses.TryGetValue(tool, out analysis))
+        if (_toolAnalyses.TryGetValue(tool, out WERAnalysis? analysis))
         {
             analysis.RemoveCachedResults();
             _toolAnalyses.Remove(tool);
@@ -108,6 +131,29 @@ public class WERAnalysis
                     // We'll just have to re-analyze the next time.
                     _log.Warning("Failed to cache analysis results - " + ex.ToString());
                 }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Analysis))
+        {
+            ExternalTool? debuggerTool = AnalysisTool as ExternalTool;
+
+            Debug.Assert(debuggerTool is not null, "We should only be running external tools on dumps");
+
+            // Apply the tool's regular expression to get the failure bucket
+
+            // From MSDN
+            // When using System.Text.RegularExpressions to process untrusted input, pass a time -out value to prevent malicious
+            // users from causing a denial - of - service attack. A time-out value specifies how long a pattern - matching method
+            // should try to find a match before it times out.
+            //
+            // Only let the regex run for a max of 30 seconds...
+            Regex regex = new(debuggerTool.ExtraInfo, RegexOptions.Compiled, new TimeSpan(0, 0, 30));
+            Match match = regex.Match(Analysis);
+
+            if (match.Success)
+            {
+                FailureBucket = match.Groups[1].Value;
             }
         }
     }
