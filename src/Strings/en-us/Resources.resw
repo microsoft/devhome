@@ -323,8 +323,9 @@
     <comment>Git Extension Display Name</comment>
   </data>
   <data name="AppDescriptionGitExt" xml:space="preserve">
-    <value>Allows integration of GIt with File Explorer</value>
+    <value>Allows integration of Git with File Explorer</value>
     <comment>Git Extension Description</comment>
+  </data>
   <data name="WidgetScreenshotAltDisplayCPU" xml:space="preserve">
     <value>CPU widget preview image</value>
   </data>
