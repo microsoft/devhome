@@ -4,6 +4,7 @@
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Win32;
@@ -89,7 +90,9 @@ public class ExtensionWrapper : IExtensionWrapper
                 return false;
             }
 
-            throw;
+            // Getting here is unexpected; log the state to handle other errors in the future.
+            Log.Warning(e, $"Unexpected result in IsRunning(): {e.Message}");
+            return false;
         }
 
         return true;
