@@ -252,8 +252,7 @@ internal sealed class WERHelper : IDisposable
 
     private void FindOrCreateWEREntryFromEventLog(string filepath, DateTime timeGenerated, string moduleName, string executable, string eventGuid, string description, string processId)
     {
-        var converter = new Int32Converter();
-        var pid = (int?)converter.ConvertFromString(processId);
+        int? pid = CommonHelper.ParseStringToInt(processId);
 
         // When adding/updating a report, we need to do it on the dispatcher thread
         _dispatcher.TryEnqueue(() =>

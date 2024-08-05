@@ -95,29 +95,15 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
 
         // If this text contains a number, show it in different number bases.
         var matches = _findNumbersRegex.Matches(text);
-        var converter = new Int32Converter();
 
         foreach (var match in matches.Cast<Match>())
         {
             var original = match.ToString();
 
             // Assume the number is easily identifable as either base 10 or base 16... convert to int.
-            int? errorAsInt;
+            int? errorAsInt = CommonHelper.ParseStringToInt(original);
 
-            try
-            {
-                if (converter.IsValid(original))
-                {
-                    // Int32Converter.ConvertFromString() does a pretty good job of parsing numbers, except when given a hex
-                    // number that isn't prefixed with 0x. If it fails, try parsing it using int.Parse().
-                    errorAsInt = (int?)converter.ConvertFromString(original);
-                }
-                else
-                {
-                    errorAsInt = int.Parse(original, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
-                }
-            }
-            catch
+            if (errorAsInt is null)
             {
                 // If this ConvertFromString() function fails due to a bad format, update the above regex to ensure
                 // the bad string isn't fed to this function.
@@ -126,29 +112,24 @@ internal sealed class ClipboardMonitor : WindowHooker<ClipboardMonitor>, INotify
             }
 
             newContents.Raw = original;
-            newContents.Hex = errorAsInt is not null ? Convert.ToString((int)errorAsInt, 16) : original;
-            newContents.Dec = errorAsInt is not null ? Convert.ToString((int)errorAsInt, 10) : original;
+            newContents.Hex = Convert.ToString((int)errorAsInt, 16);
+            newContents.Dec = Convert.ToString((int)errorAsInt, 10);
 
-            // Is there an error code on here?
-            // if (ErrorLookupHelper.ContainsErrorCode(text, out var hresult))
-            if (errorAsInt is not null)
+            var errors = ErrorLookupHelper.LookupError((int)errorAsInt);
+            if (errors is not null)
             {
-                var errors = ErrorLookupHelper.LookupError((int)errorAsInt);
-                if (errors is not null)
+                foreach (var error in errors)
                 {
-                    foreach (var error in errors)
+                    // Seperate each error with a space. These errors aren't localized, so we may not need to worry
+                    // about the space being in the wrong place.
+                    if (newContents.Code != string.Empty)
                     {
-                        // Seperate each error with a space. These errors aren't localized, so we may not need to worry
-                        // about the space being in the wrong place.
-                        if (newContents.Code != string.Empty)
-                        {
-                            newContents.Code += " ";
-                            newContents.Help += " ";
-                        }
-
-                        newContents.Code += error.Name;
-                        newContents.Help += error.Help;
+                        newContents.Code += " ";
+                        newContents.Help += " ";
                     }
+
+                    newContents.Code += error.Name;
+                    newContents.Help += error.Help;
                 }
             }
 

@@ -20,35 +20,7 @@ public sealed partial class LandingPage : ToolPage
         ViewModel = Application.Current.GetService<LandingPageViewModel>();
         InitializeComponent();
         ViewModel.Initialize(NotificationQueue);
-
-#if DEBUG
-        Loaded += AddDebugButtons;
-#endif
     }
-
-#if DEBUG
-    private void AddDebugButtons(object sender, RoutedEventArgs e)
-    {
-        var onlyLocalButton = new Button
-        {
-            Content = "Load local testing values",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Margin = new Thickness(3, 0, 0, 0),
-            Command = LocalLoadButtonCommand,
-        };
-
-        TitleGrid.Children.Add(onlyLocalButton);
-
-        var column = Grid.GetColumn(EnvironmentsHeader);
-        Grid.SetColumn(onlyLocalButton, column + 1);
-    }
-
-    [RelayCommand]
-    private async Task LocalLoadButton()
-    {
-        await ViewModel.LoadModelAsync(true);
-    }
-#endif
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
