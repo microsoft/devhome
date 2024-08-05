@@ -28,6 +28,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private readonly bool _logMeasures;
     private readonly ObservableCollection<WinLogsEntry> _winLogsOutput;
     private readonly DispatcherQueue _dispatcher;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private ObservableCollection<WinLogsEntry> _winLogEntries;
@@ -61,6 +62,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
         _dispatcher = DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
+
+        _insightsService = Application.Current.GetService<PIInsightsService>();
 
         _winLogEntries = [];
         _winLogsOutput = [];
@@ -200,8 +203,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             _dispatcher.TryEnqueue(() =>
             {
-                var insightsService = Application.Current.GetService<PIInsightsService>();
-                insightsService.AddInsight(newInsight);
+                _insightsService.AddInsight(newInsight);
             });
         }
     }
