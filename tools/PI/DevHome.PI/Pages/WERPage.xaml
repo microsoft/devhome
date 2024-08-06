@@ -68,9 +68,9 @@
             Sorting="WERDataGrid_Sorting"
             ItemsSource="{x:Bind ViewModel.DisplayedReports, Mode=OneWay}">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Tag="DateTime" x:Uid="WERTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180"/>
-                <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WERFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180"/>
-                <controls:DataGridTextColumn Tag="WERBucket" x:Uid="WERBucketColumn" Binding="{Binding FailureBucket, Mode=OneWay}" Width="240"/>
+                <controls:DataGridTextColumn Tag="DateTime" x:Uid="WERTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WERFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180" IsReadOnly="True"/>
+                <controls:DataGridTextColumn Tag="WERBucket" x:Uid="WERBucketColumn" Binding="{Binding FailureBucket, Mode=OneWay}" Width="240" IsReadOnly="True"/>
                 <controls:DataGridTemplateColumn Tag="CrashDumpPath" x:Uid="WERDumpColumn" Width="*">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -83,12 +83,18 @@
 
         <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="10">
             <SelectorBar x:Name="InfoSelector" SelectionChanged="SelectorBar_SelectionChanged">
-                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True"/>
+                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True">
+                    <SelectorBarItem.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Uid="BucketUsingThisToolStringDefault" Command="{x:Bind ViewModel.ResetBucketingToolCommand}"/>
+                        </MenuFlyout>
+                    </SelectorBarItem.ContextFlyout>
+                </SelectorBarItem>
             </SelectorBar>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <TextBox
                     x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True"
-                    Text="{x:Bind ((models:WERDisplayInfo)WERDataGrid.SelectedItem).Report.Description, Mode=OneWay}"
+                    Text="{x:Bind ((models:WERAnalysisReport)WERDataGrid.SelectedItem).Report.Description, Mode=OneWay}"
                     HorizontalAlignment="Stretch" Height="640" TextWrapping="Wrap"/>
             </ScrollViewer>
         </StackPanel>

@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
@@ -46,6 +47,8 @@ public partial class ExternalTool : Tool
 
     public string Arguments { get; private set; }
 
+    public string ExtraInfo { get; private set; }
+
     public string AppUserModelId { get; private set; }
 
     public string IconFilePath { get; private set; }
@@ -55,14 +58,17 @@ public partial class ExternalTool : Tool
         string executable,
         ToolActivationType activationType,
         string arguments = "",
+        string extraInfo = "",
         string appUserModelId = "",
         string iconFilePath = "",
+        ToolType type = ToolType.Unknown,
         bool isPinned = false)
-        : base(name, isPinned)
+        : base(name, type, isPinned)
     {
         Executable = executable;
         ActivationType = activationType;
         Arguments = arguments;
+        ExtraInfo = extraInfo;
         AppUserModelId = appUserModelId;
         IconFilePath = iconFilePath;
 
@@ -105,11 +111,11 @@ public partial class ExternalTool : Tool
         };
     }
 
-    internal async override void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd)
+    internal async override void InvokeTool(ToolLaunchOptions options)
     {
         try
         {
-            var process = await InvokeToolInternal(targetProcessId, hWnd);
+            await InvokeToolInternal(options);
         }
         catch (Exception ex)
         {
@@ -127,26 +133,49 @@ public partial class ExternalTool : Tool
         }
     }
 
-    internal async Task<Process?> InvokeToolInternal(int? pid, HWND? hwnd)
+    internal void ValidateOptions(ToolLaunchOptions options)
+    {
+        // We can only get stdout if we're launching the process via CreateProcess.
+        if (options.RedirectStandardOut && ActivationType != ToolActivationType.Launch)
+        {
+            throw new InvalidOperationException("Can only redirect StandardOut with a CreateProcess launch");
+        }
+    }
+
+    private string CreateCommandLine(ToolLaunchOptions options)
+    {
+        var commandLineArgs = string.Empty;
+        if (!string.IsNullOrEmpty(Arguments))
+        {
+            var argumentVariables = new Dictionary<string, string>();
+            if (options.TargetProcessId.HasValue)
+            {
+                argumentVariables.Add("pid", options.TargetProcessId.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (options.TargetHWnd != HWND.Null)
+            {
+                argumentVariables.Add("hwnd", ((int)options.TargetHWnd).ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (Type.HasFlag(ToolType.DumpAnalyzer) && options.CommandLineParams is not null)
+            {
+                argumentVariables.Add("crashDumpPath", options.CommandLineParams);
+            }
+
+            commandLineArgs = ReplaceKnownVariables(Arguments, argumentVariables);
+        }
+
+        return commandLineArgs;
+    }
+
+    internal async Task<Process?> InvokeToolInternal(ToolLaunchOptions options)
     {
         var process = default(Process);
 
-        var parsedArguments = string.Empty;
-        if (!string.IsNullOrEmpty(Arguments))
-        {
-            var argumentVariables = new Dictionary<string, int>();
-            if (pid.HasValue)
-            {
-                argumentVariables.Add("pid", pid.Value);
-            }
+        ValidateOptions(options);
 
-            if (hwnd.HasValue)
-            {
-                argumentVariables.Add("hwnd", (int)hwnd.Value);
-            }
-
-            parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
-        }
+        string commandLineArgs = CreateCommandLine(options);
 
         try
         {
@@ -156,14 +185,20 @@ public partial class ExternalTool : Tool
                 // false otherwise. However, if there's no registered app for the protocol, it shows
                 // the "get an app from the store" dialog, and returns true. So we can't rely on the
                 // return value to know if the tool was actually launched.
-                var result = await Launcher.LaunchUriAsync(new Uri(parsedArguments));
+                var result = await Launcher.LaunchUriAsync(new Uri(commandLineArgs));
                 if (result != true)
                 {
                     // We get here if the user supplied a valid registered protocol, but the app failed to launch.
                     var errorMessage = string.Format(
-                        CultureInfo.InvariantCulture, _errorMessageText, parsedArguments);
+                        CultureInfo.InvariantCulture, _errorMessageText, commandLineArgs);
                     throw new InvalidOperationException(errorMessage);
                 }
+
+                // Currently we can't get the process object of the launched app via LaunchUriAsync. If we
+                // ever do and want to populate ToolLaunchOptions.LaunchedProcess, we'll need to revisit the async behavior here,
+                // as when we return from this function (and our async operation is still ongoing) our callers currently expect to
+                // be able to read ToolLaunchOptions.LaunchedProcess immedately... there isn't an indication that they would need to
+                // do an await first.
             }
             else
             {
@@ -180,25 +215,28 @@ public partial class ExternalTool : Tool
                     {
                         // Note: running most msc files requires elevation.
                         finalExecutable = "mmc.exe";
-                        finalArguments = $"{Executable} {parsedArguments}";
+                        finalArguments = $"{Executable} {commandLineArgs}";
                     }
                     else if (Path.GetExtension(Executable).Equals(".ps1", StringComparison.OrdinalIgnoreCase))
                     {
                         // Note: running powershell scripts might require setting the execution policy.
                         finalExecutable = "powershell.exe";
-                        finalArguments = $"{Executable} {parsedArguments}";
+                        finalArguments = $"{Executable} {commandLineArgs}";
                     }
                     else
                     {
                         finalExecutable = Executable;
-                        finalArguments = parsedArguments;
+                        finalArguments = commandLineArgs;
                     }
 
                     var startInfo = new ProcessStartInfo()
                     {
                         FileName = finalExecutable,
                         Arguments = finalArguments,
-                        UseShellExecute = true,
+
+                        // If we want to redirect standard out, we can't use shell execute
+                        UseShellExecute = !options.RedirectStandardOut,
+                        RedirectStandardOutput = options.RedirectStandardOut,
                     };
                     process = Process.Start(startInfo);
                 }
@@ -212,6 +250,7 @@ public partial class ExternalTool : Tool
             throw new InvalidOperationException(errorMessage, ex);
         }
 
+        options.LaunchedProcess = process;
         return process;
     }
 
@@ -244,7 +283,7 @@ public partial class ExternalTool : Tool
         return process;
     }
 
-    private string ReplaceKnownVariables(string input, Dictionary<string, int> argumentValues)
+    private string ReplaceKnownVariables(string input, Dictionary<string, string> argumentValues)
     {
         // Process the input string to replace any instance of defined variables with "real" values.
         // Eg, replace {pid} with 123, {hwnd} with 456.
@@ -257,7 +296,7 @@ public partial class ExternalTool : Tool
             // Check if the variable exists in the dictionary; if so, replace it.
             if (argumentValues.TryGetValue(variable, out var replacementValue))
             {
-                return replacementValue.ToString(CultureInfo.InvariantCulture);
+                return replacementValue;
             }
 
             // If the variable is not found, keep it as is.
@@ -269,6 +308,6 @@ public partial class ExternalTool : Tool
 
     public override void UnregisterTool()
     {
-        ExternalToolsHelper.Instance.RemoveExternalTool(this);
+        Application.Current.GetService<ExternalToolsHelper>().RemoveExternalTool(this);
     }
 }
