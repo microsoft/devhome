@@ -77,9 +77,11 @@ internal sealed class ExternalToolsHelper
         _toolInfoFileName = Path.Combine(localFolder, "externaltools.json");
         AllExternalTools = new(_allExternalTools);
         FilteredExternalTools = new(_filteredExternalTools);
+
+        Init();
     }
 
-    internal void Init()
+    private void Init()
     {
         _allExternalTools.Clear();
         if (File.Exists(_toolInfoFileName))

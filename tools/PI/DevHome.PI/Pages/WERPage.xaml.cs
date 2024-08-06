@@ -25,7 +25,7 @@ public sealed partial class WERPage : Page
 
     public WERPage()
     {
-        ViewModel = Application.Current.GetService<WERPageViewModel>();
+        ViewModel = new WERPageViewModel(Application.Current.GetService<WERAnalyzer>());
         InitializeComponent();
 
         // Populate selector items for each WER analyizer registered with the system

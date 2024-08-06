@@ -56,7 +56,7 @@ public partial class WERPageViewModel : ObservableObject
 
     public ReadOnlyObservableCollection<Tool> RegisteredAnalysisTools => _werAnalyzer.RegisteredAnalysisTools;
 
-    public WERPageViewModel()
+    public WERPageViewModel(WERAnalyzer werAnalyzer)
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
@@ -78,7 +78,7 @@ public partial class WERPageViewModel : ObservableObject
         AttachedToApp = attachedApp is not null;
         LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
 
-        _werAnalyzer = Application.Current.GetService<WERAnalyzer>();
+        _werAnalyzer = werAnalyzer;
         ((INotifyCollectionChanged)_werAnalyzer.WERAnalysisReports).CollectionChanged += WER_CollectionChanged;
 
         PopulateCurrentLogs();
