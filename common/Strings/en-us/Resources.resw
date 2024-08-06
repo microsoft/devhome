@@ -353,7 +353,7 @@
   </data>
   <data name="WindowsSandboxDescription" xml:space="preserve">
     <value>Enables the dependencies required to run Windows Sandbox scenarios.</value>
-    <comment>Locked="{Windows Sandbox}" Description for the Containers-DisposableClientVM optional feature.</comment>
+    <comment>Description for the Containers-DisposableClientVM optional feature.</comment>
   </data>
   <data name="WindowsSubsystemForLinuxDescription" xml:space="preserve">
     <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>

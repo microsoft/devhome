@@ -63,6 +63,9 @@ internal sealed class ExperimentalFeatures
     [JsonPropertyName("enabledByDefault")]
     public bool EnabledByDefault { get; set; }
 
+    [JsonPropertyName("needsFeaturePresenceCheck")]
+    public bool NeedsFeaturePresenceCheck { get; set; }
+
     [JsonPropertyName("buildTypeOverrides")]
     public BuildTypeOverrides[] BuildTypeOverrides { get; set; }
 }

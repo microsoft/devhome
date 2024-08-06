@@ -44,6 +44,7 @@ graph TD;
     DevHome.Services.WindowsPackageManager-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.FileExplorerSourceControlIntegration-->DevHome.Customization;
+    DevHome.QuietBackgroundProcesses.ElevatedServer.Projection-->DevHome.Settings;
 ```
 
 ## Dev Home Core
