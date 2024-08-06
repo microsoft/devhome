@@ -310,6 +310,29 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Settings
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+    runtimeclass WebViewResult
+    {
+        WebViewResult(String url);
+        WebViewResult(HRESULT e, String diagnosticText);
+
+        String Url
+        {
+            get;
+        };
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    }
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+    interface ISettingsProvider2
+        requires ISettingsProvider
+    {
+        WebViewResult GetSettingsWebView();
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface ISettingsProvider
         requires Windows.Foundation.IClosable

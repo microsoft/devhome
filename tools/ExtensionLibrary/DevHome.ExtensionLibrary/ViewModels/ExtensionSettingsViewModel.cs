@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -51,6 +52,12 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
                 {
+                    if (settingsProvider is ISettingsProvider2 settingsProvider2)
+                    {
+                        var webViewUrl = settingsProvider2.GetSettingsWebView();
+                        Console.WriteLine(webViewUrl.Url);
+                    }
+
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                     {
