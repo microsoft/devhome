@@ -16,8 +16,7 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private readonly string _workingDirectory;
 
-    private readonly GitDetect _gitDetect = new();
-    private readonly bool _gitInstalled;
+    private readonly StatusCache _statusCache;
 
     private Commit? _head;
     private CommitLogCache? _commits;
@@ -28,7 +27,7 @@ internal sealed class RepositoryWrapper : IDisposable
     {
         _repo = new Repository(rootFolder);
         _workingDirectory = _repo.Info.WorkingDirectory;
-        _gitInstalled = _gitDetect.DetectGit();
+        _statusCache = new StatusCache(rootFolder);
     }
 
     public IEnumerable<Commit> GetCommits()
@@ -70,8 +69,7 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetRepoStatus()
     {
-        var repoStatus = new GitRepositoryStatus();
-
+        var repoStatus = _statusCache.Status;
 
         string branchName;
         var branchStatus = string.Empty;

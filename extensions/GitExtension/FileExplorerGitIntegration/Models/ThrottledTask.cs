@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace FileExplorerGitIntegration.Models;
 
-internal class ThrottledTask
+internal sealed class ThrottledTask
 {
     private readonly TimeSpan _interval;
     private readonly object _lock = new();

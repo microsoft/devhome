@@ -115,6 +115,7 @@ internal sealed class StatusCache : IDisposable
             }
 
             // Populate initial status
+            _statusLock.ExitReadLock();
             _statusLock.EnterWriteLock();
             try
             {
