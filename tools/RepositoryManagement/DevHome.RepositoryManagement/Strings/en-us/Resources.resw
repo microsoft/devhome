@@ -119,6 +119,6 @@
   </resheader>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Repositories</value>
-    <comment>Name of the tool to help manage repositories on the users machine.</comment>
+    <comment>Name of the tool to help manage repositories on the user's machine.</comment>
   </data>
 </root>
