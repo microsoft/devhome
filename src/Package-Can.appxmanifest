@@ -87,6 +87,20 @@
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DevHome.FileExplorerSourceControlIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Source Control Core">
+              <com:Class Id="8DDE51FC-3AE8-4880-BD85-CA57DF7E2889" DisplayName="Core Extension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="FileExplorerGitIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="LocalRepositoryProvider">
+              <com:Class Id="A65E46FF-F979-480d-A379-1FDA3EB5F7C5" DisplayName="LocalRepositoryProvider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
             <uap3:Properties>
@@ -123,6 +137,20 @@
                 </Activation>
                 <SupportedInterfaces>
                   <ComputeSystem />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID4" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameGitExt" Description="ms-resource:AppDescriptionGitExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="A65E46FF-F979-480d-A379-1FDA3EB5F7C5" />
+                </Activation>
+                <SupportedInterfaces>
+                  <LocalRepository />
                 </SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>
