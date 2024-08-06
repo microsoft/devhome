@@ -33,7 +33,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.600.494" />
+        <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1799.582.1922" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />

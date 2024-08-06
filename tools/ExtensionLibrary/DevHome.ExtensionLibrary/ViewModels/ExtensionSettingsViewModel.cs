@@ -55,7 +55,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
                         var webViewUrl = settingsProvider2.GetSettingsWebView();
-                        Console.WriteLine(webViewUrl.Url);
+                        Console.WriteLine("WORKING :): " + webViewUrl.Url);
                     }
 
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
