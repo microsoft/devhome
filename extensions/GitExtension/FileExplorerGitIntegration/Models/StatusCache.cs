@@ -5,10 +5,12 @@ namespace FileExplorerGitIntegration.Models;
 
 using System.Data;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using LibGit2Sharp;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Win32;
 
 // Caches the most recently obtained repo status.
 // Use FileSystemWatcher to invalidate the cache.
@@ -143,6 +145,45 @@ internal sealed class StatusCache : IDisposable
         }
 
         // Diff old and new status to obtain a list of files to refresh to the Shell.
+        if (oldStatus == null)
+        {
+            return;
+        }
+
+        HashSet<string> changed = [];
+        foreach (var newEntry in newStatus.Entries)
+        {
+            GitStatusEntry? oldValue;
+            if (oldStatus.Entries.TryGetValue(newEntry.Key, out oldValue))
+            {
+                if (newEntry.Value.Status != oldValue.Status)
+                {
+                    changed.Add(newEntry.Key);
+                }
+
+                oldStatus.Entries.Remove(newEntry.Key);
+            }
+            else
+            {
+                changed.Add(newEntry.Key);
+            }
+        }
+
+        foreach (var oldEntry in oldStatus.Entries)
+        {
+            changed.Add(oldEntry.Key);
+        }
+
+        foreach (var entry in changed)
+        {
+            var fixedPath = Path.Combine(_workingDirectory, entry).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            unsafe
+            {
+                IntPtr strPtr = Marshal.StringToCoTaskMemUni(fixedPath);
+                PInvoke.SHChangeNotify(Windows.Win32.UI.Shell.SHCNE_ID.SHCNE_UPDATEITEM, Windows.Win32.UI.Shell.SHCNF_FLAGS.SHCNF_PATH, (void*)strPtr, null);
+                Marshal.FreeCoTaskMem(strPtr);
+            }
+        }
     }
 
     private GitRepositoryStatus RetrieveStatus()
