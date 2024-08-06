@@ -5,8 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    xmlns:local="using:DevHome.PI.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DevHome.PI.Models"
     xmlns:helpers="using:DevHome.PI.Helpers"
     mc:Ignorable="d"
@@ -36,24 +35,16 @@
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
                 Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
             <CheckBox
-                x:Uid="WatsonCheckbox" x:Name="WatsonCheckbox" IsChecked="{x:Bind ViewModel.IsWatsonEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.Watson}"
+                x:Uid="WERCheckbox" x:Name="WERCheckbox" IsChecked="{x:Bind ViewModel.IsWEREnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.WER}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.WatsonName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.WERName}"/>
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
                 BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
-            <local:GlowButton 
-                x:Uid="InsightsButton" x:Name="InsightsButton" Margin="6,0,0,0"
-                BorderThickness="0"              
-                Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}" Foreground="#0089FF"
-                Command="{x:Bind ViewModel.ShowInsightsPageCommand}" 
-                Visibility="{x:Bind ViewModel.InsightsButtonVisibility, Mode=OneWay}">
-            </local:GlowButton>
-
         </StackPanel>
-        <controls:DataGrid
+        <toolkit:DataGrid
             x:Name="WinLogsDataGrid" Grid.Row="3" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
             AlternatingRowBackground="Transparent"
@@ -71,18 +62,18 @@
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
             ItemsSource="{x:Bind ViewModel.WinLogEntries, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
-        <controls:DataGrid.Columns>
-            <controls:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
-            <controls:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
-            <controls:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
-            <controls:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
-                <controls:DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
-                    </DataTemplate>
-                </controls:DataGridTemplateColumn.CellTemplate>
-            </controls:DataGridTemplateColumn>
-            </controls:DataGrid.Columns>
-        </controls:DataGrid>
+        <toolkit:DataGrid.Columns>
+            <toolkit:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
+            <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
+            <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
+            <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
+                <toolkit:DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                </DataTemplate>
+                </toolkit:DataGridTemplateColumn.CellTemplate>
+            </toolkit:DataGridTemplateColumn>
+            </toolkit:DataGrid.Columns>
+        </toolkit:DataGrid>
     </Grid>
 </Page>

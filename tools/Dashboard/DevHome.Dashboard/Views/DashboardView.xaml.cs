@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
@@ -22,12 +21,17 @@ using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Serilog;
+using Windows.UI.Core;
+
+using VirtualKey = Windows.System.VirtualKey;
 
 namespace DevHome.Dashboard.Views;
 
@@ -41,12 +45,12 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private readonly WidgetViewModelFactory _widgetViewModelFactory;
 
-    public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
-
     private readonly SemaphoreSlim _pinnedWidgetsLock = new(1, 1);
+    private readonly SemaphoreSlim _moveWidgetsLock = new(1, 1);
 
     private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
+    private readonly IWidgetExtensionService _widgetExtensionService;
     private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -60,11 +64,11 @@ public partial class DashboardView : ToolPage, IDisposable
 
         this.InitializeComponent();
 
-        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
 
         _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+        _widgetExtensionService = Application.Current.GetService<IWidgetExtensionService>();
 
 #if DEBUG
         Loaded += AddResetButton;
@@ -119,7 +123,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async void HandleRendererUpdated(object sender, object args)
     {
         // Re-render the widgets with the new theme and renderer.
-        foreach (var widget in PinnedWidgets)
+        foreach (var widget in ViewModel.PinnedWidgets)
         {
             await widget.RenderAsync();
         }
@@ -134,6 +138,9 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
+        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
+        Bindings.StopTracking();
+
         Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated -= HandleRendererUpdated;
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
@@ -147,6 +154,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
         }
 
+        ViewModel.PinnedWidgets.Clear();
         await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
@@ -154,7 +162,7 @@ public partial class DashboardView : ToolPage, IDisposable
     {
         try
         {
-            foreach (var widget in PinnedWidgets)
+            foreach (var widget in ViewModel.PinnedWidgets)
             {
                 widget.UnsubscribeFromWidgetUpdates();
             }
@@ -184,7 +192,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
-                    await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
                 await InitializePinnedWidgetListAsync(isFirstDashboardRun);
@@ -375,10 +383,12 @@ public partial class DashboardView : ToolPage, IDisposable
         // For example, if the provider for the widget at position 0 was deleted, the widget at position 1
         // should be updated to have position 0, etc.
         var updatedPlace = 0;
-        foreach (var widget in PinnedWidgets)
+        foreach (var widget in ViewModel.PinnedWidgets)
         {
             await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
+
+        _log.Information($"Done restoring pinned widgets");
     }
 
     private async Task DeleteAbandonedWidgetAsync(ComSafeWidget widget)
@@ -446,7 +456,7 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Information($"Created default widget {unsafeWidgetId}");
 
             // Set custom state on new widget.
-            var position = PinnedWidgets.Count;
+            var position = ViewModel.PinnedWidgets.Count;
             var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             _log.Debug($"SetCustomState: {newCustomState}");
             await comSafeWidget.SetCustomStateAsync(newCustomState);
@@ -465,7 +475,7 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     public async Task GoToWidgetsInStoreAsync()
     {
-        if (Common.Helpers.RuntimeHelper.IsOnWindows11)
+        if (RuntimeHelper.IsOnWindows11)
         {
             await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
@@ -527,7 +537,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 }
 
                 // Set custom state on new widget.
-                var position = PinnedWidgets.Count;
+                var position = ViewModel.PinnedWidgets.Count;
                 var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
                 _log.Debug($"SetCustomState: {newCustomState}");
                 await comSafeWidget.SetCustomStateAsync(newCustomState);
@@ -584,6 +594,14 @@ public partial class DashboardView : ToolPage, IDisposable
                     return;
                 }
 
+                // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+                // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
+                // tell the extension to dispose later.
+                if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+                {
+                    await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
+                }
+
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Dashboard_ReportPinnedWidget",
                     LogLevel.Critical,
@@ -594,7 +612,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 {
                     try
                     {
-                        PinnedWidgets.Insert(index, wvm);
+                        ViewModel.PinnedWidgets.Insert(index, wvm);
                     }
                     catch (Exception ex)
                     {
@@ -658,7 +676,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         var matchingWidgetsFound = 0;
 
-        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
+        foreach (var widgetToUpdate in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
@@ -671,7 +689,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 {
                     _log.Information($"No longer allowed to have multiple of widget {updatedDefinitionId}");
                     _log.Information($"Delete widget {widgetToUpdate.Widget.Id}");
-                    PinnedWidgets.Remove(widgetToUpdate);
+                    ViewModel.PinnedWidgets.Remove(widgetToUpdate);
                     await widgetToUpdate.Widget.DeleteAsync();
                     _log.Information($"Deleted Widget {widgetToUpdate.Widget.Id}");
                 });
@@ -710,10 +728,10 @@ public partial class DashboardView : ToolPage, IDisposable
         _dispatcherQueue.TryEnqueue(async () =>
         {
             _log.Information($"WidgetDefinitionDeleted {definitionId}");
-            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
+            foreach (var widgetToRemove in ViewModel.PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 _log.Information($"Remove widget {widgetToRemove.Widget.Id}");
-                PinnedWidgets.Remove(widgetToRemove);
+                ViewModel.PinnedWidgets.Remove(widgetToRemove);
 
                 // The widget definition is gone, so delete widgets with that definition.
                 await widgetToRemove.Widget.DeleteAsync();
@@ -737,10 +755,10 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 var removedIndex = e.OldStartingIndex;
                 _log.Debug($"Removed widget at index {removedIndex}");
-                for (var i = removedIndex; i < PinnedWidgets.Count; i++)
+                for (var i = removedIndex; i < ViewModel.PinnedWidgets.Count; i++)
                 {
                     _log.Debug($"Updating widget position for widget now at {i}");
-                    var widgetToUpdate = PinnedWidgets.ElementAt(i);
+                    var widgetToUpdate = ViewModel.PinnedWidgets.ElementAt(i);
                     await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
                 }
             }
@@ -759,7 +777,7 @@ public partial class DashboardView : ToolPage, IDisposable
         var draggedObject = e.Items.FirstOrDefault();
         var draggedWidgetViewModel = draggedObject as WidgetViewModel;
         e.Data.Properties.Add(DraggedWidget, draggedWidgetViewModel);
-        e.Data.Properties.Add(DraggedIndex, PinnedWidgets.IndexOf(draggedWidgetViewModel));
+        e.Data.Properties.Add(DraggedIndex, ViewModel.PinnedWidgets.IndexOf(draggedWidgetViewModel));
     }
 
     private void WidgetControl_DragOver(object sender, DragEventArgs e)
@@ -815,15 +833,33 @@ public partial class DashboardView : ToolPage, IDisposable
 
         var draggedWidgetViewModel = draggedObject as WidgetViewModel;
 
+        await MoveWidgetAsync(draggedWidgetViewModel, draggedIndex, droppedIndex);
+
+        _log.Debug($"Drop ended");
+    }
+
+    private async Task MoveWidgetAsync(WidgetViewModel draggedWidgetViewModel, int draggedIndex, int droppedIndex)
+    {
         // Remove the moved widget then insert it back in the collection at the new location. If the dropped widget was
         // moved from a lower index to a higher one, removing the moved widget before inserting it will ensure that any
         // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
-        PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
 
-        PinnedWidgets.RemoveAt(draggedIndex);
         var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
-        await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
+
+        // Doing these operations in different orders for different start/end indexes make the animation look a little better.
+        if (draggedIndex < droppedIndex)
+        {
+            ViewModel.PinnedWidgets.RemoveAt(draggedIndex);
+            await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
+        }
+        else
+        {
+            await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
+            ViewModel.PinnedWidgets.RemoveAt(draggedIndex + 1);
+        }
+
         await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
 
         // Update the CustomState Position of any widgets that were moved.
@@ -832,13 +868,75 @@ public partial class DashboardView : ToolPage, IDisposable
         var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
         for (var i = startIndex; i < endIndex; i++)
         {
-            var widgetToUpdate = PinnedWidgets.ElementAt(i);
+            var widgetToUpdate = ViewModel.PinnedWidgets.ElementAt(i);
             await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
         }
 
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+        ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+    }
 
-        _log.Debug($"Drop ended");
+    /// <summary>
+    /// Handle keyboard shortcuts for moving widgets left and right.
+    /// </summary>
+    private async void HandleKeyUpAsync(object sender, KeyRoutedEventArgs e)
+    {
+        _log.Debug($"Key up");
+
+        await _moveWidgetsLock.WaitAsync();
+        try
+        {
+            var key = e.Key;
+            _log.Debug($"e.Key = {key}");
+            if (e.Handled || !(key == VirtualKey.Left || key == VirtualKey.Right))
+            {
+                return;
+            }
+
+            var focusedItem = e.OriginalSource as GridViewItem;
+            if (focusedItem?.Content is not WidgetViewModel widgetViewModel)
+            {
+                return;
+            }
+
+            if (IsAltAndShiftPressed())
+            {
+                var index = ViewModel.PinnedWidgets.IndexOf(widgetViewModel);
+                _log.Information($"Move widget {widgetViewModel.WidgetDisplayTitle} at index {index} {key}");
+
+                if (key == VirtualKey.Left && index > 0)
+                {
+                    await MoveWidgetAsync(widgetViewModel, index, index - 1);
+                    await FocusManager.TryFocusAsync(WidgetGridView.ItemsPanelRoot.Children.ElementAt(index - 1), FocusState.Keyboard);
+                    _log.Debug($"Focus moved to index {index - 1}");
+                }
+                else if (key == VirtualKey.Right && index < (ViewModel.PinnedWidgets.Count - 1))
+                {
+                    // Setting focus before and after the move looks more natural than letting the focus move to the wrong element.
+                    await FocusManager.TryFocusAsync(WidgetGridView.ItemsPanelRoot.Children.ElementAt(index + 1), FocusState.Keyboard);
+                    await MoveWidgetAsync(widgetViewModel, index, index + 1);
+                    await FocusManager.TryFocusAsync(WidgetGridView.ItemsPanelRoot.Children.ElementAt(index + 1), FocusState.Keyboard);
+                    _log.Debug($"Focus moved to index {index + 1}");
+                }
+            }
+
+            e.Handled = true;
+        }
+        finally
+        {
+            _moveWidgetsLock.Release();
+        }
+    }
+
+    private bool IsAltAndShiftPressed()
+    {
+        var downState = CoreVirtualKeyStates.Down;
+
+        // VirtualKeys "Menu" key is also the "Alt" key on the keyboard.
+        var isAltKeyPressed = (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu) & downState) == downState;
+        var isShiftKeyPressed = (InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift) & downState) == downState;
+        _log.Debug($"isAltKeyPressed = {isAltKeyPressed} isShiftKeyPressed = {isShiftKeyPressed}");
+
+        return isAltKeyPressed && isShiftKeyPressed;
     }
 
     public void Dispose()
@@ -854,6 +952,7 @@ public partial class DashboardView : ToolPage, IDisposable
             if (disposing)
             {
                 _pinnedWidgetsLock.Dispose();
+                _moveWidgetsLock.Dispose();
             }
 
             _disposedValue = true;

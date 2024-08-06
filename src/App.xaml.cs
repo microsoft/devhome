@@ -25,16 +25,15 @@ using DevHome.Telemetry;
 using DevHome.Utilities.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome;
 
@@ -185,14 +184,14 @@ public partial class App : Application, IApp
     {
         _dispatcherQueue.TryEnqueue(() =>
         {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(MainWindow);
-            if (PInvoke.IsIconic(new HWND(hWnd)) && MainWindow.AppWindow.Presenter is OverlappedPresenter overlappedPresenter)
+            var hWnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(MainWindow));
+            if (PInvoke.IsIconic(hWnd))
             {
-                overlappedPresenter.Restore(true);
+                PInvoke.ShowWindow(hWnd, SHOW_WINDOW_CMD.SW_RESTORE);
             }
             else
             {
-                PInvoke.SetForegroundWindow(new HWND(hWnd));
+                PInvoke.SetForegroundWindow(hWnd);
             }
         });
     }

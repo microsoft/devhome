@@ -4,15 +4,17 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Globalization;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Serilog;
 using Windows.Graphics;
 using Windows.System;
 using Windows.Win32.Foundation;
@@ -21,11 +23,12 @@ namespace DevHome.PI.ViewModels;
 
 public partial class BarWindowViewModel : ObservableObject
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(BarWindowViewModel));
+
     private const string UnsnapButtonText = "\ue89f";
     private const string SnapButtonText = "\ue8a0";
 
     private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
-    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
     private readonly string _unsnapToolTip = CommonHelper.GetLocalizedString("UnsnapToolTip");
     private readonly string _snapToolTip = CommonHelper.GetLocalizedString("SnapToolTip");
     private readonly string _expandToolTip = CommonHelper.GetLocalizedString("SwitchToLargeLayoutToolTip");
@@ -35,6 +38,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -64,6 +68,9 @@ public partial class BarWindowViewModel : ObservableObject
     private bool _isAppBarVisible = true;
 
     [ObservableProperty]
+    private bool _isProcessChooserVisible = false;
+
+    [ObservableProperty]
     private Visibility _externalToolSeparatorVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
@@ -90,6 +97,15 @@ public partial class BarWindowViewModel : ObservableObject
     [ObservableProperty]
     private PointInt32 _windowPosition;
 
+    [ObservableProperty]
+    private SizeInt32 _requestedWindowSize;
+
+    [ObservableProperty]
+    private int _unreadInsightsCount;
+
+    [ObservableProperty]
+    private double _insightsBadgeOpacity;
+
     internal HWND? ApplicationHwnd { get; private set; }
 
     public BarWindowViewModel()
@@ -106,9 +122,13 @@ public partial class BarWindowViewModel : ObservableObject
         SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
-        IsAppBarVisible = process is not null;
-        if (process != null)
+
+        // Show either the result chooser, or the app bar. Not both
+        IsProcessChooserVisible = process is null;
+        IsAppBarVisible = !IsProcessChooserVisible;
+        if (IsAppBarVisible)
         {
+            Debug.Assert(process is not null, "Process should not be null if we're showing the app bar");
             ApplicationName = process.ProcessName;
             ApplicationPid = process.Id;
             ApplicationIcon = TargetAppData.Instance.Icon;
@@ -122,6 +142,9 @@ public partial class BarWindowViewModel : ObservableObject
 
         ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+
+        _insightsService = Application.Current.GetService<PIInsightsService>();
+        _insightsService.PropertyChanged += InsightsService_PropertyChanged;
     }
 
     partial void OnShowingExpandedContentChanged(bool value)
@@ -225,9 +248,6 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooser()
     {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
     }
@@ -235,8 +255,6 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ManageExternalToolsButton()
     {
-        ToggleExpandedContentVisibility();
-
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
@@ -269,7 +287,7 @@ public partial class BarWindowViewModel : ObservableObject
 
             _dispatcher.TryEnqueue(() =>
             {
-                // The App status bar is only visible if we're attached to a process
+                // The App status bar is only visible if we're attached to a result
                 IsAppBarVisible = process is not null;
 
                 if (process is not null)
@@ -277,6 +295,10 @@ public partial class BarWindowViewModel : ObservableObject
                     ApplicationPid = process.Id;
                     ApplicationName = process.ProcessName;
                 }
+
+                // Conversely, the result chooser is only visible if we're not attached to a result
+                IsProcessChooserVisible = process is null;
+                UnreadInsightsCount = 0;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))
@@ -327,40 +349,31 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
-    public void ExternalToolButton_Click(object sender, RoutedEventArgs e)
+    private void InsightsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is Button clickedButton)
+        if (e.PropertyName == nameof(PIInsightsService.UnreadCount))
         {
-            if (clickedButton.Tag is ExternalTool tool)
-            {
-                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-            }
+            UnreadInsightsCount = _insightsService.UnreadCount;
+            InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
         }
     }
 
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
-        InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-    }
-
-    private void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
-    {
-        var process = tool.Invoke(pid, hWnd);
-        if (process is null)
-        {
-            // A ContentDialog only renders in the space its parent occupies. Since the parent is a narrow
-            // bar, the dialog doesn't have enough space to render. So, we'll use MessageBox to display errors.
-            Windows.Win32.PInvoke.MessageBox(
-                HWND.Null, // ThisHwnd,
-                string.Format(CultureInfo.CurrentCulture, _errorMessageText, tool.Executable),
-                _errorTitleText,
-                Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_STYLE.MB_ICONERROR);
-        }
+        tool.InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
     }
 
     [RelayCommand]
     public void LaunchAdvancedAppsPageInWindowsSettings()
     {
         _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
+    }
+
+    [RelayCommand]
+    private void ShowInsightsPage()
+    {
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        Debug.Assert(barWindow != null, "BarWindow should not be null.");
+        barWindow.NavigateTo(typeof(InsightsPageViewModel));
     }
 }

@@ -28,6 +28,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.System.SystemInformation;
 using Windows.Win32.System.Threading;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.Helpers;
@@ -409,6 +410,49 @@ public class WindowHelper
         return processID;
     }
 
+    internal static void TranslateUWPProcess(HWND hWnd, ref Process process)
+    {
+        if (process.ProcessName.Equals("ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
+        {
+            var processId = GetProcessIdFromUWPWindow(hWnd);
+            if (processId != 0)
+            {
+                process = Process.GetProcessById((int)processId);
+            }
+        }
+    }
+
+    internal static unsafe uint GetProcessIdFromUWPWindow(HWND hWnd)
+    {
+        UWPProcessFinder processFinder = new();
+        PInvoke.EnumChildWindows(hWnd, processFinder.EnumChildWindowsProc, IntPtr.Zero);
+        return processFinder.UWPProcessId;
+    }
+
+    private sealed class UWPProcessFinder
+    {
+        public uint UWPProcessId { get; private set; }
+
+        public unsafe BOOL EnumChildWindowsProc(HWND hWnd, LPARAM data)
+        {
+            var className = stackalloc char[256];
+            var classNameLength = PInvoke.GetClassName(hWnd, className, 256);
+            if (classNameLength > 0)
+            {
+                string classNameString = new(className, 0, classNameLength);
+                if (classNameString.StartsWith("Windows.UI.Core.", StringComparison.OrdinalIgnoreCase))
+                {
+                    uint hWndProcessId = 0;
+                    _ = PInvoke.GetWindowThreadProcessId(hWnd, &hWndProcessId);
+                    UWPProcessId = hWndProcessId;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     internal static HWINEVENTHOOK WatchWindowPositionEvents(WINEVENTPROC procDelegate, uint processID)
     {
         var eventHook = PInvoke.SetWinEventHook(
@@ -598,6 +642,13 @@ public class WindowHelper
         return screenBounds;
     }
 
+    internal static double GetDpiScaleForWindow(HWND hWnd)
+    {
+        var monitor = PInvoke.MonitorFromWindow(hWnd, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+        PInvoke.GetScaleFactorForMonitor(monitor, out DEVICE_SCALE_FACTOR scaleFactor).ThrowOnFailure();
+        return (double)scaleFactor / 100;
+    }
+
     internal static void GetAppInfoUnderMouseCursor(out Process? process, out HWND hwnd)
     {
         process = null;
@@ -608,6 +659,15 @@ public class WindowHelper
 
         if (hwnd != HWND.Null)
         {
+            // Walk up until we get the topmost parent window
+            HWND hwndParent = PInvoke.GetParent(hwnd);
+
+            while (hwndParent != HWND.Null)
+            {
+                hwnd = hwndParent;
+                hwndParent = PInvoke.GetParent(hwnd);
+            }
+
             var processID = WindowHelper.GetProcessIdFromWindow(hwnd);
 
             if (processID != 0)

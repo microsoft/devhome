@@ -4,13 +4,20 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Management;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel;
+using Windows.Wdk.System.Threading;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Threading;
+using PInvokeWdk = Windows.Wdk.PInvoke;
 
 namespace DevHome.PI.Helpers;
 
@@ -69,5 +76,96 @@ internal sealed class CommonHelper
                 _log.Error(ex, "UAC to run PI as admin was denied");
             }
         }
+    }
+
+    public static unsafe int GetParentProcessId(Process process)
+    {
+        var pbi = default(PROCESS_BASIC_INFORMATION);
+        int status = PInvokeWdk.NtQueryInformationProcess((HANDLE)process.Handle, PROCESSINFOCLASS.ProcessBasicInformation, &pbi, (uint)Marshal.SizeOf(pbi), null);
+        if (status != 0)
+        {
+            throw new InvalidOperationException("Failed to query process information.");
+        }
+
+        return (int)pbi.InheritedFromUniqueProcessId;
+    }
+
+    public static HWND? TryGetParentProcessHWND()
+    {
+        try
+        {
+            using var process = Process.GetCurrentProcess();
+            var parentProcessId = GetParentProcessId(process);
+            if (parentProcessId != 0)
+            {
+                using var parentProcess = Process.GetProcessById(parentProcessId);
+                return new HWND(parentProcess.MainWindowHandle);
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get parent process HWND");
+        }
+
+        return null;
+    }
+
+    public static string GetCommandLine(Process process)
+    {
+        var activationArgs = string.Empty;
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}");
+            if (searcher is null)
+            {
+                return activationArgs;
+            }
+
+            using var objects = searcher.Get();
+            if (objects is null)
+            {
+                return activationArgs;
+            }
+
+            var obj = objects.Cast<ManagementObject>().FirstOrDefault();
+            if (obj is not null)
+            {
+                activationArgs = obj["CommandLine"]?.ToString() ?? string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get command line for process {ProcessId}", process.Id);
+        }
+
+        return activationArgs;
+    }
+
+    private static readonly Int32Converter _converter = new();
+
+    public static int? ParseStringToInt(string value)
+    {
+        int? valueAsInt;
+
+        try
+        {
+            if (_converter.IsValid(value))
+            {
+                // Int32Converter.ConvertFromString() does a pretty good job of parsing numbers, except when given a hex
+                // number that isn't prefixed with 0x. If it fails, try parsing it using int.Parse().
+                valueAsInt = (int?)_converter.ConvertFromString(value);
+            }
+            else
+            {
+                valueAsInt = int.Parse(value, NumberStyles.HexNumber, CultureInfo.CurrentCulture);
+            }
+        }
+        catch
+        {
+            return null;
+        }
+
+        return valueAsInt;
     }
 }

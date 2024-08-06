@@ -38,14 +38,15 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240328-rc" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
+    <PackageReference Include="LibGit2Sharp" Version="0.30.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240311-x1907" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240709-x2135" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.600.494" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.700.544" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -55,7 +56,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Management.Automation" Version="7.4.0" />
+    <PackageReference Include="System.Management.Automation" Version="7.4.3" />
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 

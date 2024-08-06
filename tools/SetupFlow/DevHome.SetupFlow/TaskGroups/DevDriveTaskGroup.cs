@@ -25,7 +25,6 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     {
         _host = host;
 
-        // TODO https://github.com/microsoft/devhome/issues/631
         _devDriveReviewViewModel = new(() => new DevDriveReviewViewModel(host, stringResource, this));
         _stringResource = stringResource;
     }

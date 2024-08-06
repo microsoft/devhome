@@ -34,4 +34,12 @@ public static class RuntimeHelper
         var identity = WindowsIdentity.GetCurrent();
         return identity.Owner?.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid) ?? false;
     }
+
+    public static void VerifyCurrentProcessRunningAsAdmin()
+    {
+        if (!IsCurrentProcessRunningAsAdmin())
+        {
+            throw new UnauthorizedAccessException("This operation requires elevated privileges.");
+        }
+    }
 }

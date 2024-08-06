@@ -5,15 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.System;
+using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI.Helpers;
@@ -25,14 +30,14 @@ public enum ToolActivationType
     Launch,
 }
 
-// ExternalTool represents an imported tool
-public partial class ExternalTool : ObservableObject
+public partial class ExternalTool : Tool
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
+    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
+
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
 
     public string ID { get; private set; }
-
-    public string Name { get; private set; }
 
     public string Executable { get; private set; }
 
@@ -45,21 +50,6 @@ public partial class ExternalTool : ObservableObject
 
     public string IconFilePath { get; private set; }
 
-    [ObservableProperty]
-    private bool _isPinned;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private string _pinGlyph;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private SoftwareBitmapSource? _toolIcon;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private ImageIcon? _menuIcon;
-
     public ExternalTool(
         string name,
         string executable,
@@ -68,15 +58,13 @@ public partial class ExternalTool : ObservableObject
         string appUserModelId = "",
         string iconFilePath = "",
         bool isPinned = false)
+        : base(name, isPinned)
     {
-        Name = name;
         Executable = executable;
         ActivationType = activationType;
         Arguments = arguments;
         AppUserModelId = appUserModelId;
         IconFilePath = iconFilePath;
-        IsPinned = isPinned;
-        PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
 
         ID = Guid.NewGuid().ToString();
 
@@ -86,32 +74,22 @@ public partial class ExternalTool : ObservableObject
         }
     }
 
-    partial void OnIsPinnedChanged(bool oldValue, bool newValue)
-    {
-        PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
-    }
-
     private async void GetIcons()
     {
         try
         {
             if (!string.IsNullOrEmpty(IconFilePath))
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromImageFilePath(IconFilePath);
+                ToolIconSource = await GetSoftwareBitmapSourceFromImageFilePath(IconFilePath);
             }
             else
             {
                 var softwareBitmap = GetSoftwareBitmapFromExecutable(Executable);
                 if (softwareBitmap is not null)
                 {
-                    ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(softwareBitmap);
+                    ToolIconSource = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(softwareBitmap);
                 }
             }
-
-            MenuIcon = new ImageIcon
-            {
-                Source = ToolIcon,
-            };
         }
         catch (Exception ex)
         {
@@ -119,59 +97,151 @@ public partial class ExternalTool : ObservableObject
         }
     }
 
-    internal async Task<bool> Invoke(int? pid, HWND? hwnd)
+    public override IconElement GetIcon()
     {
-        var result = false;
+        return new ImageIcon
+        {
+            Source = ToolIconSource,
+        };
+    }
+
+    internal async override void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd)
+    {
+        try
+        {
+            var process = await InvokeToolInternal(targetProcessId, hWnd);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Tool launched failed");
+
+            var builder = new StringBuilder();
+            builder.AppendLine(ex.Message);
+            if (ex.InnerException is not null)
+            {
+                builder.AppendLine(ex.InnerException.Message);
+            }
+
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, builder.ToString(), Executable);
+            PInvoke.MessageBox(HWND.Null, errorMessage, _errorTitleText, MESSAGEBOX_STYLE.MB_ICONERROR);
+        }
+    }
+
+    internal async Task<Process?> InvokeToolInternal(int? pid, HWND? hwnd)
+    {
+        var process = default(Process);
+
+        var parsedArguments = string.Empty;
+        if (!string.IsNullOrEmpty(Arguments))
+        {
+            var argumentVariables = new Dictionary<string, int>();
+            if (pid.HasValue)
+            {
+                argumentVariables.Add("pid", pid.Value);
+            }
+
+            if (hwnd.HasValue)
+            {
+                argumentVariables.Add("hwnd", (int)hwnd.Value);
+            }
+
+            parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
+        }
 
         try
         {
-            var parsedArguments = string.Empty;
-            if (!string.IsNullOrEmpty(Arguments))
-            {
-                var argumentVariables = new Dictionary<string, int>();
-                if (pid.HasValue)
-                {
-                    argumentVariables.Add("pid", pid.Value);
-                }
-
-                if (hwnd.HasValue)
-                {
-                    argumentVariables.Add("hwnd", (int)hwnd.Value);
-                }
-
-                parsedArguments = ReplaceKnownVariables(Arguments, argumentVariables);
-            }
-
             if (ActivationType == ToolActivationType.Protocol)
             {
-                result = await Launcher.LaunchUriAsync(new Uri($"{parsedArguments}"));
+                // Docs say this returns true if the default app for the URI scheme was launched;
+                // false otherwise. However, if there's no registered app for the protocol, it shows
+                // the "get an app from the store" dialog, and returns true. So we can't rely on the
+                // return value to know if the tool was actually launched.
+                var result = await Launcher.LaunchUriAsync(new Uri(parsedArguments));
+                if (result != true)
+                {
+                    // We get here if the user supplied a valid registered protocol, but the app failed to launch.
+                    var errorMessage = string.Format(
+                        CultureInfo.InvariantCulture, _errorMessageText, parsedArguments);
+                    throw new InvalidOperationException(errorMessage);
+                }
             }
             else
             {
                 if (ActivationType == ToolActivationType.Msix)
                 {
-                    var process = Process.Start("explorer.exe", $"shell:AppsFolder\\{AppUserModelId}");
-                    result = process is not null;
+                    process = LaunchPackagedTool(AppUserModelId);
                 }
                 else
                 {
-                    var startInfo = new ProcessStartInfo(Executable)
+                    var finalExecutable = string.Empty;
+                    var finalArguments = string.Empty;
+
+                    if (Path.GetExtension(Executable).Equals(".msc", StringComparison.OrdinalIgnoreCase))
                     {
-                        Arguments = parsedArguments,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
+                        // Note: running most msc files requires elevation.
+                        finalExecutable = "mmc.exe";
+                        finalArguments = $"{Executable} {parsedArguments}";
+                    }
+                    else if (Path.GetExtension(Executable).Equals(".ps1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Note: running powershell scripts might require setting the execution policy.
+                        finalExecutable = "powershell.exe";
+                        finalArguments = $"{Executable} {parsedArguments}";
+                    }
+                    else
+                    {
+                        finalExecutable = Executable;
+                        finalArguments = parsedArguments;
+                    }
+
+                    var startInfo = new ProcessStartInfo()
+                    {
+                        FileName = finalExecutable,
+                        Arguments = finalArguments,
+                        UseShellExecute = true,
                     };
-                    var process = Process.Start(startInfo);
-                    result = process is not null;
+                    process = Process.Start(startInfo);
                 }
             }
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Tool launched failed");
+            // We compose a custom exception because an exception from executing some tools
+            // (powershell, mmc) will have lost the target tool information.
+            var errorMessage = string.Format(CultureInfo.InvariantCulture, _errorMessageText, Executable);
+            throw new InvalidOperationException(errorMessage, ex);
         }
 
-        return result;
+        return process;
+    }
+
+    public static Process? LaunchPackagedTool(string appUserModelId)
+    {
+        var process = default(Process);
+        var clsid = CLSID.ApplicationActivationManager;
+        var iid = typeof(IApplicationActivationManager).GUID;
+        object obj;
+
+        int hr = PInvoke.CoCreateInstance(
+            in clsid, null, CLSCTX.CLSCTX_LOCAL_SERVER, in iid, out obj);
+
+        if (HResult.Succeeded(hr))
+        {
+            var appActiveManager = (IApplicationActivationManager)obj;
+            uint processId;
+            hr = appActiveManager.ActivateApplication(
+                appUserModelId, string.Empty, ACTIVATEOPTIONS.None, out processId);
+            if (HResult.Succeeded(hr))
+            {
+                process = Process.GetProcessById((int)processId);
+            }
+        }
+        else
+        {
+            Marshal.ThrowExceptionForHR(hr);
+        }
+
+        return process;
     }
 
     private string ReplaceKnownVariables(string input, Dictionary<string, int> argumentValues)
@@ -197,12 +267,7 @@ public partial class ExternalTool : ObservableObject
         return result;
     }
 
-    public void TogglePinnedState()
-    {
-        IsPinned = !IsPinned;
-    }
-
-    public void UnregisterTool()
+    public override void UnregisterTool()
     {
         ExternalToolsHelper.Instance.RemoveExternalTool(this);
     }

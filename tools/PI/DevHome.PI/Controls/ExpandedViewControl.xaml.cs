@@ -3,7 +3,6 @@
 
 using System;
 using DevHome.PI.ViewModels;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 
@@ -11,12 +10,12 @@ namespace DevHome.PI.Controls;
 
 public sealed partial class ExpandedViewControl : UserControl
 {
-    private readonly ExpandedViewControlViewModel viewModel = new();
+    private readonly ExpandedViewControlViewModel _viewModel = new();
 
     public ExpandedViewControl()
     {
         InitializeComponent();
-        viewModel.NavigationService.Frame = PageFrame;
+        _viewModel.NavigationService.Frame = PageFrame;
     }
 
     public Frame GetPageFrame()
@@ -26,17 +25,12 @@ public sealed partial class ExpandedViewControl : UserControl
 
     public void NavigateTo(Type viewModelType)
     {
-        viewModel.NavigateTo(viewModelType);
-    }
-
-    private void SettingsButton_Click(object sender, RoutedEventArgs e)
-    {
-        NavigateToSettings(typeof(SettingsPageViewModel).FullName!);
+        _viewModel.NavigateTo(viewModelType);
     }
 
     public void NavigateToSettings(string viewModelType)
     {
-        viewModel.NavigateToSettings(viewModelType);
+        _viewModel.NavigateToSettings(viewModelType);
     }
 
     private void GridSplitter_PointerPressed(object sender, PointerRoutedEventArgs e)

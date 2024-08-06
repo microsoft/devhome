@@ -53,7 +53,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     [ObservableProperty]
     private bool _shouldShowDotOperations;
 
+    [ObservableProperty]
+    private bool _shouldShowSplitButton;
+
     private bool _disposedValue;
+
+    private Action<ComputeSystemReviewItem>? _configurationAction;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
@@ -70,6 +75,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         IComputeSystem system,
         ComputeSystemProvider provider,
         Func<ComputeSystemCardBase, bool> removalAction,
+        Action<ComputeSystemReviewItem>? configurationAction,
         string packageFullName,
         Window window)
     {
@@ -80,6 +86,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         ComputeSystem = new(system);
         PackageFullName = packageFullName;
         _removalAction = removalAction;
+        _configurationAction = configurationAction;
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
     }
 
@@ -128,7 +135,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         try
         {
             ShouldShowDotOperations = false;
-            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
+            ShouldShowSplitButton = false;
+
+            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(_provider, ComputeSystem, _configurationAction));
 
             _ = Task.Run(async () =>
             {
@@ -157,7 +166,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                         DotOperations.Add(data);
                     }
 
-                    ShouldShowDotOperations = true;
+                    // Only show dot operations when there are items in the list.
+                    ShouldShowDotOperations = DotOperations.Count > 0;
+
+                    // Only show Launch split button with operations when there are items in the list.
+                    ShouldShowSplitButton = LaunchOperations.Count > 0;
                 });
             });
 

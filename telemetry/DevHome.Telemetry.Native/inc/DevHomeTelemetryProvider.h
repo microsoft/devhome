@@ -10,6 +10,32 @@
 #define __WIL_TRACELOGGING_CONFIG_H
 #include <wil/Tracelogging.h>
 
+#define DEFINE_CRITICAL_DATA_EVENT_PARAM10(                                                                                                                                   \
+    EventId, VarType1, varName1, VarType2, varName2, VarType3, varName3, VarType4, varName4, VarType5, varName5, VarType6, varName6, VarType7, varName7, VarType8, varName8, VarType9, varName9, VarType10, varName10) \
+    DEFINE_TRACELOGGING_EVENT_PARAM10(                                                                                                                                        \
+        EventId,                                                                                                                                                             \
+        VarType1,                                                                                                                                                            \
+        varName1,                                                                                                                                                            \
+        VarType2,                                                                                                                                                            \
+        varName2,                                                                                                                                                            \
+        VarType3,                                                                                                                                                            \
+        varName3,                                                                                                                                                            \
+        VarType4,                                                                                                                                                            \
+        varName4,                                                                                                                                                            \
+        VarType5,                                                                                                                                                            \
+        varName5,                                                                                                                                                            \
+        VarType6,                                                                                                                                                            \
+        varName6,                                                                                                                                                            \
+        VarType7,                                                                                                                                                            \
+        varName7,                                                                                                                                                            \
+        VarType8,                                                                                                                                                            \
+        varName8,                                                                                                                                                            \
+        VarType9,                                                                                                                                                            \
+        varName9,                                                                                                                                                            \
+        VarType10,                                                                                                                                                           \
+        varName10,                                                                                                                                                           \
+        TraceLoggingKeyword(MICROSOFT_KEYWORD_CRITICAL_DATA))
+
 // [uuid(2e74ff65-bbda-5e80-4c0a-bd8320d4223b)]
 class DevHomeTelemetryProvider : public wil::TraceLoggingProvider
 {
@@ -18,10 +44,10 @@ class DevHomeTelemetryProvider : public wil::TraceLoggingProvider
 public:
 
     // Activity for quiet session
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS_WITH_LEVEL(
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS_WITH_LEVEL(
         QuietBackgroundProcesses_ElevatedServer_Session,
         PDT_ProductAndServicePerformance,
-        WINEVENT_LEVEL_CRITICAL);
+        WINEVENT_LEVEL_LOG_ALWAYS);
 
         DEFINE_ACTIVITY_START(bool isPlacebo, uint64_t expectedDuration)
         {
@@ -41,10 +67,10 @@ public:
 
 
     // Activity for process metrics
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS_WITH_LEVEL(
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS_WITH_LEVEL(
         QuietBackgroundProcesses_PerformanceMetrics,
         PDT_ProductAndServicePerformance,
-        WINEVENT_LEVEL_CRITICAL);
+        WINEVENT_LEVEL_LOG_ALWAYS);
 
         DEFINE_ACTIVITY_START(uint32_t quietSessionVersion, uint64_t samplingPeriodInMs, uint64_t totalCpuUsageInMicroseconds)
         {
@@ -55,15 +81,15 @@ public:
             );
         }
 
-        DEFINE_TRACELOGGING_EVENT_PARAM4(
-            ComputerInfo,
+        DEFINE_CRITICAL_DATA_EVENT_PARAM4(
+            QuietBackgroundProcesses_ComputerInfo,
             DWORD, processorCount,
             PCWSTR, processor,
             PCWSTR, motherboard,
             DWORD, ram);
 
-        DEFINE_TRACELOGGING_EVENT_PARAM10(
-            SessionCategoryMetrics,
+        DEFINE_CRITICAL_DATA_EVENT_PARAM10(
+            QuietBackgroundProcesses_SessionCategoryMetrics,
             int, numProcesses_unknown,
             int, numProcesses_user,
             int, numProcesses_system,
@@ -75,8 +101,8 @@ public:
             int, totalCpuTimesByCategory_developer,
             int, totalCpuTimesByCategory_background);
 
-        DEFINE_TRACELOGGING_EVENT_PARAM10(
-            ProcessInfo,
+        DEFINE_CRITICAL_DATA_EVENT_PARAM10(
+            QuietBackgroundProcesses_ProcessInfo,
             int, reason,
             bool, isInSystem32,
             PCWSTR, processName,

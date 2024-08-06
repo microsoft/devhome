@@ -8,6 +8,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="/Styles/CommandBarStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">

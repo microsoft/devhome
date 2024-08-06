@@ -75,5 +75,5 @@ public enum WinLogsTool
     ETWLogs,
     DebugOutput,
     EventViewer,
-    Watson,
+    WER,
 }

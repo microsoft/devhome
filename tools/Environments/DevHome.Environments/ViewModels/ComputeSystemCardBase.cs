@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
@@ -59,18 +60,29 @@ public abstract partial class ComputeSystemCardBase : ObservableObject
 
     public string ComputeSystemId { get; protected set; } = string.Empty;
 
+    private readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
+
+    private readonly StringResource _stringResourceCommon = new("DevHome.Common.pri", "DevHome.Common/Resources");
+
     [ObservableProperty]
     private string _uiMessageToDisplay = string.Empty;
 
     public ComputeSystemCardBase()
     {
-        var stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
-        _moreOptionsButtonName = stringResource.GetLocalized("MoreOptionsButtonName");
+        _moreOptionsButtonName = _stringResource.GetLocalized("MoreOptions.AutomationProperties.Name");
     }
 
     public override string ToString()
     {
-        return $"{Name} {AlternativeName}";
+        var description = new StringBuilder(Name);
+
+        if (!string.IsNullOrEmpty(AlternativeName))
+        {
+            description.Append(AlternativeName);
+        }
+
+        description.Append(_stringResourceCommon.GetLocalized($"ComputeSystem{State}"));
+        return description.ToString();
     }
 
     /// <summary>

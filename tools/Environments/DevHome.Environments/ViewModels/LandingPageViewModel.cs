@@ -18,6 +18,7 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.Environments.ViewModels;
@@ -33,8 +34,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly Window _mainWindow;
 
-    private readonly EnvironmentsExtensionsService _environmentExtensionsService;
-
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
@@ -48,6 +47,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private bool _disposed;
 
     private bool _wasSyncButtonClicked;
+
+    private string _selectedProvider = string.Empty;
 
     public bool IsLoading { get; set; }
 
@@ -81,7 +82,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
-    private const int SortUnselected = -1;
+    private enum SortOptions
+    {
+        Alphabetical,
+        AlphabeticalDescending,
+        LastConnected,
+    }
+
+    private const int DefaultSortIndex = (int)SortOptions.LastConnected;
 
     public ObservableCollection<string> Providers { get; set; }
 
@@ -90,20 +98,17 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
-        EnvironmentsExtensionsService extensionsService,
         Window mainWindow)
     {
         _computeSystemManager = manager;
-        _environmentExtensionsService = extensionsService;
         _mainWindow = mainWindow;
         _navigationService = navigationService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new() { _stringResource.GetLocalized("AllProviders") };
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
-
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
     }
@@ -117,7 +122,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public async Task SyncButton()
     {
         // Reset the sort and filter
-        SelectedSortIndex = SortUnselected;
+        SelectedSortIndex = DefaultSortIndex;
         Providers = new ObservableCollection<string> { _stringResource.GetLocalized("AllProviders") };
         SelectedProviderIndex = 0;
         _wasSyncButtonClicked = true;
@@ -148,6 +153,18 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
+    }
+
+    public void ConfigureComputeSystem(ComputeSystemReviewItem item)
+    {
+        _log.Information("User clicked on the setup button. Navigating to the Setup an Environment page in Setup flow");
+        object[] parameters = { "StartConfigurationFlow", "EnvironmentsLandingPage", item };
+
+        // Run on the UI thread
+        _mainWindow.DispatcherQueue.EnqueueAsync(() =>
+        {
+            _navigationService.NavigateTo(KnownPageKeys.SetupFlow, parameters);
+        });
     }
 
     // Updates the last sync time on the UI thread after set delay
@@ -244,7 +261,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         CallToActionHyperLinkButtonText = null;
         ShouldNavigateToExtensionsPage = false;
         ShowLoadingShimmer = true;
-        await _environmentExtensionsService.GetComputeSystemsAsync(useDebugValues, AddAllComputeSystemsFromAProvider);
+        await _computeSystemManager.GetComputeSystemsAsync(AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
         UpdateCallToActionText();
 
@@ -303,30 +320,30 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
         var provider = data.ProviderDetails.ComputeSystemProvider;
 
-        var computeSystemList = data.DevIdToComputeSystemMap.Values.SelectMany(x => x.ComputeSystems).ToList() ?? [];
-
-        // In the future when we support switching between accounts in the environments page, we will need to handle this differently.
-        // for now we'll show all the compute systems from a provider.
-        if (computeSystemList.Count == 0)
-        {
-            _log.Error($"No Compute systems found for provider: {provider.Id}");
-        }
-
-        // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
-        var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+        // List of ComputeSystemViewModels to be added to the view model
+        // that didn't have any errors during initialization
         var computeSystemViewModels = new List<ComputeSystemViewModel>();
-        foreach (var computeSystem in computeSystemList)
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(map =>
+            map.Value.Result.Status != ProviderOperationStatus.Failure))
         {
-            var computeSystemViewModel = new ComputeSystemViewModel(
-                _computeSystemManager,
-                computeSystem,
-                provider,
-                RemoveComputeSystemCard,
-                packageFullName,
-                _mainWindow);
+            var computeSystems = mapping.Value.ComputeSystems;
 
-            computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
-            computeSystemViewModels.Add(computeSystemViewModel);
+            // Initialize the cards for the compute systems in parallel before adding them to the view model on UI thread
+            var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+            foreach (var computeSystem in computeSystems)
+            {
+                var computeSystemViewModel = new ComputeSystemViewModel(
+                    _computeSystemManager,
+                    computeSystem,
+                    provider,
+                    RemoveComputeSystemCard,
+                    ConfigureComputeSystem,
+                    packageFullName,
+                    _mainWindow);
+
+                computeSystemViewModel.ComputeSystemErrorReceived += OnComputeSystemOperationError;
+                computeSystemViewModels.Add(computeSystemViewModel);
+            }
         }
 
         await Parallel.ForEachAsync(computeSystemViewModels, async (computeSystemModel, token) =>
@@ -367,11 +384,23 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
             {
+                var providerName = createComputeSystemOperationViewModel.ProviderDisplayName;
+                if (providerName != _selectedProvider)
+                {
+                    return false;
+                }
+
                 return createComputeSystemOperationViewModel.EnvironmentName.Contains(query, StringComparison.OrdinalIgnoreCase);
             }
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
+                var providerName = computeSystemViewModel.ProviderDisplayName;
+                if (providerName != _selectedProvider)
+                {
+                    return false;
+                }
+
                 var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
                 var systemAltName = computeSystemViewModel.ComputeSystem.SupplementalDisplayName.Value;
                 return systemName.Contains(query, StringComparison.OrdinalIgnoreCase) || systemAltName.Contains(query, StringComparison.OrdinalIgnoreCase);
@@ -388,22 +417,22 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void ProviderHandler(int selectedIndex)
     {
         SelectedProviderIndex = selectedIndex;
-        var currentProvider = Providers[SelectedProviderIndex];
+        _selectedProvider = Providers[SelectedProviderIndex];
         ComputeSystemCardsView.Filter = system =>
         {
-            if (currentProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
+            if (_selectedProvider.Equals(_stringResource.GetLocalized("AllProviders"), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             if (system is CreateComputeSystemOperationViewModel createComputeSystemOperationViewModel)
             {
-                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return createComputeSystemOperationViewModel.ProviderDisplayName.Equals(_selectedProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                return computeSystemViewModel.ProviderDisplayName.Equals(currentProvider, StringComparison.OrdinalIgnoreCase);
+                return computeSystemViewModel.ProviderDisplayName.Equals(_selectedProvider, StringComparison.OrdinalIgnoreCase);
             }
 
             return false;
@@ -421,26 +450,20 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     {
         ComputeSystemCardsView.SortDescriptions.Clear();
 
-        if (SelectedSortIndex == SortUnselected)
+        if (SelectedSortIndex == (int)SortOptions.LastConnected)
         {
             ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
         }
 
         switch (SelectedSortIndex)
         {
-            case 0:
+            case (int)SortOptions.Alphabetical:
                 ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Ascending));
                 break;
-            case 1:
+            case (int)SortOptions.AlphabeticalDescending:
                 ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("Name", SortDirection.Descending));
                 break;
-            case 2:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Ascending));
-                break;
-            case 3:
-                ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("AlternativeName", SortDirection.Descending));
-                break;
-            case 4:
+            case (int)SortOptions.LastConnected:
                 ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("LastConnected", SortDirection.Ascending));
                 break;
         }

@@ -31,7 +31,7 @@
             "assembly": "DevHome.Customization",
             "viewFullName": "DevHome.Customization.Views.MainPage",
             "viewModelFullName": "DevHome.Customization.ViewModels.MainPageViewModel",
-            "icon": "e9f5"
+            "icon": "EC7A"
           },
           {
             "identity": "DevHome.Utilities",
@@ -49,6 +49,7 @@
     {
       "identity": "QuietBackgroundProcessesExperiment",
       "enabledByDefault": false,
+      "needsFeaturePresenceCheck": true,
       "buildTypeOverrides": [
         {
           "buildType": "dev",
@@ -64,6 +65,27 @@
           "buildType": "stable",
           "enabledByDefault": false,
           "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "FileExplorerSourceControlIntegration",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": true
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": false
         }
       ]
     },

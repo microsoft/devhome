@@ -21,16 +21,19 @@ public partial class ExperimentalFeature : ObservableObject
 
     public string Id { get; init; }
 
+    public bool NeedsFeaturePresenceCheck { get; init; }
+
     public bool IsVisible { get; init; }
 
     public static ILocalSettingsService? LocalSettingsService { get; set; }
 
     public static IQuickstartSetupService? QuickstartSetupService { get; set; }
 
-    public ExperimentalFeature(string id, bool enabledByDefault, bool visible = true)
+    public ExperimentalFeature(string id, bool enabledByDefault, bool needsFeaturePresenceCheck, bool visible = true)
     {
         Id = id;
         _isEnabledByDefault = enabledByDefault;
+        NeedsFeaturePresenceCheck = needsFeaturePresenceCheck;
         IsVisible = visible;
 
         IsEnabled = CalculateEnabled();

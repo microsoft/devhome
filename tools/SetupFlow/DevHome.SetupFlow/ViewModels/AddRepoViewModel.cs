@@ -579,6 +579,8 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private async Task AddAccountClicked()
     {
+        _addRepoDialog.Focus(FocusState.Programmatic);
+
         // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
         // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
         // to account 1 after logging into account 2.
@@ -1284,6 +1286,10 @@ public partial class AddRepoViewModel : ObservableObject
 
             return;
         }
+        else
+        {
+            ShouldShowUrlError = true;
+        }
     }
 
     /// <summary>
@@ -1307,10 +1313,11 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         // Repo may be public.  Try that.
-        var repo = provider.GetRepositoryFromUri(uri);
-        if (repo != null)
+        var repositoryResult = provider.GetRepositoryFromUri(uri);
+
+        if (repositoryResult.Result.Status == ProviderOperationStatus.Success)
         {
-            var cloningInformation = new CloningInformation(repo);
+            var cloningInformation = new CloningInformation(repositoryResult.Repository);
             cloningInformation.RepositoryProvider = provider.GetProvider();
             cloningInformation.ProviderName = provider.DisplayName;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
@@ -1324,10 +1331,10 @@ public partial class AddRepoViewModel : ObservableObject
         {
             foreach (var loggedInAccount in loggedInAccounts)
             {
-                repo = provider.GetRepositoryFromUri(uri, loggedInAccount);
-                if (repo != null)
+                repositoryResult = provider.GetRepositoryFromUri(uri, loggedInAccount);
+                if (repositoryResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    var cloningInformation = new CloningInformation(repo);
+                    var cloningInformation = new CloningInformation(repositoryResult.Repository);
                     cloningInformation.RepositoryProvider = provider.GetProvider();
                     cloningInformation.ProviderName = provider.DisplayName;
                     cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
@@ -1336,6 +1343,14 @@ public partial class AddRepoViewModel : ObservableObject
                     return cloningInformation;
                 }
             }
+        }
+
+        // If no accounts can log in, or the user did not log in.
+        if (repositoryResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            _log.Information("Could not get repo from Uri.");
+            _log.Information(repositoryResult.Result.DisplayMessage);
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
         }
 
         return null;

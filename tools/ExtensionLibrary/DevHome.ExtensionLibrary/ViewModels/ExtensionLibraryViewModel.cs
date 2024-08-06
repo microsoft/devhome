@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -19,6 +18,7 @@ using Serilog;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
+using static DevHome.Common.Helpers.CommonConstants;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
@@ -26,17 +26,18 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionLibraryViewModel));
 
-    private readonly string devHomeProductId = "9N8MHTPHNGVV";
+    private const string DevHomeProductId = "9N8MHTPHNGVV";
 
     private readonly IExtensionService _extensionService;
     private readonly DispatcherQueue _dispatcherQueue;
 
     // All internal Dev Home extensions that should allow users to enable/disable them, should add
     // their class Ids to this set.
-    private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage = new()
-    {
-        CommonConstants.HyperVExtensionClassId,
-    };
+    private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage =
+    [
+        HyperVExtensionClassId,
+        WSLExtensionClassId,
+    ];
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
@@ -66,7 +67,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [RelayCommand]
     public async Task LoadedAsync()
     {
-        await GetInstalledExtensionsAsync();
+        await GetInstalledPackagesAndExtensionsAsync();
         GetAvailablePackages();
     }
 
@@ -75,12 +76,12 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         await _dispatcherQueue.EnqueueAsync(async () =>
         {
             ShouldShowStoreError = false;
-            await GetInstalledExtensionsAsync();
+            await GetInstalledPackagesAndExtensionsAsync();
             GetAvailablePackages();
         });
     }
 
-    private async Task GetInstalledExtensionsAsync()
+    private async Task GetInstalledPackagesAndExtensionsAsync()
     {
         var extensionWrappers = await _extensionService.GetInstalledExtensionsAsync(true);
 
@@ -164,7 +165,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                 var productId = productObj.GetNamedString("ProductId");
 
                 // Don't show self as available.
-                if (productId == devHomeProductId)
+                if (productId == DevHomeProductId)
                 {
                     continue;
                 }

@@ -27,6 +27,7 @@ graph TD;
     DevHome.SetupFlow.ElevatedComponent.Projection-->DevHome.SetupFlow;
     CoreWidgetProvider-->DevHome;
     HyperVExtensionServer-->DevHome;
+    FileExplorerGitIntegration-->DevHome;
     DevHome.Common-->DevHome;
     DevHome.Customization-->DevHome;
     DevHome.Dashboard-->DevHome;
@@ -42,6 +43,8 @@ graph TD;
     DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow;
     DevHome.Services.WindowsPackageManager-->DevHome.SetupFlow.ElevatedComponent;
     DevHome.Services.DesiredStateConfiguration-->DevHome.SetupFlow.ElevatedComponent;
+    DevHome.FileExplorerSourceControlIntegration-->DevHome.Customization;
+    DevHome.QuietBackgroundProcesses.ElevatedServer.Projection-->DevHome.Settings;
 ```
 
 ## Dev Home Core
@@ -78,6 +81,7 @@ Dev Home currently has the following tools:
 - Setup flow
 - Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
+- Utilities
 
 ## Extensions
 
