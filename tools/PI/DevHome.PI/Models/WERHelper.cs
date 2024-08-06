@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using DevHome.Common.Helpers;
@@ -289,6 +290,12 @@ internal sealed class WERHelper : IDisposable
     {
         var timeGenerated = File.GetCreationTime(crashDumpFile);
 
+        // Only look at .dmp files
+        if (Path.GetExtension(crashDumpFile) != ".dmp")
+        {
+            return;
+        }
+
         // The crashdumpFilename has a format of
         // executable.pid.dmp
         // so it could be
@@ -323,6 +330,16 @@ internal sealed class WERHelper : IDisposable
 
         FileInfo fileInfo = new(executableFullPath);
 
+        // Build a basic description of this file in case we don't have an event log entry for it
+        FileInfo dumpFileInfo = new(crashDumpFile);
+
+        string description = string.Empty;
+
+        if (dumpFileInfo.Exists)
+        {
+            description = string.Format(CultureInfo.CurrentCulture, CommonHelper.GetLocalizedString("WERBasicInfo"), dumpFileInfo.Length, dumpFileInfo.CreationTime);
+        }
+
         var converter = new Int32Converter();
         var pid = (int?)converter.ConvertFromString(processID);
 
@@ -340,6 +357,7 @@ internal sealed class WERHelper : IDisposable
                 werReport.TimeStamp = timeGenerated;
                 werReport.Executable = fileInfo.Name;
                 werReport.Pid = pid ?? 0;
+                werReport.Description = description;
             }
 
             // Populate the report

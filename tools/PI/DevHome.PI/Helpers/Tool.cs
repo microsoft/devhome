@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -28,9 +29,13 @@ public abstract partial class Tool : ObservableObject
 
     public string Name { get; private set; }
 
-    public Tool(string name, bool isPinned)
+    [JsonConverter(typeof(EnumStringConverter<ToolType>))]
+    public ToolType Type { get; private set; }
+
+    public Tool(string name, ToolType type, bool isPinned)
     {
         Name = name;
+        Type = type;
         IsPinned = isPinned;
         PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
     }
@@ -47,26 +52,53 @@ public abstract partial class Tool : ObservableObject
     {
     }
 
+    [property: JsonIgnore]
     [RelayCommand]
     public void TogglePinnedState()
     {
         IsPinned = !IsPinned;
     }
 
+    public void Invoke(ToolLaunchOptions options)
+    {
+        InvokeTool(options);
+    }
+
+    [property: JsonIgnore]
     [RelayCommand]
     public void Invoke()
     {
-        InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+        ToolLaunchOptions options = new();
+        options.TargetProcessId = TargetAppData.Instance.TargetProcess?.Id;
+        options.TargetHWnd = TargetAppData.Instance.HWnd;
+        InvokeTool(options);
     }
 
-    [RelayCommand]
-    public void InvokeWithParent(Window parent)
-    {
-        InvokeTool(parent, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-    }
+    internal virtual void InvokeTool(ToolLaunchOptions options) => throw new NotImplementedException();
 
-    internal virtual void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd) => throw new NotImplementedException();
-
+    [property: JsonIgnore]
     [RelayCommand]
     public abstract void UnregisterTool();
+}
+
+[Flags]
+public enum ToolType
+{
+    Unknown = 0,
+    DumpAnalyzer = 1,
+}
+
+public class ToolLaunchOptions
+{
+    public Window? ParentWindow { get; set; }
+
+    public bool RedirectStandardOut { get; set; } /* = false; */
+
+    public string? CommandLineParams { get; set; }
+
+    public int? TargetProcessId { get; set; }
+
+    internal HWND TargetHWnd { get; set; }
+
+    public Process? LaunchedProcess { get; set; }
 }

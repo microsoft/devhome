@@ -21,8 +21,6 @@ internal sealed class ExternalToolsHelper
     private readonly JsonSerializerOptions _serializerOptions = new() { WriteIndented = true };
     private readonly string _toolInfoFileName;
 
-    public static readonly ExternalToolsHelper Instance = new();
-
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalToolsHelper));
 
     private readonly ObservableCollection<ExternalTool> _filteredExternalTools = [];
@@ -62,7 +60,7 @@ internal sealed class ExternalToolsHelper
 
     internal static int ToolsCollectionVersion { get; private set; } = 2;
 
-    private ExternalToolsHelper()
+    public ExternalToolsHelper()
     {
         string localFolder;
         if (RuntimeHelper.IsMSIX)
@@ -133,6 +131,8 @@ internal sealed class ExternalToolsHelper
                     arguments,
                     string.Empty,
                     string.Empty,
+                    string.Empty,
+                    ToolType.Unknown,
                     oldTool.IsPinned);
 
                 _allExternalTools.Add(newTool);

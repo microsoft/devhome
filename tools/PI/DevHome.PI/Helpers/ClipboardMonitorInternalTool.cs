@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.PI.Properties;
 using DevHome.PI.Views;
 using Microsoft.UI.Xaml;
@@ -19,7 +20,7 @@ public class ClipboardMonitorInternalTool : Tool
     private ClipboardMonitoringWindow? _clipboardMonitoringWindow;
 
     public ClipboardMonitorInternalTool()
-        : base(_clipboardMonitorToolName, Settings.Default.IsClipboardMonitorToolPinned)
+        : base(_clipboardMonitorToolName, ToolType.Unknown, Settings.Default.IsClipboardMonitorToolPinned)
     {
     }
 
@@ -32,19 +33,19 @@ public class ClipboardMonitorInternalTool : Tool
         };
     }
 
-    internal override void InvokeTool(Window? parent, int? targetProcessId, HWND hWnd)
+    internal override void InvokeTool(ToolLaunchOptions options)
     {
         if (_clipboardMonitoringWindow is null || _clipboardMonitoringWindow.AppWindow is null)
         {
             _clipboardMonitoringWindow = new ClipboardMonitoringWindow();
         }
 
-        if (parent is not null)
+        if (options.ParentWindow is not null)
         {
             RectInt32 rect;
-            rect.X = parent.AppWindow.Position.X;
-            rect.Y = parent.AppWindow.Position.Y + 100;
-            rect.Width = parent.AppWindow.Size.Width;
+            rect.X = options.ParentWindow.AppWindow.Position.X;
+            rect.Y = options.ParentWindow.AppWindow.Position.Y + 100;
+            rect.Width = options.ParentWindow.AppWindow.Size.Width;
             rect.Height = _clipboardMonitoringWindow.AppWindow.Size.Height;
 
             _clipboardMonitoringWindow.AppWindow.MoveAndResize(rect);
