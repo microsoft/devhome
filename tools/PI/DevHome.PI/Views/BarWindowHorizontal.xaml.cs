@@ -612,5 +612,10 @@ public partial class BarWindowHorizontal : WindowEx
                 }
             }
         }
+        else if (e.Equals(WindowState.Maximized))
+        {
+            // If we're being maximized, expand our content
+            _viewModel.ShowingExpandedContent = true;
+        }
     }
 }
