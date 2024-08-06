@@ -5,6 +5,7 @@ using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.PI.Helpers;
+
 using DevHome.PI.Models;
 using DevHome.PI.Pages;
 using DevHome.PI.Services;
@@ -68,6 +69,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<ResourceUsagePage>();
                 services.AddSingleton<ResourceUsagePageViewModel>();
                 services.AddSingleton<WERPage>();
+                services.AddSingleton<WERPageViewModel>();
                 services.AddSingleton<WinLogsPage>();
                 services.AddSingleton<WinLogsPageViewModel>();
                 services.AddSingleton<SettingsPage>();
