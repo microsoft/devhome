@@ -9,14 +9,11 @@ internal sealed class ThrottledTask
 {
     private readonly TimeSpan _interval;
     private readonly object _lock = new();
-    private readonly Stopwatch _stopwatch = new();
 
     private readonly Action _action;
 
     private Task? _currentTask;
-    private bool _running;
-
-    private bool Throttled => _stopwatch.Elapsed < _interval;
+    private bool _shouldQueue;
 
     public ThrottledTask(Action action, TimeSpan interval)
     {
@@ -24,26 +21,40 @@ internal sealed class ThrottledTask
         _interval = interval;
     }
 
+    // When the action completes, wait for interval before checking if a new action has been queued.
     public void Run(CancellationToken cancellationToken = default)
     {
         lock (_lock)
         {
-            if (_currentTask != null && (_running || Throttled))
+            if (_currentTask != null && !_currentTask.IsCompleted)
             {
+                _shouldQueue = true;
                 return;
             }
 
-            _running = true;
-            _currentTask = Task.Run(_action, cancellationToken);
-            _currentTask.ContinueWith(
-                task =>
-            {
-                _stopwatch.Restart();
-                _running = false;
-            },
+            _currentTask = Task.Run(
+                async () =>
+                {
+                    bool shouldContinue = true;
+                    while (shouldContinue)
+                    {
+                        _action.Invoke();
+                        await Task.Delay(_interval, cancellationToken);
+                        lock (_lock)
+                        {
+                            if (_shouldQueue)
+                            {
+                                _shouldQueue = false;
+                            }
+                            else
+                            {
+                                shouldContinue = false;
+                                _currentTask = null;
+                            }
+                        }
+                    }
+                },
                 cancellationToken);
-
-            return;
         }
     }
 }
