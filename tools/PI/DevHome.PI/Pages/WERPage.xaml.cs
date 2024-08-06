@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
@@ -30,14 +31,7 @@ public sealed partial class WERPage : Page
         // Populate selector items for each WER analyizer registered with the system
         foreach (Tool tool in ViewModel.RegisteredAnalysisTools)
         {
-            SelectorBarItem selectorBarItem = new()
-            {
-                Text = tool.Name,
-                Tag = tool,
-            };
-
-            selectorBarItem.ContextFlyout = CreateMenuFlyoutForDebugginAnalyzerSelector(tool);
-            InfoSelector.Items.Add(selectorBarItem);
+            InfoSelector.Items.Add(CreateSelectorBarItemForDebugAnalyzer(tool));
         }
 
         ((INotifyCollectionChanged)ViewModel.RegisteredAnalysisTools).CollectionChanged += RegisteredAnalysisTools_CollectionChanged;
@@ -50,13 +44,7 @@ public sealed partial class WERPage : Page
         {
             foreach (Tool tool in e.NewItems)
             {
-                SelectorBarItem selectorBarItem = new()
-                {
-                    Text = tool.Name,
-                    Tag = tool,
-                };
-                selectorBarItem.ContextFlyout = CreateMenuFlyoutForDebugginAnalyzerSelector(tool);
-                InfoSelector.Items.Add(selectorBarItem);
+                InfoSelector.Items.Add(CreateSelectorBarItemForDebugAnalyzer(tool));
             }
         }
 
@@ -65,24 +53,27 @@ public sealed partial class WERPage : Page
         {
             foreach (Tool tool in e.OldItems)
             {
-                foreach (var item in InfoSelector.Items)
+                foreach (var item in InfoSelector.Items.Where(x => x.Tag == tool))
                 {
-                    if (item.Tag == tool)
-                    {
-                        InfoSelector.Items.Remove(item);
-                        break;
-                    }
+                    InfoSelector.Items.Remove(item);
+                    break;
                 }
             }
         }
     }
 
-    private MenuFlyout CreateMenuFlyoutForDebugginAnalyzerSelector(Tool tool)
+    private SelectorBarItem CreateSelectorBarItemForDebugAnalyzer(Tool tool)
     {
+        SelectorBarItem selectorBarItem = new()
+        {
+            Text = tool.Name,
+            Tag = tool,
+        };
+
         MenuFlyout menuFlyout = new();
         MenuFlyoutItem item = new()
         {
-            Text = "Use this for bucketing",
+            Text = _bucketUsingThisToolString,
             Tag = tool,
         };
         item.Click += (sender, e) =>
@@ -91,7 +82,8 @@ public sealed partial class WERPage : Page
         };
         menuFlyout.Items.Add(item);
 
-        return menuFlyout;
+        selectorBarItem.ContextFlyout = menuFlyout;
+        return selectorBarItem;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

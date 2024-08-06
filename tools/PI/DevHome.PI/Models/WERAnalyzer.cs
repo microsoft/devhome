@@ -102,10 +102,7 @@ public class WERAnalyzer : IDisposable
                 {
                     _registeredAnalysisTools.Remove(tool);
                 }
-            }
 
-            foreach (Tool tool in e.OldItems)
-            {
                 foreach (var report in _werAnalysisReports)
                 {
                     report.RemoveToolAnalysis(tool);
