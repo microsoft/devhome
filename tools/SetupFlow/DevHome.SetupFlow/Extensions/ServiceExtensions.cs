@@ -104,14 +104,6 @@ public static class ServiceExtensions
         return services;
     }
 
-    private static IServiceCollection AddRepositoryManagement(this IServiceCollection services)
-    {
-        services.AddTransient<RepositoryManagementMainPageViewModel>();
-        services.AddTransient<RepositoryManagementItemViewModel>();
-
-        return services;
-    }
-
     private static IServiceCollection AddDevDrive(this IServiceCollection services)
     {
         // View models

@@ -14,6 +14,7 @@ using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
+using DevHome.RepositoryManagement.Extensions;
 using DevHome.RepositoryManagement.ViewModels;
 using DevHome.Services;
 using DevHome.Services.Core.Extensions;
@@ -159,6 +160,9 @@ public partial class App : Application, IApp
 
             // Setup flow
             services.AddSetupFlow(context);
+
+            // Repository Management
+            services.AddRepositoryManagement(context);
 
             // Dashboard
             services.AddDashboard(context);

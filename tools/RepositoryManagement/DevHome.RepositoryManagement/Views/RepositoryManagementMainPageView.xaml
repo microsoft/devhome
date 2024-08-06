@@ -32,7 +32,7 @@
             </Style>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
-    <Grid>
+    <Grid Margin="10,0,20,0" RowSpacing="25">
         <Grid.Resources>
             <!--  Three Dot Button template  -->
             <DataTemplate x:Key="ThreeDotsButton">
@@ -59,8 +59,6 @@
         <Grid
             x:Name="TitleGrid"
             Grid.Row="0"
-            MaxWidth="{ThemeResource MaxPageContentWidth}"
-            Margin="{ThemeResource HeaderMargin}"
             ColumnSpacing="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -79,10 +77,7 @@
                 Margin="0,0,50,0"
                 Content="Clone repository" />
         </Grid>
-        <Grid
-            Grid.Row="1"
-            Margin="{ThemeResource HeaderMargin}"
-            ColumnSpacing="5">
+        <Grid Grid.Row="1" ColumnSpacing="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MaxWidth="300" />
                 <ColumnDefinition />
@@ -104,7 +99,6 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <ListView
-                Margin="{ThemeResource HeaderMargin}"
                 ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
                 SelectionMode="None">

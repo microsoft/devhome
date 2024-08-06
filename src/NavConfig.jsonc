@@ -47,7 +47,8 @@
             "viewFullName": "DevHome.RepositoryManagement.Views.RepositoryManagementMainPageView",
             "viewModelFullName": "DevHome.RepositoryManagement.ViewModels.RepositoryManagementMainPageViewModel",
             "iconFontFamily": "DevHomeFluentIcons",
-            "icon": "F03F"
+            "icon": "F03F",
+            "experimentalFeatureIdentity": "RepositoryManagement"
           }
         ]
       }
@@ -136,6 +137,27 @@
           "buildType": "stable",
           "enabledByDefault": false,
           "visible": true
+        }
+      ]
+    },
+    {
+      "identity": "RepositoryManagement",
+      "enabledByDefault": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": true,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": false
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": false
         }
       ]
     }
