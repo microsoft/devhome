@@ -105,12 +105,18 @@ internal sealed class RepositoryProviders
         {
             provider.Value.StartIfNotRunning();
             _log.Information($"Attempting to parse using provider {provider.Key}");
-            var repository = provider.Value.GetRepositoryFromUri(uri);
-            if (repository != null)
+            var repositoryResult = provider.Value.GetRepositoryFromUri(uri);
+
+            if (repositoryResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                _log.Information($"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
-                return (provider.Value.DisplayName, repository);
+                _log.Information("Could not get repo from Uri.");
+                _log.Information(repositoryResult.Result.DisplayMessage);
+                return (string.Empty, null);
             }
+
+            var repository = repositoryResult.Repository;
+            _log.Information($"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
+            return (provider.Value.DisplayName, repository);
         }
 
         return (string.Empty, null);

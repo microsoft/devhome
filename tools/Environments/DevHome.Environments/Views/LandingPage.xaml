@@ -68,7 +68,9 @@
             <!--  Three Dot Button template  -->
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
-                    <Button x:Uid="MoreOptionsButton" Style="{StaticResource HorizontalThreeDotsStyle}">
+                    <Button
+                        x:Uid="MoreOptionsButton"
+                        Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
@@ -173,41 +175,6 @@
                 </Grid>
             </DataTemplate>
 
-            <!--  Per Provider Card Template  -->
-            <DataTemplate x:Key="PerProviderComputeSystemTemplate" x:DataType="vm:PerProviderViewModel">
-                <Grid Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,0,3"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                            IsTextSelectionEnabled="True"
-                            Text="{x:Bind ProviderName}" />
-                        <TextBlock
-                            Margin="5,0,0,3"
-                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                            IsTextSelectionEnabled="True"
-                            Text="{x:Bind DecoratedDevID}" />
-                    </StackPanel>
-                    <Grid Grid.Row="1">
-                        <ListView
-                            ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}"
-                            ItemTemplate="{StaticResource ComputeSystemTemplate}"
-                            ItemsSource="{x:Bind ComputeSystemAdvancedView, Mode=OneWay}"
-                            SelectionMode="None">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
-                    </Grid>
-                </Grid>
-            </DataTemplate>
-
             <DataTemplate x:Key="CreateComputeSystemOperationTemplate" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid Style="{StaticResource HorizontalCardRootForEnvironmentsPage}">
                     <Grid.RowDefinitions>
@@ -232,10 +199,9 @@
                 </Grid>
             </DataTemplate>
 
-            <selectors:CardItemTemplateSelector
-                x:Key="CardItemTemplateSelector"
-                CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"
-                PerProviderComputeSystemTemplate="{StaticResource PerProviderComputeSystemTemplate}" />
+            <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
+                ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
+                CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
 
         </Grid.Resources>
         <!--  Templates end here  -->
@@ -283,14 +249,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <!--  Search field  -->
-            <AutoSuggestBox
-                x:Name="SearchTextBox"
-                x:Uid="SearchTextBox"
-                Grid.Column="0"
-                Width="250"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
+            <!-- Search field -->
+            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="230" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="TextChanged">
                         <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchHandlerCommand, Mode=OneWay}" CommandParameter="{Binding Text, ElementName=SearchTextBox}" />
@@ -304,13 +264,12 @@
                 Spacing="16">
                 <!--  Provider field  -->
                 <TextBlock x:Uid="ProviderTextBlock" VerticalAlignment="Center" />
-                <ComboBox
-                    x:Name="ProviderSelectionComboBox"
-                    x:Uid="ProviderSelectionComboBox"
-                    MinWidth="180"
-                    Margin="0,3,0,0"
-                    ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}"
-                    SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
+                <ComboBox x:Uid="ProviderSelectionComboBox"
+                          x:Name="ProviderSelectionComboBox"
+                          Margin="0 3 0 0"
+                          MinWidth="150"
+                          ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}"
+                          SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.ProviderHandlerCommand}" CommandParameter="{Binding SelectedIndex, ElementName=ProviderSelectionComboBox, Mode=OneWay}" />
@@ -319,15 +278,14 @@
                 </ComboBox>
                 <!--  Sort field  -->
                 <TextBlock x:Uid="SortByTextBlock" VerticalAlignment="Center" />
-                <ComboBox
-                    x:Name="SortSelectionComboBox"
-                    x:Uid="SortSelectionComboBox"
-                    MinWidth="167"
-                    Margin="0,3,0,0"
-                    SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
-                    <ComboBoxItem x:Uid="SortByName" />
-                    <ComboBoxItem x:Uid="SortByNameDesc" />
-                    <ComboBoxItem x:Uid="SortByLastConnected" />
+                <ComboBox x:Uid="SortSelectionComboBox"
+                          x:Name="SortSelectionComboBox"
+                          Margin="0 3 0 0"
+                          MinWidth="165"
+                          SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
+                    <ComboBoxItem x:Uid="SortByName"/>
+                    <ComboBoxItem x:Uid="SortByNameDesc"/>
+                    <ComboBoxItem x:Uid="SortByLastConnected"/>
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SortHandlerCommand}" />
@@ -337,16 +295,11 @@
                 <!--  Sync button  -->
                 <Button
                     x:Uid="SyncEnvironmentsButton"
-                    Margin="0,3,0,0"
-                    Command="{x:Bind ViewModel.SyncButtonCommand}">
-                    <StackPanel
-                        Padding="20,0"
-                        Orientation="Horizontal"
-                        Spacing="8">
-                        <FontIcon
-                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                            FontSize="16"
-                            Glyph="&#xE72C;" />
+                    Command="{x:Bind ViewModel.SyncButtonCommand}"
+                    Margin="0 3 0 0"
+                    Width="110">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />
                     </StackPanel>
                 </Button>
@@ -371,17 +324,13 @@
             </StackPanel>
         </Grid>
 
-        <ScrollViewer
-            Grid.Row="3"
-            MaxWidth="{ThemeResource MaxPageContentWidth}"
-            Margin="{ThemeResource ContentPageMargin}"
-            Style="{StaticResource EnvironmentScrollViewerStyle}">
+        <!-- Per VM/Compute System card -->
+        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid>
-                <!--  Per Compute System card  -->
                 <StackPanel>
                     <ListView
                         MaxWidth="{ThemeResource MaxPageContentWidth}"
-                        ItemContainerStyle="{StaticResource HorizontalCardListViewItemContainerForManagementPageStyle}"
+                        ItemsSource="{x:Bind ViewModel.ComputeSystemCardsView}" SelectionMode="None"
                         ItemTemplateSelector="{StaticResource CardItemTemplateSelector}"
                         ItemsSource="{x:Bind ViewModel.PerProviderViewModels}"
                         SelectionMode="None">

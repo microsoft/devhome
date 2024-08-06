@@ -4,13 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonViews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:views="using:DevHome.Customization.Views"
+    xmlns:views="using:DevHome.Customization.Views" 
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
-    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <ScrollView VerticalAlignment="Top">
-            <views:FileExplorerView />
-        </ScrollView>
-    </Grid>
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                <views:FileExplorerView />
+                <views:AddRepositoriesView Visibility="{x:Bind ViewModel.IsFeatureEnabled}"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </commonViews:DevHomePage>

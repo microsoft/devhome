@@ -661,7 +661,7 @@
     <value>Generate Configuration file</value>
     <comment>Text for a generating configuration file button</comment>
   </data>
-  <data name="Review_DownloadFileTooltip.Subtitle" xml:space="preserve">
+  <data name="Review_DownloadFileTooltip.Title" xml:space="preserve">
     <value>Generate a WinGet Configuration file (.winget) to repeat this setup in the future or share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
@@ -2022,5 +2022,9 @@
   <data name="LoginUIDialogCloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Close</value>
 	<comment>Close button automation name for the login UI dialog</comment>
+  </data>
+  <data name="GenerateConfigInfoButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Generate configuration file info</value>
+	<comment>Narration for the informational icon next to the "Generate Configuration file" button</comment>
   </data>
 </root>

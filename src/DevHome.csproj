@@ -93,8 +93,10 @@
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+    <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
     <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+    <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
     <ProjectReference Include="..\tools\PI\DevHome.PI\DevHome.PI.csproj" />

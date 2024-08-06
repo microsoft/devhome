@@ -7,18 +7,18 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.System;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static DevHome.PI.Helpers.WindowHelper;
 
 namespace DevHome.PI.Helpers;
@@ -30,15 +30,14 @@ public enum ToolActivationType
     Launch,
 }
 
-public partial class ExternalTool : ObservableObject
+public partial class ExternalTool : Tool
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
+    private readonly string _errorTitleText = CommonHelper.GetLocalizedString("ToolLaunchErrorTitle");
 
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("ToolLaunchErrorMessage");
 
     public string ID { get; private set; }
-
-    public string Name { get; private set; }
 
     public string Executable { get; private set; }
 
@@ -51,17 +50,6 @@ public partial class ExternalTool : ObservableObject
 
     public string IconFilePath { get; private set; }
 
-    [ObservableProperty]
-    private bool _isPinned;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private string _pinGlyph;
-
-    [ObservableProperty]
-    [property: JsonIgnore]
-    private SoftwareBitmapSource? _toolIcon;
-
     public ExternalTool(
         string name,
         string executable,
@@ -70,15 +58,13 @@ public partial class ExternalTool : ObservableObject
         string appUserModelId = "",
         string iconFilePath = "",
         bool isPinned = false)
+        : base(name, isPinned)
     {
-        Name = name;
         Executable = executable;
         ActivationType = activationType;
         Arguments = arguments;
         AppUserModelId = appUserModelId;
         IconFilePath = iconFilePath;
-        IsPinned = isPinned;
-        PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
 
         ID = Guid.NewGuid().ToString();
 
@@ -88,25 +74,20 @@ public partial class ExternalTool : ObservableObject
         }
     }
 
-    partial void OnIsPinnedChanged(bool oldValue, bool newValue)
-    {
-        PinGlyph = newValue ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
-    }
-
     private async void GetIcons()
     {
         try
         {
             if (!string.IsNullOrEmpty(IconFilePath))
             {
-                ToolIcon = await GetSoftwareBitmapSourceFromImageFilePath(IconFilePath);
+                ToolIconSource = await GetSoftwareBitmapSourceFromImageFilePath(IconFilePath);
             }
             else
             {
                 var softwareBitmap = GetSoftwareBitmapFromExecutable(Executable);
                 if (softwareBitmap is not null)
                 {
-                    ToolIcon = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(softwareBitmap);
+                    ToolIconSource = await GetSoftwareBitmapSourceFromSoftwareBitmapAsync(softwareBitmap);
                 }
             }
         }
@@ -116,7 +97,37 @@ public partial class ExternalTool : ObservableObject
         }
     }
 
-    internal async Task<Process?> Invoke(int? pid, HWND? hwnd)
+    public override IconElement GetIcon()
+    {
+        return new ImageIcon
+        {
+            Source = ToolIconSource,
+        };
+    }
+
+    internal async override void InvokeTool(Window? parentWindow, int? targetProcessId, HWND hWnd)
+    {
+        try
+        {
+            var process = await InvokeToolInternal(targetProcessId, hWnd);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Tool launched failed");
+
+            var builder = new StringBuilder();
+            builder.AppendLine(ex.Message);
+            if (ex.InnerException is not null)
+            {
+                builder.AppendLine(ex.InnerException.Message);
+            }
+
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, builder.ToString(), Executable);
+            PInvoke.MessageBox(HWND.Null, errorMessage, _errorTitleText, MESSAGEBOX_STYLE.MB_ICONERROR);
+        }
+    }
+
+    internal async Task<Process?> InvokeToolInternal(int? pid, HWND? hwnd)
     {
         var process = default(Process);
 
@@ -256,14 +267,7 @@ public partial class ExternalTool : ObservableObject
         return result;
     }
 
-    [RelayCommand]
-    public void TogglePinnedState()
-    {
-        IsPinned = !IsPinned;
-    }
-
-    [RelayCommand]
-    public void UnregisterTool()
+    public override void UnregisterTool()
     {
         ExternalToolsHelper.Instance.RemoveExternalTool(this);
     }

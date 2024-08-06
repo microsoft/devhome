@@ -14,6 +14,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
@@ -27,6 +28,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private readonly bool _logMeasures;
     private readonly ObservableCollection<WinLogsEntry> _winLogsOutput;
     private readonly DispatcherQueue _dispatcher;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private ObservableCollection<WinLogsEntry> _winLogEntries;
@@ -60,6 +62,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
         _dispatcher = DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
+
+        _insightsService = Application.Current.GetService<PIInsightsService>();
 
         _winLogEntries = [];
         _winLogsOutput = [];
@@ -199,8 +203,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             _dispatcher.TryEnqueue(() =>
             {
-                var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
-                insightsPageViewModel.AddInsight(newInsight);
+                _insightsService.AddInsight(newInsight);
             });
         }
     }

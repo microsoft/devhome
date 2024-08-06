@@ -87,6 +87,20 @@
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DevHome.FileExplorerSourceControlIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Source Control Core">
+              <com:Class Id="40FE4D6E-C9A0-48b4-A83E-AAA1D002C0D5" DisplayName="Core Extension" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="FileExplorerGitIntegration.exe" Arguments="-RegisterProcessAsComServer" DisplayName="LocalRepositoryProvider">
+              <com:Class Id="BDA76685-E749-4f09-8F13-C466D0802DA1" DisplayName="LocalRepositoryProvider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameCoreExt" Description="ms-resource:AppDescriptionCoreExt">
             <uap3:Properties>
@@ -129,6 +143,20 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID4" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameGitExt" Description="ms-resource:AppDescriptionGitExt">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="BDA76685-E749-4f09-8F13-C466D0802DA1" />
+                </Activation>
+                <SupportedInterfaces>
+                  <LocalRepository />
+                </SupportedInterfaces>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
@@ -160,14 +188,14 @@
                         <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotLight.png" DisplayAltText="SSH Keychain widget preview image" />
+                        <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotLight.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplaySSKeychain" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\icons\ssh_keychain_icon_dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotDark.png" DisplayAltText="SSH Keychain widget preview image" />
+                          <Screenshot Path="Widgets\Assets\screenshots\SSHScreenshotDark.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplaySSKeychain" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode />
@@ -190,14 +218,14 @@
                         <Icon Path="Widgets\Assets\icons\mem_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotLight.png" DisplayAltText="Memory widget preview image" />
+                        <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotLight.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayMemory" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\icons\mem_icon_dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotDark.png" DisplayAltText="Memory widget preview image" />
+                          <Screenshot Path="Widgets\Assets\screenshots\MemoryScreenshotDark.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayMemory" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode />
@@ -220,14 +248,14 @@
                         <Icon Path="Widgets\Assets\icons\net_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotLight.png" DisplayAltText="Network widget preview image" />
+                        <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotLight.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayNetwork" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\icons\net_icon_dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotDark.png" DisplayAltText="Network widget preview image" />
+                          <Screenshot Path="Widgets\Assets\screenshots\NetworkScreenshotDark.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayNetwork" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode />
@@ -250,14 +278,14 @@
                         <Icon Path="Widgets\Assets\icons\gpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotLight.png" DisplayAltText="GPU widget preview image" />
+                        <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotLight.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayGPU" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\icons\gpu_icon_dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotDark.png" DisplayAltText="GPU widget preview image" />
+                          <Screenshot Path="Widgets\Assets\screenshots\GPUScreenshotDark.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayGPU" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode />
@@ -280,14 +308,14 @@
                         <Icon Path="Widgets\Assets\icons\cpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotLight.png" DisplayAltText="CPU widget preview image" />
+                        <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotLight.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayCPU" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\icons\cpu_icon_dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotDark.png" DisplayAltText="CPU widget preview image" />
+                          <Screenshot Path="Widgets\Assets\screenshots\CPUScreenshotDark.png" DisplayAltText="ms-resource:WidgetScreenshotAltDisplayCPU" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode />

@@ -228,5 +228,17 @@ namespace DevHome.PI.Properties {
                 this["WindowWidth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsClipboardMonitorToolPinned {
+            get {
+                return ((bool)(this["IsClipboardMonitorToolPinned"]));
+            }
+            set {
+                this["IsClipboardMonitorToolPinned"] = value;
+            }
+        }
     }
 }
