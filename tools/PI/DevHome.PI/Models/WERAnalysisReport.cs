@@ -56,7 +56,7 @@ public partial class WERAnalysisReport : ObservableObject
 
     public void RunToolAnalysis(Tool tool)
     {
-        Debug.Assert(tool.Type.HasFlag(ToolType.DumpAnalyzer), "We should only be running dump analyzers on dumps");
+        Debug.Assert(tool.Type.HasFlag(ToolType.DumpAnalyzer), "We should only be running dump analyzers on dumps - Not " + tool.Type);
 
         WERAnalysis analysis = new(tool, Report.CrashDumpPath);
         analysis.Run();
@@ -68,7 +68,7 @@ public partial class WERAnalysisReport : ObservableObject
 
     public void RemoveToolAnalysis(Tool tool)
     {
-        Debug.Assert(tool.Type.HasFlag(ToolType.DumpAnalyzer), "We should only be running dump analyzers on dumps");
+        Debug.Assert(tool.Type.HasFlag(ToolType.DumpAnalyzer), "We should only be running dump analyzers on dumps  - Not " + tool.Type);
 
         if (_toolAnalyses.TryGetValue(tool, out WERAnalysis? analysis))
         {

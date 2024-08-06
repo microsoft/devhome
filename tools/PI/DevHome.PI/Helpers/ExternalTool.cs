@@ -199,7 +199,6 @@ public partial class ExternalTool : Tool
                 // as when we return from this function (and our async operation is still ongoing) our callers currently expect to
                 // be able to read ToolLaunchOptions.LaunchedProcess immedately... there isn't an indication that they would need to
                 // do an await first.
-                // process = ProcessLaunchedFromLaunchUriAsync;
             }
             else
             {
