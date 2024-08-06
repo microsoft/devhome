@@ -5,9 +5,6 @@
     xmlns:commonViews="using:DevHome.Common.Views"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:views="using:DevHome.Customization.Views" 
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters" 
-    xmlns:viewmodels="using:DevHome.Customization.ViewModels" 
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 

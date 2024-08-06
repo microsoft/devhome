@@ -2,6 +2,11 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <OutputType>WinExe</OutputType>
