@@ -125,37 +125,32 @@ internal sealed class RepositoryWrapper : IDisposable
             return string.Empty;
         }
 
-        FileStatus status;
-        try
-        {
-            _repoLock.EnterWriteLock();
-            status = _repo.RetrieveStatus(relativePath);
-        }
-        finally
-        {
-            _repoLock.ExitWriteLock();
-        }
-
-        if (status == FileStatus.Unaltered || status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
+        GitStatusEntry? status;
+        if (!_statusCache.Status.Entries.TryGetValue(relativePath, out status))
         {
             return string.Empty;
         }
-        else if (status.HasFlag(FileStatus.Conflicted))
+
+        if (status.Status == FileStatus.Unaltered || status.Status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
+        {
+            return string.Empty;
+        }
+        else if (status.Status.HasFlag(FileStatus.Conflicted))
         {
             return "Merge conflict";
         }
-        else if (status.HasFlag(FileStatus.NewInWorkdir))
+        else if (status.Status.HasFlag(FileStatus.NewInWorkdir))
         {
             return "Untracked";
         }
 
         var statusString = string.Empty;
-        if (status.HasFlag(FileStatus.NewInIndex) || status.HasFlag(FileStatus.ModifiedInIndex) || status.HasFlag(FileStatus.RenamedInIndex) || status.HasFlag(FileStatus.TypeChangeInIndex))
+        if (status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex))
         {
             statusString = "Staged";
         }
 
-        if (status.HasFlag(FileStatus.ModifiedInWorkdir) || status.HasFlag(FileStatus.RenamedInWorkdir) || status.HasFlag(FileStatus.TypeChangeInWorkdir))
+        if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.RenamedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir))
         {
             if (string.IsNullOrEmpty(statusString))
             {

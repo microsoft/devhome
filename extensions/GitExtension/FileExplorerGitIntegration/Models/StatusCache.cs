@@ -44,8 +44,7 @@ internal sealed class StatusCache : IDisposable
 
         _watcher = new FileSystemWatcher(rootFolder)
         {
-            NotifyFilter = NotifyFilters.Attributes
-            | NotifyFilters.CreationTime
+            NotifyFilter = NotifyFilters.CreationTime
             | NotifyFilters.DirectoryName
             | NotifyFilters.FileName
             | NotifyFilters.LastWrite
