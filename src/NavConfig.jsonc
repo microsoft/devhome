@@ -146,7 +146,7 @@
       "buildTypeOverrides": [
         {
           "buildType": "dev",
-          "enabledByDefault": true,
+          "enabledByDefault": false,
           "visible": true
         },
         {
