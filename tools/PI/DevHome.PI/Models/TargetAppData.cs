@@ -54,19 +54,19 @@ public partial class TargetAppData : ObservableObject
     }
 
     [ObservableProperty]
-    private SoftwareBitmapSource? icon;
+    private SoftwareBitmapSource? _icon;
 
     [ObservableProperty]
-    private string appName = string.Empty;
+    private string _appName = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProcessId))]
-    private Process? targetProcess;
+    private Process? _targetProcess;
 
     internal HWND HWnd { get; private set; }
 
     [ObservableProperty]
-    private bool hasExited;
+    private bool _hasExited;
 
     private async void GetBitmap(Process process, HWND hWnd)
     {
@@ -124,7 +124,7 @@ public partial class TargetAppData : ObservableObject
 
         // Reset hasExited, but don't trigger the property change event.
 #pragma warning disable MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
-        hasExited = false;
+        _hasExited = false;
 #pragma warning restore MVVMTK0034 // Direct field reference to [ObservableProperty] backing field
         try
         {

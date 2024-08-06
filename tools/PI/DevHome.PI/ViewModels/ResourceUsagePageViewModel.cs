@@ -13,38 +13,38 @@ namespace DevHome.PI.ViewModels;
 
 public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
 {
-    private readonly Timer timer;
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+    private readonly Timer _timer;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private string cpuUsage = string.Empty;
+    private string _cpuUsage = string.Empty;
 
     [ObservableProperty]
-    private string ramUsage = string.Empty;
+    private string _ramUsage = string.Empty;
 
     [ObservableProperty]
-    private string diskUsage = string.Empty;
+    private string _diskUsage = string.Empty;
 
     [ObservableProperty]
-    private string gpuUsage = string.Empty;
+    private string _gpuUsage = string.Empty;
 
     [ObservableProperty]
-    private bool responding;
+    private bool _responding;
 
     public ResourceUsagePageViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
         // Initial population of values
-        cpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
-        ramUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabel", PerfCounters.Instance.RamUsageInMB);
-        diskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
-        gpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
-        responding = TargetAppData.Instance.TargetProcess?.Responding ?? false;
+        _cpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
+        _ramUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabel", PerfCounters.Instance.RamUsageInMB);
+        _diskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
+        _gpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
+        _responding = TargetAppData.Instance.TargetProcess?.Responding ?? false;
 
         // We don't have a great way to determine when the "Responding" member changes, so we'll poll every 10 seconds using a Timer
-        timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+        _timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
     }
 
     private void TimerCallback(object? state)
@@ -57,7 +57,7 @@ public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
 
             if (newResponding != Responding)
             {
-                dispatcher.TryEnqueue(() =>
+                _dispatcher.TryEnqueue(() =>
                 {
                     Responding = newResponding;
                 });
@@ -69,28 +69,28 @@ public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
     {
         if (e.PropertyName == nameof(PerfCounters.CpuUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.RamUsageInMB))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabel", PerfCounters.Instance.RamUsageInMB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.DiskUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.GpuUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 GpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.GpuUsage);
             });
@@ -99,7 +99,7 @@ public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        timer.Dispose();
+        _timer.Dispose();
         GC.SuppressFinalize(this);
     }
 }
