@@ -19,7 +19,7 @@ The proposed experience is a new page to manage your cloned repositories on your
 
 ### 1.3 Rough-in Designs
 
-![repo management design](repomanagement.png)
+![repo management design](RepoManagement.png)
 
 ## 2. Goals & User Cans
 
