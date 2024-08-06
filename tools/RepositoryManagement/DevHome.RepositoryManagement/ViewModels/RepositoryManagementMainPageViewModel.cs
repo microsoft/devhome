@@ -18,7 +18,7 @@ public class RepositoryManagementMainPageViewModel
 {
     private readonly IHost _host;
 
-    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; set; } = new();
+    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; } = new();
 
     public RepositoryManagementMainPageViewModel(IHost host)
     {

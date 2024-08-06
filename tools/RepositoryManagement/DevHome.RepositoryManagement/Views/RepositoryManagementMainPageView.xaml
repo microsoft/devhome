@@ -11,7 +11,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.RepositoryManagement.ViewModels"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <commonviews:ToolPage.Resources>
         <ResourceDictionary>
@@ -21,7 +20,7 @@
                 <Setter Property="Padding" Value="0" />
             </Style>
             <Style x:Key="HorizontalThreeDotsStyle" TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Background" Value="{ThemeResource ControlFillColorTransparent}" />
                 <Setter Property="Content" Value="&#xE712;" />
                 <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}" />
                 <Setter Property="HorizontalAlignment" Value="Right" />

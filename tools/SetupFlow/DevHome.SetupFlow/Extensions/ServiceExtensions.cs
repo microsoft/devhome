@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using DevHome.Common.Services;
+using DevHome.RepositoryManagement.ViewModels;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
@@ -99,6 +100,14 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<CloneRepoSummaryInformationViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositoryManagement(this IServiceCollection services)
+    {
+        services.AddTransient<RepositoryManagementMainPageViewModel>();
+        services.AddTransient<RepositoryManagementItemViewModel>();
 
         return services;
     }

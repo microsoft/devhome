@@ -150,8 +150,6 @@ public partial class App : Application, IApp
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
             services.AddTransient<InitializationViewModel>();
-            services.AddTransient<RepositoryManagementMainPageViewModel>();
-            services.AddTransient<RepositoryManagementItemViewModel>();
 
             // Settings
             services.AddSettings(context);
