@@ -389,4 +389,36 @@
     <value>A restart may be required for long path changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
+   <data name="AddRepositoriesTextBlock.Text" xml:space="preserve">
+    <value>Add repositories</value>
+    <comment>Header for the add repositories user experience for file explorer source control integration</comment>
+  </data>
+  <data name="AddRepositoriesCard.Header" xml:space="preserve">
+    <value>Add folder to File Explorer Settings page</value>
+    <comment>Header for the add repositories card for file explorer source control integration</comment>
+  </data>
+  <data name="AddFolderButton.Content" xml:space="preserve">
+    <value>Add folder</value>
+    <comment>Click to choose a folder path for source control integration</comment>
+  </data>
+  <data name="AddRepositoriesCard.Description" xml:space="preserve">
+    <value>The version control protocol list is populated by installed Dev Home extensions (i.e. Git from "Git Extension for Dev Home")</value>
+    <comment>Description for the add repositories card for file explorer source control integration</comment>
+  </data>
+  <data name="ProviderSelectorDropDown.Content" xml:space="preserve">
+    <value>Unassigned</value>
+    <comment>Default value for provider selector</comment>
+  </data>
+  <data name="RemoveFolder.Text" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Click to remove a folder path from source control integration</comment>
+  </data>
+  <data name="MenuFlyoutUnregisteredRepository_Content" xml:space="preserve">
+    <value>Unassigned</value>
+    <comment>This is the content string displayed when a repository is added in the File Explorer Settings page but no source control provider has been selected. </comment>
+  </data>
+  <data name="RemoveRepository.Text" xml:space="preserve">
+    <value>Enter path to remove an enhanced repository</value>
+    <comment>The text for removing a repository from source control integration</comment>
+  </data>
 </root>

@@ -35,6 +35,7 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _collapseToolTip = CommonHelper.GetLocalizedString("SwitchToSmallLayoutToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly ExternalToolsHelper _externalToolsHelper;
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
@@ -140,7 +141,8 @@ public partial class BarWindowViewModel : ObservableObject
         CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
         _snapHelper = new();
 
-        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
+        _externalToolsHelper = Application.Current.GetService<ExternalToolsHelper>();
+        ((INotifyCollectionChanged)_externalToolsHelper.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
 
         _insightsService = Application.Current.GetService<PIInsightsService>();
@@ -155,7 +157,7 @@ public partial class BarWindowViewModel : ObservableObject
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
     {
         // Only show the separator if we're showing pinned tools
-        ExternalToolSeparatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ExternalToolSeparatorVisibility = _externalToolsHelper.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     partial void OnIsSnappedChanged(bool value)
@@ -360,7 +362,7 @@ public partial class BarWindowViewModel : ObservableObject
 
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
-        tool.InvokeTool(null, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
+        tool.Invoke();
     }
 
     [RelayCommand]

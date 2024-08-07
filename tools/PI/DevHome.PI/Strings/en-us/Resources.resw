@@ -946,8 +946,8 @@
     <comment>Column heading for the name column in a datagrid</comment>
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
-    <comment>{Locked="Ironsides"} Description text for a section where the user can type in the arguments to be used for the app</comment>
+    <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <comment>{Locked="Ironsides", "{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
     <value>Arguments</value>
@@ -1177,8 +1177,45 @@
     <value>No issues</value>
     <comment>A message indicating that there are no issues with the given item.</comment>
   </data>
+  <data name="ToolTypeButton.Content" xml:space="preserve">
+    <value>Tool Type</value>
+    <comment>Button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Set the type of the tool being added.</value>
+    <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
+    <value>WER Dump Analyzer</value>
+    <comment>Describes type of tool used to analyze WER dumps</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <comment>Tooltip that describes what a WER Dump analyzer does</comment>
+  </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
     <value>Project Ironsides Clipboard Monitor</value>
     <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
+  </data>
+  <data name="WERAnalysisUnavailable" xml:space="preserve">
+    <value>Analysis unavailable.</value>
+    <comment>Message shown when there isn't crash analysis available.</comment>
+  </data>
+  <data name="WERBasicInfo" xml:space="preserve">
+    <value>Dump File Size: {0} bytes
+Dump File creation time: {1}</value>
+    <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
+  </data>
+  <data name="BucketUsingThisToolString" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
+    <value>Regular Expression for WER bucket</value>
+    <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
   </data>
 </root>
