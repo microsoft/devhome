@@ -22,6 +22,7 @@ using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using DevHome.Utilities.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
@@ -178,6 +179,9 @@ public partial class App : Application, IApp
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
+
+        TelemetryFactory.Get<ITelemetry>().Log("DevHome_Started_Event", LogLevel.Critical, new DevHomeStartedEvent());
+        Log.Information("Dev Home Started.");
     }
 
     public void ShowMainWindow()
@@ -209,7 +213,7 @@ public partial class App : Application, IApp
         Environment.FailFast(e.Message, e.Exception);
     }
 
-    protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+    protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
         await Task.WhenAll(

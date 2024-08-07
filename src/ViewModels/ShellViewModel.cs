@@ -6,8 +6,11 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.AppLifecycle;
+using Serilog;
 
 namespace DevHome.ViewModels;
 
@@ -52,7 +55,11 @@ public partial class ShellViewModel : ObservableObject
 
     public async Task OnLoaded()
     {
-        switch (AppInstance.GetCurrent().GetActivatedEventArgs().Kind)
+        var activationKind = AppInstance.GetCurrent().GetActivatedEventArgs().Kind;
+        Log.Information($"Activated with kind {activationKind}");
+        TelemetryFactory.Get<ITelemetry>().Log("DevHome_Shell_Loaded_Event", LogLevel.Critical, new DevHomeShellLoadedEvent(activationKind));
+
+        switch (activationKind)
         {
             case ExtendedActivationKind.File:
                 // Allow the file activation handler to navigate to the appropriate page.

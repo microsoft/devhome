@@ -83,6 +83,11 @@ public sealed partial class WhatsNewPage : DevHomePage
         ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
 
         MoveBigCardsIfNeeded(this.ActualWidth);
+
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Page_Loaded_Event",
+            LogLevel.Critical,
+            new PageLoadedEvent(GetType().Name));
     }
 
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)
