@@ -1,4 +1,4 @@
-<views:DevHomeUserControl
+<UserControl
     x:Class="DevHome.Customization.Views.DevDriveInsightsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -181,4 +181,4 @@
             </ListView>
         </StackPanel>
     </ScrollViewer>
-</views:DevHomeUserControl>
+</UserControl>

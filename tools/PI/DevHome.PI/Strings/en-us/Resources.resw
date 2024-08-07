@@ -461,10 +461,6 @@
     <value>See more</value>
     <comment>The contents of a text label.</comment>
   </data>
-  <data name="ClickboardErrorTextBlock.Text" xml:space="preserve">
-    <value>Error on clipboard</value>
-    <comment>This refers to error codes being detected on the clipboard (HRESULT/NTSTATUS failures etc)</comment>
-  </data>
   <data name="HexLabelTextBlock.Text" xml:space="preserve">
     <value>Hex</value>
     <comment>This refers to a short hand for hexadecimal number notation.</comment>
@@ -484,10 +480,6 @@
   <data name="IsRunningAsSystemTextBlock.Text" xml:space="preserve">
     <value>Is running as System</value>
     <comment>This refers to whether the application is running as System</comment>
-  </data>
-  <data name="RunElevatedButton.Content" xml:space="preserve">
-    <value>Restart Project Ironsides as Admin to get more data</value>
-    <comment>{Locked="Ironsides"} When the user clicks this button we close and relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -950,8 +942,8 @@
     <comment>Column heading for the name column in a datagrid</comment>
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
-    <comment>{Locked="Ironsides"} Description text for a section where the user can type in the arguments to be used for the app</comment>
+    <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <comment>{Locked="Ironsides", "{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
     <value>Arguments</value>
@@ -1009,13 +1001,9 @@
     <value>Name of the attached app</value>
     <comment>Refers to the app's name in the bar</comment>
   </data>
-  <data name="ClipboardMonitor.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open the Clipboard Monitor window</value>
-    <comment>Tooltip that tells users what the Clipboard Monitor button will do</comment>
-  </data>
-  <data name="ClipboardMonitorLabel.Text" xml:space="preserve">
+  <data name="ClipboardMonitorName" xml:space="preserve">
     <value>Clipboard Monitor</value>
-    <comment>A text label for the Clipboard Monitor button</comment>
+    <comment>A label for the Clipboard Monitor tool</comment>
   </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
     <value>See insights that Project Ironsides has gained</value>
@@ -1076,6 +1064,14 @@
   <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
     <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
     <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change WER settings</comment>
+  </data>
+  <data name="RunElevatedButton.Text" xml:space="preserve">
+    <value>Get Information</value>
+    <comment>The contents of a button to allow the user to trigger elevation to get more information</comment>
+  </data>
+  <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to get more data for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to get more data</comment>
   </data>
   <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
     <value>Dump Info</value>
@@ -1184,5 +1180,46 @@
   <data name="NoIssuesText" xml:space="preserve">
     <value>No issues</value>
     <comment>A message indicating that there are no issues with the given item.</comment>
+  </data>
+  <data name="ToolTypeButton.Content" xml:space="preserve">
+    <value>Tool Type</value>
+    <comment>Button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Set the type of the tool being added.</value>
+    <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
+    <value>WER Dump Analyzer</value>
+    <comment>Describes type of tool used to analyze WER dumps</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <comment>Tooltip that describes what a WER Dump analyzer does</comment>
+  </data>
+  <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
+    <value>Project Ironsides Clipboard Monitor</value>
+    <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
+  </data>
+  <data name="WERAnalysisUnavailable" xml:space="preserve">
+    <value>Analysis unavailable.</value>
+    <comment>Message shown when there isn't crash analysis available.</comment>
+  </data>
+  <data name="WERBasicInfo" xml:space="preserve">
+    <value>Dump File Size: {0} bytes
+Dump File creation time: {1}</value>
+    <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
+  </data>
+  <data name="BucketUsingThisToolString" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
+    <value>Regular Expression for WER bucket</value>
+    <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
   </data>
 </root>

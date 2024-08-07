@@ -12,6 +12,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Controls;
@@ -50,6 +51,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
+    private readonly IWidgetExtensionService _widgetExtensionService;
     private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -67,6 +69,7 @@ public partial class DashboardView : ToolPage, IDisposable
 
         _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+        _widgetExtensionService = Application.Current.GetService<IWidgetExtensionService>();
 
 #if DEBUG
         Loaded += AddResetButton;
@@ -131,6 +134,10 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task OnLoadedAsync()
     {
         await InitializeDashboard();
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Page_Loaded_Event",
+            LogLevel.Critical,
+            new PageLoadedEvent(GetType().Name));
     }
 
     [RelayCommand]
@@ -590,6 +597,14 @@ public partial class DashboardView : ToolPage, IDisposable
                     _log.Error($"Error inserting widget in pinned widgets, id = {widgetId}, index = {index}");
                     await widget.DeleteAsync();
                     return;
+                }
+
+                // The WidgetService will start the widget provider, however Dev Home won't know about it and won't be
+                // able to send disposed events when Dev Home closes. Ensure the provider is started here so we can
+                // tell the extension to dispose later.
+                if (_widgetExtensionService.IsCoreWidgetProvider(comSafeWidgetDefinition.ProviderDefinitionId))
+                {
+                    await _widgetExtensionService.EnsureCoreWidgetExtensionStarted(comSafeWidgetDefinition.ProviderDefinitionId);
                 }
 
                 TelemetryFactory.Get<ITelemetry>().Log(

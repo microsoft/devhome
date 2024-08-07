@@ -13,15 +13,9 @@ namespace DevHome.TelemetryEvents;
 [EventData]
 public class DevHomeClosedEvent : EventBase
 {
-    public double ElapsedTime
-    {
-        get;
-    }
+    public double ElapsedTime { get; }
 
-    public Guid DeploymentIdentifier
-    {
-        get;
-    }
+    public Guid DeploymentIdentifier { get; }
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 

@@ -18,7 +18,7 @@ using Windows.System;
 
 namespace DevHome.Views;
 
-public sealed partial class WhatsNewPage : DevHomePage
+public sealed partial class WhatsNewPage : ToolPage
 {
     private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
@@ -83,6 +83,11 @@ public sealed partial class WhatsNewPage : DevHomePage
         ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
 
         MoveBigCardsIfNeeded(this.ActualWidth);
+
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Page_Loaded_Event",
+            LogLevel.Critical,
+            new PageLoadedEvent(GetType().Name));
     }
 
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)

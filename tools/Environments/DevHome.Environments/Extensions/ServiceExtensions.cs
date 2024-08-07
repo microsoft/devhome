@@ -17,9 +17,6 @@ public static class ServiceExtensions
         // View-models
         services.AddSingleton<LandingPageViewModel>();
 
-        // Services
-        services.AddSingleton<EnvironmentsExtensionsService>();
-
 #if DEBUG
         // Debug only offline test compute system provider
         services.AddSingleton<IComputeSystemProvider, TestSystemProvider>();

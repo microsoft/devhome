@@ -36,7 +36,6 @@ public sealed partial class PrimaryWindow : WindowEx
     public PrimaryWindow()
     {
         InitializeComponent();
-        ExternalToolsHelper.Instance.Init();
         _werHelper = Application.Current.GetService<WERHelper>();
         _werHelper.Start();
     }

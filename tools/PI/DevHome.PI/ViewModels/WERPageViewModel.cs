@@ -18,6 +18,7 @@ using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
+using Windows.Win32.Foundation;
 
 namespace DevHome.PI.ViewModels;
 
@@ -25,9 +26,8 @@ public partial class WERPageViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly WERHelper _werHelper;
-
-    [ObservableProperty]
-    private ObservableCollection<WERDisplayInfo> _displayedReports = [];
+    private readonly WERAnalyzer _werAnalyzer;
+    private Tool? _selectedAnalysisTool;
 
     [ObservableProperty]
     private string _werInfoText;
@@ -46,19 +46,28 @@ public partial class WERPageViewModel : ObservableObject
     [ObservableProperty]
     private bool _allowElevationOption;
 
-    private delegate int WERCompareFunction(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending);
+    private delegate int WERCompareFunction(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending);
 
     private WERCompareFunction? _currentCompareFunction;
     private bool? _currentSortAscending;
 
-    public WERPageViewModel()
+    [ObservableProperty]
+    private ObservableCollection<WERAnalysisReport> _displayedReports = [];
+
+    public ReadOnlyObservableCollection<Tool> RegisteredAnalysisTools => _werAnalyzer.RegisteredAnalysisTools;
+
+    public WERPageViewModel(WERAnalyzer werAnalyzer)
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
+        DisplayedReports = new ObservableCollection<WERAnalysisReport>();
+
         _werInfoText = string.Empty;
         _applyFilter = Settings.Default.ApplyAppFilteringToData;
         Settings.Default.PropertyChanged += Settings_PropertyChanged;
+
+        _selectedAnalysisTool = null;
 
         _werHelper = Application.Current.GetService<WERHelper>();
 
@@ -69,7 +78,8 @@ public partial class WERPageViewModel : ObservableObject
         AttachedToApp = attachedApp is not null;
         LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
 
-        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WER_CollectionChanged;
+        _werAnalyzer = werAnalyzer;
+        ((INotifyCollectionChanged)_werAnalyzer.WERAnalysisReports).CollectionChanged += WER_CollectionChanged;
 
         PopulateCurrentLogs();
     }
@@ -112,8 +122,27 @@ public partial class WERPageViewModel : ObservableObject
         {
             DisplayedReports.Clear();
 
-            FilterWERReportList(_werHelper.WERReports.ToList<WERReport>());
+            FilterWERReportList(_werAnalyzer.WERAnalysisReports.ToList<WERAnalysisReport>());
         });
+    }
+
+    public void SetBucketingTool(Tool tool)
+    {
+        _selectedAnalysisTool = tool;
+        foreach (WERAnalysisReport report in DisplayedReports)
+        {
+            report.SetFailureBucketTool(tool);
+        }
+    }
+
+    [RelayCommand]
+    public void ResetBucketingTool()
+    {
+        _selectedAnalysisTool = null;
+        foreach (WERAnalysisReport report in DisplayedReports)
+        {
+            report.SetFailureBucketTool(null);
+        }
     }
 
     private void FilterWERReportList(System.Collections.IList? reportList)
@@ -124,15 +153,13 @@ public partial class WERPageViewModel : ObservableObject
         }
 
         // Get all existing reports
-        foreach (WERReport report in reportList)
+        foreach (WERAnalysisReport report in reportList)
         {
             // Provide filtering if needed
             if (!_applyFilter ||
                 (TargetAppData.Instance.TargetProcess is not null &&
-                report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase)))
+                report.Report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase)))
             {
-                WERDisplayInfo displayInfo = new WERDisplayInfo(report);
-
                 // If the list is currently being sorted, add the item in appropriate spot
                 if (_currentCompareFunction is not null)
                 {
@@ -140,16 +167,16 @@ public partial class WERPageViewModel : ObservableObject
                     Debug.Assert(_currentSortAscending is not null, "Compare function is not null, but order is?");
 
                     // Add the item in appropriate spot
-                    while (i < DisplayedReports.Count && _currentCompareFunction(DisplayedReports[i], displayInfo, _currentSortAscending ?? true) < 0)
+                    while (i < DisplayedReports.Count && _currentCompareFunction(DisplayedReports[i], report, _currentSortAscending ?? true) < 0)
                     {
                         i++;
                     }
 
-                    DisplayedReports.Insert(i, new WERDisplayInfo(report));
+                    DisplayedReports.Insert(i, report);
                 }
                 else
                 {
-                    DisplayedReports.Add(new WERDisplayInfo(report));
+                    DisplayedReports.Add(report);
                 }
             }
         }
@@ -157,15 +184,15 @@ public partial class WERPageViewModel : ObservableObject
 
     internal void SortByFaultingExecutable(bool sortAscending)
     {
-        ObservableCollection<WERDisplayInfo> sortedCollection;
+        ObservableCollection<WERAnalysisReport> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.Executable));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => x.Report.Executable));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.Executable));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => x.Report.Executable));
         }
 
         DisplayedReports = sortedCollection;
@@ -174,7 +201,7 @@ public partial class WERPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByFaultingExecutable(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
+    internal int CompareByFaultingExecutable(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -188,15 +215,15 @@ public partial class WERPageViewModel : ObservableObject
 
     internal void SortByDateTime(bool sortAscending)
     {
-        ObservableCollection<WERDisplayInfo> sortedCollection;
+        ObservableCollection<WERAnalysisReport> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.TimeGenerated));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => x.Report.TimeGenerated));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.TimeGenerated));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => x.Report.TimeGenerated));
         }
 
         DisplayedReports = sortedCollection;
@@ -205,7 +232,7 @@ public partial class WERPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByDateTime(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
+    internal int CompareByDateTime(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -219,15 +246,15 @@ public partial class WERPageViewModel : ObservableObject
 
     internal void SortByWERBucket(bool sortAscending)
     {
-        ObservableCollection<WERDisplayInfo> sortedCollection;
+        ObservableCollection<WERAnalysisReport> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.FailureBucket));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => x.FailureBucket));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => x.FailureBucket));
         }
 
         DisplayedReports = sortedCollection;
@@ -236,7 +263,7 @@ public partial class WERPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByWERBucket(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
+    internal int CompareByWERBucket(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending)
     {
         if (sortAscending)
         {
@@ -250,15 +277,15 @@ public partial class WERPageViewModel : ObservableObject
 
     internal void SortByCrashDumpPath(bool sortAscending)
     {
-        ObservableCollection<WERDisplayInfo> sortedCollection;
+        ObservableCollection<WERAnalysisReport> sortedCollection;
 
         if (sortAscending)
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderBy(x => x.Report.CrashDumpPath));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderBy(x => x.Report.CrashDumpPath));
         }
         else
         {
-            sortedCollection = new ObservableCollection<WERDisplayInfo>(DisplayedReports.OrderByDescending(x => x.Report.CrashDumpPath));
+            sortedCollection = new ObservableCollection<WERAnalysisReport>(DisplayedReports.OrderByDescending(x => x.Report.CrashDumpPath));
         }
 
         DisplayedReports = sortedCollection;
@@ -267,7 +294,7 @@ public partial class WERPageViewModel : ObservableObject
         _currentSortAscending = sortAscending;
     }
 
-    internal int CompareByCrashDumpPath(WERDisplayInfo info1, WERDisplayInfo info2, bool sortAscending)
+    internal int CompareByCrashDumpPath(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending)
     {
         if (sortAscending)
         {

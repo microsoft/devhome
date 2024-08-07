@@ -135,7 +135,7 @@ internal sealed class RepositoryProvider
     /// <remarks>
     /// Can be null if the provider can't parse the Uri.
     /// </remarks>
-    public IRepository GetRepositoryFromUri(Uri uri, IDeveloperId developerId = null)
+    public RepositoryResult GetRepositoryFromUri(Uri uri, IDeveloperId developerId = null)
     {
         RepositoryResult getResult;
         if (developerId == null)
@@ -147,14 +147,7 @@ internal sealed class RepositoryProvider
             getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri, developerId).AsTask().Result;
         }
 
-        if (getResult.Result.Status == ProviderOperationStatus.Failure)
-        {
-            _log.Information("Could not get repo from Uri.");
-            _log.Information(getResult.Result.DisplayMessage);
-            return null;
-        }
-
-        return getResult.Repository;
+        return getResult;
     }
 
     /// <summary>

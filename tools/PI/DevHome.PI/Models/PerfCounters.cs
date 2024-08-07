@@ -34,42 +34,42 @@ public partial class PerfCounters : ObservableObject, IDisposable
     private const string GpuEngineName = "GPU Engine";
     private const string UtilizationPercentageName = "Utilization Percentage";
 
-    private Process? targetProcess;
-    private PerformanceCounter? cpuCounter;
-    private List<PerformanceCounter>? gpuCounters;
-    private PerformanceCounter? ramCounter;
-    private PerformanceCounter? readCounter;
-    private PerformanceCounter? writeCounter;
+    private Process? _targetProcess;
+    private PerformanceCounter? _cpuCounter;
+    private List<PerformanceCounter>? _gpuCounters;
+    private PerformanceCounter? _ramCounter;
+    private PerformanceCounter? _readCounter;
+    private PerformanceCounter? _writeCounter;
 
-    private PerformanceCounter? systemCpuCounter;
-    private PerformanceCounter? systemRamCounter;
-    private PerformanceCounter? systemDiskCounter;
+    private PerformanceCounter? _systemCpuCounter;
+    private PerformanceCounter? _systemRamCounter;
+    private PerformanceCounter? _systemDiskCounter;
 
-    private Timer? timer;
-
-    [ObservableProperty]
-    private float cpuUsage;
+    private Timer? _timer;
 
     [ObservableProperty]
-    private float gpuUsage;
+    private float _cpuUsage;
 
     [ObservableProperty]
-    private float ramUsageInMB;
+    private float _gpuUsage;
 
     [ObservableProperty]
-    private float diskUsage;
+    private float _ramUsageInMB;
 
     [ObservableProperty]
-    private float networkUsage;
+    private float _diskUsage;
 
     [ObservableProperty]
-    private float systemCpuUsage;
+    private float _networkUsage;
 
     [ObservableProperty]
-    private float systemRamUsageInGB;
+    private float _systemCpuUsage;
 
     [ObservableProperty]
-    private float systemDiskUsage;
+    private float _systemRamUsageInGB;
+
+    [ObservableProperty]
+    private float _systemDiskUsage;
 
     public PerfCounters()
     {
@@ -77,9 +77,9 @@ public partial class PerfCounters : ObservableObject, IDisposable
 
         ThreadPool.QueueUserWorkItem((o) =>
         {
-            systemCpuCounter = new PerformanceCounter(ProcessorCategory, SystemCpuCounterName, "_Total", true);
-            systemRamCounter = new PerformanceCounter(MemoryCategory, SystemRamCounterName, true);
-            systemDiskCounter = new PerformanceCounter(DiskCategory, SystemDiskCounterName, "_Total", true);
+            _systemCpuCounter = new PerformanceCounter(ProcessorCategory, SystemCpuCounterName, "_Total", true);
+            _systemRamCounter = new PerformanceCounter(MemoryCategory, SystemRamCounterName, true);
+            _systemDiskCounter = new PerformanceCounter(DiskCategory, SystemDiskCounterName, "_Total", true);
             UpdateTargetProcess(TargetAppData.Instance.TargetProcess);
         });
     }
@@ -98,7 +98,7 @@ public partial class PerfCounters : ObservableObject, IDisposable
 
     private void UpdateTargetProcess(Process? process)
     {
-        if (process == targetProcess)
+        if (process == _targetProcess)
         {
             // Already tracking this process.
             return;
@@ -106,55 +106,55 @@ public partial class PerfCounters : ObservableObject, IDisposable
 
         CloseTargetCounters();
 
-        targetProcess = process;
-        if (targetProcess == null)
+        _targetProcess = process;
+        if (_targetProcess == null)
         {
             return;
         }
 
-        var processName = targetProcess.ProcessName;
-        cpuCounter = new PerformanceCounter(ProcessCategory, CpuCounterName, processName, true);
-        ramCounter = new PerformanceCounter(ProcessCategory, RamCounterName, processName, true);
-        gpuCounters = GetGpuCounters(targetProcess.Id);
-        readCounter = new PerformanceCounter(ProcessCategory, ReadCounterName, processName, true);
-        writeCounter = new PerformanceCounter(ProcessCategory, WriteCounterName, processName, true);
+        var processName = _targetProcess.ProcessName;
+        _cpuCounter = new PerformanceCounter(ProcessCategory, CpuCounterName, processName, true);
+        _ramCounter = new PerformanceCounter(ProcessCategory, RamCounterName, processName, true);
+        _gpuCounters = GetGpuCounters(_targetProcess.Id);
+        _readCounter = new PerformanceCounter(ProcessCategory, ReadCounterName, processName, true);
+        _writeCounter = new PerformanceCounter(ProcessCategory, WriteCounterName, processName, true);
     }
 
     public void Start()
     {
         Stop();
-        timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        _timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
     public void Stop()
     {
-        timer?.Dispose();
-        timer = null;
+        _timer?.Dispose();
+        _timer = null;
     }
 
     private void CloseTargetCounters()
     {
-        cpuCounter?.Close();
-        cpuCounter?.Dispose();
-        cpuCounter = null;
-        ramCounter?.Close();
-        ramCounter?.Dispose();
-        ramCounter = null;
+        _cpuCounter?.Close();
+        _cpuCounter?.Dispose();
+        _cpuCounter = null;
+        _ramCounter?.Close();
+        _ramCounter?.Dispose();
+        _ramCounter = null;
 
-        foreach (var counter in gpuCounters ?? Enumerable.Empty<PerformanceCounter>())
+        foreach (var counter in _gpuCounters ?? Enumerable.Empty<PerformanceCounter>())
         {
             counter.Close();
             counter.Dispose();
         }
 
-        gpuCounters?.Clear();
+        _gpuCounters?.Clear();
 
-        readCounter?.Close();
-        readCounter?.Dispose();
-        readCounter = null;
-        writeCounter?.Close();
-        writeCounter?.Dispose();
-        writeCounter = null;
+        _readCounter?.Close();
+        _readCounter?.Dispose();
+        _readCounter = null;
+        _writeCounter?.Close();
+        _writeCounter?.Dispose();
+        _writeCounter = null;
     }
 
     public static List<PerformanceCounter> GetGpuCounters(int pid)
@@ -173,22 +173,22 @@ public partial class PerfCounters : ObservableObject, IDisposable
     {
         try
         {
-            CpuUsage = cpuCounter?.NextValue() / Environment.ProcessorCount ?? 0;
-            GpuUsage = GetGpuUsage(gpuCounters);
+            CpuUsage = _cpuCounter?.NextValue() / Environment.ProcessorCount ?? 0;
+            GpuUsage = GetGpuUsage(_gpuCounters);
 
             // Report app memory usage in MB
-            RamUsageInMB = ramCounter?.NextValue() / (1024 * 1024) ?? 0;
+            RamUsageInMB = _ramCounter?.NextValue() / (1024 * 1024) ?? 0;
 
-            var readBytesPerSec = readCounter?.NextValue() ?? 0;
-            var writeBytesPerSec = writeCounter?.NextValue() ?? 0;
+            var readBytesPerSec = _readCounter?.NextValue() ?? 0;
+            var writeBytesPerSec = _writeCounter?.NextValue() ?? 0;
             var totalDiskBytesPerSec = readBytesPerSec + writeBytesPerSec;
             DiskUsage = totalDiskBytesPerSec / (1024 * 1024);
 
-            SystemCpuUsage = systemCpuCounter?.NextValue() ?? 0;
+            SystemCpuUsage = _systemCpuCounter?.NextValue() ?? 0;
 
             // Report system memory usage in GB
-            SystemRamUsageInGB = systemRamCounter?.NextValue() / (1024 * 1024 * 1024) ?? 0;
-            SystemDiskUsage = systemDiskCounter?.NextValue() ?? 0;
+            SystemRamUsageInGB = _systemRamCounter?.NextValue() / (1024 * 1024 * 1024) ?? 0;
+            SystemDiskUsage = _systemDiskCounter?.NextValue() ?? 0;
         }
         catch (Exception ex)
         {
@@ -215,12 +215,12 @@ public partial class PerfCounters : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        cpuCounter?.Dispose();
-        ramCounter?.Dispose();
-        readCounter?.Dispose();
-        writeCounter?.Dispose();
+        _cpuCounter?.Dispose();
+        _ramCounter?.Dispose();
+        _readCounter?.Dispose();
+        _writeCounter?.Dispose();
 
-        foreach (var counter in gpuCounters ?? Enumerable.Empty<PerformanceCounter>())
+        foreach (var counter in _gpuCounters ?? Enumerable.Empty<PerformanceCounter>())
         {
             counter.Dispose();
         }

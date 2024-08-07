@@ -1,27 +1,23 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
 using Windows.Graphics;
 using Windows.System;
-using Windows.Win32;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace DevHome.PI.ViewModels;
 
@@ -39,9 +35,11 @@ public partial class BarWindowViewModel : ObservableObject
     private readonly string _collapseToolTip = CommonHelper.GetLocalizedString("SwitchToSmallLayoutToolTip");
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly ExternalToolsHelper _externalToolsHelper;
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly SnapHelper _snapHelper;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -143,8 +141,12 @@ public partial class BarWindowViewModel : ObservableObject
         CurrentExpandToolTip = ShowingExpandedContent ? _collapseToolTip : _expandToolTip;
         _snapHelper = new();
 
-        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
+        _externalToolsHelper = Application.Current.GetService<ExternalToolsHelper>();
+        ((INotifyCollectionChanged)_externalToolsHelper.FilteredExternalTools).CollectionChanged += FilteredExternalTools_CollectionChanged;
         FilteredExternalTools_CollectionChanged(null, null);
+
+        _insightsService = Application.Current.GetService<PIInsightsService>();
+        _insightsService.PropertyChanged += InsightsService_PropertyChanged;
     }
 
     partial void OnShowingExpandedContentChanged(bool value)
@@ -155,7 +157,7 @@ public partial class BarWindowViewModel : ObservableObject
     private void FilteredExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
     {
         // Only show the separator if we're showing pinned tools
-        ExternalToolSeparatorVisibility = ExternalToolsHelper.Instance.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ExternalToolSeparatorVisibility = _externalToolsHelper.FilteredExternalTools.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     partial void OnIsSnappedChanged(bool value)
@@ -248,28 +250,13 @@ public partial class BarWindowViewModel : ObservableObject
     [RelayCommand]
     public void ProcessChooser()
     {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateTo(typeof(ProcessListPageViewModel));
     }
 
     [RelayCommand]
-    public void LaunchInsights()
-    {
-        ToggleExpandedContentVisibility();
-
-        // And navigate to the appropriate page
-        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-        barWindow?.NavigateTo(typeof(InsightsPageViewModel));
-    }
-
-    [RelayCommand]
     public void ManageExternalToolsButton()
     {
-        ToggleExpandedContentVisibility();
-
         var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
         barWindow?.NavigateToPiSettings(typeof(AdditionalToolsViewModel).FullName!);
     }
@@ -313,6 +300,7 @@ public partial class BarWindowViewModel : ObservableObject
 
                 // Conversely, the result chooser is only visible if we're not attached to a result
                 IsProcessChooserVisible = process is null;
+                UnreadInsightsCount = 0;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))
@@ -363,54 +351,24 @@ public partial class BarWindowViewModel : ObservableObject
         }
     }
 
-    public void ExternalToolButton_Click(object sender, RoutedEventArgs e)
+    private void InsightsService_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender is Button clickedButton)
+        if (e.PropertyName == nameof(PIInsightsService.UnreadCount))
         {
-            if (clickedButton.Tag is ExternalTool tool)
-            {
-                InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-            }
+            UnreadInsightsCount = _insightsService.UnreadCount;
+            InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
         }
     }
 
     public void ManageExternalToolsButton_ExternalToolLaunchRequest(object sender, ExternalTool tool)
     {
-        InvokeTool(tool, TargetAppData.Instance.TargetProcess?.Id, TargetAppData.Instance.HWnd);
-    }
-
-    private async void InvokeTool(ExternalTool tool, int? pid, HWND hWnd)
-    {
-        try
-        {
-            var process = await tool.Invoke(pid, hWnd);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Tool launched failed");
-
-            var builder = new StringBuilder();
-            builder.AppendLine(ex.Message);
-            if (ex.InnerException is not null)
-            {
-                builder.AppendLine(ex.InnerException.Message);
-            }
-
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, builder.ToString(), tool.Executable);
-            PInvoke.MessageBox(HWND.Null, errorMessage, _errorTitleText, MESSAGEBOX_STYLE.MB_ICONERROR);
-        }
+        tool.Invoke();
     }
 
     [RelayCommand]
     public void LaunchAdvancedAppsPageInWindowsSettings()
     {
         _ = Launcher.LaunchUriAsync(new("ms-settings:advanced-apps"));
-    }
-
-    public void UpdateUnreadInsightsCount(int count)
-    {
-        UnreadInsightsCount = count;
-        InsightsBadgeOpacity = count > 0 ? 1 : 0;
     }
 
     [RelayCommand]

@@ -18,20 +18,31 @@ namespace DevHome.PI.Helpers;
 internal sealed class ETWHelper : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ETWHelper));
-    private readonly Process targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> output;
+    private readonly Process _targetProcess;
+    private readonly ObservableCollection<WinLogsEntry> _output;
 
-    private static readonly List<string> ProviderList = ["1AFF6089-E863-4D36-BDFD-3581F07440BE" /*COM Tracelog*/];
-    private TraceEventSession? session;
+    private static readonly List<string> _providerList = ["1AFF6089-E863-4D36-BDFD-3581F07440BE" /*COM Tracelog*/];
+    private TraceEventSession? _session;
 
     // From: https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-identifiers
     private const string PerformanceLogUsersSid = "S-1-5-32-559";
 
+    public const string AddUserToPerformanceLogUsersSid = @"
+        Add-LocalGroupMember -Sid S-1-5-32-559 -Member ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
+        # Check if the last command succeeded
+        if ($?)
+        {
+            # User added to the Performance Log Users group.
+            exit 0
+        }
+        exit 1
+        ";
+
     public ETWHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
     {
-        this.targetProcess = targetProcess;
-        this.targetProcess.Exited += TargetProcess_Exited;
-        this.output = output;
+        _targetProcess = targetProcess;
+        _targetProcess.Exited += TargetProcess_Exited;
+        _output = output;
     }
 
     public void Start()
@@ -48,46 +59,46 @@ internal sealed class ETWHelper : IDisposable
             var sessionName = "DevHomePITrace" + Process.GetCurrentProcess().SessionId;
 
             // Stop and dispose any existing session
-            session = TraceEventSession.GetActiveSession(sessionName);
-            if (session is not null)
+            _session = TraceEventSession.GetActiveSession(sessionName);
+            if (_session is not null)
             {
-                session.Stop();
-                session.Dispose();
+                _session.Stop();
+                _session.Dispose();
             }
 
             try
             {
-                using (session = new TraceEventSession(sessionName))
+                using (_session = new TraceEventSession(sessionName))
                 {
                     // Filter the provider events based on processId
-                    var providerOptions = new TraceEventProviderOptions { ProcessIDFilter = [targetProcess.Id] };
-                    foreach (var provider in ProviderList)
+                    var providerOptions = new TraceEventProviderOptions { ProcessIDFilter = [_targetProcess.Id] };
+                    foreach (var provider in _providerList)
                     {
-                        session.EnableProvider(provider, TraceEventLevel.Always, options: providerOptions);
+                        _session.EnableProvider(provider, TraceEventLevel.Always, options: providerOptions);
                     }
 
-                    session.Source.Dynamic.All += EventsHandler;
-                    session.Source.UnhandledEvents += UnHandledEventsHandler;
-                    session.Source.Process();
+                    _session.Source.Dynamic.All += EventsHandler;
+                    _session.Source.UnhandledEvents += UnHandledEventsHandler;
+                    _session.Source.Process();
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
                 Stop();
                 WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsHelper.EtwLogsName);
-                output.Add(entry);
+                _output.Add(entry);
             }
         }
     }
 
     public void Stop()
     {
-        session?.Stop();
+        _session?.Stop();
     }
 
     public void Dispose()
     {
-        session?.Dispose();
+        _session?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -104,14 +115,14 @@ internal sealed class ETWHelper : IDisposable
 
     private void ETWEventHandler(int processId, DateTime timeStamp, TraceEventLevel level, string message)
     {
-        if (processId != targetProcess.Id)
+        if (processId != _targetProcess.Id)
         {
             return;
         }
 
         var category = WinLogsHelper.ConvertTraceEventLevelToWinLogCategory(level);
         var entry = new WinLogsEntry(timeStamp, category, message, WinLogsHelper.EtwLogsName);
-        output.Add(entry);
+        _output.Add(entry);
     }
 
     private void TargetProcess_Exited(object? sender, EventArgs e)
@@ -139,10 +150,10 @@ internal sealed class ETWHelper : IDisposable
 
         var startInfo = new ProcessStartInfo();
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = Environment.SystemDirectory + "\\net.exe";
+        startInfo.FileName = $"powershell.exe";
 
         // Add the user to the Performance Log Users group
-        startInfo.Arguments = $"localgroup \"Performance Log Users\" {userName} /add";
+        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{AddUserToPerformanceLogUsersSid}\"";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 

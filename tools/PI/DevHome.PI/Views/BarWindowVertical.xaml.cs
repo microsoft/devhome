@@ -30,6 +30,7 @@ public partial class BarWindowVertical : WindowEx
 {
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
+    private readonly ExternalToolsHelper _externalTools;
 
     private int _cursorPosX; // = 0;
     private int _cursorPosY; // = 0;
@@ -47,6 +48,7 @@ public partial class BarWindowVertical : WindowEx
     public BarWindowVertical(BarWindowViewModel model)
     {
         _viewModel = model;
+        _externalTools = Application.Current.GetService<ExternalToolsHelper>();
 
         // The main constructor is used in all cases, including when there's no target window.
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
