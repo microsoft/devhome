@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<views:DevHomePage
+<views:ToolPage
     x:Class="DevHome.Settings.Views.ExperimentalFeaturesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -45,4 +45,4 @@
             </StackPanel>
         </Grid>
     </ScrollViewer>
-</views:DevHomePage>
+</views:ToolPage>
