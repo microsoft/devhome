@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<commonviews:ToolPage
+    x:Class="DevHome.RepositoryManagement.Views.RepositoryManagementMainPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:commonCustomControls="using:DevHome.Common.Environments.CustomControls"
+    xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:DevHome.RepositoryManagement.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:DevHome.RepositoryManagement.ViewModels"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    mc:Ignorable="d">
+    <commonviews:ToolPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style x:Key="HorizontalThreeDotsStyle" TargetType="Button">
+                <Setter Property="Background" Value="{ThemeResource ControlFillColorTransparent}" />
+                <Setter Property="Content" Value="&#xE712;" />
+                <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Width" Value="50" />
+                <Setter Property="Height" Value="36" />
+                <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+            </Style>
+        </ResourceDictionary>
+    </commonviews:ToolPage.Resources>
+    <Grid Margin="10,0,20,0" RowSpacing="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid
+            x:Name="TitleGrid"
+            Grid.Row="0"
+            ColumnSpacing="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                x:Name="EnvironmentsHeader"
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                Style="{ThemeResource SubtitleTextBlockStyle}"
+                Text="Repositories" />
+            <Button Grid.Column="1" Content="Add repository" />
+            <Button
+                Grid.Column="2"
+                Margin="0,0,50,0"
+                Content="Clone repository" />
+        </Grid>
+        <Grid Grid.Row="1" ColumnSpacing="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="300" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" PlaceholderText="Filter" />
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Text="Sort:" />
+            <ComboBox Grid.Column="3" MinWidth="150">
+                <ComboBoxItem Content="A to Z" IsSelected="True" />
+                <ComboBoxItem Content="Z to A" />
+            </ComboBox>
+        </Grid>
+        <Grid Grid.Row="2" Padding="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ListView
+                ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
+                ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                SelectionMode="None">
+                <ListView.Header>
+                    <Grid
+                        Margin="0,0,0,5"
+                        Padding="0,0,0,5"
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="40" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Name" />
+                        <TextBlock Grid.Column="1" Text="Clone path" />
+                        <TextBlock Grid.Column="2" Text="Latest commit" />
+                        <TextBlock Grid.Column="3" Text="Branch" />
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:RepositoryManagementItemViewModel">
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="35" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                Grid.Column="0"
+                                Text="{x:Bind RepositoryName}"
+                                ToolTipService.ToolTip="{x:Bind RepositoryName}" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{x:Bind ClonePath}"
+                                ToolTipService.ToolTip="{x:Bind ClonePath}" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Text="{x:Bind LatestCommit}"
+                                ToolTipService.ToolTip="{x:Bind LatestCommit}" />
+                            <TextBlock
+                                Grid.Column="3"
+                                Text="{x:Bind Branch}"
+                                ToolTipService.ToolTip="{x:Bind Branch}" />
+                            <Button
+                                x:Uid="MoreOptionsButton"
+                                Grid.Column="4"
+                                Style="{StaticResource HorizontalThreeDotsStyle}">
+                                <Button.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Open in File Explorer" />
+                                        <MenuFlyoutItem Text="Open in Command Line" />
+                                        <MenuFlyoutItem Text="Move Repository" />
+                                        <MenuFlyoutItem Text="Add to Config file" />
+                                        <MenuFlyoutItem Text="Run to config file" />
+                                        <MenuFlyoutItem Text="Remove from this list" />
+                                        <MenuFlyoutItem Text="Delete Repository" />
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </Grid>
+</commonviews:ToolPage>
