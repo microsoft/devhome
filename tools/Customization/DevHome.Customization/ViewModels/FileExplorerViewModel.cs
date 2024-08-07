@@ -145,13 +145,6 @@ public partial class FileExplorerViewModel : ObservableObject
                 if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
                 {
                     _log.Information($"Selected '{repoRootfolder.Path}' as location to register");
-                    var wrapperResult = ExtraFolderPropertiesWrapper.Register(repoRootfolder.Path, typeof(SourceControlProvider).GUID);
-                    if (!wrapperResult.Succeeded)
-                    {
-                        _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                        return;
-                    }
-
                     RepoTracker.AddRepositoryPath(_unassigned, repoRootfolder.Path);
                 }
                 else
@@ -180,6 +173,13 @@ public partial class FileExplorerViewModel : ObservableObject
             if (result.Result == ResultType.Failure)
             {
                 _log.Error("Failed to validate source control extension");
+                return;
+            }
+
+            var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
+            if (!wrapperResult.Succeeded)
+            {
+                _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
                 return;
             }
 
