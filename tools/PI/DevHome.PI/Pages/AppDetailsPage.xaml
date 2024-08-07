@@ -152,9 +152,14 @@
                 </Grid>
 
                 <Button 
-                    Grid.Row="3" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Margin="0,12,0,0"
+                    Grid.Row="3" Grid.ColumnSpan="2" Margin="0,12,0,0"
                     Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" 
-                    Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+                    Command="{x:Bind ViewModel.RunAsAdminCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <SymbolIcon Symbol="Admin"/>
+                        <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </ScrollViewer>
     </Grid>

@@ -481,10 +481,6 @@
     <value>Is running as System</value>
     <comment>This refers to whether the application is running as System</comment>
   </data>
-  <data name="RunElevatedButton.Content" xml:space="preserve">
-    <value>Restart Project Ironsides as Admin to get more data</value>
-    <comment>{Locked="Ironsides"} When the user clicks this button we close and relaunch Project Ironsides as admin to get more app details</comment>
-  </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
     <comment>The tooltip for a button that takes the user to the key insights page</comment>
@@ -1061,13 +1057,13 @@
     <value>More</value>
     <comment>Label for a link that navigates the user to a location to learn more about WER local dumps</comment>
   </data>
-  <data name="RunElevatedButtonForWER.Text" xml:space="preserve">
+    <data name="RunElevatedButton.Text" xml:space="preserve">
     <value>Change</value>
-    <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
+    <comment>The contents of a button to allow the user to trigger elevation</comment>
   </data>
-  <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
-    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change WER settings</comment>
+    <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to get more data for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to get more data</comment>
   </data>
   <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
     <value>Dump Info</value>
