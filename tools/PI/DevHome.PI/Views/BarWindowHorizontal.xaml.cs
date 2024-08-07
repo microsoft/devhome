@@ -629,12 +629,11 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
     {
-        if (args.Size.Height <= FloatingHorizontalBarHeight)
+        if (args.Size.Height <= FloatingHorizontalBarHeight && _viewModel.ShowingExpandedContent == true)
         {
-            // If out window size is small, then we're no longer showing expanded content
-            _viewModel.ShowingExpandedContent = false;
+            Height = Settings.Default.ExpandedWindowHeight;
         }
-        else
+        else if (args.Size.Height > FloatingHorizontalBarHeight)
         {
             // Conversely, if our window is large, then we're showing expanded content
             _viewModel.ShowingExpandedContent = true;
