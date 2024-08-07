@@ -12,10 +12,6 @@
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}"
     Loaded="Page_Loaded">
 
-    <i:Interaction.Behaviors >
-        <behaviors:AutoFocusBehavior />
-    </i:Interaction.Behaviors>
-
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <ctControls:SettingsCard x:Uid="Settings_Theme"

@@ -8,14 +8,8 @@
     xmlns:devViewModels="using:DevHome.Customization.ViewModels.DevDriveInsights"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d"
     Loaded="UserControl_Loaded">
-    <i:Interaction.Behaviors >
-        <behaviors:AutoFocusBehavior />
-    </i:Interaction.Behaviors>
-
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
