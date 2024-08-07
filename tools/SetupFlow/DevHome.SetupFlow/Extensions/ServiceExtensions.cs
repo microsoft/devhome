@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using DevHome.Common.Services;
-using DevHome.RepositoryManagement.ViewModels;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;

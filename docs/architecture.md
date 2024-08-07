@@ -82,6 +82,7 @@ Dev Home currently has the following tools:
 - Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 - Utilities
+- Repository Management
 
 ## Extensions
 
