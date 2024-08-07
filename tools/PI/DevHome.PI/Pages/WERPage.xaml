@@ -40,7 +40,7 @@
                     <Button Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <SymbolIcon Symbol="Admin"/>
-                            <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+                            <TextBlock x:Uid="RunElevatedButtonForWER" Margin="0"/>
                         </StackPanel>
                     </Button>
                     <HyperlinkButton x:Uid="LocalDumpMoreInfo" NavigateUri="https://go.microsoft.com/fwlink/?linkid=2279804" />
