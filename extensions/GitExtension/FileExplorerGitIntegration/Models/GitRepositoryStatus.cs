@@ -7,7 +7,7 @@ namespace FileExplorerGitIntegration.Models;
 
 internal sealed class GitRepositoryStatus
 {
-    private readonly Dictionary<string, GitStatusEntry> _entries = new();
+    private readonly Dictionary<string, GitStatusEntry> _fileEntries = new();
     private readonly List<GitStatusEntry> _added = new();
     private readonly List<GitStatusEntry> _staged = new();
     private readonly List<GitStatusEntry> _removed = new();
@@ -18,77 +18,50 @@ internal sealed class GitRepositoryStatus
     private readonly List<GitStatusEntry> _renamedInIndex = new();
     private readonly List<GitStatusEntry> _renamedInWorkDir = new();
     private readonly List<GitStatusEntry> _conflicted = new();
+    private readonly Dictionary<FileStatus, List<GitStatusEntry>> _statusEntries = new();
 
     public GitRepositoryStatus()
     {
+        _statusEntries.Add(FileStatus.NewInIndex, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.ModifiedInIndex, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.DeletedFromIndex, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.NewInWorkdir, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.ModifiedInWorkdir, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.DeletedFromWorkdir, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.RenamedInIndex, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.RenamedInWorkdir, new List<GitStatusEntry>());
+        _statusEntries.Add(FileStatus.Conflicted, new List<GitStatusEntry>());
     }
 
     public void Add(string path, GitStatusEntry status)
     {
-        _entries.Add(path, status);
-        if (status.Status.HasFlag(FileStatus.NewInIndex))
+        _fileEntries.Add(path, status);
+        foreach (var entry in _statusEntries)
         {
-            _added.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.ModifiedInIndex))
-        {
-            _staged.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.DeletedFromIndex))
-        {
-            _removed.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.NewInWorkdir))
-        {
-            _untracked.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir))
-        {
-            _modified.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.DeletedFromWorkdir))
-        {
-            _missing.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.RenamedInIndex))
-        {
-            _renamedInIndex.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.RenamedInWorkdir))
-        {
-            _renamedInWorkDir.Add(status);
-        }
-
-        if (status.Status.HasFlag(FileStatus.Conflicted))
-        {
-            _conflicted.Add(status);
+            if (status.Status.HasFlag(entry.Key))
+            {
+                entry.Value.Add(status);
+            }
         }
     }
 
-    public Dictionary<string, GitStatusEntry> Entries => _entries;
+    public Dictionary<string, GitStatusEntry> FileEntries => _fileEntries;
 
-    public List<GitStatusEntry> Added => _added;
+    public List<GitStatusEntry> Added => _statusEntries[FileStatus.NewInIndex];
 
-    public List<GitStatusEntry> Staged => _staged;
+    public List<GitStatusEntry> Staged => _statusEntries[FileStatus.ModifiedInIndex];
 
-    public List<GitStatusEntry> Removed => _removed;
+    public List<GitStatusEntry> Removed => _statusEntries[FileStatus.DeletedFromIndex];
 
-    public List<GitStatusEntry> Untracked => _untracked;
+    public List<GitStatusEntry> Untracked => _statusEntries[FileStatus.NewInWorkdir];
 
-    public List<GitStatusEntry> Modified => _modified;
+    public List<GitStatusEntry> Modified => _statusEntries[FileStatus.ModifiedInWorkdir];
 
-    public List<GitStatusEntry> Missing => _missing;
+    public List<GitStatusEntry> Missing => _statusEntries[FileStatus.DeletedFromWorkdir];
 
-    public List<GitStatusEntry> RenamedInIndex => _renamedInIndex;
+    public List<GitStatusEntry> RenamedInIndex => _statusEntries[FileStatus.RenamedInIndex];
 
-    public List<GitStatusEntry> RenamedInWorkDir => _renamedInWorkDir;
+    public List<GitStatusEntry> RenamedInWorkDir => _statusEntries[FileStatus.RenamedInWorkdir];
 
-    public List<GitStatusEntry> Conflicted => _conflicted;
+    public List<GitStatusEntry> Conflicted => _statusEntries[FileStatus.Conflicted];
 }

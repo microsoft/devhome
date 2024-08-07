@@ -15,13 +15,26 @@ internal sealed class ThrottledTask
     private Task? _currentTask;
     private bool _shouldQueue;
 
+    // Run an action, but ensure that `interval` time has elapsed after the last action completed before running again.
+    // If a task is already running when Run is called again, we "queue" that request to execute after enough time has passed.
+    // Multiple requests during this period of time result in only a single action being run after the waiting period.
+    // In other words, when there is a rapid flood of calls to Run(), this is coalesced into:
+    //   - The first call to Run invokes _action immediately.
+    //   - The subsequent calls within the window are all coalesced into a second, delayed invoke of _action
+    //   - If more calls arrive during this second invoke, they are coalesced into a third, delayed invoke.
+    //   - and so on...
     public ThrottledTask(Action action, TimeSpan interval)
     {
         _action = action;
         _interval = interval;
     }
 
-    // When the action completes, wait for interval before checking if a new action has been queued.
+    // The first time Run is called, create a task to invoke _action, and then delay for _interval as a "cooldown".
+    // If Run is not called again while the task is active (during the action or cooldown)
+    //   then the task exits normally and resets state back to initial.
+    // Otherwise, if Run is called again while the task is active,
+    //   then set _shouldQueue to true.
+    //   Now, when the action and cooldown complete, we'll loopback and execute one more call and reset the queue flag.
     public void Run(CancellationToken cancellationToken = default)
     {
         lock (_lock)

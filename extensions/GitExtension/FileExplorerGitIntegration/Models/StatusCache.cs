@@ -19,17 +19,13 @@ using Windows.Win32;
 internal sealed class StatusCache : IDisposable
 {
     private readonly string _workingDirectory;
-
     private readonly FileSystemWatcher _watcher;
     private readonly ThrottledTask _throttledUpdate;
-
     private readonly ReaderWriterLockSlim _statusLock = new();
-
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
 
     private GitRepositoryStatus? _status;
-
     private bool _disposedValue;
 
     public StatusCache(string rootFolder)
@@ -151,17 +147,17 @@ internal sealed class StatusCache : IDisposable
         }
 
         HashSet<string> changed = [];
-        foreach (var newEntry in newStatus.Entries)
+        foreach (var newEntry in newStatus.FileEntries)
         {
             GitStatusEntry? oldValue;
-            if (oldStatus.Entries.TryGetValue(newEntry.Key, out oldValue))
+            if (oldStatus.FileEntries.TryGetValue(newEntry.Key, out oldValue))
             {
                 if (newEntry.Value.Status != oldValue.Status)
                 {
                     changed.Add(newEntry.Key);
                 }
 
-                oldStatus.Entries.Remove(newEntry.Key);
+                oldStatus.FileEntries.Remove(newEntry.Key);
             }
             else
             {
@@ -169,7 +165,7 @@ internal sealed class StatusCache : IDisposable
             }
         }
 
-        foreach (var oldEntry in oldStatus.Entries)
+        foreach (var oldEntry in oldStatus.FileEntries)
         {
             changed.Add(oldEntry.Key);
         }
@@ -189,112 +185,116 @@ internal sealed class StatusCache : IDisposable
     private GitRepositoryStatus RetrieveStatus()
     {
         var repoStatus = new GitRepositoryStatus();
-        if (_gitInstalled)
+        if (!_gitInstalled)
         {
-            // Options fully explained at https://git-scm.com/docs/git-status
-            // --no-optional-locks : Since this we are essentially running in the background, don't take any optional git locks
-            //                       that could interfere with the user's work. This means calling "status" won't auto-update the
-            //                       index to make future "status" calls faster, but it's better to be unintrusive.
-            // --porcelain=v2      : The v2 gives us nice detailed entries that help us separate ordinary changes from renames, conflicts, and untracked
-            //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
-            //                       There could be old Git installations that predate it.
-            // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
-            var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
-            if (result.Status == ProviderOperationStatus.Success && result.Output != null)
+            return repoStatus;
+        }
+
+        // Options fully explained at https://git-scm.com/docs/git-status
+        // --no-optional-locks : Since this we are essentially running in the background, don't take any optional git locks
+        //                       that could interfere with the user's work. This means calling "status" won't auto-update the
+        //                       index to make future "status" calls faster, but it's better to be unintrusive.
+        // --porcelain=v2      : The v2 gives us nice detailed entries that help us separate ordinary changes from renames, conflicts, and untracked
+        //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
+        //                       There could be old Git installations that predate it.
+        // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
+        if (result.Status != ProviderOperationStatus.Success || result.Output == null)
+        {
+            return repoStatus;
+        }
+
+        var parts = result.Output.Split('\0', StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < parts.Length; ++i)
+        {
+            var line = parts[i];
+            if (line.StartsWith("1 ", StringComparison.Ordinal))
             {
-                var parts = result.Output.Split('\0', StringSplitOptions.RemoveEmptyEntries);
-                for (var i = 0; i < parts.Length; ++i)
+                // For porcelain=v2, "ordinary" entries have the following format:
+                //   1 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <path>
+                // For now, we only care about the <XY> and <path> fields.
+                var pieces = line.Split(' ', 9);
+                var fileStatusString = pieces[1];
+                var filePath = pieces[8];
+                FileStatus statusEntry = FileStatus.Unaltered;
+                switch (fileStatusString[0])
                 {
-                    var line = parts[i];
-                    if (line.StartsWith("1 ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "ordinary" entries have the following format:
-                        //   1 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <path>
-                        // For now, we only care about the <XY> and <path> fields.
-                        var pieces = line.Split(' ', 9);
-                        var fileStatusString = pieces[1];
-                        var filePath = pieces[8];
-                        FileStatus statusEntry = FileStatus.Unaltered;
-                        switch (fileStatusString[0])
-                        {
-                            case 'M':
-                                statusEntry |= FileStatus.ModifiedInIndex;
-                                break;
+                    case 'M':
+                        statusEntry |= FileStatus.ModifiedInIndex;
+                        break;
 
-                            case 'T':
-                                statusEntry |= FileStatus.TypeChangeInIndex;
-                                break;
+                    case 'T':
+                        statusEntry |= FileStatus.TypeChangeInIndex;
+                        break;
 
-                            case 'A':
-                                statusEntry |= FileStatus.NewInIndex;
-                                break;
+                    case 'A':
+                        statusEntry |= FileStatus.NewInIndex;
+                        break;
 
-                            case 'D':
-                                statusEntry |= FileStatus.DeletedFromIndex;
-                                break;
-                        }
-
-                        switch (fileStatusString[1])
-                        {
-                            case 'M':
-                                statusEntry |= FileStatus.ModifiedInWorkdir;
-                                break;
-
-                            case 'T':
-                                statusEntry |= FileStatus.TypeChangeInWorkdir;
-                                break;
-
-                            case 'A':
-                                statusEntry |= FileStatus.NewInWorkdir;
-                                break;
-
-                            case 'D':
-                                statusEntry |= FileStatus.DeletedFromWorkdir;
-                                break;
-                        }
-
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, statusEntry));
-                    }
-                    else if (line.StartsWith("2 ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "rename" entries have the following format:
-                        //   2 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <X><score> <path><sep><origPath>
-                        // For now, we only care about the <XY>, <path>, and <origPath> fields.
-                        var pieces = line.Split(' ', 9);
-                        var fileStatusString = pieces[1];
-                        var newPath = pieces[8];
-                        var oldPath = parts[++i];
-                        FileStatus statusEntry = FileStatus.Unaltered;
-                        if (fileStatusString[0] == 'R')
-                        {
-                            statusEntry |= FileStatus.RenamedInIndex;
-                        }
-
-                        if (fileStatusString[1] == 'R')
-                        {
-                            statusEntry |= FileStatus.RenamedInWorkdir;
-                        }
-
-                        repoStatus.Add(newPath, new GitStatusEntry(newPath, statusEntry, oldPath));
-                    }
-                    else if (line.StartsWith("u ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "unmerged" entries have the following format:
-                        //   u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
-                        // For now, we only care about the <path>. (We only say that the file has a conflict, not the details)
-                        var pieces = line.Split(' ', 11);
-                        var filePath = pieces[10];
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.Conflicted));
-                    }
-                    else if (line.StartsWith("? ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "untracked" entries have the following format:
-                        //   ? <path>
-                        // For now, we only care about the <path>.
-                        var filePath = line.Substring(2);
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
-                    }
+                    case 'D':
+                        statusEntry |= FileStatus.DeletedFromIndex;
+                        break;
                 }
+
+                switch (fileStatusString[1])
+                {
+                    case 'M':
+                        statusEntry |= FileStatus.ModifiedInWorkdir;
+                        break;
+
+                    case 'T':
+                        statusEntry |= FileStatus.TypeChangeInWorkdir;
+                        break;
+
+                    case 'A':
+                        statusEntry |= FileStatus.NewInWorkdir;
+                        break;
+
+                    case 'D':
+                        statusEntry |= FileStatus.DeletedFromWorkdir;
+                        break;
+                }
+
+                repoStatus.Add(filePath, new GitStatusEntry(filePath, statusEntry));
+            }
+            else if (line.StartsWith("2 ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, "rename" entries have the following format:
+                //   2 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <X><score> <path><sep><origPath>
+                // For now, we only care about the <XY>, <path>, and <origPath> fields.
+                var pieces = line.Split(' ', 9);
+                var fileStatusString = pieces[1];
+                var newPath = pieces[8];
+                var oldPath = parts[++i];
+                FileStatus statusEntry = FileStatus.Unaltered;
+                if (fileStatusString[0] == 'R')
+                {
+                    statusEntry |= FileStatus.RenamedInIndex;
+                }
+
+                if (fileStatusString[1] == 'R')
+                {
+                    statusEntry |= FileStatus.RenamedInWorkdir;
+                }
+
+                repoStatus.Add(newPath, new GitStatusEntry(newPath, statusEntry, oldPath));
+            }
+            else if (line.StartsWith("u ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, "unmerged" entries have the following format:
+                //   u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
+                // For now, we only care about the <path>. (We only say that the file has a conflict, not the details)
+                var pieces = line.Split(' ', 11);
+                var filePath = pieces[10];
+                repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.Conflicted));
+            }
+            else if (line.StartsWith("? ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, "untracked" entries have the following format:
+                //   ? <path>
+                // For now, we only care about the <path>.
+                var filePath = line.Substring(2);
+                repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
             }
         }
 

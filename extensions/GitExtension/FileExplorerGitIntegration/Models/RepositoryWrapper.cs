@@ -126,7 +126,7 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         GitStatusEntry? status;
-        if (!_statusCache.Status.Entries.TryGetValue(relativePath, out status))
+        if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
         {
             return string.Empty;
         }
