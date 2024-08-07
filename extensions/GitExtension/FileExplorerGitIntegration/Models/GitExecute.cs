@@ -23,6 +23,7 @@ public class GitExecute
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WorkingDirectory = repositoryDirectory ?? string.Empty,
+                StandardOutputEncoding = System.Text.Encoding.UTF8,
             };
 
             using var process = Process.Start(processStartInfo);

@@ -68,7 +68,7 @@ internal sealed class CommitLogCache : IEnumerable<Commit>
             return null;
         }
 
-        var parts = result.Output.Split();
+        var parts = result.Output.Split('\n');
         string message = parts[0];
         string authorName = parts[1];
         string authorEmail = parts[2];
