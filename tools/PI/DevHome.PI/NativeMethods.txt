@@ -43,6 +43,7 @@ GlobalUnlock
 IsIconic
 IsImmersiveProcess
 IsWindow
+IsWindowArranged
 IsWindowVisible
 IsWow64Process2
 IsZoomed

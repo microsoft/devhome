@@ -13,6 +13,7 @@
     Title="" MinHeight="90" MinWidth="700" Height="90" Width="700" MaxHeight="90"
     TaskBarIcon="Images/pi.ico"
     Activated="Window_Activated"
+    SizeChanged="WindowEx_SizeChanged"
     WindowStateChanged="WindowEx_WindowStateChanged"
     Closed="WindowEx_Closed">
 

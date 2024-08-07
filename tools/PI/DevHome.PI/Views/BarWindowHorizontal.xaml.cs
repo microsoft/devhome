@@ -602,6 +602,7 @@ public partial class BarWindowHorizontal : WindowEx
     {
         if (e.Equals(WindowState.Normal))
         {
+            Debug.WriteLine("Going to normal");
             if (Height == FloatingHorizontalBarHeight)
             {
                 // If we were in collapsed mode, then maximized, then expanded, then restored, be sure to set the height back to the expanded height
@@ -616,6 +617,31 @@ public partial class BarWindowHorizontal : WindowEx
         {
             // If we're being maximized, expand our content
             _viewModel.ShowingExpandedContent = true;
+        }
+    }
+
+    private bool _windowWasArranged;
+
+    private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
+    {
+        if (PInvoke.IsWindowArranged(ThisHwnd))
+        {
+            Debug.WriteLine("Window is arranged");
+
+            if (!_viewModel.ShowingExpandedContent)
+            {
+                _windowWasArranged = true;
+                _viewModel.ShowingExpandedContent = true;
+            }
+
+            return;
+        }
+        else if (_windowWasArranged)
+        {
+            Debug.Assert(this.Height == FloatingHorizontalBarHeight, "Why are we here?");
+            CollapseLargeContentPanel();
+            _windowWasArranged = false;
+            Debug.WriteLine("Undoing window arrangement");
         }
     }
 }
