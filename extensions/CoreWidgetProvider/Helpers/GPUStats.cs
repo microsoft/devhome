@@ -103,37 +103,45 @@ internal sealed class GPUStats : IDisposable
 
             if (success && counters != null)
             {
-                var sum = 0.0f;
-                var countersToRemove = new List<PerformanceCounter>();
-                foreach (var counter in counters)
+                // TODO: This outer try/catch should be replaced with more secure locking around shared resources.
+                try
                 {
-                    try
+                    var sum = 0.0f;
+                    var countersToRemove = new List<PerformanceCounter>();
+                    foreach (var counter in counters)
                     {
-                        // NextValue() can throw an InvalidOperationException if the counter is no longer there.
-                        sum += counter.NextValue();
+                        try
+                        {
+                            // NextValue() can throw an InvalidOperationException if the counter is no longer there.
+                            sum += counter.NextValue();
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            // We can't modify the list during the loop, so save it to remove at the end.
+                            _log.Information(ex, "Failed to get next value, remove");
+                            countersToRemove.Add(counter);
+                        }
+                        catch (Exception ex)
+                        {
+                            _log.Error(ex, "Error going through process counters.");
+                        }
                     }
-                    catch (InvalidOperationException ex)
+
+                    foreach (var counter in countersToRemove)
                     {
-                        // We can't modify the list during the loop, so save it to remove at the end.
-                        _log.Information(ex, "Failed to get next value, remove");
-                        countersToRemove.Add(counter);
+                        counters.Remove(counter);
+                        counter.Dispose();
                     }
-                    catch (Exception ex)
+
+                    gpu.Usage = sum / 100;
+                    lock (gpu.GpuChartValues)
                     {
-                        _log.Error(ex, "Error going through process counters.");
+                        ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
                     }
                 }
-
-                foreach (var counter in countersToRemove)
+                catch (Exception ex)
                 {
-                    counters.Remove(counter);
-                    counter.Dispose();
-                }
-
-                gpu.Usage = sum / 100;
-                lock (gpu.GpuChartValues)
-                {
-                    ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
+                    _log.Error(ex, "Error summing process counters.");
                 }
             }
         }
