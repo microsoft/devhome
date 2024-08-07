@@ -20,7 +20,12 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
-        <Button Grid.Row="1" x:Uid="RunElevatedButton" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+        <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <SymbolIcon Symbol="Admin"/>
+                <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+            </StackPanel>
+        </Button>
         <StackPanel x:Name="WinLogsOptions" Grid.Row="2" Orientation="Horizontal" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
             <CheckBox
                 x:Uid="EtwCheckbox" x:Name="EtwCheckbox" IsChecked="{x:Bind ViewModel.IsETWLogsEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.ETWLogs}"
