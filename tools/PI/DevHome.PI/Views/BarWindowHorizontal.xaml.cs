@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
@@ -154,6 +155,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         // Now that the position is set correctly show the window
         this.Show();
+        HookWndProc();
     }
 
     public void PopulateCommandBar()
@@ -494,7 +496,6 @@ public partial class BarWindowHorizontal : WindowEx
         // We're expanding.
         // Switch the bar to horizontal before we adjust the size.
         LargeContentPanel.Visibility = Visibility.Visible;
-        MaxHeight = double.NaN;
 
         var monitorRect = GetMonitorRectForWindow(ThisHwnd);
         var dpiScale = GetDpiScaleForWindow(ThisHwnd);
@@ -519,10 +520,13 @@ public partial class BarWindowHorizontal : WindowEx
     private void CollapseLargeContentPanel()
     {
         // Make sure we cache the state before switching to collapsed bar.
-        Settings.Default.ExpandedWindowHeight = Height;
+        if (Height > FloatingHorizontalBarHeight)
+        {
+            Settings.Default.ExpandedWindowHeight = Height;
+        }
+
         LargeContentPanel.Visibility = Visibility.Collapsed;
         this.Height = FloatingHorizontalBarHeight;
-        this.MaxHeight = FloatingHorizontalBarHeight;
         this.MinHeight = FloatingHorizontalBarHeight;
     }
 
@@ -616,5 +620,54 @@ public partial class BarWindowHorizontal : WindowEx
                 }
             }
         }
+        else if (e.Equals(WindowState.Maximized))
+        {
+            // If we're being maximized, expand our content
+            _viewModel.ShowingExpandedContent = true;
+        }
+    }
+
+    private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
+    {
+        if (args.Size.Height <= FloatingHorizontalBarHeight)
+        {
+            // If out window size is small, then we're no longer showing expanded content
+            _viewModel.ShowingExpandedContent = false;
+        }
+        else
+        {
+            // Conversely, if our window is large, then we're showing expanded content
+            _viewModel.ShowingExpandedContent = true;
+        }
+    }
+
+    private Windows.Win32.UI.Shell.SUBCLASSPROC? _wndProc;
+
+    private void HookWndProc()
+    {
+        _wndProc = new Windows.Win32.UI.Shell.SUBCLASSPROC(NewWindowProc);
+        PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
+    }
+
+    private LRESULT NewWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, nuint uldSubclass, nuint dwRefData)
+    {
+        switch (msg)
+        {
+            case PInvoke.WM_WINDOWPOSCHANGING:
+            {
+                if (!PInvoke.IsWindowArranged(hWnd) && !_viewModel.ShowingExpandedContent)
+                {
+                    // Enforce our height limit if we're not showing expanded content and we're not being arranged
+                    Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
+
+                    wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+                    Marshal.StructureToPtr(wndPos, lParam, true);
+                }
+
+                break;
+            }
+        }
+
+        return PInvoke.DefSubclassProc(hWnd, msg, wParam, lParam);
     }
 }
