@@ -496,7 +496,6 @@ public partial class BarWindowHorizontal : WindowEx
         // We're expanding.
         // Switch the bar to horizontal before we adjust the size.
         LargeContentPanel.Visibility = Visibility.Visible;
-        MaxHeight = double.NaN;
 
         var monitorRect = GetMonitorRectForWindow(ThisHwnd);
         var dpiScale = GetDpiScaleForWindow(ThisHwnd);
@@ -521,10 +520,13 @@ public partial class BarWindowHorizontal : WindowEx
     private void CollapseLargeContentPanel()
     {
         // Make sure we cache the state before switching to collapsed bar.
-        Settings.Default.ExpandedWindowHeight = Height;
+        if (Height > FloatingHorizontalBarHeight)
+        {
+            Settings.Default.ExpandedWindowHeight = Height;
+        }
+
         LargeContentPanel.Visibility = Visibility.Collapsed;
         this.Height = FloatingHorizontalBarHeight;
-        this.MaxHeight = FloatingHorizontalBarHeight;
         this.MinHeight = FloatingHorizontalBarHeight;
     }
 
@@ -626,36 +628,18 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    // private bool _windowWasArranged;
     private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
     {
-        Debug.WriteLine("Window size changed");
-
-        /*
-        if (PInvoke.IsWindowArranged(ThisHwnd))
+        if (args.Size.Height <= FloatingHorizontalBarHeight)
         {
-            Debug.WriteLine("Window is arranged");
-
-            if (!_viewModel.ShowingExpandedContent)
-            {
-                _windowWasArranged = true;
-                _viewModel.ShowingExpandedContent = true;
-            }
-
-            return;
-        }
-        else if (_windowWasArranged)
-        {
-            Debug.Assert(this.Height == FloatingHorizontalBarHeight, "Why are we here?");
+            // If out window size is small, then we're no longer showing expanded content
             _viewModel.ShowingExpandedContent = false;
-            _windowWasArranged = false;
-            Debug.WriteLine("Undoing window arrangement");
         }
-        */
-    }
-
-    private void WindowEx_PositionChanged(object sender, Windows.Graphics.PointInt32 e)
-    {
+        else
+        {
+            // Conversely, if our window is large, then we're showing expanded content
+            _viewModel.ShowingExpandedContent = true;
+        }
     }
 
     private Windows.Win32.UI.Shell.SUBCLASSPROC? _wndProc;
@@ -666,64 +650,23 @@ public partial class BarWindowHorizontal : WindowEx
         PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
     }
 
-    private bool isMoving;
-
     private LRESULT NewWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, nuint uldSubclass, nuint dwRefData)
     {
         switch (msg)
         {
-            case PInvoke.WM_ENTERSIZEMOVE:
-                this.MaxHeight = double.NaN;
-                Debug.WriteLine("entering size move " + this.MaxHeight);
-                break;
-
-            case PInvoke.WM_EXITSIZEMOVE:
-                Debug.WriteLine("exiting size move " + this.MaxHeight);
-                isMoving = false;
-                break;
-
-            case PInvoke.WM_MOVING:
-                this.MaxHeight = double.NaN;
-                isMoving = true;
-                Debug.WriteLine("moving - resetting max height " + this.MaxHeight);
-                break;
-
-            case PInvoke.WM_GETMINMAXINFO:
-
-                if (PInvoke.IsWindowArranged(hWnd))
+            case PInvoke.WM_WINDOWPOSCHANGING:
+            {
+                if (!PInvoke.IsWindowArranged(hWnd) && !_viewModel.ShowingExpandedContent)
                 {
-                    this.MaxHeight = double.NaN;
-                    Debug.WriteLine("resizing - Window is arranged " + this.MaxHeight);
-                }
-                else if (isMoving)
-                {
-                    Debug.WriteLine("resizing - Window is moving, ignoring " + this.MaxHeight);
-                }
-                else
-                {
-                    // this.MaxHeight = FloatingHorizontalBarHeight;
-                    Debug.WriteLine("resizing - Window is not arranged " + this.MaxHeight);
+                    // Enforce our height limit if we're not showing expanded content and we're not being arranged
+                    Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
 
-                    /*
-                    if (!_viewModel.ShowingExpandedContent)
-                    {
-                        this.MaxHeight = FloatingHorizontalBarHeight;
-                    }
-                    */
+                    wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+                    Marshal.StructureToPtr(wndPos, lParam, true);
                 }
 
                 break;
-
-                /*
-                var dpi = PInvoke.User32.GetDpiForWindow(hWnd);
-                float scalingFactor = (float)dpi / 96;
-
-                MINMAXINFO minMaxInfo = Marshal.PtrToStructure<MINMAXINFO>(lParam);
-                minMaxInfo.ptMinTrackSize.x = (int)(MinWidth * scalingFactor);
-                minMaxInfo.ptMinTrackSize.y = (int)(MinHeight * scalingFactor);
-                Marshal.StructureToPtr(minMaxInfo, lParam, true);
-                return (LRESULT)1;
-                */
+            }
         }
 
         return PInvoke.DefSubclassProc(hWnd, msg, wParam, lParam);
