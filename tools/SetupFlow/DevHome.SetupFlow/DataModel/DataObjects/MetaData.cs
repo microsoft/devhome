@@ -6,8 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using Dapper.Contrib.Extensions;
 
 namespace DevHome.SetupFlow.DataModel.DataObjects;
+
 [Table("Metadata")]
 public class MetaData
 {
@@ -29,7 +32,9 @@ public class MetaData
         command.ExecuteNonQuery();
     }
 
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     public static MetaData? GetByKey(DataStore dataStore, string key)
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         var sql = @"SELECT * FROM MetaData WHERE Key = @Key;";
         var param = new
@@ -40,7 +45,9 @@ public class MetaData
         return dataStore.Connection!.QueryFirstOrDefault<MetaData>(sql, param, null);
     }
 
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     public static string? Get(DataStore dataStore, string key)
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     {
         var metaData = GetByKey(dataStore, key);
         return metaData?.Value;
