@@ -17,29 +17,46 @@ namespace FileExplorerGitIntegration.Models;
 // Furthermore, LibGit2 revwalk initialization takes locks on internal data, which causes contention in multithreaded scenarios as threads
 // all scramble to initialize and re-initialize their own revwalk objects.
 // Ideally, LibGit2Sharp improves the API to allow reusing the revwalk object, but that seems unlikely to happen soon.
-internal sealed class CommitLogCache : IEnumerable<Commit>
+internal sealed class CommitLogCache
 {
     private readonly List<Commit> _commits = new();
-    private readonly bool _useCommandLine = true;
+    private readonly string _workingDirectory;
+
+    // For now, we'll use the command line to get the last commit for a file, on demand.
+    // In the future we may use some sort of heuristic to determine if we should use the command line or not.
+    private readonly bool _preferCommandLine = true;
+    private readonly bool _useCommandLine;
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
-    private readonly string _workingDirectory;
 
     public CommitLogCache(Repository repo)
     {
         _workingDirectory = repo.Info.WorkingDirectory;
-        if (_useCommandLine)
+
+        // Use the command line to get the last commit for a file, on demand.
+        // PRO: If Git is installed, this will always succeed, and in a somewhat predictable amount of time.
+        //      Doesn't consume memory for the entire commit log.
+        // CON: Spawning a process for each file may be slower than walking to recent commits.
+        //      Does not work if Git isn't installed.
+        if (_preferCommandLine)
         {
             _gitInstalled = _gitDetect.DetectGit();
+            _useCommandLine = _gitInstalled;
         }
-        else
+
+        if (!_useCommandLine)
         {
-            // For now, greedily get the entire commit log for simplicity.
+            // Greedily get the entire commit log for simplicity.
             // PRO: No syncronization needed for the enumerator.
             // CON: May take longer for the initial load and use more memory.
-            // For reference, I tested on my dev machine on a repo with an *enormous* number of commits
+            // For reference, I tested on my dev machine on a repo with an *large* number of commits
             // https://github.com/python/cpython with > 120k commits. This was a one-time cost of 2-3 seconds, but also
             // consumed several hundred MB of memory.
+            // Unfortunately, loading an *enormous* repo with 1M+ commits consumes a multiple GBs of memory.
+
+            // For smaller repos this method is faster, but the memory consumption is prohibitive on the huge ones.
+            // Additionally, virtualized repos (aka GVFS) may show the entire commit log, but each commit's tree isn't always hydrated.
+            // As a result, GVFS repos often fail to find the last commit for a file if it is older than some unknown threshold.
 
             // Often, but not always, the root folder has some boilerplate/doc/config that rarely changes
             // Therefore, populating the last commit for each file in the root folder often requires a large portion of the commit history anyway.
@@ -125,15 +142,5 @@ internal sealed class CommitLogCache : IEnumerable<Commit>
         }
 
         return null;
-    }
-
-    public IEnumerator<Commit> GetEnumerator()
-    {
-        return _commits.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }
