@@ -35,6 +35,7 @@ graph TD;
     DevHome.ExtensionLibrary-->DevHome;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
+    DevHome.RepositoryManagement-->DevHome
     DevHome.Services.Core-->DevHome.Services.WindowsPackageManager;
     DevHome.Services.Core-->DevHome.Services.DesiredStateConfiguration;
     DevHome.Telemetry-->DevHome.Services.Core;
