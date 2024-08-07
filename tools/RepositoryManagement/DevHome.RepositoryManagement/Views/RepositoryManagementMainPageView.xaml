@@ -33,24 +33,6 @@
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
     <Grid Margin="10,0,20,0" RowSpacing="25">
-        <Grid.Resources>
-            <!--  Three Dot Button template  -->
-            <DataTemplate x:Key="ThreeDotsButton">
-                <Button x:Uid="MoreOptionsButton" Style="{StaticResource HorizontalThreeDotsStyle}">
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem Text="Open in File Explorer" />
-                            <MenuFlyoutItem Text="Open in Command Line" />
-                            <MenuFlyoutItem Text="Move Repository" />
-                            <MenuFlyoutItem Text="Add to Config file" />
-                            <MenuFlyoutItem Text="Run to config file" />
-                            <MenuFlyoutItem Text="Remove from this list" />
-                            <MenuFlyoutItem Text="Delete Repository" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                </Button>
-            </DataTemplate>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
