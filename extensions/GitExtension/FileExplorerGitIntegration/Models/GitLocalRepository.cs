@@ -57,7 +57,7 @@ public sealed class GitLocalRepository : ILocalRepository
     {
         relativePath = relativePath.Replace('\\', '/');
         var result = new ValueSet();
-        Commit? latestCommit = null;
+        CommitWrapper? latestCommit = null;
 
         var repository = OpenRepository();
 
@@ -72,89 +72,54 @@ public sealed class GitLocalRepository : ILocalRepository
             switch (propName)
             {
                 case "System.VersionControl.LastChangeMessage":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit != null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeMessage", latestCommit.MessageShort);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeMessage", latestCommit.MessageShort);
+                        result.Add(propName, latestCommit.MessageShort);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeAuthorName":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit != null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeAuthorName", latestCommit.Author.Name);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeAuthorName", latestCommit.Author.Name);
+                        result.Add(propName, latestCommit.AuthorName);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeDate":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit != null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeDate", latestCommit.Author.When);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeDate", latestCommit.Author.When);
+                        result.Add(propName, latestCommit.AuthorWhen);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeAuthorEmail":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit != null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeAuthorEmail", latestCommit.Author.Email);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeAuthorEmail", latestCommit.Author.Email);
+                        result.Add(propName, latestCommit.AuthorEmail);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeID":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit != null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeID", latestCommit.Sha);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeID", latestCommit.Sha);
+                        result.Add(propName, latestCommit.Sha);
                     }
 
                     break;
                 case "System.VersionControl.Status":
-                    result.Add("System.VersionControl.Status", GetStatus(relativePath, repository));
+                    result.Add(propName, GetStatus(relativePath, repository));
                     break;
 
                 case "System.VersionControl.CurrentFolderStatus":
                     var folderStatus = GetFolderStatus(relativePath, repository);
                     if (folderStatus != null)
                     {
-                        result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                        result.Add(propName, folderStatus);
                     }
 
                     break;
@@ -194,7 +159,7 @@ public sealed class GitLocalRepository : ILocalRepository
         }
     }
 
-    private Commit? FindLatestCommit(string relativePath, RepositoryWrapper repository)
+    private CommitWrapper? FindLatestCommit(string relativePath, RepositoryWrapper repository)
     {
         return repository.FindLastCommit(relativePath);
     }
