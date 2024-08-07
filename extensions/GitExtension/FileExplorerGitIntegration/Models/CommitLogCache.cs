@@ -29,6 +29,8 @@ internal sealed class CommitLogCache
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
 
+    private readonly LruCacheDictionary<string, CommitWrapper> _cache = new();
+
     public CommitLogCache(Repository repo)
     {
         _workingDirectory = repo.Info.WorkingDirectory;
@@ -67,14 +69,27 @@ internal sealed class CommitLogCache
 
     public CommitWrapper? FindLastCommit(string relativePath)
     {
+        if (_cache.TryGetValue(relativePath, out var cachedCommit))
+        {
+            return cachedCommit;
+        }
+
+        CommitWrapper? result;
         if (_useCommandLine)
         {
-            return FindLastCommitUsingCommandLine(relativePath);
+            result = FindLastCommitUsingCommandLine(relativePath);
         }
         else
         {
-            return FindLastCommitUsingLibGit2Sharp(relativePath);
+            result = FindLastCommitUsingLibGit2Sharp(relativePath);
         }
+
+        if (result != null)
+        {
+            result = _cache.GetOrAdd(relativePath, result);
+        }
+
+        return result;
     }
 
     private CommitWrapper? FindLastCommitUsingCommandLine(string relativePath)
