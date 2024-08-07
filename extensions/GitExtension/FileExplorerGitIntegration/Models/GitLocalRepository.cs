@@ -196,51 +196,6 @@ public sealed class GitLocalRepository : ILocalRepository
 
     private Commit? FindLatestCommit(string relativePath, RepositoryWrapper repository)
     {
-        var checkedFirstCommit = false;
-        foreach (var currentCommit in repository.GetCommits())
-        {
-            // Now that CommitLogCache is caching the result of the revwalk, the next piece that is most expensive
-            // is obtaining relativePath's TreeEntry from the Tree (e.g. currentTree[relativePath].
-            // Digging into the git shows that number of directory entries and/or directory depth may play a factor.
-            // There may also be a lot of redundant lookups happening here, so it may make sense to do some LRU caching.
-            var currentTree = currentCommit.Tree;
-            var currentTreeEntry = currentTree[relativePath];
-            if (currentTreeEntry == null)
-            {
-                if (checkedFirstCommit)
-                {
-                    continue;
-                }
-                else
-                {
-                    // If this file isn't present in the most recent commit, then it's of no interest
-                    return null;
-                }
-            }
-
-            checkedFirstCommit = true;
-            var parents = currentCommit.Parents;
-            var count = parents.Count();
-            if (count == 0)
-            {
-                return currentCommit;
-            }
-            else if (count > 1)
-            {
-                // Multiple parents means a merge. Ignore.
-                continue;
-            }
-            else
-            {
-                var parentTree = parents.First();
-                var parentTreeEntry = parentTree[relativePath];
-                if (parentTreeEntry == null || parentTreeEntry.Target.Id != currentTreeEntry.Target.Id)
-                {
-                    return currentCommit;
-                }
-            }
-        }
-
-        return null;
+        return repository.FindLastCommit(relativePath);
     }
 }
