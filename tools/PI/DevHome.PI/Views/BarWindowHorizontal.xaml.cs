@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
@@ -150,6 +151,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         // Now that the position is set correctly show the window
         this.Show();
+        HookWndProc();
     }
 
     public void PopulateCommandBar()
@@ -620,10 +622,12 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    private bool _windowWasArranged;
-
+    // private bool _windowWasArranged;
     private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
     {
+        Debug.WriteLine("Window size changed");
+
+        /*
         if (PInvoke.IsWindowArranged(ThisHwnd))
         {
             Debug.WriteLine("Window is arranged");
@@ -639,9 +643,85 @@ public partial class BarWindowHorizontal : WindowEx
         else if (_windowWasArranged)
         {
             Debug.Assert(this.Height == FloatingHorizontalBarHeight, "Why are we here?");
-            CollapseLargeContentPanel();
+            _viewModel.ShowingExpandedContent = false;
             _windowWasArranged = false;
             Debug.WriteLine("Undoing window arrangement");
         }
+        */
+    }
+
+    private void WindowEx_PositionChanged(object sender, Windows.Graphics.PointInt32 e)
+    {
+    }
+
+    private Windows.Win32.UI.Shell.SUBCLASSPROC? _wndProc;
+
+    private void HookWndProc()
+    {
+        _wndProc = new Windows.Win32.UI.Shell.SUBCLASSPROC(NewWindowProc);
+        PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
+    }
+
+    private bool isMoving;
+
+    private LRESULT NewWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, nuint uldSubclass, nuint dwRefData)
+    {
+        switch (msg)
+        {
+            case PInvoke.WM_ENTERSIZEMOVE:
+                this.MaxHeight = double.NaN;
+                Debug.WriteLine("entering size move " + this.MaxHeight);
+                break;
+
+            case PInvoke.WM_EXITSIZEMOVE:
+                Debug.WriteLine("exiting size move " + this.MaxHeight);
+                isMoving = false;
+                break;
+
+            case PInvoke.WM_MOVING:
+                this.MaxHeight = double.NaN;
+                isMoving = true;
+                Debug.WriteLine("moving - resetting max height " + this.MaxHeight);
+                break;
+
+            case PInvoke.WM_GETMINMAXINFO:
+
+                if (PInvoke.IsWindowArranged(hWnd))
+                {
+                    this.MaxHeight = double.NaN;
+                    Debug.WriteLine("resizing - Window is arranged " + this.MaxHeight);
+                }
+                else if (isMoving)
+                {
+                    Debug.WriteLine("resizing - Window is moving, ignoring " + this.MaxHeight);
+                }
+                else
+                {
+                    // this.MaxHeight = FloatingHorizontalBarHeight;
+                    Debug.WriteLine("resizing - Window is not arranged " + this.MaxHeight);
+
+                    /*
+                    if (!_viewModel.ShowingExpandedContent)
+                    {
+                        this.MaxHeight = FloatingHorizontalBarHeight;
+                    }
+                    */
+                }
+
+                break;
+
+                /*
+                var dpi = PInvoke.User32.GetDpiForWindow(hWnd);
+                float scalingFactor = (float)dpi / 96;
+
+                MINMAXINFO minMaxInfo = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+                minMaxInfo.ptMinTrackSize.x = (int)(MinWidth * scalingFactor);
+                minMaxInfo.ptMinTrackSize.y = (int)(MinHeight * scalingFactor);
+                Marshal.StructureToPtr(minMaxInfo, lParam, true);
+                return (LRESULT)1;
+                */
+        }
+
+        return PInvoke.DefSubclassProc(hWnd, msg, wParam, lParam);
     }
 }

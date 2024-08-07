@@ -14,6 +14,7 @@
     TaskBarIcon="Images/pi.ico"
     Activated="Window_Activated"
     SizeChanged="WindowEx_SizeChanged"
+    PositionChanged="WindowEx_PositionChanged"
     WindowStateChanged="WindowEx_WindowStateChanged"
     Closed="WindowEx_Closed">
 
