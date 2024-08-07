@@ -15,6 +15,8 @@ internal sealed class GPUStats : IDisposable
 
     private readonly List<Data> _stats = new();
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(GPUStats));
+
     public sealed class Data
     {
         public string? Name { get; set; }
@@ -99,23 +101,39 @@ internal sealed class GPUStats : IDisposable
             List<PerformanceCounter>? counters;
             var success = _gpuCounters.TryGetValue(gpu.PhysId, out counters);
 
-            if (success)
+            if (success && counters != null)
             {
-                try
+                var sum = 0.0f;
+                var countersToRemove = new List<PerformanceCounter>();
+                foreach (var counter in counters)
                 {
-                    // NextValue() can throw an InvalidOperationException if the counter is no longer there.
-                    var sum = counters?.Sum(x => x.NextValue()) ?? 0;
-                    gpu.Usage = sum / 100;
-                    lock (gpu.GpuChartValues)
+                    try
                     {
-                        ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
+                        // NextValue() can throw an InvalidOperationException if the counter is no longer there.
+                        sum += counter.NextValue();
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // We can't modify the list during the loop, so save it to remove at the end.
+                        _log.Information(ex, "Failed to get next value, remove");
+                        countersToRemove.Add(counter);
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.Error(ex, "Error going through process counters.");
                     }
                 }
-                catch (InvalidOperationException ex)
+
+                foreach (var counter in countersToRemove)
                 {
-                    Log.Warning(ex, "GPUStats", "Failed to get next value");
-                    Log.Information("GPUStats", "Calling GetGPUPerfCounters again");
-                    GetGPUPerfCounters();
+                    counters.Remove(counter);
+                    counter.Dispose();
+                }
+
+                gpu.Usage = sum / 100;
+                lock (gpu.GpuChartValues)
+                {
+                    ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
                 }
             }
         }
