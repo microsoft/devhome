@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -28,6 +29,9 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _webMessageReceived;
 
+    [ObservableProperty]
+    private Uri? _webViewUrl;
+
     public ExtensionSettingsViewModel(
         IExtensionService extensionService,
         INavigationService navigationService,
@@ -37,6 +41,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         _navigationService = navigationService;
         _adaptiveCardRenderingService = adaptiveCardRenderingService;
         _webMessageReceived = string.Empty;
+        _webViewUrl = null;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
@@ -56,13 +61,15 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
                 {
-                    /*
-                     *  if (settingsProvider is ISettingsProvider2 settingsProvider2)
+                    if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
                         var webViewUrl = settingsProvider2.GetSettingsWebView();
                         Console.WriteLine("WORKING :): " + webViewUrl.Url);
+                        if (webViewUrl != null)
+                        {
+                            WebViewUrl = new Uri(webViewUrl.Url);
+                        }
                     }
-                     */
 
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)

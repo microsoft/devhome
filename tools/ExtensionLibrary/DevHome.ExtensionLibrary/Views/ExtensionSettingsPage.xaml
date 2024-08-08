@@ -22,7 +22,7 @@
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </commonviews:ExtensionAdaptiveCardPanel>
-                <WebView2 x:Name="webView2" Height="500" Width="500" />
+                <WebView2 x:Name="webView2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" Height="500" Width="500" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

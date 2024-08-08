@@ -17,7 +17,5 @@ public sealed partial class ExtensionSettingsPage : DevHomePage
     {
         ViewModel = Application.Current.GetService<ExtensionSettingsViewModel>();
         this.InitializeComponent();
-
-        // webView2.Source = new Uri("https://www.microsoft.com");
     }
 }
