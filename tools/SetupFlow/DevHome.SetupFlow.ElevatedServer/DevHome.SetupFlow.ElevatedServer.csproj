@@ -5,7 +5,6 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     <ApplicationIcon Condition="'$(BuildRing)'=='Dev'">$(SolutionDir)\src\Assets\Dev\DevHome_Dev.ico</ApplicationIcon>
     <ApplicationIcon Condition="'$(BuildRing)'=='Canary'">$(SolutionDir)\src\Assets\Canary\DevHome_Canary.ico</ApplicationIcon>
     <ApplicationIcon Condition="'$(BuildRing)'=='Stable'">$(SolutionDir)\src\Assets\Preview\DevHome_Preview.ico</ApplicationIcon>
