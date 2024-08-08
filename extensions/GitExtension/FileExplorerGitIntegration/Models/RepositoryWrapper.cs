@@ -128,12 +128,6 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetFileStatus(string relativePath)
     {
-        // Skip directories while we're getting individual file status.
-        if (File.GetAttributes(Path.Combine(_workingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
-        {
-            return string.Empty;
-        }
-
         GitStatusEntry? status;
         if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
         {
@@ -180,11 +174,6 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private string GetOriginalPath(string relativePath)
     {
-        if (File.GetAttributes(Path.Combine(_workingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
-        {
-            return relativePath;
-        }
-
         _statusCache.Status.FileEntries.TryGetValue(relativePath, out var status);
         if (status is null)
         {
