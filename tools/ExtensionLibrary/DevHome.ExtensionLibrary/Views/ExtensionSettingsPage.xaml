@@ -16,14 +16,14 @@
         <ScrollViewer VerticalAlignment="Top">
             <Grid>
                 <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-                <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent" Visibility="Collapsed">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="Loaded">
-                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SettingsContentLoadedCommand}" CommandParameter="{x:Bind SettingsContent}" />
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </commonviews:ExtensionAdaptiveCardPanel>
-                <WebView2 x:Name="webView2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" Height="500" />
+                    <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent" Visibility="Collapsed">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="Loaded">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SettingsContentLoadedCommand}" CommandParameter="{x:Bind SettingsContent}" />
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </commonviews:ExtensionAdaptiveCardPanel>
+                    <WebView2 x:Name="webView2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" MinHeight="{ThemeResource NavigationViewAutoSuggestAreaHeight}" VerticalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
