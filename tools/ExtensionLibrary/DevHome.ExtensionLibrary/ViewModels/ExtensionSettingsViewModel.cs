@@ -25,6 +25,9 @@ public partial class ExtensionSettingsViewModel : ObservableObject
 
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
+    [ObservableProperty]
+    private string _webMessageReceived;
+
     public ExtensionSettingsViewModel(
         IExtensionService extensionService,
         INavigationService navigationService,
@@ -33,6 +36,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         _extensionService = extensionService;
         _navigationService = navigationService;
         _adaptiveCardRenderingService = adaptiveCardRenderingService;
+        _webMessageReceived = string.Empty;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
@@ -52,11 +56,13 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
                 {
-                    if (settingsProvider is ISettingsProvider2 settingsProvider2)
+                    /*
+                     *  if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
                         var webViewUrl = settingsProvider2.GetSettingsWebView();
                         Console.WriteLine("WORKING :): " + webViewUrl.Url);
                     }
+                     */
 
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
