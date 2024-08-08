@@ -5,6 +5,7 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
@@ -20,6 +21,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
+using Windows.Graphics;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
@@ -66,6 +68,7 @@ public partial class BarWindowHorizontal : WindowEx
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
     private const int FloatingHorizontalBarHeight = 90;
+    private const int MinimumExpandedSize = 120;
 
     // Default size of the expanded view as a percentage of the screen size
     private const float DefaultExpandedViewHeightofScreen = 0.9f;
@@ -608,34 +611,9 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void WindowEx_WindowStateChanged(object sender, WindowState e)
     {
-        if (e.Equals(WindowState.Normal))
-        {
-            if (Height == FloatingHorizontalBarHeight)
-            {
-                // If we were in collapsed mode, then maximized, then expanded, then restored, be sure to set the height back to the expanded height
-                // (by default, Windows will set us to the collapsed height)
-                if (_viewModel.ShowingExpandedContent && Height == FloatingHorizontalBarHeight)
-                {
-                    Height = Settings.Default.ExpandedWindowHeight;
-                }
-            }
-        }
-        else if (e.Equals(WindowState.Maximized))
+        if (e.Equals(WindowState.Maximized))
         {
             // If we're being maximized, expand our content
-            _viewModel.ShowingExpandedContent = true;
-        }
-    }
-
-    private void WindowEx_SizeChanged(object sender, WindowSizeChangedEventArgs args)
-    {
-        if (args.Size.Height <= FloatingHorizontalBarHeight && _viewModel.ShowingExpandedContent == true)
-        {
-            Height = Settings.Default.ExpandedWindowHeight;
-        }
-        else if (args.Size.Height > FloatingHorizontalBarHeight)
-        {
-            // Conversely, if our window is large, then we're showing expanded content
             _viewModel.ShowingExpandedContent = true;
         }
     }
@@ -648,19 +626,64 @@ public partial class BarWindowHorizontal : WindowEx
         PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
     }
 
+    private bool _isSnapped;
+    private bool _transitionFromSnapped;
+
     private LRESULT NewWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, nuint uldSubclass, nuint dwRefData)
     {
         switch (msg)
         {
             case PInvoke.WM_WINDOWPOSCHANGING:
             {
-                if (!PInvoke.IsWindowArranged(hWnd) && !_viewModel.ShowingExpandedContent)
+                Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
+                if (wndPos.flags.HasFlag(Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
+                {
+                    break;
+                }
+
+                int floatingBarHeight = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+                int minimumExpandedSize = CommonHelper.MulDiv(MinimumExpandedSize, (int)this.GetDpiForWindow(), 96);
+
+                if (PInvoke.IsWindowArranged(hWnd))
+                {
+                    _isSnapped = true;
+                }
+                else
+                {
+                    if (_isSnapped)
+                    {
+                        _transitionFromSnapped = true;
+                        _isSnapped = false;
+                    }
+                }
+
+                if (!_isSnapped && !_viewModel.ShowingExpandedContent && wndPos.cy > floatingBarHeight)
                 {
                     // Enforce our height limit if we're not showing expanded content and we're not being arranged
-                    Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
-
                     wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped);
+                }
+                else if (_viewModel.ShowingExpandedContent && wndPos.cy > floatingBarHeight && wndPos.cy < minimumExpandedSize)
+                {
+                    wndPos.cy = minimumExpandedSize;
+                    Marshal.StructureToPtr(wndPos, lParam, true);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing minimum window size of expanded content " + _isSnapped);
+                }
+                else if (wndPos.cy <= floatingBarHeight && _viewModel.ShowingExpandedContent && _transitionFromSnapped)
+                {
+                    wndPos.cy = CommonHelper.MulDiv((int)Settings.Default.ExpandedWindowHeight, (int)this.GetDpiForWindow(), 96);
+                    Marshal.StructureToPtr(wndPos, lParam, true);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
+                }
+                else if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
+                {
+                    _viewModel.ShowingExpandedContent = true;
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
+                }
+                else
+                {
+                    _transitionFromSnapped = false;
                 }
 
                 break;
