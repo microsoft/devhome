@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DevHome.PI.Models"
-    xmlns:helpers="using:DevHome.PI.Helpers"
+    xmlns:services="using:DevHome.PI.Services"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
 
@@ -30,19 +30,19 @@
             <CheckBox
                 x:Uid="EtwCheckbox" x:Name="EtwCheckbox" IsChecked="{x:Bind ViewModel.IsETWLogsEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.ETWLogs}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.EtwLogsName}"/>
+                Content="{x:Bind services:WinLogsService.EtwLogsName}"/>
             <CheckBox
                 x:Uid="DebugOutputCheckbox" x:Name="DebugOutputCheckbox" IsChecked="{x:Bind ViewModel.IsDebugOutputEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.DebugOutput}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.DebugOutputLogsName}"/>
+                Content="{x:Bind services:WinLogsService.DebugOutputLogsName}"/>
             <CheckBox
                 x:Uid="EventViewerCheckbox" x:Name="EventViewerCheckbox" IsChecked="{x:Bind ViewModel.IsEventViewerEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.EventViewer}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
+                Content="{x:Bind services:WinLogsService.EventViewerName}"/>
             <CheckBox
                 x:Uid="WERCheckbox" x:Name="WERCheckbox" IsChecked="{x:Bind ViewModel.IsWEREnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.WER}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.WERName}"/>
+                Content="{x:Bind services:WinLogsService.WERName}"/>
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
                 BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">

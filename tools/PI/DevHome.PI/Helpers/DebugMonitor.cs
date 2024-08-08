@@ -10,15 +10,16 @@ using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Threading;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 
 namespace DevHome.PI.Helpers;
 
 public sealed class DebugMonitor : IDisposable
 {
-    private readonly Process targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> output;
-    private readonly EventWaitHandle stopEvent;
-    private readonly string errorMessageText = CommonHelper.GetLocalizedString("WinLogsAlreadyRunningErrorMessage");
+    private readonly Process _targetProcess;
+    private readonly ObservableCollection<WinLogsEntry> _output;
+    private readonly EventWaitHandle _stopEvent;
+    private readonly string _errorMessageText = CommonHelper.GetLocalizedString("WinLogsAlreadyRunningErrorMessage");
 
     private const string MutexName = "DevHome.PI.DebugMonitor.SingletonMutex";
     private const string StopEventName = "DebugMonitorStopEvent";
@@ -26,20 +27,20 @@ public sealed class DebugMonitor : IDisposable
     private const string DBWinDataReadyName = "DBWIN_DATA_READY";
     private const string DBWinBufferName = "DBWIN_BUFFER";
 
-    private static readonly List<string> IgnoreLogList = [];
+    private static readonly List<string> _ignoreLogList = [];
 
     public DebugMonitor(Process targetProcess, ObservableCollection<WinLogsEntry> output)
     {
-        this.targetProcess = targetProcess;
-        this.targetProcess.Exited += TargetProcess_Exited;
-        this.output = output;
+        _targetProcess = targetProcess;
+        _targetProcess.Exited += TargetProcess_Exited;
+        _output = output;
 
-        stopEvent = new EventWaitHandle(false, EventResetMode.AutoReset, StopEventName);
+        _stopEvent = new EventWaitHandle(false, EventResetMode.AutoReset, StopEventName);
     }
 
     public void Start()
     {
-        stopEvent.Reset();
+        _stopEvent.Reset();
 
         // Don't initiate if debugger is attached. It makes debugging very slow.
         if (Debugger.IsAttached)
@@ -63,8 +64,8 @@ public sealed class DebugMonitor : IDisposable
         // Don't initiate if there is an existing OutputDebugString monitor running
         if (!isNewBufferReadyEvent || !isNewDataReadyEvent)
         {
-            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, errorMessageText, WinLogsHelper.DebugOutputLogsName);
-            output.Add(entry);
+            WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, _errorMessageText, WinLogsService.DebugOutputLogsName);
+            _output.Add(entry);
             return;
         }
 
@@ -72,7 +73,7 @@ public sealed class DebugMonitor : IDisposable
         while (true)
         {
             bufferReadyEvent.Set();
-            var waitResult = WaitHandle.WaitAny(new[] { stopEvent, dataReadyEvent });
+            var waitResult = WaitHandle.WaitAny(new[] { _stopEvent, dataReadyEvent });
 
             // Stop listenting to OutputDebugString if the debugger is attached. It makes debugging very slow.
             if (Debugger.IsAttached)
@@ -96,7 +97,7 @@ public sealed class DebugMonitor : IDisposable
                 using BinaryReader binaryReader = new BinaryReader(viewStream);
                 var pid = binaryReader.ReadUInt32();
 
-                if (pid == targetProcess.Id)
+                if (pid == _targetProcess.Id)
                 {
                     // Get the message from the stream.
                     var stringBuilder = new StringBuilder();
@@ -110,7 +111,7 @@ public sealed class DebugMonitor : IDisposable
                     if (!string.IsNullOrWhiteSpace(entryMessage))
                     {
                         var hasIgnoreLog = false;
-                        foreach (var ignoreLog in IgnoreLogList)
+                        foreach (var ignoreLog in _ignoreLogList)
                         {
                             if (entryMessage.Contains(ignoreLog))
                             {
@@ -120,8 +121,8 @@ public sealed class DebugMonitor : IDisposable
 
                         if (!hasIgnoreLog)
                         {
-                            WinLogsEntry entry = new(timeGenerated, WinLogCategory.Debug, entryMessage, WinLogsHelper.DebugOutputLogsName);
-                            output.Add(entry);
+                            WinLogsEntry entry = new(timeGenerated, WinLogCategory.Debug, entryMessage, WinLogsService.DebugOutputLogsName);
+                            _output.Add(entry);
                         }
                     }
                 }
@@ -131,16 +132,16 @@ public sealed class DebugMonitor : IDisposable
 
     public void Stop()
     {
-        if (!stopEvent.SafeWaitHandle.IsClosed)
+        if (!_stopEvent.SafeWaitHandle.IsClosed)
         {
-            stopEvent.Set();
+            _stopEvent.Set();
         }
     }
 
     public void Dispose()
     {
-        stopEvent.Close();
-        stopEvent.Dispose();
+        _stopEvent.Close();
+        _stopEvent.Dispose();
 
         GC.SuppressFinalize(this);
     }

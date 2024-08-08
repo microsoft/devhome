@@ -52,7 +52,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private bool _isWEREnabled = true;
 
     private Process? _targetProcess;
-    private WinLogsHelper? _winLogsHelper;
+    private WinLogsService? _winLogsService;
 
     public WinLogsPageViewModel()
     {
@@ -90,8 +90,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 if (!process.HasExited)
                 {
                     IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
-                    _winLogsHelper = new WinLogsHelper(_targetProcess, _winLogsOutput);
-                    _winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
+                    _winLogsService = new WinLogsService(_targetProcess, _winLogsOutput);
+                    _winLogsService.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
                 }
             }
             catch (Win32Exception ex)
@@ -131,7 +131,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     private void StopWinLogs(bool shouldCleanLogs = true)
     {
-        _winLogsHelper?.Stop();
+        _winLogsService?.Stop();
 
         if (shouldCleanLogs)
         {
@@ -156,7 +156,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        _winLogsHelper?.Dispose();
+        _winLogsService?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -173,7 +173,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             }
 
             var tool = (WinLogsTool)box.Tag;
-            _winLogsHelper?.LogStateChanged(tool, isChecked ?? false);
+            _winLogsService?.LogStateChanged(tool, isChecked ?? false);
         }
     }
 

@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
 using Serilog;
@@ -85,7 +86,7 @@ internal sealed class ETWHelper : IDisposable
             catch (UnauthorizedAccessException ex)
             {
                 Stop();
-                WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsHelper.EtwLogsName);
+                WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsService.EtwLogsName);
                 _output.Add(entry);
             }
         }
@@ -120,8 +121,8 @@ internal sealed class ETWHelper : IDisposable
             return;
         }
 
-        var category = WinLogsHelper.ConvertTraceEventLevelToWinLogCategory(level);
-        var entry = new WinLogsEntry(timeStamp, category, message, WinLogsHelper.EtwLogsName);
+        var category = WinLogsService.ConvertTraceEventLevelToWinLogCategory(level);
+        var entry = new WinLogsEntry(timeStamp, category, message, WinLogsService.EtwLogsName);
         _output.Add(entry);
     }
 

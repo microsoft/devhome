@@ -15,7 +15,7 @@ namespace DevHome.PI.Services;
 // Similar to DevHome.Services.PageService
 internal sealed class PIPageService : IPageService
 {
-    private readonly Dictionary<string, Type> pages = new();
+    private readonly Dictionary<string, Type> _pages = new();
 
     public PIPageService()
     {
@@ -38,9 +38,9 @@ internal sealed class PIPageService : IPageService
     public Type GetPageType(string key)
     {
         Type? pageType;
-        lock (pages)
+        lock (_pages)
         {
-            if (!pages.TryGetValue(key, out pageType))
+            if (!_pages.TryGetValue(key, out pageType))
             {
                 throw new ArgumentException($"Page not found: {key}. Did you forget to call PageService.Configure?");
             }
@@ -53,21 +53,21 @@ internal sealed class PIPageService : IPageService
         where T_VM : ObservableObject
         where T_V : Page
     {
-        lock (pages)
+        lock (_pages)
         {
             var key = typeof(T_VM).FullName!;
-            if (pages.ContainsKey(key))
+            if (_pages.ContainsKey(key))
             {
                 throw new ArgumentException($"The key {key} is already configured in PageService");
             }
 
             var type = typeof(T_V);
-            if (pages.Any(p => p.Value == type))
+            if (_pages.Any(p => p.Value == type))
             {
-                throw new ArgumentException($"This type is already configured with key {pages.First(p => p.Value == type).Key}");
+                throw new ArgumentException($"This type is already configured with key {_pages.First(p => p.Value == type).Key}");
             }
 
-            pages.Add(key, type);
+            _pages.Add(key, type);
         }
     }
 }
