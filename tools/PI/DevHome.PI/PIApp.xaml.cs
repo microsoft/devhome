@@ -48,6 +48,8 @@ public partial class App : Application, IApp
                 services.AddSingleton<PIAppInfoService>();
                 services.AddSingleton<PIInsightsService>();
                 services.AddSingleton<WERHelper>();
+                services.AddSingleton<PerfCounters>();
+                services.AddSingleton<HardwareMonitor>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();

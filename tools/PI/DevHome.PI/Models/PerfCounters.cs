@@ -16,8 +16,6 @@ public partial class PerfCounters : ObservableObject, IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(PerfCounters));
 
-    public static readonly PerfCounters Instance = new();
-
     private const string ProcessCategory = "Process";
     private const string ProcessorCategory = "Processor Information";
     private const string MemoryCategory = "Memory";

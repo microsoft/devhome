@@ -67,7 +67,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
-        PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
+        Application.Current.GetService<PerfCounters>().PropertyChanged += PerfCounterHelper_PropertyChanged;
 
         _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
         _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
@@ -84,9 +84,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         AddPagesIfNecessary(TargetAppData.Instance.TargetProcess);
 
         // Initial values
-        CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", PerfCounters.Instance.CpuUsage);
-        RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
-        DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
+        CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", Application.Current.GetService<PerfCounters>().CpuUsage);
+        RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", Application.Current.GetService<PerfCounters>().RamUsageInMB);
+        DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", Application.Current.GetService<PerfCounters>().DiskUsage);
         NavigationService = Application.Current.GetService<INavigationService>();
     }
 
@@ -96,21 +96,21 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         {
             _dispatcher.TryEnqueue(() =>
             {
-                CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", PerfCounters.Instance.CpuUsage);
+                CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", Application.Current.GetService<PerfCounters>().CpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.RamUsageInMB))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
+                RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", Application.Current.GetService<PerfCounters>().RamUsageInMB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.DiskUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
+                DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", Application.Current.GetService<PerfCounters>().DiskUsage);
             });
         }
     }

@@ -115,11 +115,12 @@ public partial class BarWindowViewModel : ObservableObject
         IsSnappingEnabled = TargetAppData.Instance.HWnd != HWND.Null;
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
+        var perfCounters = Application.Current.GetService<PerfCounters>();
+        perfCounters.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
-        SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
-        SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
-        SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
+        SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", perfCounters.SystemCpuUsage);
+        SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", perfCounters.SystemRamUsageInGB);
+        SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", perfCounters.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
 
@@ -322,7 +323,7 @@ public partial class BarWindowViewModel : ObservableObject
         {
             _dispatcher.TryEnqueue(() =>
             {
-                SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
+                SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", Application.Current.GetService<PerfCounters>().SystemCpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemRamUsageInGB))
@@ -330,21 +331,21 @@ public partial class BarWindowViewModel : ObservableObject
             _dispatcher.TryEnqueue(() =>
             {
                 // Convert from bytes to GBs
-                SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
+                SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", Application.Current.GetService<PerfCounters>().SystemRamUsageInGB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemDiskUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
+                SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", Application.Current.GetService<PerfCounters>().SystemDiskUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.CpuUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
+                AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", Application.Current.GetService<PerfCounters>().CpuUsage);
             });
         }
     }

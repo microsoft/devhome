@@ -83,7 +83,7 @@ public partial class BarWindow
 
         if (_settings.IsCpuUsageMonitoringEnabled)
         {
-            PerfCounters.Instance.Start();
+            Application.Current.GetService<PerfCounters>().Start();
         }
     }
 
@@ -91,7 +91,7 @@ public partial class BarWindow
     {
         // If we receive a window closed event, clean up the system
         TargetAppData.Instance.ClearAppData();
-        PerfCounters.Instance.Stop();
+        Application.Current.GetService<PerfCounters>().Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
@@ -103,11 +103,11 @@ public partial class BarWindow
         {
             if (_settings.IsCpuUsageMonitoringEnabled)
             {
-                PerfCounters.Instance.Start();
+                Application.Current.GetService<PerfCounters>().Start();
             }
             else
             {
-                PerfCounters.Instance.Stop();
+                Application.Current.GetService<PerfCounters>().Stop();
             }
         }
     }
