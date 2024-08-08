@@ -30,7 +30,13 @@ internal sealed class RepositoryWrapper : IDisposable
         _statusCache = new StatusCache(rootFolder);
     }
 
-    public IEnumerable<Commit> GetCommits()
+    public CommitWrapper? FindLastCommit(string relativePath)
+    {
+        var commitLog = GetCommitLogCache();
+        return commitLog.FindLastCommit(relativePath);
+    }
+
+    private CommitLogCache GetCommitLogCache()
     {
         // Fast path: if we have an up-to-date commit log, return that
         if (_head != null && _commits != null)

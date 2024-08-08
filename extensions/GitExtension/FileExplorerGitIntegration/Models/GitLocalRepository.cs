@@ -57,11 +57,11 @@ public sealed class GitLocalRepository : ILocalRepository
     {
         relativePath = relativePath.Replace('\\', '/');
         var result = new ValueSet();
-        Commit? latestCommit = null;
+        CommitWrapper? latestCommit = null;
 
         var repository = OpenRepository();
 
-        if (repository == null)
+        if (repository is null)
         {
             _log.Debug("GetProperties: Repository object is null");
             return result;
@@ -72,89 +72,54 @@ public sealed class GitLocalRepository : ILocalRepository
             switch (propName)
             {
                 case "System.VersionControl.LastChangeMessage":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeMessage", latestCommit.MessageShort);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeMessage", latestCommit.MessageShort);
+                        result.Add(propName, latestCommit.MessageShort);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeAuthorName":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeAuthorName", latestCommit.Author.Name);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeAuthorName", latestCommit.Author.Name);
+                        result.Add(propName, latestCommit.AuthorName);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeDate":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeDate", latestCommit.Author.When);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeDate", latestCommit.Author.When);
+                        result.Add(propName, latestCommit.AuthorWhen);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeAuthorEmail":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeAuthorEmail", latestCommit.Author.Email);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeAuthorEmail", latestCommit.Author.Email);
+                        result.Add(propName, latestCommit.AuthorEmail);
                     }
 
                     break;
                 case "System.VersionControl.LastChangeID":
-                    if (latestCommit == null)
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
                     {
-                        latestCommit = FindLatestCommit(relativePath, repository);
-                        if (latestCommit != null)
-                        {
-                            result.Add("System.VersionControl.LastChangeID", latestCommit.Sha);
-                        }
-                    }
-                    else
-                    {
-                        result.Add("System.VersionControl.LastChangeID", latestCommit.Sha);
+                        result.Add(propName, latestCommit.Sha);
                     }
 
                     break;
                 case "System.VersionControl.Status":
-                    result.Add("System.VersionControl.Status", GetStatus(relativePath, repository));
+                    result.Add(propName, GetStatus(relativePath, repository));
                     break;
 
                 case "System.VersionControl.CurrentFolderStatus":
                     var folderStatus = GetFolderStatus(relativePath, repository);
-                    if (folderStatus != null)
+                    if (folderStatus is not null)
                     {
-                        result.Add("System.VersionControl.CurrentFolderStatus", folderStatus);
+                        result.Add(propName, folderStatus);
                     }
 
                     break;
@@ -194,53 +159,8 @@ public sealed class GitLocalRepository : ILocalRepository
         }
     }
 
-    private Commit? FindLatestCommit(string relativePath, RepositoryWrapper repository)
+    private CommitWrapper? FindLatestCommit(string relativePath, RepositoryWrapper repository)
     {
-        var checkedFirstCommit = false;
-        foreach (var currentCommit in repository.GetCommits())
-        {
-            // Now that CommitLogCache is caching the result of the revwalk, the next piece that is most expensive
-            // is obtaining relativePath's TreeEntry from the Tree (e.g. currentTree[relativePath].
-            // Digging into the git shows that number of directory entries and/or directory depth may play a factor.
-            // There may also be a lot of redundant lookups happening here, so it may make sense to do some LRU caching.
-            var currentTree = currentCommit.Tree;
-            var currentTreeEntry = currentTree[relativePath];
-            if (currentTreeEntry == null)
-            {
-                if (checkedFirstCommit)
-                {
-                    continue;
-                }
-                else
-                {
-                    // If this file isn't present in the most recent commit, then it's of no interest
-                    return null;
-                }
-            }
-
-            checkedFirstCommit = true;
-            var parents = currentCommit.Parents;
-            var count = parents.Count();
-            if (count == 0)
-            {
-                return currentCommit;
-            }
-            else if (count > 1)
-            {
-                // Multiple parents means a merge. Ignore.
-                continue;
-            }
-            else
-            {
-                var parentTree = parents.First();
-                var parentTreeEntry = parentTree[relativePath];
-                if (parentTreeEntry == null || parentTreeEntry.Target.Id != currentTreeEntry.Target.Id)
-                {
-                    return currentCommit;
-                }
-            }
-        }
-
-        return null;
+        return repository.FindLastCommit(relativePath);
     }
 }
