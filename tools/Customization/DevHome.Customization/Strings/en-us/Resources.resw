@@ -389,7 +389,7 @@
     <value>A restart may be required for long path changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
-   <data name="AddRepositoriesTextBlock.Text" xml:space="preserve">
+  <data name="AddRepositoriesTextBlock.Text" xml:space="preserve">
     <value>Add repositories</value>
     <comment>Header for the add repositories user experience for file explorer source control integration</comment>
   </data>
@@ -420,5 +420,33 @@
   <data name="RemoveRepository.Text" xml:space="preserve">
     <value>Enter path to remove an enhanced repository</value>
     <comment>The text for removing a repository from source control integration</comment>
+  </data>
+  <data name="EnableVersionControlIntegrationCard.Description" xml:space="preserve">
+    <value>Allow Dev Home to enhance your File Explorer view for known repositories</value>
+    <comment>The description for the settings card that allows user to enable or disable File Explorer Version Control Integration</comment>
+  </data>
+  <data name="EnableVersionControlIntegrationCard.Header" xml:space="preserve">
+    <value>Enable File Explorer Version Control Integration</value>
+    <comment>The header for the settings card that allows user to enable or disable File Explorer Version Control Integration</comment>
+  </data>
+  <data name="FileExplorerSettingsTextBlock.Text" xml:space="preserve">
+    <value>File Explorer + Version Control</value>
+    <comment>The text for the File Explorer Settings toggle</comment>
+  </data>
+   <data name="ShowVersionControlInfoCard.Description" xml:space="preserve">
+    <value>See version control columns for enhanced repositories like "Code Status", "Last Change Date", "Last Change Message"</value>
+    <comment>The description for the settings card that allows user to enable or disable displayment of version control property information inside File Explorer</comment>
+  </data>
+  <data name="ShowVersionControlInfoCard.Header" xml:space="preserve">
+    <value>Show version control information</value>
+    <comment>The header for the settings card that allows user to enable or disable displayment of version control property information inside File Explorer</comment>
+  </data>
+  <data name="ShowRepositoryStatusCard.Description" xml:space="preserve">
+    <value>See useful repository statuses provided by relevant version control extension like current branch and remote origin (if applicable)</value>
+    <comment>The description for the settings card that allows user to enable or disable displayment of repository status inside File Explorer</comment>
+  </data>
+  <data name="ShowRepositoryStatusCard.Header" xml:space="preserve">
+    <value>Show the repository status</value>
+    <comment>The header for the settings card that allows user to enable or disable displayment of repository status inside File Explorer</comment>
   </data>
 </root>
