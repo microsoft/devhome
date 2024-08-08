@@ -32,6 +32,12 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     [ObservableProperty]
     private Uri? _webViewUrl;
 
+    [ObservableProperty]
+    private bool _isAdaptiveCardEnabled;
+
+    [ObservableProperty]
+    private bool _isWebView2Enabled;
+
     public ExtensionSettingsViewModel(
         IExtensionService extensionService,
         INavigationService navigationService,
@@ -63,6 +69,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 {
                     if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
+                        IsAdaptiveCardEnabled = false;
+                        IsWebView2Enabled = true;
                         var webViewUrl = settingsProvider2.GetSettingsWebView();
                         Console.WriteLine("WORKING :): " + webViewUrl.Url);
                         if (webViewUrl != null)
@@ -71,6 +79,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                         }
                     }
 
+                    IsAdaptiveCardEnabled = true;
+                    IsWebView2Enabled = false;
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                     {
