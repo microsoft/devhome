@@ -611,7 +611,15 @@ public partial class BarWindowHorizontal : WindowEx
 
     private void WindowEx_WindowStateChanged(object sender, WindowState e)
     {
-        if (e.Equals(WindowState.Maximized))
+        if (e.Equals(WindowState.Normal))
+        {
+            // If, as part of being restored, we were in an expanded state, then make our window bigger (don't go back to collapsed mode)
+            if (_viewModel.ShowingExpandedContent && Height == FloatingHorizontalBarHeight)
+            {
+                Height = Settings.Default.ExpandedWindowHeight;
+            }
+        }
+        else if (e.Equals(WindowState.Maximized))
         {
             // If we're being maximized, expand our content
             _viewModel.ShowingExpandedContent = true;
@@ -642,7 +650,6 @@ public partial class BarWindowHorizontal : WindowEx
                 }
 
                 int floatingBarHeight = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
-                int minimumExpandedSize = CommonHelper.MulDiv(MinimumExpandedSize, (int)this.GetDpiForWindow(), 96);
 
                 if (PInvoke.IsWindowArranged(hWnd))
                 {
@@ -662,27 +669,24 @@ public partial class BarWindowHorizontal : WindowEx
                     // Enforce our height limit if we're not showing expanded content and we're not being arranged
                     wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
-                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped);
-                }
-                else if (_viewModel.ShowingExpandedContent && wndPos.cy > floatingBarHeight && wndPos.cy < minimumExpandedSize)
-                {
-                    wndPos.cy = minimumExpandedSize;
-                    Marshal.StructureToPtr(wndPos, lParam, true);
-                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing minimum window size of expanded content " + _isSnapped);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
                 }
                 else if (wndPos.cy <= floatingBarHeight && _viewModel.ShowingExpandedContent && _transitionFromSnapped)
                 {
+                    // If we're transitioning from snapped (which always expands our bar) to unsnapped, be sure set our height to the expanded height
                     wndPos.cy = CommonHelper.MulDiv((int)Settings.Default.ExpandedWindowHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
                     Debug.WriteLine("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
                 }
                 else if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
                 {
+                    // Our window is bigger than the floating bar height, so we should show the expanded content
                     _viewModel.ShowingExpandedContent = true;
                     Debug.WriteLine("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
                 }
                 else
                 {
+                    // We'll say we're done transitioning from snapped once our size is "valid" for our current state
                     _transitionFromSnapped = false;
                 }
 
