@@ -95,7 +95,7 @@ internal sealed class CommitLogCache
     private CommitWrapper? FindLastCommitUsingCommandLine(string relativePath)
     {
         var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, $"log -n 1 --pretty=format:%s%n%an%n%ae%n%aI%n%H -- {relativePath}");
-        if (result.Status != Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Success || result.Output == null)
+        if ((result.Status != Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Success) || (result.Output is null))
         {
             return null;
         }

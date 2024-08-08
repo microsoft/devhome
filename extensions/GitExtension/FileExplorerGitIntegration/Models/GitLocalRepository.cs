@@ -61,7 +61,7 @@ public sealed class GitLocalRepository : ILocalRepository
 
         var repository = OpenRepository();
 
-        if (repository == null)
+        if (repository is null)
         {
             _log.Debug("GetProperties: Repository object is null");
             return result;
@@ -73,7 +73,7 @@ public sealed class GitLocalRepository : ILocalRepository
             {
                 case "System.VersionControl.LastChangeMessage":
                     latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit != null)
+                    if (latestCommit is not null)
                     {
                         result.Add(propName, latestCommit.MessageShort);
                     }
@@ -81,7 +81,7 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
                 case "System.VersionControl.LastChangeAuthorName":
                     latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit != null)
+                    if (latestCommit is not null)
                     {
                         result.Add(propName, latestCommit.AuthorName);
                     }
@@ -89,7 +89,7 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
                 case "System.VersionControl.LastChangeDate":
                     latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit != null)
+                    if (latestCommit is not null)
                     {
                         result.Add(propName, latestCommit.AuthorWhen);
                     }
@@ -97,7 +97,7 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
                 case "System.VersionControl.LastChangeAuthorEmail":
                     latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit != null)
+                    if (latestCommit is not null)
                     {
                         result.Add(propName, latestCommit.AuthorEmail);
                     }
@@ -105,7 +105,7 @@ public sealed class GitLocalRepository : ILocalRepository
                     break;
                 case "System.VersionControl.LastChangeID":
                     latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit != null)
+                    if (latestCommit is not null)
                     {
                         result.Add(propName, latestCommit.Sha);
                     }
@@ -117,7 +117,7 @@ public sealed class GitLocalRepository : ILocalRepository
 
                 case "System.VersionControl.CurrentFolderStatus":
                     var folderStatus = GetFolderStatus(relativePath, repository);
-                    if (folderStatus != null)
+                    if (folderStatus is not null)
                     {
                         result.Add(propName, folderStatus);
                     }
