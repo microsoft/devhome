@@ -23,7 +23,7 @@
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
                     </commonviews:ExtensionAdaptiveCardPanel>
-                    <WebView2 x:Name="webView2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" MinHeight="{ThemeResource NavigationViewAutoSuggestAreaHeight}" VerticalAlignment="Stretch"/>
+                    <WebView2 x:Name="webView2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" MinHeight="{ThemeResource NavigationViewCompactPaneLength}" VerticalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
