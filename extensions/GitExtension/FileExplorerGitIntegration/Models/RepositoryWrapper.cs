@@ -32,8 +32,11 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public CommitWrapper? FindLastCommit(string relativePath)
     {
+        // Fetching the most recent status to check if the file is renamed
+        // should be much less expensive than getting the most recent commit.
+        // So, preemtively check for a rename here.
         var commitLog = GetCommitLogCache();
-        return commitLog.FindLastCommit(relativePath);
+        return commitLog.FindLastCommit(GetOriginalPath(relativePath));
     }
 
     private CommitLogCache GetCommitLogCache()
@@ -154,6 +157,10 @@ internal sealed class RepositoryWrapper : IDisposable
         if (status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex))
         {
             statusString = "Staged";
+            if (status.Status.HasFlag(FileStatus.RenamedInIndex))
+            {
+                statusString += " rename";
+            }
         }
 
         if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.RenamedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir))
@@ -169,6 +176,31 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         return statusString;
+    }
+
+    private string GetOriginalPath(string relativePath)
+    {
+        if (File.GetAttributes(Path.Combine(_workingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
+        {
+            return relativePath;
+        }
+
+        _statusCache.Status.FileEntries.TryGetValue(relativePath, out var status);
+        if (status is null)
+        {
+            return relativePath;
+        }
+
+        if (status.Status.HasFlag(FileStatus.RenamedInIndex))
+        {
+            return status.RenameOldPath ?? relativePath;
+        }
+        else if (status.Status.HasFlag(FileStatus.RenamedInWorkdir))
+        {
+            return status.RenameOldPath ?? relativePath;
+        }
+
+        return relativePath;
     }
 
     internal void Dispose(bool disposing)

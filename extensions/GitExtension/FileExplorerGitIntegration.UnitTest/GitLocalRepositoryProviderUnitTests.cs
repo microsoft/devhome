@@ -145,4 +145,37 @@ public class GitLocalRepositoryProviderUnitTests
         result = localRepo.GetProperties(properties, ".");
         Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
     }
+
+    [TestMethod]
+    public void DetectFileRename()
+    {
+        const string statusProperty = "System.VersionControl.Status";
+        var properties = new string[]
+        {
+            statusProperty,
+        };
+        var localRepo = new GitLocalRepository(RepoPath);
+        var relativeFromPath = Path.Join("a", "a1");
+        var relativeToPath = Path.Join("a", "a1_renamed");
+
+        var result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.IsNull(result[statusProperty]);
+
+        var modifiedRepo = new Repository(RepoPath);
+        Commands.Move(modifiedRepo, relativeFromPath, relativeToPath);
+        Commands.Stage(modifiedRepo, relativeFromPath);
+        Commands.Stage(modifiedRepo, relativeToPath);
+        result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.IsNull(result[statusProperty]);
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.AreEqual(result[statusProperty], "Staged rename");
+
+        modifiedRepo.Reset(ResetMode.Hard);
+        result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.IsNull(result[statusProperty]);
+    }
 }
