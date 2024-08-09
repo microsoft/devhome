@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
@@ -15,43 +16,37 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Services;
 
-public class WinLogsService : IDisposable
+public partial class WinLogsService : ObservableObject, IDisposable
 {
     public const string EtwLogsName = "ETW Logs";
     public const string DebugOutputLogsName = "DebugOutput";
     public const string EventViewerName = "EventViewer";
     public const string WERName = "WER";
 
-    private readonly ETWHelper _etwHelper;
-    private readonly DebugMonitor _debugMonitor;
-    private readonly EventViewerHelper _eventViewerHelper;
-    private readonly ObservableCollection<WinLogsEntry> _output;
-    private readonly Process _targetProcess;
     private readonly WERHelper _werHelper;
+    private Process? _targetProcess;
+    private ETWHelper? _etwHelper;
+    private DebugMonitor? _debugMonitor;
+    private EventViewerHelper? _eventViewerHelper;
 
     private Thread? _etwThread;
     private Thread? _debugMonitorThread;
     private Thread? _eventViewerThread;
 
-    public WinLogsService(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    [ObservableProperty]
+    private ObservableCollection<WinLogsEntry> _winLogEntries;
+
+    public WinLogsService()
     {
-        _targetProcess = targetProcess;
-        _output = output;
-
-        // Initialize ETW logs
-        _etwHelper = new ETWHelper(targetProcess, output);
-
-        // Initialize DebugMonitor
-        _debugMonitor = new DebugMonitor(targetProcess, output);
-
-        // Initialize EventViewer
-        _eventViewerHelper = new EventViewerHelper(targetProcess, output);
-
+        _winLogEntries = [];
         _werHelper = Application.Current.GetService<WERHelper>();
     }
 
     public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
     {
+        _targetProcess = TargetAppData.Instance.TargetProcess;
+        Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting logs");
+
         if (isEtwEnabled)
         {
             StartETWLogsThread();
@@ -88,11 +83,16 @@ public class WinLogsService : IDisposable
         ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
     }
 
+    public void AddWinLogsEntry(WinLogsEntry entry)
+    {
+        WinLogEntries.Add(entry);
+    }
+
     public void Dispose()
     {
-        _etwHelper.Dispose();
-        _debugMonitor.Dispose();
-        _eventViewerHelper.Dispose();
+        _etwHelper?.Dispose();
+        _debugMonitor?.Dispose();
+        _eventViewerHelper?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -104,6 +104,9 @@ public class WinLogsService : IDisposable
         // Start a new thread
         _etwThread = new Thread(() =>
         {
+            Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting ETW logs");
+            _etwHelper?.Dispose();
+            _etwHelper = new ETWHelper(_targetProcess);
             _etwHelper.Start();
         });
         _etwThread.Name = EtwLogsName + " Thread";
@@ -112,7 +115,7 @@ public class WinLogsService : IDisposable
 
     private void StopETWLogsThread()
     {
-        _etwHelper.Stop();
+        _etwHelper?.Stop();
 
         if (Thread.CurrentThread != _etwThread)
         {
@@ -128,7 +131,9 @@ public class WinLogsService : IDisposable
         // Start a new thread
         _debugMonitorThread = new Thread(() =>
         {
-            // Start Debug Outputs
+            Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting DebugMonitor logs");
+            _debugMonitor?.Dispose();
+            _debugMonitor = new DebugMonitor(_targetProcess);
             _debugMonitor.Start();
         });
         _debugMonitorThread.Name = DebugOutputLogsName + " Thread";
@@ -137,7 +142,7 @@ public class WinLogsService : IDisposable
 
     private void StopDebugOutputsThread()
     {
-        _debugMonitor.Stop();
+        _debugMonitor?.Stop();
 
         if (Thread.CurrentThread != _debugMonitorThread)
         {
@@ -154,6 +159,9 @@ public class WinLogsService : IDisposable
         _eventViewerThread = new Thread(() =>
         {
             // Start EventViewer logs
+            Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting EventViewer logs");
+            _eventViewerHelper?.Dispose();
+            _eventViewerHelper = new EventViewerHelper(_targetProcess);
             _eventViewerHelper.Start();
         });
         _eventViewerThread.Name = EventViewerName + " Thread";
@@ -162,7 +170,7 @@ public class WinLogsService : IDisposable
 
     private void StopEventViewerThread()
     {
-        _eventViewerHelper.Stop();
+        _eventViewerHelper?.Stop();
 
         if (Thread.CurrentThread != _eventViewerThread)
         {
@@ -179,10 +187,10 @@ public class WinLogsService : IDisposable
                 var filePath = report.Executable ?? string.Empty;
 
                 // Filter WER events based on the process we're targeting
-                if (filePath.Contains(_targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
+                if ((_targetProcess is not null) && filePath.Contains(_targetProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
                 {
                     WinLogsEntry entry = new(report.TimeStamp, WinLogCategory.Error, report.Description, WinLogsService.WERName);
-                    _output.Add(entry);
+                    WinLogEntries.Add(entry);
                 }
             }
         }
@@ -192,6 +200,9 @@ public class WinLogsService : IDisposable
     {
         if (isEnabled)
         {
+            _targetProcess = TargetAppData.Instance.TargetProcess;
+            Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting logs");
+
             switch (logType)
             {
                 case WinLogsTool.ETWLogs:

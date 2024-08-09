@@ -3,22 +3,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Threading;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.Services;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
 public sealed class DebugMonitor : IDisposable
 {
     private readonly Process _targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> _output;
     private readonly EventWaitHandle _stopEvent;
+    private readonly WinLogsService _winLogsService;
     private readonly string _errorMessageText = CommonHelper.GetLocalizedString("WinLogsAlreadyRunningErrorMessage");
 
     private const string MutexName = "DevHome.PI.DebugMonitor.SingletonMutex";
@@ -29,11 +30,11 @@ public sealed class DebugMonitor : IDisposable
 
     private static readonly List<string> _ignoreLogList = [];
 
-    public DebugMonitor(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public DebugMonitor(Process targetProcess)
     {
         _targetProcess = targetProcess;
         _targetProcess.Exited += TargetProcess_Exited;
-        _output = output;
+        _winLogsService = Application.Current.GetService<WinLogsService>();
 
         _stopEvent = new EventWaitHandle(false, EventResetMode.AutoReset, StopEventName);
     }
@@ -65,7 +66,7 @@ public sealed class DebugMonitor : IDisposable
         if (!isNewBufferReadyEvent || !isNewDataReadyEvent)
         {
             WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, _errorMessageText, WinLogsService.DebugOutputLogsName);
-            _output.Add(entry);
+            _winLogsService.AddWinLogsEntry(entry);
             return;
         }
 
@@ -122,7 +123,7 @@ public sealed class DebugMonitor : IDisposable
                         if (!hasIgnoreLog)
                         {
                             WinLogsEntry entry = new(timeGenerated, WinLogCategory.Debug, entryMessage, WinLogsService.DebugOutputLogsName);
-                            _output.Add(entry);
+                            _winLogsService.AddWinLogsEntry(entry);
                         }
                     }
                 }

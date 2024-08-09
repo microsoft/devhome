@@ -3,15 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.Services;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.PI.Helpers;
@@ -20,7 +21,7 @@ internal sealed class ETWHelper : IDisposable
 {
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ETWHelper));
     private readonly Process _targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> _output;
+    private readonly WinLogsService _winLogsService;
 
     private static readonly List<string> _providerList = ["1AFF6089-E863-4D36-BDFD-3581F07440BE" /*COM Tracelog*/];
     private TraceEventSession? _session;
@@ -39,11 +40,11 @@ internal sealed class ETWHelper : IDisposable
         exit 1
         ";
 
-    public ETWHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public ETWHelper(Process targetProcess)
     {
         _targetProcess = targetProcess;
         _targetProcess.Exited += TargetProcess_Exited;
-        _output = output;
+        _winLogsService = Application.Current.GetService<WinLogsService>();
     }
 
     public void Start()
@@ -87,7 +88,7 @@ internal sealed class ETWHelper : IDisposable
             {
                 Stop();
                 WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsService.EtwLogsName);
-                _output.Add(entry);
+                _winLogsService.AddWinLogsEntry(entry);
             }
         }
     }
@@ -123,7 +124,7 @@ internal sealed class ETWHelper : IDisposable
 
         var category = WinLogsService.ConvertTraceEventLevelToWinLogCategory(level);
         var entry = new WinLogsEntry(timeStamp, category, message, WinLogsService.EtwLogsName);
-        _output.Add(entry);
+        _winLogsService.AddWinLogsEntry(entry);
     }
 
     private void TargetProcess_Exited(object? sender, EventArgs e)

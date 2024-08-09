@@ -26,9 +26,9 @@ namespace DevHome.PI.ViewModels;
 public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 {
     private readonly bool _logMeasures;
-    private readonly ObservableCollection<WinLogsEntry> _winLogsOutput;
     private readonly DispatcherQueue _dispatcher;
     private readonly PIInsightsService _insightsService;
+    private readonly WinLogsService _winLogsService;
 
     [ObservableProperty]
     private ObservableCollection<WinLogsEntry> _winLogEntries;
@@ -52,7 +52,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private bool _isWEREnabled = true;
 
     private Process? _targetProcess;
-    private WinLogsService? _winLogsService;
 
     public WinLogsPageViewModel()
     {
@@ -64,10 +63,10 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
         _insightsService = Application.Current.GetService<PIInsightsService>();
+        _winLogsService = Application.Current.GetService<WinLogsService>();
 
         _winLogEntries = [];
-        _winLogsOutput = [];
-        _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _winLogsService.WinLogEntries.CollectionChanged += WinLogEntries_CollectionChanged;
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -90,7 +89,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 if (!process.HasExited)
                 {
                     IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
-                    _winLogsService = new WinLogsService(_targetProcess, _winLogsOutput);
                     _winLogsService.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
                 }
             }
@@ -139,7 +137,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void WinLogsOutput_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void WinLogEntries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
@@ -217,7 +215,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             App.Log("DevHome.PI_WinLogs_ClearLogs", LogLevel.Measure);
         }
 
-        _winLogsOutput?.Clear();
         _dispatcher.TryEnqueue(() =>
         {
             WinLogEntries.Clear();

@@ -2,25 +2,26 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using DevHome.Common.Extensions;
 using DevHome.PI.Models;
 using DevHome.PI.Services;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.Helpers;
 
 internal sealed class EventViewerHelper : IDisposable
 {
     private readonly Process _targetProcess;
-    private readonly ObservableCollection<WinLogsEntry> _output;
     private readonly EventLogWatcher? _eventLogWatcher;
+    private readonly WinLogsService _winLogsService;
 
-    public EventViewerHelper(Process targetProcess, ObservableCollection<WinLogsEntry> output)
+    public EventViewerHelper(Process targetProcess)
     {
         _targetProcess = targetProcess;
         _targetProcess.Exited += TargetProcess_Exited;
-        _output = output;
+        _winLogsService = Application.Current.GetService<WinLogsService>();
 
         try
         {
@@ -34,7 +35,7 @@ internal sealed class EventViewerHelper : IDisposable
         {
             var message = CommonHelper.GetLocalizedString("UnableToStartEventViewerErrorMessage");
             WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, message, WinLogsService.EventViewerName);
-            output.Add(entry);
+            _winLogsService.AddWinLogsEntry(entry);
         }
     }
 
@@ -71,7 +72,7 @@ internal sealed class EventViewerHelper : IDisposable
             WinLogCategory category = WinLogsService.ConvertStandardEventLevelToWinLogCategory(eventArg.EventRecord.Level);
             var message = eventArg.EventRecord.FormatDescription();
             WinLogsEntry entry = new(eventArg.EventRecord.TimeCreated, category, message, WinLogsService.EventViewerName);
-            _output.Add(entry);
+            _winLogsService.AddWinLogsEntry(entry);
         }
     }
 
