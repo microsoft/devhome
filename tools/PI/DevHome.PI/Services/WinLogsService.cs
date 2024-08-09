@@ -64,7 +64,7 @@ public partial class WinLogsService : ObservableObject, IDisposable
 
         if (isWEREnabled)
         {
-            ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
+            StartWER();
         }
     }
 
@@ -80,7 +80,7 @@ public partial class WinLogsService : ObservableObject, IDisposable
         StopEventViewerThread();
 
         // Stop WER
-        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
+        StopWER();
     }
 
     public void AddWinLogsEntry(WinLogsEntry entry)
@@ -178,6 +178,16 @@ public partial class WinLogsService : ObservableObject, IDisposable
         }
     }
 
+    private void StartWER()
+    {
+        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
+    }
+
+    private void StopWER()
+    {
+        ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
+    }
+
     private void WEREvents_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
@@ -212,7 +222,7 @@ public partial class WinLogsService : ObservableObject, IDisposable
                     StartEventViewerThread();
                     break;
                 case WinLogsTool.WER:
-                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WEREvents_CollectionChanged;
+                    StartWER();
                     break;
             }
         }
@@ -230,7 +240,7 @@ public partial class WinLogsService : ObservableObject, IDisposable
                     StopEventViewerThread();
                     break;
                 case WinLogsTool.WER:
-                    ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged -= WEREvents_CollectionChanged;
+                    StopWER();
                     break;
             }
         }
