@@ -666,6 +666,13 @@ public partial class AddRepoViewModel : ObservableObject
 
         ChangeToUrlPage();
 
+        // If the user isn't setting up a local machine, hide the browse button.
+        // Since we can't browse for a folder on a remote machine.
+        if (!_setupFlowOrchestrator.IsSettingUpLocalMachine)
+        {
+            FolderPickerViewModel.HideBrowseButton();
+        }
+
         // override changes ChangeToUrlPage to correctly set the state.
         UrlParsingError = string.Empty;
         ShouldShowUrlError = false;

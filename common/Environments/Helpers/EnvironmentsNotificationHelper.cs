@@ -201,7 +201,7 @@ public partial class EnvironmentsNotificationHelper
 
         // Add the user to the Hyper-V Administrators group and enable the Hyper-V feature if it is not already enabled.
         // Using a string instead of a file for the script so it can't be manipulated via the file system.
-        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{HyperVSetupScript.SetupFunction}\"";
+        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{HyperVSetupScript.SetupFunction} {user}\"";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 

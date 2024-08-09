@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -393,6 +394,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     public async Task UpdateListViewModelList(ComputeSystemsLoadedData data)
     {
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
+
+        // Remove the mappings that failed to load.
+        // The errors are already handled by the notification helper.
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kvp =>
+            kvp.Value.Result.Status == ProviderOperationStatus.Failure))
+        {
+            data.DevIdToComputeSystemMap.Remove(mapping.Key);
+        }
 
         var curListViewModel = new ComputeSystemsListViewModel(data);
 
