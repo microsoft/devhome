@@ -101,6 +101,11 @@ internal sealed class CommitLogCache
         }
 
         var parts = result.Output.Split('\n');
+        if (parts.Length != 5)
+        {
+            return null;
+        }
+
         string message = parts[0];
         string authorName = parts[1];
         string authorEmail = parts[2];

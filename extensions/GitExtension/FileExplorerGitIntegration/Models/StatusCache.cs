@@ -262,9 +262,9 @@ internal sealed class StatusCache : IDisposable
                 // For porcelain=v2, "rename" entries have the following format:
                 //   2 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <X><score> <path><sep><origPath>
                 // For now, we only care about the <XY>, <path>, and <origPath> fields.
-                var pieces = line.Split(' ', 9);
+                var pieces = line.Split(' ', 10);
                 var fileStatusString = pieces[1];
-                var newPath = pieces[8];
+                var newPath = pieces[9];
                 var oldPath = parts[++i];
                 FileStatus statusEntry = FileStatus.Unaltered;
                 if (fileStatusString[0] == 'R')
