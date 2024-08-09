@@ -104,7 +104,8 @@
 
                         <!-- Package version list -->
                         <ComboBox
-                            x:Uid="VersionComboBox"
+                            AutomationProperties.Name="{Binding TooltipVersion}"
+                            ToolTipService.ToolTip="{Binding TooltipVersion}"
                             Grid.Row="1"
                             Visibility="{Binding ShowVersionList}"
                             BorderThickness="0"

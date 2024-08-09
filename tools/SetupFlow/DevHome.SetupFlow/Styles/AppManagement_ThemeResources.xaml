@@ -81,7 +81,8 @@
                 </controls:PackageDetailsSettingsCard.HeaderIcon>
                 <StackPanel Orientation="Horizontal" Spacing="10">
                     <ComboBox
-                        x:Uid="VersionComboBox"
+                        AutomationProperties.Name="{Binding TooltipVersion}"
+                        ToolTipService.ToolTip="{Binding TooltipVersion}"
                         Visibility="{Binding ShowVersionList}"
                         BorderThickness="0"
                         FontSize="{ThemeResource CaptionTextBlockFontSize}"
