@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
-    AutomationProperties.Name="{Binding PackageTitle}"
+    AutomationProperties.Name="{Binding PackageAnnouncement}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

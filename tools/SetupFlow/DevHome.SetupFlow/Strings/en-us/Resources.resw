@@ -625,6 +625,10 @@
     <value>Already installed</value>
     <comment>Label for a package/application that already exists on the user's machine.</comment>
   </data>
+  <data name="PackageInstalledAnnouncement" xml:space="preserve">
+    <value>{0}. Already installed</value>
+    <comment>{Locked="{0}","."}Text announced for a package/application that already exists on the user's machine. {0} is replaced by the package name. A period (.) is used to add a pause for the narrator.</comment>
+  </data>
   <data name="PackageNameTooltip" xml:space="preserve">
     <value>Name: {0}</value>
     <comment>{Locked="{0}"} Label for a package name displayed on a tooltip. {0} is replaced by the package name.</comment>

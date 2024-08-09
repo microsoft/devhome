@@ -70,6 +70,7 @@ public static class StringResourceKey
     public static readonly string PackageDescriptionTwoParts = nameof(PackageDescriptionTwoParts);
     public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
     public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
+    public static readonly string PackageInstalledAnnouncement = nameof(PackageInstalledAnnouncement);
     public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);
     public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
     public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);

@@ -119,6 +119,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string PackageTitle => Name;
 
+    public string PackageAnnouncement => IsInstalled ? _stringResource.GetLocalized(StringResourceKey.PackageInstalledAnnouncement, Name) : Name;
+
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
     public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, SelectedVersion);
