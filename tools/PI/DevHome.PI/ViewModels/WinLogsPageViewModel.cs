@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -52,6 +53,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isWEREnabled = true;
 
+    [ObservableProperty]
+    private string _filterMessageText;
+
     private Process? _targetProcess;
 
     public WinLogsPageViewModel()
@@ -68,6 +72,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
         _winLogsService.WinLogEntries.CollectionChanged += WinLogEntries_CollectionChanged;
         _winLogsViewSource = new CollectionViewSource();
+        _filterMessageText = string.Empty;
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -107,6 +112,67 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 }
             }
         }
+    }
+
+    public void LogStateChanged(object sender, RoutedEventArgs e)
+    {
+        var box = e.OriginalSource as CheckBox;
+        if ((box is not null) && (box.Tag is not null))
+        {
+            var isChecked = box.IsChecked;
+
+            if (_logMeasures)
+            {
+                App.Log("DevHome.PI_WinLogs_LogStateChanged", LogLevel.Measure, new LogStateChangedEventData(box.Name, (box.IsChecked ?? false) ? "true" : "false"), null);
+            }
+
+            var tool = (WinLogsTool)box.Tag;
+            _winLogsService?.LogStateChanged(tool, isChecked ?? false);
+        }
+    }
+
+    public void UpdateClipboardContent(object sender, DataGridRowClipboardEventArgs e)
+    {
+        var winLogEntry = e.Item as WinLogsEntry;
+        var dataGrid = sender as DataGrid;
+        if ((winLogEntry is not null) && (dataGrid is not null))
+        {
+            // Message Column is the last column.
+            var messageColumnIndex = dataGrid.Columns.Count - 1;
+            var selectedColumnIndex = dataGrid.CurrentColumn.DisplayIndex;
+
+            // Clear clipboard if the selected column is Message column
+            // to copy only the selected text from the textbox.
+            if ((winLogEntry.SelectedText.Length > 0) && (selectedColumnIndex == messageColumnIndex))
+            {
+                e.ClipboardRowContent.Clear();
+            }
+        }
+    }
+
+    public void UpdateWinLogsViewSource()
+    {
+        List<WinLogsEntry> sortedList;
+
+        if (string.IsNullOrEmpty(FilterMessageText))
+        {
+            sortedList = _winLogsService.WinLogEntries.OrderBy(i => i.TimeStamp).ToList();
+        }
+        else
+        {
+            sortedList = _winLogsService.WinLogEntries
+                .Where(i => i.Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase))
+                .OrderBy(i => i.TimeStamp)
+                .ToList();
+        }
+
+        WinLogsViewSource.Source = sortedList;
+    }
+
+    public void Dispose()
+    {
+        _winLogsService?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -152,54 +218,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
             UpdateWinLogsViewSource();
         });
-    }
-
-    private void UpdateWinLogsViewSource()
-    {
-        var sortedList = _winLogsService.WinLogEntries.OrderBy(i => i.TimeStamp).ToList();
-        WinLogsViewSource.Source = sortedList;
-    }
-
-    public void Dispose()
-    {
-        _winLogsService?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-
-    public void LogStateChanged(object sender, RoutedEventArgs e)
-    {
-        var box = e.OriginalSource as CheckBox;
-        if ((box is not null) && (box.Tag is not null))
-        {
-            var isChecked = box.IsChecked;
-
-            if (_logMeasures)
-            {
-                App.Log("DevHome.PI_WinLogs_LogStateChanged", LogLevel.Measure, new LogStateChangedEventData(box.Name, (box.IsChecked ?? false) ? "true" : "false"), null);
-            }
-
-            var tool = (WinLogsTool)box.Tag;
-            _winLogsService?.LogStateChanged(tool, isChecked ?? false);
-        }
-    }
-
-    public void UpdateClipboardContent(object sender, DataGridRowClipboardEventArgs e)
-    {
-        var winLogEntry = e.Item as WinLogsEntry;
-        var dataGrid = sender as DataGrid;
-        if ((winLogEntry is not null) && (dataGrid is not null))
-        {
-            // Message Column is the last column.
-            var messageColumnIndex = dataGrid.Columns.Count - 1;
-            var selectedColumnIndex = dataGrid.CurrentColumn.DisplayIndex;
-
-            // Clear clipboard if the selected column is Message column
-            // to copy only the selected text from the textbox.
-            if ((winLogEntry.SelectedText.Length > 0) && (selectedColumnIndex == messageColumnIndex))
-            {
-                e.ClipboardRowContent.Clear();
-            }
-        }
     }
 
     private void FindPattern(string message)
