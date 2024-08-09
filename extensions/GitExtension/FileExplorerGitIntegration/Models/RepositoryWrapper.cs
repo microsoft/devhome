@@ -182,11 +182,7 @@ internal sealed class RepositoryWrapper : IDisposable
             return relativePath;
         }
 
-        if (status.Status.HasFlag(FileStatus.RenamedInIndex))
-        {
-            return status.RenameOldPath ?? relativePath;
-        }
-        else if (status.Status.HasFlag(FileStatus.RenamedInWorkdir))
+        if (status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir))
         {
             return status.RenameOldPath ?? relativePath;
         }
