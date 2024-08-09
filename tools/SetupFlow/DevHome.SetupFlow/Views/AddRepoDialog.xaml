@@ -398,7 +398,8 @@
                     <Button
                         x:Uid="ClonePath_Button"
                         Margin="5,27,0,0"
-                        IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}">
+                        IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                        Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShowBrowseButton, Mode=OneWay}">
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="Click">
                                 <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.OpenFolderPickerCommand}" />
