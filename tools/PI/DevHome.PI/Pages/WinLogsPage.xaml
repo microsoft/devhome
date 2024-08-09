@@ -69,12 +69,12 @@
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
         <toolkit:DataGrid.Columns>
             <toolkit:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
-            <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
+            <toolkit:DataGridComboBoxColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
             <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
             <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
                 <toolkit:DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" IsReadOnly="True"/>
                 </DataTemplate>
                 </toolkit:DataGridTemplateColumn.CellTemplate>
             </toolkit:DataGridTemplateColumn>

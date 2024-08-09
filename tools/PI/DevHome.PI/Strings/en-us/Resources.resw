@@ -281,7 +281,7 @@
     <value>WER Reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
-  <data name="WERTimeGeneratedColumn.Header" xml:space="preserve">
+  <data name="TimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
     <comment>The time at which the WER report was generated.</comment>
   </data>
@@ -556,22 +556,6 @@
   <data name="WERStartErrorMessage" xml:space="preserve">
     <value>Could not start WER Monitoring</value>
     <comment>Refers to being unable to start monitoring the WER error logs.</comment>
-  </data>
-  <data name="WinLogCategoryError" xml:space="preserve">
-    <value>Error</value>
-    <comment>Refers to an error level message.</comment>
-  </data>
-  <data name="WinLogCategoryWarning" xml:space="preserve">
-    <value>Warning</value>
-    <comment>Refers to a warning level message.</comment>
-  </data>
-  <data name="WinLogCategoryInformation" xml:space="preserve">
-    <value>Information</value>
-    <comment>Refers to an information level message.</comment>
-  </data>
-  <data name="WinLogCategoryDebug" xml:space="preserve">
-    <value>Debug</value>
-    <comment>Refers to a debug level message.</comment>
   </data>
   <data name="PreferencesTabName" xml:space="preserve">
     <value>Preferences</value>
