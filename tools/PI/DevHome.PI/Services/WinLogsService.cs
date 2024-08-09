@@ -42,9 +42,9 @@ public partial class WinLogsService : ObservableObject, IDisposable
         _werHelper = Application.Current.GetService<WERHelper>();
     }
 
-    public void Start(bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
+    public void Start(Process process, bool isEtwEnabled, bool isDebugOutputEnabled, bool isEventViewerEnabled, bool isWEREnabled)
     {
-        _targetProcess = TargetAppData.Instance.TargetProcess;
+        _targetProcess = process;
         Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting logs");
 
         if (isEtwEnabled)
@@ -200,9 +200,6 @@ public partial class WinLogsService : ObservableObject, IDisposable
     {
         if (isEnabled)
         {
-            _targetProcess = TargetAppData.Instance.TargetProcess;
-            Debug.Assert(_targetProcess is not null, "Target Process cannot be null while starting logs");
-
             switch (logType)
             {
                 case WinLogsTool.ETWLogs:

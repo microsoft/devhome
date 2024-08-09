@@ -89,7 +89,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 if (!process.HasExited)
                 {
                     IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
-                    _winLogsService.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
+                    _winLogsService.Start(_targetProcess, IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
                 }
             }
             catch (Win32Exception ex)
