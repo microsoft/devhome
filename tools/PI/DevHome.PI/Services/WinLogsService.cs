@@ -83,6 +83,11 @@ public partial class WinLogsService : ObservableObject, IDisposable
         StopWER();
     }
 
+    public void Clear()
+    {
+        WinLogEntries.Clear();
+    }
+
     public void AddWinLogsEntry(WinLogsEntry entry)
     {
         WinLogEntries.Add(entry);

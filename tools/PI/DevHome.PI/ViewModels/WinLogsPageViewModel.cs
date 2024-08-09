@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,6 +20,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 
 namespace DevHome.PI.ViewModels;
 
@@ -31,7 +32,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private readonly WinLogsService _winLogsService;
 
     [ObservableProperty]
-    private ObservableCollection<WinLogsEntry> _winLogEntries;
+    private CollectionViewSource _winLogsViewSource;
 
     [ObservableProperty]
     private Visibility _runAsAdminVisibility = Visibility.Collapsed;
@@ -65,8 +66,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         _insightsService = Application.Current.GetService<PIInsightsService>();
         _winLogsService = Application.Current.GetService<WinLogsService>();
 
-        _winLogEntries = [];
         _winLogsService.WinLogEntries.CollectionChanged += WinLogEntries_CollectionChanged;
+        _winLogsViewSource = new CollectionViewSource();
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -139,17 +140,24 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     private void WinLogEntries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+        _dispatcher.TryEnqueue(() =>
         {
-            _dispatcher.TryEnqueue(() =>
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
             {
                 foreach (WinLogsEntry newEntry in e.NewItems)
                 {
-                    WinLogEntries.Add(newEntry);
                     ThreadPool.QueueUserWorkItem((o) => FindPattern(newEntry.Message));
                 }
-            });
-        }
+            }
+
+            UpdateWinLogsViewSource();
+        });
+    }
+
+    private void UpdateWinLogsViewSource()
+    {
+        var sortedList = _winLogsService.WinLogEntries.OrderBy(i => i.TimeStamp).ToList();
+        WinLogsViewSource.Source = sortedList;
     }
 
     public void Dispose()
@@ -215,10 +223,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
             App.Log("DevHome.PI_WinLogs_ClearLogs", LogLevel.Measure);
         }
 
-        _dispatcher.TryEnqueue(() =>
-        {
-            WinLogEntries.Clear();
-        });
+        _winLogsService.Clear();
     }
 
     [RelayCommand]
