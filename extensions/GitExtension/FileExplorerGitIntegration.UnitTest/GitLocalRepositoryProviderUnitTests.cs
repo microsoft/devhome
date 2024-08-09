@@ -98,7 +98,7 @@ public class GitLocalRepositoryProviderUnitTests
         // Oddity: When sorting the full commit graph by time, the HEAD is a merge with two parents:
         // 1. Third a/a1; f73b9567; Apr 7 15:31:13 2005 -0700
         // 2. Fourth a/a1; d0114ab8; Apr 7 15:30:13 2005 -0700
-        // It would appear that commmit is older, but for some reason, this is the one that was found by LibGit2Sharp.
+        // It would appear that commit is older, but for some reason, this is the one that was found by LibGit2Sharp.
         // Commit 1. is "the most recent", and is the commit shown by "git log" and on the GitHub repo.
         Assert.AreEqual(result["System.VersionControl.Status"], string.Empty);
         Assert.AreEqual(result["System.VersionControl.LastChangeDate"], new System.DateTimeOffset(2005, 4, 7, 15, 30, 13, new System.TimeSpan(-7, 0, 0)));

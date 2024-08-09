@@ -172,6 +172,8 @@ internal sealed class RepositoryWrapper : IDisposable
         return statusString;
     }
 
+    // Detect uncommitted renames and return the original path.
+    // This allows us to get the commit history, because the new path doesn't exist yet.
     private string GetOriginalPath(string relativePath)
     {
         _statusCache.Status.FileEntries.TryGetValue(relativePath, out var status);
