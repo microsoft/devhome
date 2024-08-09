@@ -397,8 +397,8 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
         // Remove the mappings that failed to load.
         // The errors are already handled by the notification helper.
-        foreach (var mapping in data.DevIdToComputeSystemMap.Where(map =>
-            map.Value.Result.Status == ProviderOperationStatus.Failure))
+        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kvp =>
+            kvp.Value.Result.Status == ProviderOperationStatus.Failure))
         {
             data.DevIdToComputeSystemMap.Remove(mapping.Key);
         }
