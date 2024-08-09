@@ -30,7 +30,16 @@ internal sealed class RepositoryWrapper : IDisposable
         _statusCache = new StatusCache(rootFolder);
     }
 
-    public IEnumerable<Commit> GetCommits()
+    public CommitWrapper? FindLastCommit(string relativePath)
+    {
+        // Fetching the most recent status to check if the file is renamed
+        // should be much less expensive than getting the most recent commit.
+        // So, preemtively check for a rename here.
+        var commitLog = GetCommitLogCache();
+        return commitLog.FindLastCommit(GetOriginalPath(relativePath));
+    }
+
+    private CommitLogCache GetCommitLogCache()
     {
         // Fast path: if we have an up-to-date commit log, return that
         if (_head != null && _commits != null)
@@ -119,12 +128,6 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetFileStatus(string relativePath)
     {
-        // Skip directories while we're getting individual file status.
-        if (File.GetAttributes(Path.Combine(_workingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
-        {
-            return string.Empty;
-        }
-
         GitStatusEntry? status;
         if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
         {
@@ -148,6 +151,10 @@ internal sealed class RepositoryWrapper : IDisposable
         if (status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex))
         {
             statusString = "Staged";
+            if (status.Status.HasFlag(FileStatus.RenamedInIndex))
+            {
+                statusString += " rename";
+            }
         }
 
         if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.RenamedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir))
@@ -163,6 +170,24 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         return statusString;
+    }
+
+    // Detect uncommitted renames and return the original path.
+    // This allows us to get the commit history, because the new path doesn't exist yet.
+    private string GetOriginalPath(string relativePath)
+    {
+        _statusCache.Status.FileEntries.TryGetValue(relativePath, out var status);
+        if (status is null)
+        {
+            return relativePath;
+        }
+
+        if (status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir))
+        {
+            return status.RenameOldPath ?? relativePath;
+        }
+
+        return relativePath;
     }
 
     internal void Dispose(bool disposing)
