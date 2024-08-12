@@ -12,6 +12,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.Views;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using DevHome.Dashboard.Controls;
@@ -133,6 +134,10 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task OnLoadedAsync()
     {
         await InitializeDashboard();
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Page_Loaded_Event",
+            LogLevel.Critical,
+            new PageLoadedEvent(GetType().Name));
     }
 
     [RelayCommand]

@@ -6,6 +6,8 @@ using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.Services;
 using DevHome.Services.Core.Contracts;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
 using Serilog;
@@ -46,6 +48,9 @@ public class InitializationViewModel : ObservableObject
 
     public async void OnPageLoaded()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("DevHome_Initialization_Started_Event", LogLevel.Critical, new DevHomeInitializationStartedEvent());
+        _log.Information("Dev Home Initialization starting.");
+
         // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
@@ -88,6 +93,9 @@ public class InitializationViewModel : ObservableObject
         App.MainWindow.Content = Application.Current.GetService<ShellPage>();
 
         _themeSelector.SetRequestedTheme();
+
+        TelemetryFactory.Get<ITelemetry>().Log("DevHome_Initialization_Ended_Event", LogLevel.Critical, new DevHomeInitializationEndedEvent());
+        _log.Information("Dev Home Initialization ended.");
     }
 
     private bool HasDevHomeGitHubExtensionInstalled()

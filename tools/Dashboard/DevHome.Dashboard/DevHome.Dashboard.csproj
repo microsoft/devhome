@@ -71,9 +71,4 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
     <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
-    <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
-  </PropertyGroup>
 </Project>

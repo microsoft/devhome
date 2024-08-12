@@ -149,8 +149,7 @@ public partial class SetupFlowViewModel : ObservableObject
         var parameter = args.Parameter?.ToString();
 
         if ((!string.IsNullOrEmpty(parameter)) &&
-            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase) &&
-            Orchestrator.CurrentSetupFlowKind != SetupFlowKind.CreateEnvironment)
+            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
         {
             // We expect that when navigating from anywhere in Dev Home to the create environment page
             // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
