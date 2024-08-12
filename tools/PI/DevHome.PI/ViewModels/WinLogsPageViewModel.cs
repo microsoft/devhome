@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
@@ -32,6 +33,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private ObservableCollection<WinLogsEntry> _winLogEntries;
+
+    [ObservableProperty]
+    private AdvancedCollectionView _winLogsView;
 
     [ObservableProperty]
     private Visibility _runAsAdminVisibility = Visibility.Collapsed;
@@ -68,6 +72,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         _winLogEntries = [];
         _winLogsOutput = [];
         _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _winLogsView = new AdvancedCollectionView(_winLogEntries, true);
+        _winLogsView.SortDescriptions.Add(new SortDescription(nameof(WinLogsEntry.TimeGenerated), SortDirection.Ascending));
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)

@@ -65,10 +65,10 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
-            ItemsSource="{x:Bind ViewModel.WinLogEntries, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.WinLogsView, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
         <toolkit:DataGrid.Columns>
-            <toolkit:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
+            <toolkit:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGeneratedString}" Width="180"/>
             <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
             <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
             <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
