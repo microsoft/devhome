@@ -20,6 +20,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Serilog;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
@@ -45,6 +46,7 @@ public partial class BarWindowHorizontal : WindowEx
     private const string ExpandButtonText = "\ue70d"; // ChevronDown
     private const string CollapseButtonText = "\ue70e"; // ChevronUp
     private const string ManageToolsButtonText = "\uec7a"; // DeveloperTools
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(BarWindowHorizontal));
 
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
     private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
@@ -671,20 +673,20 @@ public partial class BarWindowHorizontal : WindowEx
                     // Enforce our height limit if we're not showing expanded content and we're not being snapped
                     wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
-                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
+                    _log.Information("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
                 }
                 else if (wndPos.cy <= floatingBarHeight && _viewModel.ShowingExpandedContent && _transitionFromSnapped)
                 {
                     // If we're transitioning from snapped (which always expands our bar) to unsnapped, be sure set our height to the expanded height
                     wndPos.cy = CommonHelper.MulDiv((int)Settings.Default.ExpandedWindowHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
-                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
+                    _log.Information("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
                 }
                 else if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
                 {
                     // Our window is bigger than the floating bar height, so we should show the expanded content
                     _viewModel.ShowingExpandedContent = true;
-                    Debug.WriteLine("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
+                    _log.Information("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
                 }
                 else
                 {
