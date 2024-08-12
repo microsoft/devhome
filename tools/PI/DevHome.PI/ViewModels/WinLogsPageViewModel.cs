@@ -55,6 +55,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isWEREnabled = true;
 
+    [ObservableProperty]
+    private string _filterMessageText;
+
     private Process? _targetProcess;
     private WinLogsHelper? _winLogsHelper;
 
@@ -69,11 +72,13 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
         _insightsService = Application.Current.GetService<PIInsightsService>();
 
+        _filterMessageText = string.Empty;
         _winLogEntries = [];
         _winLogsOutput = [];
         _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
         _winLogsView = new AdvancedCollectionView(_winLogEntries, true);
         _winLogsView.SortDescriptions.Add(new SortDescription(nameof(WinLogsEntry.TimeGenerated), SortDirection.Ascending));
+        _winLogsView.Filter = entry => string.IsNullOrEmpty(FilterMessageText) || ((WinLogsEntry)entry).Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase);
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -114,6 +119,11 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 }
             }
         }
+    }
+
+    public void UpdateWinLogsView()
+    {
+        WinLogsView.RefreshFilter();
     }
 
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)

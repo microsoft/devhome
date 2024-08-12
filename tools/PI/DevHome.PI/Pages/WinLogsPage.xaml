@@ -16,6 +16,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -49,8 +50,9 @@
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
         </StackPanel>
+        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="{x:Bind ViewModel.UpdateWinLogsView}"/>
         <toolkit:DataGrid
-            x:Name="WinLogsDataGrid" Grid.Row="3" Margin="0,6,0,0"
+            x:Name="WinLogsDataGrid" Grid.Row="4" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
             AlternatingRowBackground="Transparent"
             AlternatingRowForeground="Gray"
@@ -74,7 +76,7 @@
             <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
                 <toolkit:DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" Foreground="{Binding RowColor}" IsReadOnly="True"/>
                 </DataTemplate>
                 </toolkit:DataGridTemplateColumn.CellTemplate>
             </toolkit:DataGridTemplateColumn>
