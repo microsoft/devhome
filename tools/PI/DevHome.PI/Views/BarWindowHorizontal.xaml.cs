@@ -5,7 +5,9 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.PI.Controls;
 using DevHome.PI.Helpers;
@@ -19,6 +21,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
+using Windows.Graphics;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
@@ -154,6 +157,7 @@ public partial class BarWindowHorizontal : WindowEx
 
         // Now that the position is set correctly show the window
         this.Show();
+        HookWndProc();
     }
 
     public void PopulateCommandBar()
@@ -494,7 +498,6 @@ public partial class BarWindowHorizontal : WindowEx
         // We're expanding.
         // Switch the bar to horizontal before we adjust the size.
         LargeContentPanel.Visibility = Visibility.Visible;
-        MaxHeight = double.NaN;
 
         var monitorRect = GetMonitorRectForWindow(ThisHwnd);
         var dpiScale = GetDpiScaleForWindow(ThisHwnd);
@@ -519,10 +522,13 @@ public partial class BarWindowHorizontal : WindowEx
     private void CollapseLargeContentPanel()
     {
         // Make sure we cache the state before switching to collapsed bar.
-        Settings.Default.ExpandedWindowHeight = Height;
+        if (Height > FloatingHorizontalBarHeight)
+        {
+            Settings.Default.ExpandedWindowHeight = Height;
+        }
+
         LargeContentPanel.Visibility = Visibility.Collapsed;
         this.Height = FloatingHorizontalBarHeight;
-        this.MaxHeight = FloatingHorizontalBarHeight;
         this.MinHeight = FloatingHorizontalBarHeight;
     }
 
@@ -606,15 +612,89 @@ public partial class BarWindowHorizontal : WindowEx
     {
         if (e.Equals(WindowState.Normal))
         {
-            if (Height == FloatingHorizontalBarHeight)
+            // If, as part of being restored, we were in an expanded state, then make our window bigger (don't go back to collapsed mode)
+            if (_viewModel.ShowingExpandedContent && Height == FloatingHorizontalBarHeight)
             {
-                // If we were in collapsed mode, then maximized, then expanded, then restored, be sure to set the height back to the expanded height
-                // (by default, Windows will set us to the collapsed height)
-                if (_viewModel.ShowingExpandedContent && Height == FloatingHorizontalBarHeight)
-                {
-                    Height = Settings.Default.ExpandedWindowHeight;
-                }
+                Height = Settings.Default.ExpandedWindowHeight;
             }
         }
+        else if (e.Equals(WindowState.Maximized))
+        {
+            // If we're being maximized, expand our content
+            _viewModel.ShowingExpandedContent = true;
+        }
+    }
+
+    private Windows.Win32.UI.Shell.SUBCLASSPROC? _wndProc;
+
+    private void HookWndProc()
+    {
+        _wndProc = new Windows.Win32.UI.Shell.SUBCLASSPROC(NewWindowProc);
+        PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
+    }
+
+    private bool _isSnapped;
+    private bool _transitionFromSnapped;
+
+    private LRESULT NewWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, nuint uldSubclass, nuint dwRefData)
+    {
+        switch (msg)
+        {
+            case PInvoke.WM_WINDOWPOSCHANGING:
+            {
+                Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
+
+                // We only care about this message if it's triggering a resize
+                if (wndPos.flags.HasFlag(Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
+                {
+                    break;
+                }
+
+                int floatingBarHeight = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+
+                if (PInvoke.IsWindowArranged(hWnd))
+                {
+                    _isSnapped = true;
+                }
+                else
+                {
+                    if (_isSnapped)
+                    {
+                        _transitionFromSnapped = true;
+                        _isSnapped = false;
+                    }
+                }
+
+                if (!_isSnapped && !_viewModel.ShowingExpandedContent && wndPos.cy > floatingBarHeight)
+                {
+                    // Enforce our height limit if we're not showing expanded content and we're not being snapped
+                    wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+                    Marshal.StructureToPtr(wndPos, lParam, true);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
+                }
+                else if (wndPos.cy <= floatingBarHeight && _viewModel.ShowingExpandedContent && _transitionFromSnapped)
+                {
+                    // If we're transitioning from snapped (which always expands our bar) to unsnapped, be sure set our height to the expanded height
+                    wndPos.cy = CommonHelper.MulDiv((int)Settings.Default.ExpandedWindowHeight, (int)this.GetDpiForWindow(), 96);
+                    Marshal.StructureToPtr(wndPos, lParam, true);
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
+                }
+                else if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
+                {
+                    // Our window is bigger than the floating bar height, so we should show the expanded content
+                    _viewModel.ShowingExpandedContent = true;
+                    Debug.WriteLine("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
+                }
+                else
+                {
+                    // We'll say we're done transitioning from snapped once our size is "valid" for our current state
+                    _transitionFromSnapped = false;
+                }
+
+                break;
+            }
+        }
+
+        return PInvoke.DefSubclassProc(hWnd, msg, wParam, lParam);
     }
 }
