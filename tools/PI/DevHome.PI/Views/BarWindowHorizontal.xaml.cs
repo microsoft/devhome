@@ -668,25 +668,30 @@ public partial class BarWindowHorizontal : WindowEx
                     }
                 }
 
-                if (!_isSnapped && !_viewModel.ShowingExpandedContent && wndPos.cy > floatingBarHeight)
+                if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
                 {
-                    // Enforce our height limit if we're not showing expanded content and we're not being snapped
-                    wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
-                    Marshal.StructureToPtr(wndPos, lParam, true);
-                    _log.Information("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
+                    // We're trying to make our window bigger than the floating bar height and we're in collapsed mode.
+                    if (!_isSnapped)
+                    {
+                        // Enforce our height limit if we're not being snapped
+                        wndPos.cy = CommonHelper.MulDiv(FloatingHorizontalBarHeight, (int)this.GetDpiForWindow(), 96);
+                        Marshal.StructureToPtr(wndPos, lParam, true);
+                        _log.Information("WM_WINDOWPOSCHANGING: Enforcing height limit " + _isSnapped + " " + _transitionFromSnapped);
+                    }
+                    else
+                    {
+                        // In the snapped case, let the system make our window bigger, and we'll show the expanded content
+                        _viewModel.ShowingExpandedContent = true;
+                        _log.Information("WM_WINDOWPOSCHANGING: Enabling expanded content due to large window size");
+                    }
                 }
                 else if (wndPos.cy <= floatingBarHeight && _viewModel.ShowingExpandedContent && _transitionFromSnapped)
                 {
-                    // If we're transitioning from snapped (which always expands our bar) to unsnapped, be sure set our height to the expanded height
+                    // We're transitioning from snapped to unsnapped and our window is the size of the floating bar, but we're
+                    // trying to show expanded content. We need to expand our window to show the expanded content.
                     wndPos.cy = CommonHelper.MulDiv((int)Settings.Default.ExpandedWindowHeight, (int)this.GetDpiForWindow(), 96);
                     Marshal.StructureToPtr(wndPos, lParam, true);
                     _log.Information("WM_WINDOWPOSCHANGING: Expanding window size for expanded content " + _isSnapped);
-                }
-                else if (wndPos.cy > floatingBarHeight && !_viewModel.ShowingExpandedContent)
-                {
-                    // Our window is bigger than the floating bar height, so we should show the expanded content
-                    _viewModel.ShowingExpandedContent = true;
-                    _log.Information("WM_WINDOWPOSCHANGING: enabling expanded content due to large window size " + PInvoke.IsWindowArranged(hWnd));
                 }
                 else
                 {
