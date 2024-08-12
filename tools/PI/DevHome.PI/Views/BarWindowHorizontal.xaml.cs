@@ -21,11 +21,12 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
-using Windows.Graphics;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT.Interop;
 using WinUIEx;
 using static DevHome.PI.Helpers.CommonHelper;
@@ -625,11 +626,11 @@ public partial class BarWindowHorizontal : WindowEx
         }
     }
 
-    private Windows.Win32.UI.Shell.SUBCLASSPROC? _wndProc;
+    private SUBCLASSPROC? _wndProc;
 
     private void HookWndProc()
     {
-        _wndProc = new Windows.Win32.UI.Shell.SUBCLASSPROC(NewWindowProc);
+        _wndProc = new SUBCLASSPROC(NewWindowProc);
         PInvoke.SetWindowSubclass(ThisHwnd, _wndProc, 456, 0);
     }
 
@@ -642,10 +643,10 @@ public partial class BarWindowHorizontal : WindowEx
         {
             case PInvoke.WM_WINDOWPOSCHANGING:
             {
-                Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS wndPos = Marshal.PtrToStructure<Windows.Win32.UI.WindowsAndMessaging.WINDOWPOS>(lParam);
+                WINDOWPOS wndPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
 
                 // We only care about this message if it's triggering a resize
-                if (wndPos.flags.HasFlag(Windows.Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
+                if (wndPos.flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
                 {
                     break;
                 }
