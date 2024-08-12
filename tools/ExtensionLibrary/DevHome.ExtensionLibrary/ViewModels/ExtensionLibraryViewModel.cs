@@ -8,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
+using DevHome.Common.Environments.Models;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
@@ -69,6 +71,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     {
         await GetInstalledPackagesAndExtensionsAsync();
         GetAvailablePackages();
+        WeakReferenceMessenger.Default.Send(new ExtensionsPageLoaded(true));
     }
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)

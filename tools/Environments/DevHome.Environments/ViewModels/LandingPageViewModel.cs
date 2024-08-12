@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Behaviors;
 using CommunityToolkit.WinUI.Collections;
@@ -26,7 +27,7 @@ namespace DevHome.Environments.ViewModels;
 /// <summary>
 /// The main view model for the landing page of the Environments tool.
 /// </summary>
-public partial class LandingPageViewModel : ObservableObject, IDisposable
+public partial class LandingPageViewModel : ObservableObject, IDisposable, IRecipient<ExtensionsPageLoaded>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(LandingPageViewModel));
 
@@ -47,6 +48,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private bool _disposed;
 
     private bool _wasSyncButtonClicked;
+
+    private bool _extensionsPageNavigatedTo;
 
     private string _selectedProvider = string.Empty;
 
@@ -111,6 +114,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
+        WeakReferenceMessenger.Default.Register<ExtensionsPageLoaded>(this);
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -216,7 +220,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Main entry point for loading the view model.
     /// </summary>
-    public async Task LoadModelAsync(bool useDebugValues = false)
+    public async Task LoadModelAsync()
     {
         lock (_lock)
         {
@@ -228,8 +232,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
+            // But if the user navigated to the extensions page, we need to reload the compute systems, since they might
+            // have enabled/disabled an extension.
             SetupCreateComputeSystemOperationForUI();
-            if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked)
+            if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked && !_extensionsPageNavigatedTo)
             {
                 return;
             }
@@ -269,6 +275,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             IsLoading = false;
             HasPageLoadedForTheFirstTime = true;
+            _extensionsPageNavigatedTo = false;
         }
     }
 
@@ -551,5 +558,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         ShouldNavigateToExtensionsPage = callToActionData.NavigateToExtensionsLibrary;
         CallToActionText = callToActionData.CallToActionText;
         CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
+    }
+
+    public void Receive(ExtensionsPageLoaded message)
+    {
+        _extensionsPageNavigatedTo = true;
     }
 }
