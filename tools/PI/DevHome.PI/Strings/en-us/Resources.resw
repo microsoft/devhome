@@ -283,7 +283,7 @@
   </data>
   <data name="TimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
-    <comment>The time at which the WER report was generated.</comment>
+    <comment>The time at which the report/log was generated.</comment>
   </data>
   <data name="WERFaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
