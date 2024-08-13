@@ -19,6 +19,7 @@ graph TD;
     DevHome.Common-->DevHome.Experiments;
     DevHome.Common-->DevHome.ExtensionLibrary;
     DevHome.Common-->DevHome.Settings;
+    DevHome.Common-->DevHome.RepositoryManagement;
     DevHome.Telemetry-->DevHome.SetupFlow.Common;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
@@ -35,6 +36,7 @@ graph TD;
     DevHome.ExtensionLibrary-->DevHome;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
+    DevHome.RepositoryManagement-->DevHome
     DevHome.Services.Core-->DevHome.Services.WindowsPackageManager;
     DevHome.Services.Core-->DevHome.Services.DesiredStateConfiguration;
     DevHome.Telemetry-->DevHome.Services.Core;
@@ -82,6 +84,7 @@ Dev Home currently has the following tools:
 - Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 - Utilities
+- Repository Management
 
 ## Extensions
 
