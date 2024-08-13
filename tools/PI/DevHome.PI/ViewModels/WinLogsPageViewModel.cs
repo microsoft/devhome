@@ -121,7 +121,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void UpdateWinLogsView()
+    [RelayCommand]
+    public void UpdateWinLogs()
     {
         WinLogsView.RefreshFilter();
     }
