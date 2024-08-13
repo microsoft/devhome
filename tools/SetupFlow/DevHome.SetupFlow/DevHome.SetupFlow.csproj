@@ -21,7 +21,6 @@
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\services\DevHome.Services.DesiredStateConfiguration\DevHome.Services.DesiredStateConfiguration.csproj" />
     <ProjectReference Include="..\..\..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" />
-    <ProjectReference Include="..\..\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>
