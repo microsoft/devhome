@@ -41,11 +41,9 @@
                             </Grid>
 
                         </Expander.Header>
-                        <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left">
-                            <Paragraph>
-                                <Run Text="{x:Bind Description}"/>
-                            </Paragraph>
-                        </RichTextBlock>
+                        <Expander.Content>
+                        <ContentPresenter Content="{x:Bind CustomControl}" />
+                        </Expander.Content>
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

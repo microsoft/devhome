@@ -30,6 +30,7 @@
     <None Remove="Controls\ExpandedViewControl.xaml" />
     <None Remove="Controls\PISeparator.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
+    <None Remove="Controls\SimpleTextInsight.xaml" />
     <None Remove="errors.db" />
     <None Remove="Images\PI.ico" />
     <None Remove="Pages\AboutPage.xaml" />
@@ -236,4 +237,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <WarningLevel>7</WarningLevel>
   </PropertyGroup>
+  <ItemGroup>
+    <CustomAdditionalCompileInputs Remove="Controls\SimpleTextInsight.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Remove="Controls\SimpleTextInsight.xaml" />
+  </ItemGroup>
 </Project>

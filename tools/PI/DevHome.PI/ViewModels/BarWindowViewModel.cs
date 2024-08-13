@@ -355,8 +355,11 @@ public partial class BarWindowViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(PIInsightsService.UnreadCount))
         {
-            UnreadInsightsCount = _insightsService.UnreadCount;
-            InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
+            _dispatcher.TryEnqueue(() =>
+            {
+                UnreadInsightsCount = _insightsService.UnreadCount;
+                InsightsBadgeOpacity = UnreadInsightsCount > 0 ? 1 : 0;
+            });
         }
     }
 

@@ -53,6 +53,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
                 services.AddSingleton<InternalToolsHelper>();
+                services.AddSingleton<LoaderSnapAssistantTool>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();
@@ -89,6 +90,7 @@ public partial class App : Application, IApp
         // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
         // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
         Application.Current.GetService<PrimaryWindow>();
+        Application.Current.GetService<LoaderSnapAssistantTool>();
     }
 
     internal static bool IsFeatureEnabled()

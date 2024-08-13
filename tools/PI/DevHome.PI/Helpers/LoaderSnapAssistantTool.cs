@@ -3,14 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Management.Automation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
+using DevHome.PI.Controls;
+using DevHome.PI.Models;
+using DevHome.PI.Services;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
+using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 using Windows.Win32.Foundation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DevHome.PI.Helpers;
 
@@ -18,9 +28,13 @@ public class LoaderSnapAssistantTool
 {
     private const string WindowsImageETWProvider = "2cb15d1d-5fc1-11d2-abe1-00a0c911f518"; /*EP_Microsoft-Windows-ImageLoad*/
     private const uint LoaderSnapsFlag = 0x80; /* ETW_UMGL_LDR_SNAPS_FLAG */
+    private readonly PIInsightsService _insightsService;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public LoaderSnapAssistantTool()
     {
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _insightsService = Application.Current.GetService<PIInsightsService>();
         Init();
     }
 
@@ -38,8 +52,11 @@ public class LoaderSnapAssistantTool
     {
         TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
 
-        // First enable the kernel provider to look for processes exiting with non-zero exit codes
-        session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
+        if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
+        {
+            // First enable the kernel provider to look for processes exiting with non-zero exit codes
+            session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
+        }
 
         // Enablthe loader snaps provider
         session.EnableProvider(WindowsImageETWProvider, TraceEventLevel.Error, LoaderSnapsFlag);
@@ -49,10 +66,22 @@ public class LoaderSnapAssistantTool
             if (data.ExitStatus == NTSTATUS.STATUS_DLL_NOT_FOUND || data.ExitStatus == (int)WIN32_ERROR.ERROR_MOD_NOT_FOUND)
             {
                 Console.WriteLine("Process Ending {0,6} Process Name {1}, Exit Code {2}", data.ProcessID, data.ImageFileName, data.ExitStatus);
+                if (!IsLoaderSnapLoggingEnabledForImage(data.ImageFileName))
+                {
+                    string processName = data.ImageFileName;
+                    int pid = data.ProcessID;
+                    int exitCode = data.ExitStatus;
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        var insight = new Insight();
+                        insight.Title = "Process exited due to missing files";
+                        insight.Description = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", processName, pid, exitCode);
+                        insight.CustomControl = new ClipboardMonitorControl();
+                        _insightsService.AddInsight(insight);
+                    });
+                }
 
-                // Need to write the following registry key to collect more information
-                // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\data.ImageFileName
-                // TracingFlags = 0x4
+                // else, loader snap logging is enabled, we'll get the error message from the loader snap logs
             }
         };
 
@@ -64,7 +93,7 @@ public class LoaderSnapAssistantTool
         session.Source.Process();
     }
 
-    private static void UnHandledEventsHandler(TraceEvent traceEvent)
+    private void UnHandledEventsHandler(TraceEvent traceEvent)
     {
         if (traceEvent.EventName.Contains("Opcode(215)"))
         {
@@ -74,9 +103,36 @@ public class LoaderSnapAssistantTool
             s = s.Replace("\0", ": ");
             if (s.Contains("LdrpProcessWork - ERROR: Unable to load"))
             {
-                Console.WriteLine(traceEvent.ProcessName);
-                Console.WriteLine(s);
+                var insight = new Insight();
+                insight.Title = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited due to missing files", traceEvent.ProcessName, traceEvent.ProcessID);
+                insight.Description = s;
+                _insightsService.AddInsight(insight);
             }
         }
+    }
+
+    private bool IsLoaderSnapLoggingEnabledForImage(string imageFileName)
+    {
+        // Check if the following registry key exists
+        // Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\imageFileName
+        // TracingFlags = 0x4
+        RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\" + imageFileName, false);
+
+        if (key is null)
+        {
+            return false;
+        }
+
+        if (key.GetValue("TracingFlags") is not int tracingFlags)
+        {
+            return false;
+        }
+
+        if ((tracingFlags & 0x4) != 0x4)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
