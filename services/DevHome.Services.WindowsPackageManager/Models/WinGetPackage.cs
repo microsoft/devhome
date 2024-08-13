@@ -94,7 +94,7 @@ internal sealed class WinGetPackage : IWinGetPackage
             return package.GetPackageVersionInfo(package.AvailableVersions[0]);
         }
 
-        throw new ArgumentException("Package does not have any versions");
+        throw new ArgumentException($"Package {package.Name} does not have any versions");
     }
 
     /// <summary>
