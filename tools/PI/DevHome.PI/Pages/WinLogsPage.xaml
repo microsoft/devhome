@@ -50,7 +50,13 @@
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
         </StackPanel>
-        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="{x:Bind ViewModel.UpdateWinLogsView}"/>
+        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+            <i:Interaction.Behaviors>
+                <ic:EventTriggerBehavior EventName="TextChanged">
+                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.UpdateWinLogsCommand}" />
+                </ic:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+        </TextBox>
         <toolkit:DataGrid
             x:Name="WinLogsDataGrid" Grid.Row="4" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
