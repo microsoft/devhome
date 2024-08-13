@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
@@ -34,6 +35,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private ObservableCollection<WinLogsEntry> _winLogEntries;
 
     [ObservableProperty]
+    private AdvancedCollectionView _winLogsView;
+
+    [ObservableProperty]
     private Visibility _runAsAdminVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
@@ -51,6 +55,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _isWEREnabled = true;
 
+    [ObservableProperty]
+    private string _filterMessageText;
+
     private Process? _targetProcess;
     private WinLogsHelper? _winLogsHelper;
 
@@ -65,9 +72,13 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
         _insightsService = Application.Current.GetService<PIInsightsService>();
 
+        _filterMessageText = string.Empty;
         _winLogEntries = [];
         _winLogsOutput = [];
         _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _winLogsView = new AdvancedCollectionView(_winLogEntries, true);
+        _winLogsView.SortDescriptions.Add(new SortDescription(nameof(WinLogsEntry.TimeGenerated), SortDirection.Ascending));
+        _winLogsView.Filter = entry => string.IsNullOrEmpty(FilterMessageText) || ((WinLogsEntry)entry).Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase);
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -231,5 +242,11 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             CommonHelper.RunAsAdmin(_targetProcess.Id, nameof(WinLogsPageViewModel));
         }
+    }
+
+    [RelayCommand]
+    private void UpdateWinLogs()
+    {
+        WinLogsView.RefreshFilter();
     }
 }
