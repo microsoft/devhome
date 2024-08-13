@@ -28,13 +28,35 @@
                                 Description="{x:Bind Description, Mode=OneWay}"
                                 Margin="{ThemeResource SettingsCardMargin}"
                                 Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
-                                    <i:Interaction.Behaviors>
-                                        <ic:EventTriggerBehavior EventName="Toggled">
-                                            <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
-                                        </ic:EventTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </ToggleSwitch>
+                                <StackPanel
+                                    Orientation="Horizontal"
+                                    Spacing="16"
+                                    Grid.Column="1">
+                                    <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}">
+                                        <i:Interaction.Behaviors>
+                                            <ic:EventTriggerBehavior EventName="Toggled">
+                                                <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
+                                            </ic:EventTriggerBehavior>
+                                        </i:Interaction.Behaviors>
+                                    </ToggleSwitch>
+                                    <Button
+                                        x:Uid="Settings_ExperimentalFeatures_Open_Button"
+                                        IsEnabled="{x:Bind IsEnabled, Mode=OneWay}"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                        Content="&#xE8A7;"
+                                        Height="36"
+                                        MinWidth="36"
+                                        FontSize="16"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Command="{x:Bind OpenCommand}">
+                                        <Button.Resources>
+                                            <SolidColorBrush
+                                                x:Key="ButtonBackgroundDisabled"
+                                                Color="Transparent" />
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
                             </ctControls:SettingsCard>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
