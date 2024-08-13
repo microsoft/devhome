@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Antlr4.Runtime.Misc;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Dispatching;
