@@ -10,7 +10,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -78,22 +77,24 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                             WebViewUrl = new Uri(webViewUrl.Url);
                         }
                     }
-
-                    IsAdaptiveCardEnabled = true;
-                    IsWebView2Enabled = false;
-                    var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
-                    if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+                    else
                     {
-                        _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
-                            $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
-                        await Task.CompletedTask;
+                        IsAdaptiveCardEnabled = true;
+                        IsWebView2Enabled = false;
+                        var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
+                        if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+                        {
+                            _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
+                                $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                            await Task.CompletedTask;
+                        }
+
+                        var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
+                        var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
+                        renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
+
+                        extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                     }
-
-                    var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
-                    var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
-                    renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
-
-                    extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                 }
             }
         }
