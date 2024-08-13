@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\..\database\DevHome.Database\DevHome.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>
