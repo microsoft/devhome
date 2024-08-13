@@ -54,14 +54,14 @@
         <ListView
             Name="PackagesListView"
             Grid.Row="1"
-            Loaded="PackagesListView_Loaded"
             ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}"
             SelectionMode="None">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Template" Value="{ThemeResource AppManagementSelectablePackageTemplate}" />
-                </Style>
-            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl AutomationProperties.Name="{Binding PackageAnnouncement}"
+                                    Template="{ThemeResource AppManagementSelectablePackageTemplate}" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Spacing="20" />
