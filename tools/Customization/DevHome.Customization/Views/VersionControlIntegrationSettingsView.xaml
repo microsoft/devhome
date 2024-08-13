@@ -20,9 +20,10 @@
             x:Uid="EnableVersionControlIntegrationCard"
             Margin="{ThemeResource SettingsCardMargin}"
             Visibility="Visible">
-            <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.IsVersionControlIntegrationEnabled, Mode=OneWay}" Grid.Column="1">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="Toggled">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ToggledVersionControlIntegrationSettingCommand}"/>
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ToggleSwitch>
@@ -31,10 +32,12 @@
         <ctControls:SettingsCard
             x:Uid="ShowVersionControlInfoCard"
             Margin="{ThemeResource SettingsCardMargin}"
-            Visibility="Visible">
-            <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
+            Visibility="Visible"
+            IsEnabled="{x:Bind ViewModel.IsFileExplorerIntegrationSettingOn, Mode=TwoWay}">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowVersionControlInformation, Mode=OneWay}" Grid.Column="1">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="Toggled">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ToggledVersionControlInformationSettingCommand}"/>
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ToggleSwitch>
@@ -43,10 +46,12 @@
         <ctControls:SettingsCard
             x:Uid="ShowRepositoryStatusCard"
             Margin="{ThemeResource SettingsCardMargin}"
-            Visibility="Visible">
-            <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
+            Visibility="Visible"
+            IsEnabled="{x:Bind ViewModel.IsFileExplorerIntegrationSettingOn, Mode=TwoWay}">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowRepositoryStatus, Mode=OneWay}" Grid.Column="1">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="Toggled">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ToggledRepositoryStatusSettingCommand}"/>
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ToggleSwitch>

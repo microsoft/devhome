@@ -14,8 +14,14 @@ namespace DevHome.Customization.Views;
 
 public sealed partial class VersionControlIntegrationSettingsView : UserControl
 {
+    public FileExplorerViewModel ViewModel
+    {
+        get;
+    }
+
     public VersionControlIntegrationSettingsView()
     {
+        ViewModel = Application.Current.GetService<FileExplorerViewModel>();
         this.InitializeComponent();
     }
 }
