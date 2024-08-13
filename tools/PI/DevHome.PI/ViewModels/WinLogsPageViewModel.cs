@@ -121,12 +121,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    [RelayCommand]
-    public void UpdateWinLogs()
-    {
-        WinLogsView.RefreshFilter();
-    }
-
     private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetAppData.TargetProcess))
@@ -248,5 +242,11 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             CommonHelper.RunAsAdmin(_targetProcess.Id, nameof(WinLogsPageViewModel));
         }
+    }
+
+    [RelayCommand]
+    private void UpdateWinLogs()
+    {
+        WinLogsView.RefreshFilter();
     }
 }
