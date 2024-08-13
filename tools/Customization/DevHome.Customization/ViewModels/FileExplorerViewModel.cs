@@ -1,20 +1,29 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
+using DevHome.Services;
+using DevHome.Telemetry;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -23,7 +32,7 @@ using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class FileExplorerViewModel : ObservableObject
+public partial class FileExplorerViewModel : ObservableObject, INotifyPropertyChanged
 {
     private readonly ShellSettings _shellSettings;
 
@@ -41,13 +50,27 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public IExtensionService ExtensionService { get; }
 
+    public static ILocalSettingsService? LocalSettingsService { get; set; }
+
     public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration");
 
-    public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService)
+    [ObservableProperty]
+    private bool _isVersionControlIntegrationEnabled;
+
+    [ObservableProperty]
+    private bool _showVersionControlInformation;
+
+    [ObservableProperty]
+    private bool _showRepositoryStatus;
+
+    public bool IsFileExplorerIntegrationSettingOn { get; set; }
+
+    public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService, ILocalSettingsService localSettingsService)
     {
         _shellSettings = new ShellSettings();
         ExperimentationService = experimentationService;
         ExtensionService = extensionService;
+        LocalSettingsService = localSettingsService;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
@@ -55,7 +78,19 @@ public partial class FileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
+        LoadFileExplorerSettings();
         RefreshTrackedRepositories();
+    }
+
+    public void LoadFileExplorerSettings()
+    {
+        if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        {
+            IsVersionControlIntegrationEnabled = CalculateEnabled("VersionControlIntegration");
+            ShowVersionControlInformation = CalculateEnabled("ShowVersionControlInformation");
+            ShowRepositoryStatus = CalculateEnabled("ShowRepositoryStatus");
+            IsFileExplorerIntegrationSettingOn = true;
+        }
     }
 
     public void RefreshTrackedRepositories()
@@ -176,5 +211,48 @@ public partial class FileExplorerViewModel : ObservableObject
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
         });
         RefreshTrackedRepositories();
+    }
+
+    public bool CalculateEnabled(string settingName)
+    {
+        if (LocalSettingsService!.HasSettingAsync(settingName).Result)
+        {
+            return LocalSettingsService.ReadSettingAsync<bool>(settingName).Result;
+        }
+
+        // Settings disabled by default
+        return false;
+    }
+
+    [RelayCommand]
+    public async Task OnToggledVersionControlIntegrationSettingAsync()
+    {
+        IsVersionControlIntegrationEnabled = !IsVersionControlIntegrationEnabled;
+        await LocalSettingsService!.SaveSettingAsync("VersionControlIntegration", IsVersionControlIntegrationEnabled);
+        _log.Information("Saved FE Enable setting");
+
+        if (!IsVersionControlIntegrationEnabled)
+        {
+            _log.Information("Saved FE Enable setting: false");
+            IsFileExplorerIntegrationSettingOn = false;
+        }
+        else
+        {
+            IsFileExplorerIntegrationSettingOn = true;
+        }
+    }
+
+    [RelayCommand]
+    public async Task OnToggledVersionControlInformationSettingAsync()
+    {
+        ShowVersionControlInformation = !ShowVersionControlInformation;
+        await LocalSettingsService!.SaveSettingAsync("ShowVersionControlInformation", ShowVersionControlInformation);
+    }
+
+    [RelayCommand]
+    public async Task OnToggledRepositoryStatusSettingAsync()
+    {
+        ShowRepositoryStatus = !ShowRepositoryStatus;
+        await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", ShowRepositoryStatus);
     }
 }
