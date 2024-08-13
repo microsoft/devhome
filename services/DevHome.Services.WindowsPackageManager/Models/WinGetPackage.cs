@@ -28,8 +28,8 @@ internal sealed class WinGetPackage : IWinGetPackage
         // longer running).
         _logger = logger;
         Id = package.Id;
-        CatalogId = package.DefaultInstallVersion.PackageCatalog.Info.Id;
-        CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
+        CatalogId = GetPackageVersionInfo(package).PackageCatalog.Info.Id;
+        CatalogName = GetPackageVersionInfo(package).PackageCatalog.Info.Name;
         UniqueKey = new(Id, CatalogId);
         Name = package.Name;
         AvailableVersions = package.AvailableVersions.Select(v => v.Version).ToList();
@@ -81,6 +81,22 @@ internal sealed class WinGetPackage : IWinGetPackage
         return new(CatalogName, Id, uriOptions);
     }
 
+    private PackageVersionInfo GetPackageVersionInfo(CatalogPackage package)
+    {
+        // Pinned packages do not have a default install version set
+        if (package.DefaultInstallVersion != null)
+        {
+            return package.DefaultInstallVersion;
+        }
+
+        if (package.AvailableVersions.Count > 0)
+        {
+            return package.GetPackageVersionInfo(package.AvailableVersions[0]);
+        }
+
+        throw new ArgumentException($"Package {package.Name} does not have any versions");
+    }
+
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')
     /// </summary>
@@ -94,7 +110,7 @@ internal sealed class WinGetPackage : IWinGetPackage
         try
         {
             var locale = Thread.CurrentThread.CurrentCulture.Name;
-            var metadata = package.DefaultInstallVersion.GetCatalogPackageMetadata(locale);
+            var metadata = GetPackageVersionInfo(package).GetCatalogPackageMetadata(locale);
             return metadataFunction(metadata);
         }
         catch
