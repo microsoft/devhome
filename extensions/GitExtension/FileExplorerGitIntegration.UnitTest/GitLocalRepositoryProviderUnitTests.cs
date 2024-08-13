@@ -94,12 +94,18 @@ public class GitLocalRepositoryProviderUnitTests
         GitLocalRepository repo = new GitLocalRepository(RepoPath);
         var result = repo.GetProperties(properties, relativePath);
         Assert.IsNotNull(result);
+
+        // Oddity: When sorting the full commit graph by time, the HEAD is a merge with two parents:
+        // 1. Third a/a1; f73b9567; Apr 7 15:31:13 2005 -0700
+        // 2. Fourth a/a1; d0114ab8; Apr 7 15:30:13 2005 -0700
+        // It would appear that commit is older, but for some reason, this is the one that was found by LibGit2Sharp.
+        // Commit 1. is "the most recent", and is the commit shown by "git log" and on the GitHub repo.
         Assert.AreEqual(result["System.VersionControl.Status"], string.Empty);
-        Assert.AreEqual(result["System.VersionControl.LastChangeDate"], new System.DateTimeOffset(2005, 4, 7, 15, 31, 13, new System.TimeSpan(-7, 0, 0)));
-        Assert.AreEqual(result["System.VersionControl.LastChangeMessage"], "Fourth a/a1");
+        Assert.AreEqual(result["System.VersionControl.LastChangeDate"], new System.DateTimeOffset(2005, 4, 7, 15, 30, 13, new System.TimeSpan(-7, 0, 0)));
+        Assert.AreEqual(result["System.VersionControl.LastChangeMessage"], "Third a/a1");
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorEmail"], "a.u.thor@example.com");
         Assert.AreEqual(result["System.VersionControl.LastChangeAuthorName"], "A U Thor");
-        Assert.AreEqual(result["System.VersionControl.LastChangeID"], "d0114ab8ac326bab30e3a657a0397578c5a1af88");
+        Assert.AreEqual(result["System.VersionControl.LastChangeID"], "f73b95671f326616d66b2afb3bdfcdbbce110b44");
         Assert.AreEqual(result["System.VersionControl.CurrentFolderStatus"], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
     }
 
@@ -144,5 +150,55 @@ public class GitLocalRepositoryProviderUnitTests
         modifiedRepo.Index.Write();
         result = localRepo.GetProperties(properties, ".");
         Assert.AreEqual(result[repoStatusProperty], "Branch: master ≡ | +0 ~0 -0 | +0 ~0 -0");
+    }
+
+    [TestMethod]
+    public void DetectFileRename()
+    {
+        const string statusProperty = "System.VersionControl.Status";
+        const string lastChangeMessageProperty = "System.VersionControl.LastChangeMessage";
+        var properties = new string[]
+        {
+            statusProperty,
+            lastChangeMessageProperty,
+        };
+        var localRepo = new GitLocalRepository(RepoPath);
+        var relativeFromPath = Path.Join("a", "a1");
+        var relativeToPath = Path.Join("a", "a1_renamed");
+
+        // Get initial properties
+        var result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        result.TryGetValue(lastChangeMessageProperty, out var lastChangeMessage);
+        Assert.IsNull(lastChangeMessage);
+
+        // Rename
+        var modifiedRepo = new Repository(RepoPath);
+        Commands.Move(modifiedRepo, relativeFromPath, relativeToPath);
+        Commands.Stage(modifiedRepo, relativeFromPath);
+        Commands.Stage(modifiedRepo, relativeToPath);
+
+        // Get old and new properties
+        result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.AreEqual(result[statusProperty], "Staged rename");
+        Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
+
+        // Reset
+        modifiedRepo.Reset(ResetMode.Hard);
+
+        // Get old and new properties
+        result = localRepo.GetProperties(properties, relativeFromPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
+        result = localRepo.GetProperties(properties, relativeToPath);
+        Assert.AreEqual(result[statusProperty], string.Empty);
+        result.TryGetValue(lastChangeMessageProperty, out lastChangeMessage);
+        Assert.IsNull(lastChangeMessage);
     }
 }

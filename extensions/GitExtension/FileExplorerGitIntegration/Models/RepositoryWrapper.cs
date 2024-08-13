@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Globalization;
 using System.Management.Automation;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
@@ -18,8 +16,7 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private readonly string _workingDirectory;
 
-    private readonly GitDetect _gitDetect = new();
-    private readonly bool _gitInstalled;
+    private readonly StatusCache _statusCache;
 
     private Commit? _head;
     private CommitLogCache? _commits;
@@ -30,10 +27,19 @@ internal sealed class RepositoryWrapper : IDisposable
     {
         _repo = new Repository(rootFolder);
         _workingDirectory = _repo.Info.WorkingDirectory;
-        _gitInstalled = _gitDetect.DetectGit();
+        _statusCache = new StatusCache(rootFolder);
     }
 
-    public IEnumerable<Commit> GetCommits()
+    public CommitWrapper? FindLastCommit(string relativePath)
+    {
+        // Fetching the most recent status to check if the file is renamed
+        // should be much less expensive than getting the most recent commit.
+        // So, preemtively check for a rename here.
+        var commitLog = GetCommitLogCache();
+        return commitLog.FindLastCommit(GetOriginalPath(relativePath));
+    }
+
+    private CommitLogCache GetCommitLogCache()
     {
         // Fast path: if we have an up-to-date commit log, return that
         if (_head != null && _commits != null)
@@ -70,237 +76,9 @@ internal sealed class RepositoryWrapper : IDisposable
         return _commits;
     }
 
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    internal sealed class GitStatusEntry
-    {
-        public GitStatusEntry(string path, FileStatus status, string? renameOldPath = null)
-        {
-            Path = path;
-            Status = status;
-            RenameOldPath = renameOldPath;
-        }
-
-        public string Path { get; set; }
-
-        public FileStatus Status { get; set; }
-
-        public string? RenameOldPath { get; set; }
-
-        public string? RenameNewPath { get; set; }
-
-        private string DebuggerDisplay
-        {
-            get
-            {
-                if (Status.HasFlag(FileStatus.RenamedInIndex) || Status.HasFlag(FileStatus.RenamedInWorkdir))
-                {
-                    return string.Format(CultureInfo.InvariantCulture, "{0}: {1} -> {2}", Status, RenameOldPath, Path);
-                }
-
-                return string.Format(CultureInfo.InvariantCulture, "{0}: {1}", Status, Path);
-            }
-        }
-    }
-
-    internal sealed class GitRepositoryStatus
-    {
-        private readonly Dictionary<string, GitStatusEntry> _entries = new();
-        private readonly List<GitStatusEntry> _added = new();
-        private readonly List<GitStatusEntry> _staged = new();
-        private readonly List<GitStatusEntry> _removed = new();
-        private readonly List<GitStatusEntry> _untracked = new();
-        private readonly List<GitStatusEntry> _modified = new();
-        private readonly List<GitStatusEntry> _missing = new();
-        private readonly List<GitStatusEntry> _renamedInIndex = new();
-        private readonly List<GitStatusEntry> _renamedInWorkDir = new();
-        private readonly List<GitStatusEntry> _conflicted = new();
-
-        public GitRepositoryStatus()
-        {
-        }
-
-        public void Add(string path, GitStatusEntry status)
-        {
-            _entries.Add(path, status);
-            if (status.Status.HasFlag(FileStatus.NewInIndex))
-            {
-                _added.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.ModifiedInIndex))
-            {
-                _staged.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.DeletedFromIndex))
-            {
-                _removed.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.NewInWorkdir))
-            {
-                _untracked.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir))
-            {
-                _modified.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.DeletedFromWorkdir))
-            {
-                _missing.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.RenamedInIndex))
-            {
-                _renamedInIndex.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.RenamedInWorkdir))
-            {
-                _renamedInWorkDir.Add(status);
-            }
-
-            if (status.Status.HasFlag(FileStatus.Conflicted))
-            {
-                _conflicted.Add(status);
-            }
-        }
-
-        public Dictionary<string, GitStatusEntry> Entries => _entries;
-
-        public List<GitStatusEntry> Added => _added;
-
-        public List<GitStatusEntry> Staged => _staged;
-
-        public List<GitStatusEntry> Removed => _removed;
-
-        public List<GitStatusEntry> Untracked => _untracked;
-
-        public List<GitStatusEntry> Modified => _modified;
-
-        public List<GitStatusEntry> Missing => _missing;
-
-        public List<GitStatusEntry> RenamedInIndex => _renamedInIndex;
-
-        public List<GitStatusEntry> RenamedInWorkDir => _renamedInWorkDir;
-
-        public List<GitStatusEntry> Conflicted => _conflicted;
-    }
-
     public string GetRepoStatus()
     {
-        var repoStatus = new GitRepositoryStatus();
-
-        if (_gitInstalled)
-        {
-            // Options fully explained at https://git-scm.com/docs/git-status
-            // --no-optional-locks : Since this we are essentially running in the background, don't take any optional git locks
-            //                       that could interfere with the user's work. This means calling "status" won't auto-update the
-            //                       index to make future "status" calls faster, but it's better to be unintrusive.
-            // --porcelain=v2      : The v2 gives us nice detailed entries that help us separate ordinary changes from renames, conflicts, and untracked
-            //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
-            //                       There could be old Git installations that predate it.
-            // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
-            var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
-            if (result.Status == ProviderOperationStatus.Success && result.Output != null)
-            {
-                var parts = result.Output.Split('\0', StringSplitOptions.RemoveEmptyEntries);
-                for (var i = 0; i < parts.Length; ++i)
-                {
-                    var line = parts[i];
-                    if (line.StartsWith("1 ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "ordinary" entries have the following format:
-                        //   1 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <path>
-                        // For now, we only care about the <XY> and <path> fields.
-                        var pieces = line.Split(' ', 9);
-                        var fileStatusString = pieces[1];
-                        var filePath = pieces[8];
-                        FileStatus statusEntry = FileStatus.Unaltered;
-                        switch (fileStatusString[0])
-                        {
-                            case 'M':
-                                statusEntry |= FileStatus.ModifiedInIndex;
-                                break;
-
-                            case 'T':
-                                statusEntry |= FileStatus.TypeChangeInIndex;
-                                break;
-
-                            case 'A':
-                                statusEntry |= FileStatus.NewInIndex;
-                                break;
-
-                            case 'D':
-                                statusEntry |= FileStatus.DeletedFromIndex;
-                                break;
-                        }
-
-                        switch (fileStatusString[1])
-                        {
-                            case 'M':
-                                statusEntry |= FileStatus.ModifiedInWorkdir;
-                                break;
-
-                            case 'T':
-                                statusEntry |= FileStatus.TypeChangeInWorkdir;
-                                break;
-
-                            case 'A':
-                                statusEntry |= FileStatus.NewInWorkdir;
-                                break;
-
-                            case 'D':
-                                statusEntry |= FileStatus.DeletedFromWorkdir;
-                                break;
-                        }
-
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, statusEntry));
-                    }
-                    else if (line.StartsWith("2 ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "rename" entries have the following format:
-                        //   2 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <X><score> <path><sep><origPath>
-                        // For now, we only care about the <XY>, <path>, and <origPath> fields.
-                        var pieces = line.Split(' ', 9);
-                        var fileStatusString = pieces[1];
-                        var newPath = pieces[8];
-                        var oldPath = parts[++i];
-                        FileStatus statusEntry = FileStatus.Unaltered;
-                        if (fileStatusString[0] == 'R')
-                        {
-                            statusEntry |= FileStatus.RenamedInIndex;
-                        }
-
-                        if (fileStatusString[1] == 'R')
-                        {
-                            statusEntry |= FileStatus.RenamedInWorkdir;
-                        }
-
-                        repoStatus.Add(newPath, new GitStatusEntry(newPath, statusEntry, oldPath));
-                    }
-                    else if (line.StartsWith("u ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "unmerged" entries have the following format:
-                        //   u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
-                        // For now, we only care about the <path>. (We only say that the file has a conflict, not the details)
-                        var pieces = line.Split(' ', 11);
-                        var filePath = pieces[10];
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.Conflicted));
-                    }
-                    else if (line.StartsWith("? ", StringComparison.Ordinal))
-                    {
-                        // For porcelain=v2, "untracked" entries have the following format:
-                        //   ? <path>
-                        // For now, we only care about the <path>.
-                        var filePath = line.Substring(2);
-                        repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
-                    }
-                }
-            }
-        }
+        var repoStatus = _statusCache.Status;
 
         string branchName;
         var branchStatus = string.Empty;
@@ -350,43 +128,36 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetFileStatus(string relativePath)
     {
-        // Skip directories while we're getting individual file status.
-        if (File.GetAttributes(Path.Combine(_workingDirectory, relativePath)).HasFlag(FileAttributes.Directory))
+        GitStatusEntry? status;
+        if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
         {
             return string.Empty;
         }
 
-        FileStatus status;
-        try
-        {
-            _repoLock.EnterWriteLock();
-            status = _repo.RetrieveStatus(relativePath);
-        }
-        finally
-        {
-            _repoLock.ExitWriteLock();
-        }
-
-        if (status == FileStatus.Unaltered || status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
+        if (status.Status == FileStatus.Unaltered || status.Status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
         {
             return string.Empty;
         }
-        else if (status.HasFlag(FileStatus.Conflicted))
+        else if (status.Status.HasFlag(FileStatus.Conflicted))
         {
             return "Merge conflict";
         }
-        else if (status.HasFlag(FileStatus.NewInWorkdir))
+        else if (status.Status.HasFlag(FileStatus.NewInWorkdir))
         {
             return "Untracked";
         }
 
         var statusString = string.Empty;
-        if (status.HasFlag(FileStatus.NewInIndex) || status.HasFlag(FileStatus.ModifiedInIndex) || status.HasFlag(FileStatus.RenamedInIndex) || status.HasFlag(FileStatus.TypeChangeInIndex))
+        if (status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex))
         {
             statusString = "Staged";
+            if (status.Status.HasFlag(FileStatus.RenamedInIndex))
+            {
+                statusString += " rename";
+            }
         }
 
-        if (status.HasFlag(FileStatus.ModifiedInWorkdir) || status.HasFlag(FileStatus.RenamedInWorkdir) || status.HasFlag(FileStatus.TypeChangeInWorkdir))
+        if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.RenamedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir))
         {
             if (string.IsNullOrEmpty(statusString))
             {
@@ -399,6 +170,24 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         return statusString;
+    }
+
+    // Detect uncommitted renames and return the original path.
+    // This allows us to get the commit history, because the new path doesn't exist yet.
+    private string GetOriginalPath(string relativePath)
+    {
+        _statusCache.Status.FileEntries.TryGetValue(relativePath, out var status);
+        if (status is null)
+        {
+            return relativePath;
+        }
+
+        if (status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir))
+        {
+            return status.RenameOldPath ?? relativePath;
+        }
+
+        return relativePath;
     }
 
     internal void Dispose(bool disposing)

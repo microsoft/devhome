@@ -3,3 +3,4 @@ CoRevokeClassObject
 CoResumeClassObjects
 MEMORYSTATUSEX
 GlobalMemoryStatusEx
+SHChangeNotify

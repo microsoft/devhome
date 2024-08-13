@@ -11,32 +11,33 @@ namespace DevHome.PI.Models;
 
 public class WinLogsEntry
 {
-    private readonly DateTime timeGenerated;
-    private readonly WinLogCategory category;
-    private readonly string errorText = CommonHelper.GetLocalizedString("WinLogCategoryError");
-    private readonly string warningText = CommonHelper.GetLocalizedString("WinLogCategoryWarning");
-    private readonly string informationText = CommonHelper.GetLocalizedString("WinLogCategoryInformation");
-    private readonly string debugText = CommonHelper.GetLocalizedString("WinLogCategoryDebug");
+    private readonly WinLogCategory _category;
+    private readonly string _errorText = CommonHelper.GetLocalizedString("WinLogCategoryError");
+    private readonly string _warningText = CommonHelper.GetLocalizedString("WinLogCategoryWarning");
+    private readonly string _informationText = CommonHelper.GetLocalizedString("WinLogCategoryInformation");
+    private readonly string _debugText = CommonHelper.GetLocalizedString("WinLogCategoryDebug");
 
     public WinLogsEntry(DateTime? time, WinLogCategory category, string message, string toolName)
     {
-        timeGenerated = time ?? DateTime.Now;
-        this.category = category;
-        this.Message = message;
-        this.Tool = toolName;
-        this.SelectedText = message;
+        TimeGenerated = time ?? DateTime.Now;
+        _category = category;
+        Message = message;
+        Tool = toolName;
+        SelectedText = message;
     }
 
-    public string TimeGenerated => timeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+    public DateTime TimeGenerated { get; }
+
+    public string TimeGeneratedString => TimeGenerated.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
 
     public string Tool { get; }
 
-    public string Category => category switch
+    public string Category => _category switch
     {
-        WinLogCategory.Error => errorText,
-        WinLogCategory.Warning => warningText,
-        WinLogCategory.Information => informationText,
-        WinLogCategory.Debug => debugText,
+        WinLogCategory.Error => _errorText,
+        WinLogCategory.Warning => _warningText,
+        WinLogCategory.Information => _informationText,
+        WinLogCategory.Debug => _debugText,
         _ => string.Empty,
     };
 
@@ -48,7 +49,7 @@ public class WinLogsEntry
     {
         get
         {
-            switch (category)
+            switch (_category)
             {
                 case WinLogCategory.Error:
                     return new SolidColorBrush(Colors.Red);

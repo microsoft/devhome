@@ -15,7 +15,9 @@ using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
+using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -41,7 +43,7 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public IExtensionService ExtensionService { get; }
 
-    public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration");
+    public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration") && ExtraFolderPropertiesWrapper.IsSupported();
 
     public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService)
     {
@@ -134,7 +136,7 @@ public partial class FileExplorerViewModel : ObservableObject
     [RelayCommand]
     public async Task AddFolderClick()
     {
-        if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
+        if (IsFeatureEnabled)
         {
             await Task.Run(async () =>
             {
@@ -156,6 +158,7 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public void RemoveTrackedRepositoryFromDevHome(string rootPath)
     {
+        ExtraFolderPropertiesWrapper.Unregister(rootPath);
         RepoTracker.RemoveRepositoryPath(rootPath);
         RefreshTrackedRepositories();
     }
@@ -170,6 +173,13 @@ public partial class FileExplorerViewModel : ObservableObject
             if (result.Result == ResultType.Failure)
             {
                 _log.Error("Failed to validate source control extension");
+                return;
+            }
+
+            var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
+            if (!wrapperResult.Succeeded)
+            {
+                _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
                 return;
             }
 
