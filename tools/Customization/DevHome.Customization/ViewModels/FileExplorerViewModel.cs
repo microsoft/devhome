@@ -27,7 +27,7 @@ using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class FileExplorerViewModel : ObservableObject, INotifyPropertyChanged
+public partial class FileExplorerViewModel : ObservableObject
 {
     private readonly ShellSettings _shellSettings;
 
@@ -58,8 +58,6 @@ public partial class FileExplorerViewModel : ObservableObject, INotifyPropertyCh
     [ObservableProperty]
     private bool _showRepositoryStatus;
 
-    public bool IsFileExplorerIntegrationSettingOn { get; set; }
-
     public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService, ILocalSettingsService localSettingsService)
     {
         _shellSettings = new ShellSettings();
@@ -84,7 +82,6 @@ public partial class FileExplorerViewModel : ObservableObject, INotifyPropertyCh
             IsVersionControlIntegrationEnabled = CalculateEnabled("VersionControlIntegration");
             ShowVersionControlInformation = CalculateEnabled("ShowVersionControlInformation");
             ShowRepositoryStatus = CalculateEnabled("ShowRepositoryStatus");
-            IsFileExplorerIntegrationSettingOn = true;
         }
     }
 
