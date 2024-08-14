@@ -32,8 +32,7 @@
         <ctControls:SettingsCard
             x:Uid="ShowVersionControlInfoCard"
             Margin="{ThemeResource SettingsCardMargin}"
-            Visibility="Visible"
-            IsEnabled="{x:Bind ViewModel.IsFileExplorerIntegrationSettingOn, Mode=TwoWay}">
+            Visibility="Visible">
             <ToggleSwitch IsOn="{x:Bind ViewModel.ShowVersionControlInformation, Mode=OneWay}" Grid.Column="1">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="Toggled">
@@ -46,8 +45,7 @@
         <ctControls:SettingsCard
             x:Uid="ShowRepositoryStatusCard"
             Margin="{ThemeResource SettingsCardMargin}"
-            Visibility="Visible"
-            IsEnabled="{x:Bind ViewModel.IsFileExplorerIntegrationSettingOn, Mode=TwoWay}">
+            Visibility="Visible">
             <ToggleSwitch IsOn="{x:Bind ViewModel.ShowRepositoryStatus, Mode=OneWay}" Grid.Column="1">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="Toggled">

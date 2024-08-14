@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,21 +13,17 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.TelemetryEvents;
 using DevHome.FileExplorerSourceControlIntegration.Services;
-using DevHome.Services;
-using DevHome.Telemetry;
 using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -239,16 +232,23 @@ public partial class FileExplorerViewModel : ObservableObject, INotifyPropertyCh
     {
         IsVersionControlIntegrationEnabled = !IsVersionControlIntegrationEnabled;
         await LocalSettingsService!.SaveSettingAsync("VersionControlIntegration", IsVersionControlIntegrationEnabled);
-        _log.Information("Saved FE Enable setting");
 
         if (!IsVersionControlIntegrationEnabled)
         {
-            _log.Information("Saved FE Enable setting: false");
-            IsFileExplorerIntegrationSettingOn = false;
+            _log.Information("The user has disabled version control integration inside Dev Home");
+            ExtraFolderPropertiesWrapper.UnregisterAllForCurrentApp();
+            _log.Information("Unregistered all repositories in File Explorer as setting is disabled");
         }
         else
         {
-            IsFileExplorerIntegrationSettingOn = true;
+            _log.Information("The user has enabled version control integration in Dev Home.");
+            var repoCollection = RepoTracker.GetAllTrackedRepositories();
+            foreach (var repo in repoCollection)
+            {
+                ExtraFolderPropertiesWrapper.Register(repo.Key, typeof(SourceControlProvider).GUID);
+            }
+
+            _log.Information("Dev Home has restored registration for enhanced repositories it is aware about");
         }
     }
 
