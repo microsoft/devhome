@@ -283,9 +283,9 @@
     <Content Update="Assets\Setup_EndToEnd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-	<Content Update="Assets\Setup_QuickstartPlayground.png">
+    <Content Update="Assets\Setup_QuickstartPlayground.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
+    </Content>
     <Content Update="Assets\Setup_RepoConfig.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
