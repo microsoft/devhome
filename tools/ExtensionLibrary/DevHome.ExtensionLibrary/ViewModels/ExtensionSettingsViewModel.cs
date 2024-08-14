@@ -71,7 +71,6 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                         IsAdaptiveCardEnabled = false;
                         IsWebView2Enabled = true;
                         var webViewUrl = settingsProvider2.GetSettingsWebView();
-                        Console.WriteLine("WORKING :): " + webViewUrl.Url);
                         if (webViewUrl != null)
                         {
                             WebViewUrl = new Uri(webViewUrl.Url);
