@@ -8,11 +8,14 @@
     xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DevHome.PI.Models"
     xmlns:helpers="using:DevHome.PI.Helpers"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -49,8 +52,15 @@
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
         </StackPanel>
+        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+            <i:Interaction.Behaviors>
+                <ic:EventTriggerBehavior EventName="TextChanged">
+                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.UpdateWinLogsCommand}" />
+                </ic:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+        </TextBox>
         <toolkit:DataGrid
-            x:Name="WinLogsDataGrid" Grid.Row="3" Margin="0,6,0,0"
+            x:Name="WinLogsDataGrid" Grid.Row="4" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
             AlternatingRowBackground="Transparent"
             AlternatingRowForeground="Gray"
@@ -65,16 +75,16 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
-            ItemsSource="{x:Bind ViewModel.WinLogEntries, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.WinLogsView, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
         <toolkit:DataGrid.Columns>
-            <toolkit:DataGridTextColumn x:Uid="TimeGeneratedColumn" Binding="{Binding TimeGenerated}" Width="180"/>
+            <toolkit:DataGridTextColumn x:Uid="LogTimeGenerated" Binding="{Binding TimeGeneratedString}" Width="180"/>
             <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
             <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
             <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
                 <toolkit:DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" TextWrapping="Wrap" Foreground="{Binding RowColor}" IsReadOnly="True"/>
+                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" Foreground="{Binding RowColor}" IsReadOnly="True"/>
                 </DataTemplate>
                 </toolkit:DataGridTemplateColumn.CellTemplate>
             </toolkit:DataGridTemplateColumn>

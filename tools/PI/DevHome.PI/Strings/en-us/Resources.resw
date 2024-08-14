@@ -317,6 +317,10 @@
     <value>Clear the list</value>
     <comment>Tooltip for a button that will clear the log list.</comment>
   </data>
+  <data name="LogTimeGenerated.Header" xml:space="preserve">
+    <value>Time Generated</value>
+    <comment>The time at which the log was generated.</comment>
+  </data>
   <data name="LogCategoryColumn.Header" xml:space="preserve">
     <value>Category</value>
     <comment>A header for what category the log entry belongs.</comment>

@@ -105,7 +105,7 @@
                         Padding="0,12"
                         Style="{ThemeResource BodyStrongTextBlockStyle}" />
                 </Expander.Header>
-                <GridView ItemsSource="{Binding AppsDownloaded, Mode=OneWay}" SelectionMode="None">
+                <GridView ItemsSource="{Binding AppsDownloaded, Mode=OneWay}" SelectionMode="None" Loaded="PackagesGridView_Loaded">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
@@ -117,9 +117,6 @@
                                 Width="250"
                                 Padding="5"
                                 AutomationProperties.Name="{x:Bind PackageTitle}">
-                                <ToolTipService.ToolTip>
-                                    <controls:PackageDetailsTooltip Package="{x:Bind}" />
-                                </ToolTipService.ToolTip>
                                 <controls:PackageDetailsSettingsCard.Header>
                                     <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle}" />
                                 </controls:PackageDetailsSettingsCard.Header>

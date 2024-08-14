@@ -168,4 +168,9 @@ internal sealed class CommonHelper
 
         return valueAsInt;
     }
+
+    public static int MulDiv(int number, int numerator, int denominator)
+    {
+        return (int)((((long)number * numerator) + (denominator >> 1)) / denominator);
+    }
 }
