@@ -42,14 +42,14 @@ internal sealed partial class InsightsHelper
 
     internal static Insight? FindPattern(string errorText)
     {
-        Insight? newInsight = null;
+        SimpleTextInsight? newInsight = null;
 
         foreach (var insightRegex in RegexList)
         {
             var match = insightRegex.Regex.Match(errorText);
             if (match.Success)
             {
-                newInsight = new Insight
+                newInsight = new SimpleTextInsight
                 {
                     InsightType = insightRegex.InsightType,
                 };

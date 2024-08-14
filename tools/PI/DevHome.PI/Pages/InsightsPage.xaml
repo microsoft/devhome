@@ -41,9 +41,15 @@
                             </Grid>
 
                         </Expander.Header>
-                        <Expander.Content>
-                        <ContentPresenter Content="{x:Bind CustomControl}" />
-                        </Expander.Content>
+                        <ContentPresenter Margin="12,0,12,0" HorizontalAlignment="Stretch">
+                            <Canvas Background="Blue">
+                                <RichTextBlock TextWrapping="Wrap" HorizontalAlignment="Left">
+                                    <Paragraph>
+                                        <Run x:Name="TextField" Text="This is a really long string to see where this ends up on the screen"/>
+                                    </Paragraph>
+                                </RichTextBlock>
+                            </Canvas>
+                        </ContentPresenter>
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

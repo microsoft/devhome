@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.PI.Models;
 
-internal enum InsightType
+public enum InsightType
 {
     Unknown,
     LockedFile,
@@ -22,11 +22,11 @@ internal enum InsightType
 
 public abstract partial class Insight : ObservableObject
 {
-    internal string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
-    internal InsightType InsightType { get; set; } = InsightType.Unknown;
+    public InsightType InsightType { get; set; } = InsightType.Unknown;
 
-    internal UIElement? CustomControl { get; set; }
+    public UIElement? CustomControl { get; protected set; }
 
     [ObservableProperty]
     private bool _hasBeenRead;
@@ -38,11 +38,23 @@ public abstract partial class Insight : ObservableObject
 
 public class SimpleTextInsight : Insight
 {
-    internal string Description { get; set; } = string.Empty;
+    private readonly SimpleTextInsightControl _mycontrol = new();
+    private string _description = string.Empty;
+
+    internal string Description
+    {
+        get => _description;
+
+        set
+        {
+            _description = value;
+            _mycontrol.Description = value;
+        }
+    }
 
     internal SimpleTextInsight()
     {
-        CustomControl = new SimpleTextInsightControl();
+        CustomControl = _mycontrol;
     }
 }
 

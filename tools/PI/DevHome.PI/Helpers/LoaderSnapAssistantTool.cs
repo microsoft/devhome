@@ -73,10 +73,11 @@ public class LoaderSnapAssistantTool
                     int exitCode = data.ExitStatus;
                     _dispatcher.TryEnqueue(() =>
                     {
-                        var insight = new Insight();
+                        var insight = new SimpleTextInsight();
                         insight.Title = "Process exited due to missing files";
                         insight.Description = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", processName, pid, exitCode);
-                        insight.CustomControl = new ClipboardMonitorControl();
+
+                        // insight.CustomControl = new ClipboardMonitorControl();
                         _insightsService.AddInsight(insight);
                     });
                 }
@@ -103,7 +104,7 @@ public class LoaderSnapAssistantTool
             s = s.Replace("\0", ": ");
             if (s.Contains("LdrpProcessWork - ERROR: Unable to load"))
             {
-                var insight = new Insight();
+                var insight = new SimpleTextInsight();
                 insight.Title = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited due to missing files", traceEvent.ProcessName, traceEvent.ProcessID);
                 insight.Description = s;
                 _insightsService.AddInsight(insight);
