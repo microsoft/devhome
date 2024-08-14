@@ -65,7 +65,6 @@ public class LoaderSnapAssistantTool
         {
             if (data.ExitStatus == NTSTATUS.STATUS_DLL_NOT_FOUND || data.ExitStatus == (int)WIN32_ERROR.ERROR_MOD_NOT_FOUND)
             {
-                Console.WriteLine("Process Ending {0,6} Process Name {1}, Exit Code {2}", data.ProcessID, data.ImageFileName, data.ExitStatus);
                 if (!IsLoaderSnapLoggingEnabledForImage(data.ImageFileName))
                 {
                     string processName = data.ImageFileName;
@@ -73,11 +72,10 @@ public class LoaderSnapAssistantTool
                     int exitCode = data.ExitStatus;
                     _dispatcher.TryEnqueue(() =>
                     {
-                        var insight = new SimpleTextInsight();
+                        var insight = new InsightPossibleLoaderIssue();
                         insight.Title = "Process exited due to missing files";
-                        insight.Description = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", processName, pid, exitCode);
-
-                        // insight.CustomControl = new ClipboardMonitorControl();
+                        insight.Text = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", processName, pid, exitCode);
+                        insight.ImageFileName = processName;
                         _insightsService.AddInsight(insight);
                     });
                 }
@@ -104,10 +102,15 @@ public class LoaderSnapAssistantTool
             s = s.Replace("\0", ": ");
             if (s.Contains("LdrpProcessWork - ERROR: Unable to load"))
             {
-                var insight = new SimpleTextInsight();
-                insight.Title = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited due to missing files", traceEvent.ProcessName, traceEvent.ProcessID);
-                insight.Description = s;
-                _insightsService.AddInsight(insight);
+                string processName = traceEvent.ProcessName;
+                int pid = traceEvent.ProcessID;
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var insight = new SimpleTextInsight();
+                    insight.Title = string.Format(CultureInfo.CurrentCulture, "Process {0} (PID: {1,6}) exited due to missing files", processName, pid);
+                    insight.Description = s;
+                    _insightsService.AddInsight(insight);
+                });
             }
         }
     }

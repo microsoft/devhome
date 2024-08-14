@@ -39,13 +39,20 @@ public static class Program
     public static void Main(string[] args)
     {
         // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHomePI"));
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings_pi.json")
-            .Build();
-        Log.Logger = new LoggerConfiguration()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
+        try
+        {
+            Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHomePI"));
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings_pi.json")
+                .Build();
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up logging: {ex.Message}");
+        }
 
         var stopEvent = new EventWaitHandle(false, EventResetMode.ManualReset, $"DevHomePI-{Environment.ProcessId}");
         ThreadPool.QueueUserWorkItem((o) =>

@@ -82,7 +82,7 @@ internal sealed class ETWHelper : IDisposable
                     _session.Source.Process();
                 }
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception ex)
             {
                 Stop();
                 WinLogsEntry entry = new(DateTime.Now, WinLogCategory.Error, ex.Message, WinLogsHelper.EtwLogsName);

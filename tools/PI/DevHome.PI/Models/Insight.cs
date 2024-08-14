@@ -1,8 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.PI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -38,7 +42,7 @@ public abstract partial class Insight : ObservableObject
 
 public class SimpleTextInsight : Insight
 {
-    private readonly SimpleTextInsightControl _mycontrol = new();
+    private readonly InsightSimpleTextControl _mycontrol = new();
     private string _description = string.Empty;
 
     internal string Description
@@ -55,6 +59,53 @@ public class SimpleTextInsight : Insight
     internal SimpleTextInsight()
     {
         CustomControl = _mycontrol;
+    }
+}
+
+public class InsightPossibleLoaderIssue : Insight
+{
+    private readonly InsightForMissingFileProcessTerminationControl _mycontrol = new();
+    private string _text = string.Empty;
+
+    internal string Text
+    {
+        get => _text;
+
+        set
+        {
+            _text = value;
+            _mycontrol.Text = value;
+        }
+    }
+
+    internal string ImageFileName { get; set; } = string.Empty;
+
+    internal InsightPossibleLoaderIssue()
+    {
+        _mycontrol.Command = new RelayCommand(ConfigureLoaderSnaps);
+        CustomControl = _mycontrol;
+    }
+
+    public void ConfigureLoaderSnaps()
+    {
+        try
+        {
+            FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = "EnableLoaderSnaps.exe",
+                Arguments = ImageFileName,
+                UseShellExecute = true,
+                WorkingDirectory = fileInfo.DirectoryName,
+            };
+
+            var process = Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
     }
 }
 

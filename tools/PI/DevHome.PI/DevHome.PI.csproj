@@ -27,10 +27,12 @@
 
   <ItemGroup>
     <None Remove="Controls\ClipboardMonitorControl.xaml" />
+    <None Remove="Controls\ElevatedButtonControl.xaml" />
     <None Remove="Controls\ExpandedViewControl.xaml" />
+    <None Remove="Controls\InsightForMissingFileProcessTerminationControl.xaml" />
+    <None Remove="Controls\InsightSimpleTextControl.xaml" />
     <None Remove="Controls\PISeparator.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
-    <None Remove="Controls\SimpleTextInsight.xaml" />
     <None Remove="errors.db" />
     <None Remove="Images\PI.ico" />
     <None Remove="Pages\AboutPage.xaml" />
@@ -168,6 +170,9 @@
     <None Update="appsettings_pi.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Controls\ElevatedButtonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\ClipboardMonitoringWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -237,10 +242,4 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <WarningLevel>7</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <CustomAdditionalCompileInputs Remove="Controls\SimpleTextInsight.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Remove="Controls\SimpleTextInsight.xaml" />
-  </ItemGroup>
 </Project>

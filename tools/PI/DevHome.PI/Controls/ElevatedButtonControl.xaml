@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <UserControl
-    x:Class="DevHome.PI.Controls.SimpleTextInsightControl"
+    x:Class="DevHome.PI.Controls.ElevatedButtonControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DevHome.PI.Controls"
@@ -8,11 +8,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Canvas Background="Blue">
-        <RichTextBlock TextWrapping="Wrap" HorizontalAlignment="Left">
-            <Paragraph>
-                <Run x:Name="TextField" />
-            </Paragraph>
-        </RichTextBlock>
-    </Canvas>
+    <Grid>
+        <Button Command="{x:Bind Command, Mode=OneWay}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <SymbolIcon Symbol="Admin"/>
+                <TextBlock Margin="0" Text="{x:Bind Text, Mode=OneWay}"/>
+            </StackPanel>
+        </Button>
+    </Grid>
 </UserControl>

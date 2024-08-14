@@ -23,7 +23,7 @@
         <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="1">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
-                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
+                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalAlignment="Top" Padding="0,6">
                         <interactivity:Interaction.Behaviors>
                             <helpers:ExpanderBehavior />
                         </interactivity:Interaction.Behaviors>
@@ -41,15 +41,7 @@
                             </Grid>
 
                         </Expander.Header>
-                        <ContentPresenter Margin="12,0,12,0" HorizontalAlignment="Stretch">
-                            <Canvas Background="Blue">
-                                <RichTextBlock TextWrapping="Wrap" HorizontalAlignment="Left">
-                                    <Paragraph>
-                                        <Run x:Name="TextField" Text="This is a really long string to see where this ends up on the screen"/>
-                                    </Paragraph>
-                                </RichTextBlock>
-                            </Canvas>
-                        </ContentPresenter>
+                        <ContentPresenter Margin="40,0,12,0" HorizontalAlignment="Stretch" Content="{x:Bind CustomControl}" />
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
