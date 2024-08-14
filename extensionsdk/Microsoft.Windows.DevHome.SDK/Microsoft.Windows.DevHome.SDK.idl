@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(7)]
+    [contractversion(8)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -28,6 +28,10 @@ namespace Microsoft.Windows.DevHome.SDK
         [experimental]
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 7)] 
         LocalRepository = 6,
+
+        [experimental]
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+        Navigation = 7,
     };
 
     // Definitions for exceptions.
@@ -1644,4 +1648,29 @@ namespace Microsoft.Windows.DevHome.SDK
     }
 
     // End of QuickStartProject APIs
+
+    // Navigation Provider
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    interface INavigationProvider
+        requires Windows.Foundation.IClosable
+    {
+        String DisplayName
+        {
+            get;
+        };
+
+        Windows.Foundation.Uri Icon
+        {
+            get;
+        };
+
+        String PageDisplayName
+        {
+            get;
+        };
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetNavigationAdaptiveCardSession();
+    };
 }

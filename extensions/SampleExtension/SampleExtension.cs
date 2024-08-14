@@ -4,7 +4,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
+using SampleExtension.Providers;
+using Serilog;
 
 namespace SampleExtension;
 
@@ -14,13 +18,16 @@ namespace SampleExtension;
 public sealed class SampleExtension : IExtension
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
+    private readonly IHost _host;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SampleExtension));
 
-    public SampleExtension(ManualResetEvent extensionDisposedEvent)
+    public SampleExtension(ManualResetEvent extensionDisposedEvent, IHost host)
     {
-        this._extensionDisposedEvent = extensionDisposedEvent;
+        _extensionDisposedEvent = extensionDisposedEvent;
+        _host = host;
     }
 
-    public object GetProvider(ProviderType providerType)
+    public object? GetProvider(ProviderType providerType)
     {
         switch (providerType)
         {
@@ -30,6 +37,10 @@ public sealed class SampleExtension : IExtension
                 return new RepositoryProvider();
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
+            case ProviderType.Settings:
+                return _host.Services.GetService<SettingsProvider>();
+            case ProviderType.Navigation:
+                return _host.Services.GetService<NavigationProvider>();
             default:
                 return null;
         }
@@ -37,6 +48,6 @@ public sealed class SampleExtension : IExtension
 
     public void Dispose()
     {
-        this._extensionDisposedEvent.Set();
+        _extensionDisposedEvent.Set();
     }
 }

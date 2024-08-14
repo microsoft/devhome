@@ -10,9 +10,48 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <AssemblyName>DevHomeSampleExtension</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
   </PropertyGroup>
 
-    <ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_FailFast'">
+    <OutputType>Exe</OutputType>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(BuildRing)' == 'Canary'">
+    <AppxManifest Include="Package-Can.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildRing)' == 'Stable'">
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="NavigationProvider\NavigationCardTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SettingsProvider\SettingsCardTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
         <Content Include="Assets\SplashScreen.scale-200.png" />
         <Content Include="Assets\LockScreenLogo.scale-200.png" />
         <Content Include="Assets\Square150x150Logo.scale-200.png" />
@@ -23,18 +62,33 @@
         <Content Include="ProviderAssets\**\*.png" />
         <Content Include="Templates\**\*.json" />
     </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Package-Dev.appxmanifest" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AppxManifest Include="Package-Dev.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.206-beta" />
       <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
+      <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1799.589.2359" />
       <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240227000" />
+      <PackageReference Include="Serilog" Version="3.1.1" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+      <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+      <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+      <PackageReference Include="System.Text.Json" Version="8.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="$(SolutionDir)Microsoft.Windows.DevHome.SDK/bin/$(Platform)/$(Configuration)/**/*.winmd">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
     <!-- 
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -43,16 +97,18 @@
     <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
       <ProjectCapability Include="Msix" />
     </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\extensionsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj" />
-    </ItemGroup>
 
     <!-- 
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution 
     Explorer "Package and Publish" context menu entry to be enabled for this project even if 
     the Windows App SDK Nuget package has not yet been restored.
-  -->
+    -->
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+        <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
     </PropertyGroup>
 </Project>

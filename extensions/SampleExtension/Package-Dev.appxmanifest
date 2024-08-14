@@ -9,12 +9,12 @@
   IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
-    Name="Microsoft.Windows.DevHomeSampleExtension"
+    Name="Microsoft.Windows.DevHomeSampleExtension.Dev"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Dev Home Sample Extension</DisplayName>
+    <DisplayName>Dev Home Sample Extension (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
