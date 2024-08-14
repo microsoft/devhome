@@ -17,11 +17,4 @@
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CustomControls\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Strings\" />
-    <Folder Include="Views\" />
-  </ItemGroup>
 </Project>
