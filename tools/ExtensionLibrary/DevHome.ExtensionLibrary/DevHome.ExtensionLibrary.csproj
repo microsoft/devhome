@@ -8,14 +8,6 @@
     <UseWinUI>true</UseWinUI>
     <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Helpers\**" />
-    <Content Remove="Helpers\**" />
-    <EmbeddedResource Remove="Helpers\**" />
-    <None Remove="Helpers\**" />
-    <Page Remove="Helpers\**" />
-    <PRIResource Remove="Helpers\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Views\ExtensionLibraryView.xaml" />
@@ -37,10 +29,6 @@
     <Page Update="Views\ExtensionSettingsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
