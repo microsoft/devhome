@@ -146,11 +146,11 @@
   </data>
   <data name="ProjectIronsidesDesc" xml:space="preserve">
     <value>An application for gaining deeper insights into your applications.</value>
-    <comment>A description of the Project Ironsides utility</comment>
+    <comment>A description of the Dev Insights utility</comment>
   </data>
   <data name="ProjectIronsidesTitle" xml:space="preserve">
-    <value>Project Ironsides</value>
-    <comment>{Locked="IronSides"}</comment>
+    <value>Dev Insights</value>
+    <comment>Name of the Dev Insights product</comment>
   </data>
   <data name="RegistryPreviewUtilityDesc" xml:space="preserve">
     <value>Edit and visualize Windows Registry files.</value>

@@ -554,12 +554,12 @@
     <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
   </data>
   <data name="ProjectIronsidesExperiment_Name" xml:space="preserve">
-    <value>Project Ironsides</value>
-    <comment>Name of experimental feature 'Project Ironsides' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+    <value>Dev Insights</value>
+    <comment>Name of experimental feature 'Dev Insights' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
   </data>
   <data name="ProjectIronsidesExperiment_Description" xml:space="preserve">
-    <value>Project Ironsides is a utility to provide deeper insights into your applications</value>
-    <comment>Inline description of the Project Ironsides experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
+    <value>Dev Insights is a utility to provide deeper insights into your applications</value>
+    <comment>Inline description of the Dev Insights experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
   </data>
   <data name="QuickstartPlayground_Name" xml:space="preserve">
     <value>Quickstart Playground</value>

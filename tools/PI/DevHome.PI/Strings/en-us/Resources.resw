@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -138,8 +138,8 @@
     <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
   </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Dissociate so that Project Ironsides is not tracking any app</value>
-    <comment>{Locked="Ironsides"} The tooltip for a button which causes Project Ironsides to no longer track any app</comment>
+    <value>Dissociate so that Dev Insights is not tracking any app</value>
+    <comment>{Locked="Ironsides"} The tooltip for a button which causes Dev Insights to no longer track any app</comment>
   </data>
   <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
     <value>Expand the large content panel</value>
@@ -151,11 +151,11 @@
   </data>
   <data name="SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Settings</value>
-    <comment>The tooltip for a button that takes the user to the settings for Project Ironsides.</comment>
+    <comment>The tooltip for a button that takes the user to the settings for Dev Insights.</comment>
   </data>
   <data name="ManageExternalToolsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>External tools: add/remove, configure and launch</value>
-    <comment>The tooltip for a button that takes the user to the external tools section of Project Ironsides.</comment>
+    <comment>The tooltip for a button that takes the user to the external tools section of Dev Insights.</comment>
   </data>
   <data name="ToolLaunchErrorTitle" xml:space="preserve">
     <value>Error</value>
@@ -654,16 +654,16 @@
     <comment>Tooltip for the system memory usage box in the bar</comment>
   </data>
   <data name="PIDisplayName" xml:space="preserve">
-    <value>Project Ironsides</value>
-    <comment>{Locked}The name of the Project Ironsides application</comment>
+    <value>Dev Insights</value>
+    <comment>{Locked}The name of the Dev Insights application</comment>
   </data>
   <data name="PIAppDescription" xml:space="preserve">
-    <value>Dev Home Project Ironsides</value>
-    <comment>{Locked}The description of the Project Ironsides application</comment>
+    <value>Dev Insights</value>
+    <comment>{Locked}The description of the Dev Insights application</comment>
   </data>
   <data name="PIStartupTaskDisplayName" xml:space="preserve">
-    <value>Hotkey for Dev Home Project Ironsides</value>
-    <comment>{Locked="Ironsides"} The description of the startup task for Dev Home Project Ironsides. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+    <value>Hotkey for Dev Insights</value>
+    <comment>{Locked="Ironsides"} The description of the startup task for Dev Insights. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
   </data>
   <data name="IsPythonTextBlock.Text" xml:space="preserve">
     <value>Is Python</value>
@@ -774,7 +774,7 @@
     <comment>Refers to a color theme or scheme.</comment>
   </data>
   <data name="SettingsAboutAppInfoCard.Header" xml:space="preserve">
-    <value>Dev Home Project Ironsides</value>
+    <value>Dev Insights</value>
     <comment>{Locked} This is the name of the product.</comment>
   </data>
   <data name="SettingsAboutAppInfoCard.Description" xml:space="preserve">
@@ -810,7 +810,7 @@
     <comment>Link to the source code for the product.</comment>
   </data>
   <data name="SettingsAddToolCard.Header" xml:space="preserve">
-    <value>Register an external tool with Dev Home Project Ironsides</value>
+    <value>Register an external tool with Dev Insights</value>
     <comment>{Locked="Ironsides"} Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
@@ -871,19 +871,19 @@
   </data>
   <data name="ProcessChooserButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Select a process to investigate</value>
-    <comment>Describes using a button in Project Ironsides's UX to investigate another process running on the system</comment>
+    <comment>Describes using a button in Dev Insights' UX to investigate another process running on the system</comment>
   </data>
   <data name="SnapToolTip" xml:space="preserve">
     <value>Attach the diagnostic bar to the target application</value>
     <comment>The tooltip text for a button that attaches the bar to the target application.</comment>
   </data>
   <data name="Title.Text" xml:space="preserve">
-    <value>Dev Home Project Ironsides</value>
+    <value>Dev Insights</value>
     <comment>{Locked} The product name</comment>
   </data>
   <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Close</value>
-    <comment>Describes a button that will close Project Ironsides's window</comment>
+    <comment>Describes a button that will close Dev Insights's window</comment>
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
@@ -906,12 +906,12 @@
     <comment>Content Dialog button text which on click opens the Advanced App settings page in Windows Settings app.</comment>
   </data>
   <data name="AliasDisabledDialogContent" xml:space="preserve">
-    <value>Go to Windows Settings &gt; Apps &gt; Advanced app settings &gt; App execution alias &gt; Project Ironsides &gt; Enable the toggle and try to launch PI as admin again.</value>
-    <comment>{Locked="Ironsides"} Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
+    <value>Go to Windows Settings &gt; Apps &gt; Advanced app settings &gt; App execution alias &gt; Dev Insights &gt; Enable the toggle and try to launch Dev Insights as admin again.</value>
+    <comment>Content Dialog content suggesting users steps to enable app execution alias from Windows Settings app</comment>
   </data>
   <data name="AliasDisabledDialogTitle" xml:space="preserve">
-    <value>Enable App Execution Alias for Project Ironsides and try again</value>
-    <comment>{Locked="Ironsides"} Content Dialog title to enable app execution alias for Project Ironsides</comment>
+    <value>Enable App Execution Alias for Dev Insights and try again</value>
+    <comment>Content Dialog title to enable app execution alias for Dev Insights</comment>
   </data>
   <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Detach from the currently targeted process</value>
@@ -946,7 +946,7 @@
     <comment>Column heading for the name column in a datagrid</comment>
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Dev Insights to substitute the target app's process ID or window handle. For example:</value>
     <comment>{Locked="Ironsides", "{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
@@ -1010,7 +1010,7 @@
     <comment>A label for the Clipboard Monitor tool</comment>
   </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
-    <value>See insights that Project Ironsides has gained</value>
+    <value>See insights that Dev Insights has gained</value>
     <comment>Tooltip that tells users what the Insights button will do</comment>
   </data>
   <data name="InsightsLabel.Text" xml:space="preserve">
@@ -1066,16 +1066,16 @@
     <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
   </data>
   <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
-    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change WER settings</comment>
+    <value>Dev Insights needs to run as Admin in order to modify WER collection for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
   </data>
   <data name="RunElevatedButton.Text" xml:space="preserve">
     <value>Get Information</value>
     <comment>The contents of a button to allow the user to trigger elevation to get more information</comment>
   </data>
   <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Project Ironsides needs to run as Admin in order to get more data for an app.</value>
-    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to get more data</comment>
+    <value>Dev Insights needs to run as Admin in order to get more data for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Dev Insights as admin to get more data</comment>
   </data>
   <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
     <value>Dump Info</value>
@@ -1202,7 +1202,7 @@
     <comment>Tooltip that describes what a WER Dump analyzer does</comment>
   </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
-    <value>Project Ironsides Clipboard Monitor</value>
+    <value>Dev Insights Clipboard Monitor</value>
     <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
   </data>
   <data name="WERAnalysisUnavailable" xml:space="preserve">
