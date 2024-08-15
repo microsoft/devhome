@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -49,15 +48,6 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration") && ExtraFolderPropertiesWrapper.IsSupported();
 
-    [ObservableProperty]
-    private bool _isVersionControlIntegrationEnabled;
-
-    [ObservableProperty]
-    private bool _showVersionControlInformation;
-
-    [ObservableProperty]
-    private bool _showRepositoryStatus;
-
     public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService, ILocalSettingsService localSettingsService)
     {
         _shellSettings = new ShellSettings();
@@ -71,18 +61,7 @@ public partial class FileExplorerViewModel : ObservableObject
             new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
             new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
-        LoadFileExplorerSettings();
         RefreshTrackedRepositories();
-    }
-
-    public void LoadFileExplorerSettings()
-    {
-        if (ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration"))
-        {
-            IsVersionControlIntegrationEnabled = CalculateEnabled("VersionControlIntegration");
-            ShowVersionControlInformation = CalculateEnabled("ShowVersionControlInformation");
-            ShowRepositoryStatus = CalculateEnabled("ShowRepositoryStatus");
-        }
     }
 
     public void RefreshTrackedRepositories()
@@ -158,6 +137,24 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
+    public bool IsVersionControlIntegrationEnabled
+    {
+        get => CalculateEnabled("VersionControlIntegration");
+        set => OnToggledVersionControlIntegrationSettingAsync(value);
+    }
+
+    public bool ShowVersionControlInformation
+    {
+        get => CalculateEnabled("ShowVersionControlInformation");
+        set => OnToggledVersionControlInformationSettingAsync(value);
+    }
+
+    public bool ShowRepositoryStatus
+    {
+        get => CalculateEnabled("ShowRepositoryStatus");
+        set => OnToggledRepositoryStatusSettingAsync(value);
+    }
+
     [RelayCommand]
     public async Task AddFolderClick()
     {
@@ -224,13 +221,11 @@ public partial class FileExplorerViewModel : ObservableObject
         return false;
     }
 
-    [RelayCommand]
-    public async Task OnToggledVersionControlIntegrationSettingAsync()
+    public async void OnToggledVersionControlIntegrationSettingAsync(bool value)
     {
-        IsVersionControlIntegrationEnabled = !IsVersionControlIntegrationEnabled;
-        await LocalSettingsService!.SaveSettingAsync("VersionControlIntegration", IsVersionControlIntegrationEnabled);
+        await LocalSettingsService!.SaveSettingAsync("VersionControlIntegration", value);
 
-        if (!IsVersionControlIntegrationEnabled)
+        if (!value)
         {
             _log.Information("The user has disabled version control integration inside Dev Home");
             ExtraFolderPropertiesWrapper.UnregisterAllForCurrentApp();
@@ -249,17 +244,13 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    public async Task OnToggledVersionControlInformationSettingAsync()
+    public async void OnToggledVersionControlInformationSettingAsync(bool value)
     {
-        ShowVersionControlInformation = !ShowVersionControlInformation;
-        await LocalSettingsService!.SaveSettingAsync("ShowVersionControlInformation", ShowVersionControlInformation);
+        await LocalSettingsService!.SaveSettingAsync("ShowVersionControlInformation", value);
     }
 
-    [RelayCommand]
-    public async Task OnToggledRepositoryStatusSettingAsync()
+    public async void OnToggledRepositoryStatusSettingAsync(bool value)
     {
-        ShowRepositoryStatus = !ShowRepositoryStatus;
-        await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", ShowRepositoryStatus);
+        await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", value);
     }
 }

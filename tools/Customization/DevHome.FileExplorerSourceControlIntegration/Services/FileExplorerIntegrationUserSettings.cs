@@ -10,7 +10,9 @@ namespace DevHome.FileExplorerSourceControlIntegration.Services;
 public class FileExplorerIntegrationUserSettings
 {
     private readonly LocalSettingsService? _localSettingsService;
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(FileExplorerIntegrationUserSettings));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(FileExplorerIntegrationUserSettings));
+    private const string DefaultApplicationDataFolder = "DevHome/ApplicationData";
+    private const string DefaultLocalSettingsFile = "LocalSettings.json";
 
     public FileExplorerIntegrationUserSettings()
     {
@@ -20,8 +22,8 @@ public class FileExplorerIntegrationUserSettings
             var options = new Microsoft.Extensions.Options.OptionsWrapper<LocalSettingsOptions>(
             new LocalSettingsOptions
             {
-                ApplicationDataFolder = "DevHome/ApplicationData",
-                LocalSettingsFile = "LocalSettings.json",
+                ApplicationDataFolder = DefaultApplicationDataFolder,
+                LocalSettingsFile = DefaultLocalSettingsFile,
             });
 
             // The LocalSettingsService has to be used and initialized from within the
