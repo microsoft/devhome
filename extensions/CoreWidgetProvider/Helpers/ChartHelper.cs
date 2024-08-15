@@ -64,9 +64,7 @@ internal sealed class ChartHelper
     public static string CreateImageUrl(List<float> chartValues, ChartType type)
     {
         var chartStr = CreateChart(chartValues, type);
-        var bytes = Encoding.UTF8.GetBytes(chartStr);
-        var b64String = Convert.ToBase64String(bytes);
-        return "data:image/svg+xml;base64," + b64String;
+        return "data:image/svg+xml;utf8," + chartStr;
     }
 
     /// <summary>
