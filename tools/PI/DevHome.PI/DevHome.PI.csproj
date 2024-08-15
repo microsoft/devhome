@@ -16,7 +16,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>

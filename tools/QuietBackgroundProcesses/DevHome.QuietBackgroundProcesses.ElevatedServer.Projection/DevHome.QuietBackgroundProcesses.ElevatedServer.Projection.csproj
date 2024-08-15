@@ -9,7 +9,6 @@
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <MdmergeMergedDir>$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\</MdmergeMergedDir>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -32,8 +32,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
 </Project>
