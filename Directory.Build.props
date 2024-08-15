@@ -52,7 +52,7 @@
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\codeAnalysis\StyleCop.json" Link="StyleCop.json" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_FailFast'">
     <DisableXbfLineInfo>False</DisableXbfLineInfo>
   </PropertyGroup>
 
