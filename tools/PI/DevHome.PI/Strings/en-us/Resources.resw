@@ -139,7 +139,7 @@
   </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dissociate so that Dev Insights is not tracking any app</value>
-    <comment>{Locked="Ironsides"} The tooltip for a button which causes Dev Insights to no longer track any app</comment>
+    <comment>The tooltip for a button which causes Dev Insights to no longer track any app</comment>
   </data>
   <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
     <value>Expand the large content panel</value>
@@ -663,7 +663,7 @@
   </data>
   <data name="PIStartupTaskDisplayName" xml:space="preserve">
     <value>Hotkey for Dev Insights</value>
-    <comment>{Locked="Ironsides"} The description of the startup task for Dev Insights. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
+    <comment>The description of the startup task for Dev Insights. This shows up in task manager/Windows Settings &gt; Startup Apps.</comment>
   </data>
   <data name="IsPythonTextBlock.Text" xml:space="preserve">
     <value>Is Python</value>
@@ -811,7 +811,7 @@
   </data>
   <data name="SettingsAddToolCard.Header" xml:space="preserve">
     <value>Register an external tool with Dev Insights</value>
-    <comment>{Locked="Ironsides"} Header for the settings item to add a tool to the product.</comment>
+    <comment>Header for the settings item to add a tool to the product.</comment>
   </data>
   <data name="SettingsEditToolCard.Header" xml:space="preserve">
     <value>Edit or unregister existing tools</value>
@@ -947,7 +947,7 @@
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
     <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Dev Insights to substitute the target app's process ID or window handle. For example:</value>
-    <comment>{Locked="Ironsides", "{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
+    <comment>{Locked="{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
     <value>Arguments</value>
@@ -1067,7 +1067,7 @@
   </data>
   <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dev Insights needs to run as Admin in order to modify WER collection for an app.</value>
-    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
+    <comment>Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
   </data>
   <data name="RunElevatedButton.Text" xml:space="preserve">
     <value>Get Information</value>
@@ -1075,7 +1075,7 @@
   </data>
   <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dev Insights needs to run as Admin in order to get more data for an app.</value>
-    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Dev Insights as admin to get more data</comment>
+    <comment>Tooltip for a button that relaunches Dev Insights as admin to get more data</comment>
   </data>
   <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
     <value>Dump Info</value>
@@ -1203,7 +1203,7 @@
   </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
     <value>Dev Insights Clipboard Monitor</value>
-    <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
+    <comment>Window title for the clipboard monitor tool</comment>
   </data>
   <data name="WERAnalysisUnavailable" xml:space="preserve">
     <value>Analysis unavailable.</value>
