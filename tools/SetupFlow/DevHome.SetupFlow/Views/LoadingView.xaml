@@ -257,6 +257,11 @@
                 Margin="0,0,0,5"
                 ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}"
                 SelectionMode="None">
+                <!-- 
+                    Make item container not recieve a tab stop by default since
+                    we don't want the container to recieve the tab stop. We only 
+                    want the controls within the ItemTemplate itself to get a TabStop.
+                -->
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="IsTabStop" Value="False"/>
