@@ -145,7 +145,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task OnUnloadedAsync()
     {
         _log.Debug($"Unloading Dashboard, cancel any loading.");
-        _initWidgetsCancellationTokenSource.Cancel();
+        _initWidgetsCancellationTokenSource?.Cancel();
         ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
         Bindings.StopTracking();
 
