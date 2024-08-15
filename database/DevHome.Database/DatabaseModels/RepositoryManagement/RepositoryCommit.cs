@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-
 namespace DevHome.Database.DatabaseModels.RepositoryManagement;
 
 public class RepositoryCommit
@@ -17,6 +15,7 @@ public class RepositoryCommit
 
     public DateTime CommitDateTime { get; set; }
 
+    // N:1 relationship.  RepositoryCommit is the dependant and needs the Id and object.
     public int RepositoryId { get; set; }
 
     public Repository? Repository { get; set; }

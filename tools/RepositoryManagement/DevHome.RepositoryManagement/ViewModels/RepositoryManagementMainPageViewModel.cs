@@ -7,28 +7,87 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Database;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
-public class RepositoryManagementMainPageViewModel : IDisposable
+public partial class RepositoryManagementMainPageViewModel : IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
+
     private readonly IHost _host;
 
-    private readonly RepositoryManagementContext _repositoryManagementContext;
+    private readonly DevHomeDatabaseContext _databseContext;
 
-    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; } = new();
+    private readonly List<RepositoryManagementItemViewModel> _items;
+
+    public ObservableCollection<RepositoryManagementItemViewModel> Items => new(_items.Where(x => !x.IsHiddenFromPage));
+
+    private static int _myNumber;
+
+    [RelayCommand]
+    public void AddExistingRepository()
+    {
+        var numberToUse = _myNumber++;
+        Repository repository = new Repository();
+        repository.RepositoryName = $"MicrosoftRepository{numberToUse}";
+        repository.LocalBranchName = "main";
+        repository.RepositoryClonePath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), _myNumber.ToString(CultureInfo.InvariantCulture));
+
+        _databseContext.Add(repository);
+
+        RepositoryMetadata repositoryMetadata = new RepositoryMetadata();
+        repositoryMetadata.UtcDateHidden = DateTime.UtcNow;
+        repositoryMetadata.IsHiddenFromPage = false;
+        repositoryMetadata.RepositoryId = repository.RepositoryId;
+        repositoryMetadata.Repository = repository;
+        _databseContext.Add(repositoryMetadata);
+
+        repository.RepositoryMetadata = repositoryMetadata;
+
+        _databseContext.SaveChanges();
+    }
 
     public RepositoryManagementMainPageViewModel(IHost host)
     {
+        _items = new List<RepositoryManagementItemViewModel>();
         _host = host;
-        _repositoryManagementContext = new RepositoryManagementContext();
+        _databseContext = host.GetService<DevHomeDatabaseContext>();
+
+        var repos = _databseContext.Repositories
+            .Include(x => x.RepositoryMetadata)
+            .Include(x => x.RemoteCommits);
+
+        foreach (var repo in repos)
+        {
+            var lineItem = _host.GetService<RepositoryManagementItemViewModel>();
+            lineItem.ClonePath = repo.RepositoryClonePath;
+            lineItem.Branch = repo.LocalBranchName;
+            lineItem.RepositoryName = repo.RepositoryName;
+            if (repo.RemoteCommits != null && repo.RemoteCommits.Count > 0)
+            {
+                var commitAuthor = repo.RemoteCommits[0].Author;
+                var commitHash = repo.RemoteCommits[0].CommitHash;
+                var commitElapsed = (DateTime.UtcNow - repo.RemoteCommits[0].CommitDateTime).TotalMinutes;
+                lineItem.LatestCommit = $"{commitHash} * {commitAuthor} {commitElapsed} minutes";
+            }
+            else
+            {
+                lineItem.LatestCommit = "No commits found";
+            }
+
+            lineItem.IsHiddenFromPage = repo.RepositoryMetadata.IsHiddenFromPage;
+            _items.Add(lineItem);
+        }
     }
 
+    /*
     // Some test data to show off in the Repository Management page.
     public void PopulateTestData()
     {
@@ -78,6 +137,7 @@ public class RepositoryManagementMainPageViewModel : IDisposable
             _repositoryManagementContext.SaveChanges();
         }
     }
+    */
 
     public void Dispose()
     {

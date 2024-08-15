@@ -13,7 +13,9 @@ public class Repository
 
     public string? LocalBranchName { get; set; }
 
+    // 1:N relationship.  Repository needs only the object.
     public List<RepositoryCommit>? RemoteCommits { get; set; }
 
-    public RepositoryManagement? RepositoryManagement { get; set; }
+    // 1:1 relationship.  Repository is the parent and needs only the object.
+    public RepositoryMetadata? RepositoryMetadata { get; set; }
 }

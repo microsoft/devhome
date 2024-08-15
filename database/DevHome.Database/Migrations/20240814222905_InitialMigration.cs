@@ -52,10 +52,10 @@ public partial class InitialMigration : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "RepositoryManagements",
+            name: "RepositoryMetadata",
             columns: table => new
             {
-                RepositoryManagementId = table.Column<int>(type: "INTEGER", nullable: false)
+                RepositoryMetadataId = table.Column<int>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
                 IsHiddenFromPage = table.Column<bool>(type: "INTEGER", nullable: false),
                 UtcDateHidden = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -63,9 +63,9 @@ public partial class InitialMigration : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_RepositoryManagements", x => x.RepositoryManagementId);
+                table.PrimaryKey("PK_RepositoryMetadata", x => x.RepositoryMetadataId);
                 table.ForeignKey(
-                    name: "FK_RepositoryManagements_Repositories_RepositoryId",
+                    name: "FK_RepositoryMetadata_Repositories_RepositoryId",
                     column: x => x.RepositoryId,
                     principalTable: "Repositories",
                     principalColumn: "RepositoryId",
@@ -78,8 +78,8 @@ public partial class InitialMigration : Migration
             column: "RepositoryId");
 
         migrationBuilder.CreateIndex(
-            name: "IX_RepositoryManagements_RepositoryId",
-            table: "RepositoryManagements",
+            name: "IX_RepositoryMetadata_RepositoryId",
+            table: "RepositoryMetadata",
             column: "RepositoryId",
             unique: true);
     }
@@ -91,7 +91,7 @@ public partial class InitialMigration : Migration
             name: "RepositoryCommits");
 
         migrationBuilder.DropTable(
-            name: "RepositoryManagements");
+            name: "RepositoryMetadata");
 
         migrationBuilder.DropTable(
             name: "Repositories");

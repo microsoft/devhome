@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-
 namespace DevHome.Database.DatabaseModels.RepositoryManagement;
 
-public class RepositoryManagement
+public class RepositoryMetadata
 {
-    public int RepositoryManagementId { get; set; }
+    // EF uses [ClassName]Id as the primary key
+    public int RepositoryMetadataId { get; set; }
 
     public bool IsHiddenFromPage { get; set; }
 

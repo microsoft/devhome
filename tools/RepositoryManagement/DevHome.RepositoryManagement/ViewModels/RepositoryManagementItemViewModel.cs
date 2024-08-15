@@ -2,11 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -20,6 +15,8 @@ public partial class RepositoryManagementItemViewModel
     public string LatestCommit { get; set; }
 
     public string Branch { get; set; }
+
+    public bool IsHiddenFromPage { get; set; }
 
     [RelayCommand]
     public void OpenInFileExplorer()

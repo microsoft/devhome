@@ -1,23 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
-using System.Diagnostics;
+using DevHome.Database.DatabaseModels.RepositoryManagement;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevHome.Database.DatabaseModels.RepositoryManagement;
+namespace DevHome.Database;
 
-public class RepositoryManagementContext : DbContext
+public class DevHomeDatabaseContext : DbContext
 {
     public DbSet<Repository> Repositories { get; set; }
 
     public DbSet<RepositoryCommit> RepositoryCommits { get; set; }
 
-    public DbSet<RepositoryManagement> RepositoryManagements { get; set; }
+    public DbSet<RepositoryMetadata> RepositoryMetadata { get; set; }
 
     public string DbPath { get; }
 
-    public RepositoryManagementContext()
+    public DevHomeDatabaseContext()
     {
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
@@ -27,5 +26,5 @@ public class RepositoryManagementContext : DbContext
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlite($"Data Source={DbPath}").LogTo(x => Debug.WriteLine(x)).EnableSensitiveDataLogging();
+        => optionsBuilder.UseSqlite($"Data Source={DbPath}");
 }

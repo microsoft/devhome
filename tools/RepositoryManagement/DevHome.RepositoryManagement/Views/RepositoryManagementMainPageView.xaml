@@ -53,7 +53,7 @@
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
-            <Button Grid.Column="1" Content="Add repository" />
+            <Button Grid.Column="1" Content="Add repository" Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"/>
             <Button
                 Grid.Column="2"
                 Margin="0,0,50,0"
