@@ -29,6 +29,7 @@
                 <DataTemplate>
                     <ctControls:SettingsCard 
                         Header="{Binding RepositoryRootPath}"
+                        Description ="{Binding SourceControlProviderDisplayName}"
                         Margin="0">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon 
@@ -63,6 +64,9 @@
                                         <MenuFlyoutItem
                                             x:Uid="RemoveFolder"
                                             Click="RemoveFolderButton_Click" />
+                                        <MenuFlyoutItem
+                                            x:Uid="OpenFolderInFileExplorer"
+                                            Click="OpenFolderInFileExplorer_Click" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>
