@@ -6,6 +6,8 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:commonCustomControls="using:DevHome.Common.Environments.CustomControls"
     xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:DevHome.RepositoryManagement.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -83,6 +85,8 @@
             <ListView
                 ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
                 ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                ScrollViewer.VerticalScrollMode="Auto" 
                 SelectionMode="None">
                 <ListView.Header>
                     <Grid
