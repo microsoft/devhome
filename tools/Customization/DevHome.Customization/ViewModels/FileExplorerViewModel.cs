@@ -246,11 +246,21 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public async void OnToggledVersionControlInformationSettingAsync(bool value)
     {
+        if (!value)
+        {
+            _log.Information("The user has disabled display of version control information in File Explorer");
+        }
+
         await LocalSettingsService!.SaveSettingAsync("ShowVersionControlInformation", value);
     }
 
     public async void OnToggledRepositoryStatusSettingAsync(bool value)
     {
+        if (!value)
+        {
+            _log.Information("The user has disabled display or repository status in File Explorer");
+        }
+
         await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", value);
     }
 }

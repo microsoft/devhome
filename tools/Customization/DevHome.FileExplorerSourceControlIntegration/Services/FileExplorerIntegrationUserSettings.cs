@@ -43,7 +43,7 @@ public class FileExplorerIntegrationUserSettings
             return _localSettingsService.ReadSettingAsync<bool>("VersionControlIntegration").Result;
         }
 
-        // DisabledByDefault
+        // If the user has not set the setting, it is disabled by default on page load
         return false;
     }
 
@@ -54,7 +54,7 @@ public class FileExplorerIntegrationUserSettings
             return _localSettingsService.ReadSettingAsync<bool>("ShowVersionControlInformation").Result;
         }
 
-        // DisabledByDefault
+        // If the user has not set the setting, it is disabled by default on page load
         return false;
     }
 
@@ -65,7 +65,7 @@ public class FileExplorerIntegrationUserSettings
             return _localSettingsService.ReadSettingAsync<bool>("ShowRepositoryStatus").Result;
         }
 
-        // DisabledByDefault
+        // If the user has not set the setting, it is disabled by default on page load
         return false;
     }
 }

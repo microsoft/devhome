@@ -96,6 +96,7 @@ public class SourceControlProvider :
 internal sealed class RootFolderPropertyProvider : Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootPropertyProvider
 {
     private readonly FileExplorerIntegrationUserSettings _fileExplorerIntegrationUserSettings;
+    private readonly string _repositoryStatusPropertyString = "System.VersionControl.CurrentFolderStatus";
 
     public RootFolderPropertyProvider(ILocalRepository repository)
     {
@@ -116,12 +117,12 @@ internal sealed class RootFolderPropertyProvider : Microsoft.Internal.Windows.De
 
         if (showFileExplorerVersionControlColumnData && !showRepositoryStatus)
         {
-            var filteredPropertyStrings = properties.Where(s => s != "System.VersionControl.CurrentFolderStatus").ToArray();
+            var filteredPropertyStrings = properties.Where(s => s != _repositoryStatusPropertyString).ToArray();
             properties = filteredPropertyStrings;
         }
         else if (!showFileExplorerVersionControlColumnData && showRepositoryStatus)
         {
-            properties = new string[] { "System.VersionControl.CurrentFolderStatus" };
+            properties = new string[] { _repositoryStatusPropertyString };
         }
 
         return _repository.GetProperties(properties, relativePath);

@@ -19,19 +19,19 @@
         <ctControls:SettingsCard
             x:Uid="EnableVersionControlIntegrationCard"
             Margin="{ThemeResource SettingsCardMargin}">
-            <ToggleSwitch IsOn="{x:Bind ViewModel.IsVersionControlIntegrationEnabled, Mode=TwoWay}" Grid.Column="1"></ToggleSwitch>
+            <ToggleSwitch IsOn="{x:Bind ViewModel.IsVersionControlIntegrationEnabled, Mode=TwoWay}"/>
         </ctControls:SettingsCard>
 
         <ctControls:SettingsCard
             x:Uid="ShowVersionControlInfoCard"
             Margin="{ThemeResource SettingsCardMargin}">
-            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowVersionControlInformation, Mode=TwoWay}" Grid.Column="1"></ToggleSwitch>
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowVersionControlInformation, Mode=TwoWay}"/>
         </ctControls:SettingsCard>
 
         <ctControls:SettingsCard
             x:Uid="ShowRepositoryStatusCard"
             Margin="{ThemeResource SettingsCardMargin}">
-            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowRepositoryStatus, Mode=TwoWay}" Grid.Column="1"></ToggleSwitch>
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowRepositoryStatus, Mode=TwoWay}"/>
         </ctControls:SettingsCard>
 
     </StackPanel>
