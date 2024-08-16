@@ -38,7 +38,7 @@
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_FailFast'">
     <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
   </PropertyGroup>
 
