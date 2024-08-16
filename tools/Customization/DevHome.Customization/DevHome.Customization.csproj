@@ -38,6 +38,7 @@
     <None Remove="Views\GeneralSystemView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\VersionControlIntegrationSettingsView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,9 +66,14 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\VersionControlIntegrationSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
     <Resource Remove="Views\AddRepositoriesView.xaml" />
   </ItemGroup>
+
 </Project>
