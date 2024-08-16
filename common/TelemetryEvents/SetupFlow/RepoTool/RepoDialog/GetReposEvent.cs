@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Configuration.Provider;
 using System.Diagnostics.Tracing;
+using System.Security.Cryptography.X509Certificates;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
@@ -24,6 +26,10 @@ public class GetReposEvent : EventBase
 
     public int NumberOfReposFound { get; }
 
+    public int HResult { get; }
+
+    public string ExceptionMessage { get; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GetReposEvent"/> class.
     /// </summary>
@@ -35,6 +41,7 @@ public class GetReposEvent : EventBase
         StageName = stageName;
         ProviderName = providerName;
         DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
+        ExceptionMessage = string.Empty;
     }
 
     /// <summary>
@@ -50,6 +57,16 @@ public class GetReposEvent : EventBase
         ProviderName = providerName;
         DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
         NumberOfReposFound = reposFound;
+        ExceptionMessage = string.Empty;
+    }
+
+    public GetReposEvent(Exception exception, string providerName, IDeveloperId developerId)
+    {
+        StageName = "Error";
+        ProviderName = providerName;
+        DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
+        ExceptionMessage = exception.Message;
+        HResult = exception.HResult;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
