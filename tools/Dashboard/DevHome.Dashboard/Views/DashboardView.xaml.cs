@@ -195,9 +195,10 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
-            ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
             {
+                ViewModel.HasWidgetServiceInitialized = true;
+
                 var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
