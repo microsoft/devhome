@@ -37,20 +37,9 @@ public static class HyperVSetupScript
             $adminGroupResult = [OperationStatus]::OperationNotRun
             $hyperVGroupSid = 'S-1-5-32-578'
 
-            # Check the security token the user logged on with contains the Hyper-V Administrators group SID (S-1-5-32-578). This can only be updated,
-            # once the user logs off and on again. Even if we add the user to the group later on in the script.
-            $foundSecurityTokenString = [System.Security.Principal.WindowsIdentity]::GetCurrent().Groups.Value | Where-Object { $_ -eq $hyperVGroupSid }
-            $doesUserSecurityTokenContainHyperAdminGroup = $foundSecurityTokenString -eq $hyperVGroupSid
-
             # Check if the Hyper-V feature is enabled
             $featureState = Get-WindowsOptionalFeature -FeatureName 'Microsoft-Hyper-V' -Online | Select-Object -ExpandProperty State
             $featureEnabled = $featureState -eq 'Enabled'
-
-            if ($doesUserSecurityTokenContainHyperAdminGroup -and $featureEnabled)
-            {
-                # User already in Admin group and feature already enabled
-                exit 6
-            }
 
             # Enable the Hyper-V feature if it is not already enabled
             if (-not $featureEnabled)
@@ -119,9 +108,7 @@ public static class HyperVSetupScript
             }
             # If both operations have not been run at this point, then user is already in the Hyper-V admin group and the Hyper-V feature is enabled.
             # This could happen if the script runs the first time without the user being in the group, while Hyper-V is enabled but the user doesn't
-            # log off/on again or reboot. The second time we run the script there would be no work to be done. Since the actual token of the user
-            # doesn't update until they log off, the $doesUserSecurityTokenContainHyperAdminGroup variable above will still remain false, which is
-            # how we ended up here.
+            # log off/on again or reboot. The second time we run the script there would be no work to be done.
             elseif ($featureEnablementResult -eq [OperationStatus]::OperationNotRun -and $adminGroupResult -eq [OperationStatus]::OperationNotRun)
             {
                 exit 6
