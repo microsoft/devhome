@@ -16,58 +16,24 @@ namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 public class HyperVManagerTest : HyperVExtensionTestsBase
 {
     [TestMethod]
-    [ExpectedException(typeof(HyperVAdminGroupException))]
-    public void StartVirtualMachineManagementServiceFailsWhenUserNotInHyperVAdminGroup()
-    {
-        // Arrange
-        SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        var identityService = TestHost.GetService<IWindowsIdentityService>() as WindowsIdentityServiceMock;
-        identityService!.SecuritySidIdentifier = string.Empty;
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
-
-        // Assert
-        hyperVManager.StartVirtualMachineManagementService();
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(HyperVModuleNotLoadedException))]
-    public void StartVirtualMachineManagementServiceFailsWhenModuleNotLoaded()
-    {
-        // Arrange
-        SetupHyperVTestMethod(string.Empty, ServiceControllerStatus.Running);
-        var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
-
-        // Assert
-        hyperVManager.StartVirtualMachineManagementService();
-    }
-
-    [TestMethod]
     public void StartVirtualMachineManagementServiceDoesNotThrowWhenServiceIsRunning()
     {
         // Arrange
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
 
         // If no exceptions are thrown, the service was started successfully
         hyperVManager.StartVirtualMachineManagementService();
     }
 
     [TestMethod]
-    [ExpectedException(typeof(TimeoutException))]
+    [ExpectedException(typeof(VirtualMachineManagementServiceException))]
     public void StartVirtualMachineManagementServiceThrowsExceptionWhenServiceNotRunning()
     {
         // Make sure the service appears to be stopped the next time we create an instance
         // of the IWindowsServiceController.
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Stopped);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
-        SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); });
 
         // Assert
         hyperVManager.StartVirtualMachineManagementService();
@@ -80,7 +46,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(null); });
 
         // Act
@@ -99,7 +64,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // get two virtual machines.
@@ -125,7 +89,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         var expectedVmGuid = Guid.NewGuid();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // get VM with Id = expectedVmGuid
@@ -147,7 +110,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // VM returned so we can check the state.
@@ -168,7 +130,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // Return VM that is in the off state.
@@ -188,7 +149,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock { State = HyperVState.Saved, }); });
 
         // Act
@@ -205,7 +165,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock { State = HyperVState.Running, }); });
 
         // Act
@@ -222,7 +181,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock { State = HyperVState.Paused, }); });
 
         // Act
@@ -239,7 +197,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock { State = HyperVState.Running, }); });
 
         // Act
@@ -256,7 +213,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock { IsDeleted = true, }); });
 
         // Act
@@ -281,7 +237,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
             ParentCheckpointName = "TestCheckpointParent",
         });
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // Simulate PowerShell returning a checkpoint.
@@ -305,11 +260,10 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         var expectedCheckpointGuid = Guid.NewGuid();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock()); })
             .Returns(() =>
             {
-                // Simulate PowerShell returning a VM whole parent checkpoint Id is now the Checkpoint Id of the one passed in.
+                // Simulate PowerShell returning a VM whose parent checkpoint Id is now the Checkpoint Id of the one passed in.
                 return CreatePSObjectCollection(new PSCustomObjectMock { ParentCheckpointId = expectedCheckpointGuid });
             });
 
@@ -327,7 +281,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         var initialCheckpointGuid = Guid.NewGuid();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock()); })
             .Returns(() =>
             {
@@ -349,7 +302,6 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         var newCheckpointId = Guid.NewGuid();
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>
             {
                 // Simulate PowerShell returning the new Checkpoint for the VM.
