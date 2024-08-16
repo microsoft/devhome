@@ -86,6 +86,7 @@ public partial class DashboardView : ToolPage, IDisposable
             var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
             if (widgetCatalog == null)
             {
+                _log.Error("Error in in SubscribeToWidgetCatalogEvents, widgetCatalog == null");
                 return false;
             }
 
