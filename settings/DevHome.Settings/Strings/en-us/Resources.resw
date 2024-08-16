@@ -575,12 +575,6 @@
   </data>
   <data name="FileExplorerSourceControlIntegration_Description" xml:space="preserve">
     <value>View property information (such as commit status, last commit date etc.) from source control technologies inside File Explorer</value>
-    <comment>Inline description of the FileExplorerSourceControlIntegration experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
-  </data>
-  <data name="Settings_ExperimentalFeatures_Open_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Open</value>
-  </data>
-  <data name="Settings_ExperimentalFeatures_Open_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open</value>
+    <comment>Inline description of the FileExplorerSourceControlIntegration experimental feature on the 'Settings -> Experiments' page where you enable it.</comment>
   </data>
 </root>
