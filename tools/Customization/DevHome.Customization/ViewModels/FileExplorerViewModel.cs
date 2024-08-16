@@ -209,7 +209,7 @@ public partial class FileExplorerViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "An error occurred while registering folder for File Explorer source control integration");
+                _log.Error(ex, "An exception occurred while registering folder for File Explorer source control integration");
             }
 
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
