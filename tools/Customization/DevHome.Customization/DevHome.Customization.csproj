@@ -67,6 +67,10 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\VersionControlIntegrationSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -81,9 +85,4 @@
     <Resource Remove="Views\AddRepositoriesView.xaml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Views\VersionControlIntegrationSettingsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
 </Project>
