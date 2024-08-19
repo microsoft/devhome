@@ -38,30 +38,30 @@
             <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
-                    x:Uid="SnapButton" 
+                    x:Uid="SnapButton"
                     Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
-                    x:Name="SnapButton" Style="{StaticResource ChromeButton}" 
+                    x:Name="SnapButton" Style="{StaticResource ChromeButton}"
                     FontSize="{StaticResource CaptionTextBlockFontSize}"
-                    Command="{x:Bind _viewModel.ToggleSnapCommand}" 
+                    Command="{x:Bind _viewModel.ToggleSnapCommand}"
                     HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
-                     x:Uid="RotateLayoutButton" 
-                     Style="{StaticResource ChromeButton}" 
+                     x:Uid="RotateLayoutButton"
+                     Style="{StaticResource ChromeButton}"
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                     Command="{x:Bind _viewModel.RotateLayoutCommand}"
                      HorizontalAlignment="Left">
                     <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
                 </Button>
                 <Button
-                     x:Uid="ExpandCollapseLayoutButton" 
-                     Style="{StaticResource ChromeButton}" 
+                     x:Uid="ExpandCollapseLayoutButton"
+                     Style="{StaticResource ChromeButton}"
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
-                     HorizontalAlignment="Left" 
+                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}"
+                     HorizontalAlignment="Left"
                      ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
                 </Button>
@@ -119,16 +119,16 @@
                     <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                     <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
                 </StackPanel>
-                
+
                 <!-- Insights button -->
                 <Button x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" Margin="10,0,0,0">
                     <Grid>
                         <TextBlock Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                        <controls:InfoBadge 
-                            VerticalAlignment="Top" 
+                        <controls:InfoBadge
+                            VerticalAlignment="Top"
                             HorizontalAlignment="Right"
-                            Margin="16,0,0,0" 
-                            MinWidth="16" 
+                            Margin="16,0,0,0"
+                            MinWidth="16"
                             MinHeight="16"
                             Value="{x:Bind _viewModel.UnreadInsightsCount, Mode=OneWay}"
                             Opacity="{x:Bind _viewModel.InsightsBadgeOpacity, Mode=OneWay}"
@@ -158,7 +158,7 @@
 
         <Border
             x:Name="LargeContentPanel" Visibility="Collapsed" Grid.Row="2"
-            BorderThickness="0" 
+            BorderThickness="0"
             VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <local:ExpandedViewControl x:Name="ExpandedViewControl"/>
         </Border>
