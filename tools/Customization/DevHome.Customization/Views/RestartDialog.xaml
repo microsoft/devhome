@@ -17,7 +17,7 @@
         MinHeight="40"
         Spacing="20">
         <TextBlock
-            x:Uid="ms-resource:///DevHome.Customization/Resources/RestartRequiredDialogMessage"
+            x:Uid="RestartRequiredDialogMessage"
             TextWrapping="WrapWholeWords"/>
     </StackPanel>
 </ContentDialog>
