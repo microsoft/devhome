@@ -49,8 +49,8 @@ public sealed partial class AddRepositoriesView : UserControl
 
     public void OpenFolderInFileExplorer_Click(object sender, RoutedEventArgs e)
     {
-        MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
-        if (menuItem.DataContext is RepositoryInformation repoInfo)
+        MenuFlyoutItem? menuItem = sender as MenuFlyoutItem;
+        if (menuItem?.DataContext is RepositoryInformation repoInfo)
         {
             try
             {
