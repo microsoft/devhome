@@ -29,7 +29,7 @@
                 <DataTemplate>
                     <ctControls:SettingsCard 
                         Header="{Binding RepositoryRootPath}"
-                        Description ="{Binding SourceControlProviderDisplayName}"
+                        Description="{Binding SourceControlProviderDisplayName}"
                         Margin="0">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon 
