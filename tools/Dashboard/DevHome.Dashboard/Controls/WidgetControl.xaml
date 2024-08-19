@@ -50,7 +50,7 @@
                     Background="Transparent"
                     Click="OpenWidgetMenuAsync">
                 <Button.Flyout>
-                    <MenuFlyout/>
+                    <MenuFlyout Placement="BottomEdgeAlignedLeft"/>
                 </Button.Flyout>
             </Button>
         </Grid>
@@ -62,9 +62,11 @@
              so we add 7px more of padding on the left and right.-->
         <ScrollViewer Grid.Row="1" 
                       x:Name="WidgetScrollViewer"
-                      Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollMode="Disabled"
-                      Padding="7,0" />
+                      Padding="7,0">
+            <Grid x:Name="WidgetContentGrid">
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,6 +34,8 @@ public sealed partial class WidgetControl : UserControl
     private readonly UISettings _uiSettings = new();
 
     private readonly StringResource _stringResource;
+
+    private readonly DispatcherQueue _dispatcherQueue;
 
     // Each widget has a 16px margin around it and a 48px Attribution area in which content cannot be placed.
     // https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-design-fundamentals
@@ -65,8 +68,34 @@ public sealed partial class WidgetControl : UserControl
                 // Since the icon update must happen asynchronously on the UI thread, it must be
                 // called in code rather than binding.
                 UpdateWidgetHeaderIconFillAsync();
+                WidgetSource.FrameworkElementUpdated += WidgetSource_FrameworkElementUpdated;
             }
         }
+    }
+
+    private void WidgetSource_FrameworkElementUpdated(object sender, EventArgs e)
+    {
+        _log.Information("*** Framework Element Updated!");
+        var newFrameworkElement = WidgetSource.WidgetFrameworkElement;
+        var newContentControl = new ContentControl
+        {
+            Content = newFrameworkElement,
+        };
+        ////_dispatcherQueue.TryEnqueue(() =>
+        ////{
+        if (WidgetContentGrid.Children.Count < 30)
+        {
+            WidgetContentGrid.Children.Insert(0, newContentControl);
+        }
+        ////Thread.Sleep(1000);
+        if (WidgetContentGrid.Children.Count > 2)
+        {
+            _log.Information("***** Remove");
+            WidgetContentGrid.Children.RemoveAt(2);
+        }
+
+        _log.Information($"****** {WidgetContentGrid.Children.Count}");
+        ////});
     }
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
@@ -76,6 +105,7 @@ public sealed partial class WidgetControl : UserControl
     {
         this.InitializeComponent();
         _stringResource = new StringResource("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+        _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         ActualThemeChanged += OnActualThemeChanged;
     }
 
@@ -128,7 +158,6 @@ public sealed partial class WidgetControl : UserControl
         if (sender as Button is Button widgetMenuButton)
         {
             var widgetMenuFlyout = widgetMenuButton.Flyout as MenuFlyout;
-            widgetMenuFlyout.Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.BottomEdgeAlignedLeft;
             if (widgetMenuFlyout?.Items.Count == 0)
             {
                 var widgetControl = widgetMenuButton.Tag as WidgetControl;

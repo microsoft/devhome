@@ -75,6 +75,8 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
+    public event EventHandler FrameworkElementUpdated = (_, _) => { };
+
     partial void OnWidgetChanging(ComSafeWidget value)
     {
         if (Widget != null)
@@ -100,6 +102,11 @@ public partial class WidgetViewModel : ObservableObject
             WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinitionDisplayName;
             IsCustomizable = WidgetDefinition.IsCustomizable;
         }
+    }
+
+    partial void OnWidgetFrameworkElementChanged(FrameworkElement oldValue, FrameworkElement newValue)
+    {
+        FrameworkElementUpdated.Invoke(this, EventArgs.Empty);
     }
 
     public WidgetViewModel(
@@ -403,10 +410,10 @@ public partial class WidgetViewModel : ObservableObject
     // We are treating any text inside a container with the "Warning" style
     // as an actual warning to be announced.
     // For now, the only types of containers widgets use are Containers and Columns. In the future,
-    // we may add Caroussels, Tables and Facts to this list.
+    // we may add Carousels, Tables and Facts to this list.
     // We just need to add the other controls in this dictionary
     // with the correct function to access its children.
-    private static readonly Dictionary<Type, string> ContainerTypes = new()
+    private static readonly Dictionary<Type, string> _containerTypes = new()
     {
         { typeof(AdaptiveContainer), "get_Items" },
         { typeof(AdaptiveColumn), "get_Items" },
@@ -432,13 +439,13 @@ public partial class WidgetViewModel : ObservableObject
 
         var containerElement = element as IAdaptiveContainerBase;
 
-        foreach (var containerType in ContainerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
+        foreach (var containerType in _containerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
         {
             var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var subelement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
+            foreach (var subElement in itemsMethod.Invoke(containerElement, null) as IEnumerable)
             {
-                SearchForWarning((IAdaptiveCardElement)subelement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
+                SearchForWarning((IAdaptiveCardElement)subElement, isInsideWarningContainer || (containerElement.Style == ContainerStyle.Warning));
             }
         }
     }

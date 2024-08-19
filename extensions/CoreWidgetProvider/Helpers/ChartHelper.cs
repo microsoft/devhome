@@ -20,7 +20,7 @@ internal sealed class ChartHelper
     public const int ChartHeight = 86;
     public const int ChartWidth = 268;
 
-    private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
+    private const string LightGrayBoxStyle = "fill:none;stroke:white;stroke-width:1";
 
     private const string CPULineStyle = "fill:none;stroke:rgb(57,184,227);stroke-width:1";
     private const string GPULineStyle = "fill:none;stroke:rgb(222,104,242);stroke-width:1";
