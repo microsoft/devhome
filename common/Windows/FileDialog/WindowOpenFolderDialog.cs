@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
+using Serilog;
 using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.System.Com;
@@ -13,6 +14,8 @@ namespace DevHome.Common.Windows.FileDialog;
 
 public class WindowOpenFolderDialog : WindowFileDialog
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WindowOpenFolderDialog));
+
     /// <inheritdoc />
     private protected override IFileDialog CreateInstance()
     {
@@ -28,11 +31,21 @@ public class WindowOpenFolderDialog : WindowFileDialog
 
     public async Task<StorageFolder?> ShowAsync(Window window)
     {
-        if (ShowOk(window))
+        try
         {
-            FileDialog.GetResult(out var shellItem);
-            var folderPath = GetDisplayName(shellItem);
-            return await StorageFolder.GetFolderFromPathAsync(folderPath).AsTask();
+            if (ShowOk(window))
+            {
+                FileDialog.GetResult(out var shellItem);
+                var folderPath = GetDisplayName(shellItem);
+
+                // GetFolderFromPathAsync will throw if the user does not have access to the
+                // folder.  One such example is a hidden folder.
+                return await StorageFolder.GetFolderFromPathAsync(folderPath).AsTask();
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex.ToString());
         }
 
         return null;
