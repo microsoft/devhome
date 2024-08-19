@@ -131,7 +131,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
+                _log.Error(ex, "Exception in GetWidgetCatalogAsync:");
                 _widgetCatalog = null;
             }
         }
@@ -161,7 +161,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
+                _log.Error(ex, "Exception in GetProviderDefinitionsAsync:");
             }
         }
 
@@ -190,7 +190,7 @@ public class WidgetHostingService : IWidgetHostingService
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Exception in GetWidgetDefinitionAsync:");
+                _log.Error(ex, "Exception in GetWidgetDefinitionsAsync:");
             }
         }
 

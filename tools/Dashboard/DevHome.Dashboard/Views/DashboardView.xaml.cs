@@ -86,6 +86,7 @@ public partial class DashboardView : ToolPage, IDisposable
             var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
             if (widgetCatalog == null)
             {
+                _log.Error("Error in in SubscribeToWidgetCatalogEvents, widgetCatalog == null");
                 return false;
             }
 
@@ -194,9 +195,10 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
-            ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
             {
+                ViewModel.HasWidgetServiceInitialized = true;
+
                 var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
