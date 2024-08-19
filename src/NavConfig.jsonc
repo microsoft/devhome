@@ -40,14 +40,6 @@
             "viewModelFullName": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel",
             "iconFontFamily": "DevHomeFluentIcons",
             "icon": "ECED"
-          },
-          {
-            "experimentalFeatureIdentity": "WebView2Tool",
-            "identity": "DevHome.WebView2Tool",
-            "assembly": "DevHome.WebView2Tool",
-            "viewFullName": "DevHome.WebView2Tool.Views.WebView2ToolView",
-            "viewModelFullName": "DevHome.WebView2Tool.ViewModels.WebView2ToolViewModel",
-            "icon": "f1ad"
           }
         ]
       }
@@ -114,27 +106,6 @@
           "buildType": "stable",
           "enabledByDefault": false,
           "visible": true
-        }
-      ]
-    },
-    {
-      "identity": "WebView2Tool",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": false
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
         }
       ]
     }
