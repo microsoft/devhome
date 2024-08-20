@@ -98,6 +98,7 @@ public class InsightPossibleLoaderIssue : Insight
                 Arguments = ImageFileName,
                 UseShellExecute = true,
                 WorkingDirectory = fileInfo.DirectoryName,
+                Verb = "runas",
             };
 
             var process = Process.Start(startInfo);

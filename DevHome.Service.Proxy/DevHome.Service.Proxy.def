@@ -1,0 +1,5 @@
+LIBRARY DevHome.Service.Proxy.dll
+
+EXPORTS
+    DllGetClassObject      PRIVATE
+    DllCanUnloadNow        PRIVATE

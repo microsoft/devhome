@@ -1,0 +1,14 @@
+import "unknwn.idl";
+
+cpp_quote("#ifdef __cplusplus")
+cpp_quote("class DECLSPEC_UUID(\"695B4403-83BA-4E4B-AC03-ED4D7DBA21FE\") DevHome.Service;")
+cpp_quote("#endif")
+
+[
+    uuid(D1FF65D2-7CDA-489E-9AE0-701855C4F6A1),
+    pointer_default(unique),
+    object
+] interface ITimServer : IUnknown
+{
+    HRESULT GetNumber([out, retval] int* number);
+}

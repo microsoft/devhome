@@ -3,9 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +40,26 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        Type? t = Type.GetTypeFromCLSID(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
+
+        object obj;
+        int hr = Ole32.CoCreateInstance(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"), IntPtr.Zero, Ole32._CLSCTX_LOCAL_SERVER, typeof(ITimServer).GUID, out obj);
+        if (hr < 0)
+        {
+            Marshal.ThrowExceptionForHR(hr);
+        }
+
+        if (obj is not null)
+        {
+            var timServer2 = obj as ITimServer;
+
+            if (timServer2 is not null)
+            {
+                int num;
+                timServer2.GetJoke(out num);
+            }
+        }
+
         // Set up Logging
         try
         {
@@ -253,4 +275,30 @@ public static class Program
             }
         });
     }
+
+    private sealed class Ole32
+    {
+        // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
+        public const int _CLSCTX_LOCAL_SERVER = 0x4;
+
+        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
+        [DllImport(nameof(Ole32))]
+        public static extern int CoCreateInstance(
+            [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
+            IntPtr pUnkOuter,
+            uint dwClsContext,
+            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+            [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
+    }
 }
+
+[ComImport]
+[Guid("D1FF65D2-7CDA-489E-9AE0-701855C4F6A1")]
+public interface ITimServer
+{
+    int GetJoke(out int prefix);
+}
+
+[ComImport]
+[Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57")]
+public class TimServer;
