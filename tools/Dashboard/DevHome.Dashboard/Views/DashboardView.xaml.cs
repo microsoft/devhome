@@ -52,7 +52,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IWidgetExtensionService _widgetExtensionService;
-    private CancellationTokenSource _initWidgetsCancellationTokenSource;
+    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource;
     private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -67,6 +67,8 @@ public partial class DashboardView : ToolPage, IDisposable
         this.InitializeComponent();
 
         ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
+
+        _initWidgetsCancellationTokenSource = new();
 
         _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
@@ -206,7 +208,6 @@ public partial class DashboardView : ToolPage, IDisposable
                     await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
-                _initWidgetsCancellationTokenSource = new();
                 try
                 {
                     await InitializePinnedWidgetListAsync(isFirstDashboardRun, _initWidgetsCancellationTokenSource.Token);
