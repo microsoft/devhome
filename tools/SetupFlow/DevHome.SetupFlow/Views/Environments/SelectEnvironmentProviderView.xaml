@@ -95,6 +95,7 @@
 
                 <Grid
                     Grid.Row="2"
+                    Grid.RowSpan="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Visibility="{x:Bind ViewModel.AreProvidersLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">

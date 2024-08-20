@@ -7,3 +7,4 @@ MAX_PATH
 SFBS_FLAGS
 StrFormatByteSizeEx
 SetForegroundWindow
+GetDiskFreeSpaceEx

@@ -34,7 +34,7 @@ public sealed class VMGalleryService : IVMGalleryService
         _downloaderService = downloaderService;
     }
 
-    private static readonly Uri VmGalleryUrl = new("https://go.microsoft.com/fwlink/?linkid=851584");
+    private static readonly Uri _vmGalleryUrl = new("https://go.microsoft.com/fwlink/?linkid=851584");
 
     private VMGalleryImageList _imageList = new();
 
@@ -56,7 +56,7 @@ public sealed class VMGalleryService : IVMGalleryService
             cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(5));
 
             // get the JSON data
-            var resultJson = await _downloaderService.DownloadStringAsync(VmGalleryUrl.AbsoluteUri, cancellationTokenSource.Token);
+            var resultJson = await _downloaderService.DownloadStringAsync(_vmGalleryUrl.AbsoluteUri, cancellationTokenSource.Token);
             _imageList = JsonSerializer.Deserialize(resultJson, typeof(VMGalleryImageList), _jsonOptions) as VMGalleryImageList ?? emptyList;
 
             // Now we need to download the base64 images for the symbols (icons). So they can be used within an adaptive card.
@@ -79,7 +79,8 @@ public sealed class VMGalleryService : IVMGalleryService
                     var totalSizeOfDisk = await _downloaderService.GetHeaderContentLength(new Uri(image.Disk.Uri), cancellationTokenSource.Token);
                     if (ulong.TryParse(image.Requirements.DiskSpace, CultureInfo.InvariantCulture, out var requiredDiskSpace))
                     {
-                        image.Disk.SizeInBytes = (ulong)totalSizeOfDisk;
+                        image.Disk.ArchiveSizeInBytes = (ulong)totalSizeOfDisk;
+                        image.Disk.ExtractedFileRequiredFreeSpace = requiredDiskSpace + image.Disk.ArchiveSizeInBytes;
                     }
                 }
             }

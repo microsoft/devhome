@@ -126,6 +126,10 @@ public class HyperVProvider : IComputeSystemProvider
         try
         {
             _hyperVManager.StartVirtualMachineManagementService();
+            var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
+            var virtualMachineHost = _hyperVManager.GetVirtualMachineHost();
+
+            return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource, virtualMachineHost));
         }
         catch (VirtualMachineManagementServiceException serviceException)
         {
@@ -137,9 +141,6 @@ public class HyperVProvider : IComputeSystemProvider
             _log.Error(ex, $"Failed to get adaptive card session for session kind: {sessionKind}");
             return new ComputeSystemAdaptiveCardResult(ex, OperationErrorString, ex.Message);
         }
-
-        var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
-        return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource));
     }
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSessionForComputeSystem(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind)

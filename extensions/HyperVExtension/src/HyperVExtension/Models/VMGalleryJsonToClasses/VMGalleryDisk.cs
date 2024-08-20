@@ -10,5 +10,11 @@ public sealed class VMGalleryDisk : VMGalleryItemWithHashBase
 {
     public string ArchiveRelativePath { get; set; } = string.Empty;
 
-    public ulong SizeInBytes { get; set; }
+    public ulong ArchiveSizeInBytes { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating the total required disk space for the image
+    /// after it is extracted from the archive file.
+    /// </summary>
+    public ulong ExtractedFileRequiredFreeSpace { get; set; }
 }
