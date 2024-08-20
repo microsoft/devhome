@@ -410,16 +410,16 @@
     <comment>Default value for provider selector</comment>
   </data>
   <data name="RemoveFolder.Text" xml:space="preserve">
-    <value>Remove</value>
+    <value>Remove from list</value>
     <comment>Click to remove a folder path from source control integration</comment>
   </data>
   <data name="MenuFlyoutUnregisteredRepository_Content" xml:space="preserve">
     <value>Unassigned</value>
     <comment>This is the content string displayed when a repository is added in the File Explorer Settings page but no source control provider has been selected. </comment>
   </data>
-  <data name="RemoveRepository.Text" xml:space="preserve">
-    <value>Enter path to remove an enhanced repository</value>
-    <comment>The text for removing a repository from source control integration</comment>
+  <data name="OpenFolderInFileExplorer.Text" xml:space="preserve">
+    <value>Open in File Explorer</value>
+    <comment>Click to open the folder path inside File Explorer </comment>
   </data>
   <data name="EnableVersionControlIntegrationCard.Description" xml:space="preserve">
     <value>Allow Dev Home to enhance your File Explorer view for known repositories</value>
