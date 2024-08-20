@@ -21,7 +21,7 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.1601'
+  MSIXVersion: '0.1701'
   VersionOfSDK: '0.700'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -233,7 +233,9 @@ extends:
 
                   $(Build.SourcesDirectory)\**\bin\**\*.dll
 
-                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
+                  $(Build.SourcesDirectory)\**\obj\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\obj\**\devhome.r2r.dll
 
             - template: ./build/templates/EsrpSigning-Steps.yml@self
               parameters:

@@ -9,13 +9,16 @@ using System.Diagnostics;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
 using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Services;
 using DevHome.PI.TelemetryEvents;
 using DevHome.Telemetry;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -23,50 +26,59 @@ namespace DevHome.PI.ViewModels;
 
 public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 {
-    private readonly bool logMeasures;
-
-    private readonly ObservableCollection<WinLogsEntry> winLogsOutput;
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
-
-    [ObservableProperty]
-    private ObservableCollection<WinLogsEntry> winLogEntries;
+    private readonly bool _logMeasures;
+    private readonly ObservableCollection<WinLogsEntry> _winLogsOutput;
+    private readonly DispatcherQueue _dispatcher;
+    private readonly PIInsightsService _insightsService;
 
     [ObservableProperty]
-    private Visibility insightsButtonVisibility = Visibility.Collapsed;
+    private ObservableCollection<WinLogsEntry> _winLogEntries;
 
     [ObservableProperty]
-    private Visibility runAsAdminVisibility = Visibility.Collapsed;
+    private AdvancedCollectionView _winLogsView;
 
     [ObservableProperty]
-    private Visibility gridVisibility = Visibility.Visible;
+    private Visibility _runAsAdminVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
-    private bool isETWLogsEnabled;
+    private Visibility _gridVisibility = Visibility.Visible;
 
     [ObservableProperty]
-    private bool isDebugOutputEnabled;
+    private bool _isETWLogsEnabled;
 
     [ObservableProperty]
-    private bool isEventViewerEnabled = true;
+    private bool _isDebugOutputEnabled;
 
     [ObservableProperty]
-    private bool isWatsonEnabled = true;
+    private bool _isEventViewerEnabled = true;
 
-    private Process? targetProcess;
-    private WinLogsHelper? winLogsHelper;
+    [ObservableProperty]
+    private bool _isWEREnabled = true;
+
+    [ObservableProperty]
+    private string _filterMessageText;
+
+    private Process? _targetProcess;
+    private WinLogsHelper? _winLogsHelper;
 
     public WinLogsPageViewModel()
     {
         // Log feature usage.
-        logMeasures = true;
+        _logMeasures = true;
         App.Log("DevHome.PI_WinLogs_PageInitialize", LogLevel.Measure);
 
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        winLogEntries = new();
-        winLogsOutput = new();
-        winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _insightsService = Application.Current.GetService<PIInsightsService>();
+
+        _filterMessageText = string.Empty;
+        _winLogEntries = [];
+        _winLogsOutput = [];
+        _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _winLogsView = new AdvancedCollectionView(_winLogEntries, true);
+        _winLogsView.SortDescriptions.Add(new SortDescription(nameof(WinLogsEntry.TimeGenerated), SortDirection.Ascending));
+        _winLogsView.Filter = entry => string.IsNullOrEmpty(FilterMessageText) || ((WinLogsEntry)entry).Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase);
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -77,9 +89,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     public void UpdateTargetProcess(Process process)
     {
-        if (targetProcess != process)
+        if (_targetProcess != process)
         {
-            targetProcess = process;
+            _targetProcess = process;
             GridVisibility = Visibility.Visible;
             RunAsAdminVisibility = Visibility.Collapsed;
             StopWinLogs();
@@ -89,8 +101,8 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
                 if (!process.HasExited)
                 {
                     IsETWLogsEnabled = ETWHelper.IsUserInPerformanceLogUsersGroup();
-                    winLogsHelper = new WinLogsHelper(targetProcess, winLogsOutput);
-                    winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWatsonEnabled);
+                    _winLogsHelper = new WinLogsHelper(_targetProcess, _winLogsOutput);
+                    _winLogsHelper.Start(IsETWLogsEnabled, IsDebugOutputEnabled, IsEventViewerEnabled, IsWEREnabled);
                 }
             }
             catch (Win32Exception ex)
@@ -130,7 +142,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     private void StopWinLogs(bool shouldCleanLogs = true)
     {
-        winLogsHelper?.Stop();
+        _winLogsHelper?.Stop();
 
         if (shouldCleanLogs)
         {
@@ -142,7 +154,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 foreach (WinLogsEntry newEntry in e.NewItems)
                 {
@@ -155,7 +167,7 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        winLogsHelper?.Dispose();
+        _winLogsHelper?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -166,13 +178,13 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         {
             var isChecked = box.IsChecked;
 
-            if (logMeasures)
+            if (_logMeasures)
             {
                 App.Log("DevHome.PI_WinLogs_LogStateChanged", LogLevel.Measure, new LogStateChangedEventData(box.Name, (box.IsChecked ?? false) ? "true" : "false"), null);
             }
 
             var tool = (WinLogsTool)box.Tag;
-            winLogsHelper?.LogStateChanged(tool, isChecked ?? false);
+            _winLogsHelper?.LogStateChanged(tool, isChecked ?? false);
         }
     }
 
@@ -198,55 +210,43 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     private void FindPattern(string message)
     {
         var newInsight = InsightsHelper.FindPattern(message);
-
-        dispatcher.TryEnqueue(() =>
+        if (newInsight is not null)
         {
-            if (newInsight is not null)
+            _dispatcher.TryEnqueue(() =>
             {
-                newInsight.IsExpanded = true;
-                var insightsPageViewModel = Application.Current.GetService<InsightsPageViewModel>();
-                insightsPageViewModel.AddInsight(newInsight);
-                InsightsButtonVisibility = Visibility.Visible;
-            }
-            else
-            {
-                InsightsButtonVisibility = Visibility.Collapsed;
-            }
-        });
+                _insightsService.AddInsight(newInsight);
+            });
+        }
     }
 
     [RelayCommand]
     private void ClearWinLogs()
     {
-        if (logMeasures)
+        if (_logMeasures)
         {
             // Log feature usage.
             App.Log("DevHome.PI_WinLogs_ClearLogs", LogLevel.Measure);
         }
 
-        winLogsOutput?.Clear();
-        dispatcher.TryEnqueue(() =>
+        _winLogsOutput?.Clear();
+        _dispatcher.TryEnqueue(() =>
         {
             WinLogEntries.Clear();
-
-            InsightsButtonVisibility = Visibility.Collapsed;
         });
-    }
-
-    [RelayCommand]
-    private void ShowInsightsPage()
-    {
-        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
-        Debug.Assert(barWindow != null, "BarWindow should not be null.");
-        barWindow.NavigateTo(typeof(InsightsPageViewModel));
     }
 
     [RelayCommand]
     private void RunAsAdmin()
     {
-        if (targetProcess is not null)
+        if (_targetProcess is not null)
         {
-            CommonHelper.RunAsAdmin(targetProcess.Id, nameof(WinLogsPageViewModel));
+            CommonHelper.RunAsAdmin(_targetProcess.Id, nameof(WinLogsPageViewModel));
         }
+    }
+
+    [RelayCommand]
+    private void UpdateWinLogs()
+    {
+        WinLogsView.RefreshFilter();
     }
 }

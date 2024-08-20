@@ -65,8 +65,8 @@
             <DataTemplate x:Key="ThreeDotsButton" x:DataType="vm:ComputeSystemViewModel">
                 <Grid>
                     <Button
-                        Style="{StaticResource HorizontalThreeDotsStyle}"
-                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
+                        x:Uid="MoreOptionsButton"
+                        Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
                         </Button.Flyout>
@@ -74,12 +74,12 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Three Dot Button For create compute system operation template -->
+            <!-- Three Dot Button for create compute system operation template -->
             <DataTemplate x:Key="ThreeDotsButtonForCreation" x:DataType="vm:CreateComputeSystemOperationViewModel">
                 <Grid>
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}"
-                        AutomationProperties.Name="{x:Bind MoreOptionsButtonName}">
+                        x:Uid="MoreOptionsButton">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
                         </Button.Flyout>
@@ -87,7 +87,7 @@
                 </Grid>
             </DataTemplate>
 
-            <!-- Properties template for the compute system properties that appear within a horizontal card.-->
+            <!-- Properties template for the compute system properties that appear within a horizontal card -->
             <DataTemplate x:Key="BottomRowProperties" x:DataType="commonModels:CardProperty">
                 <Grid
                     HorizontalAlignment="Stretch"
@@ -235,7 +235,7 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <!-- Search field -->
-            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="250" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="230" HorizontalAlignment="Left" VerticalAlignment="Center">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="TextChanged">
                         <ic:InvokeCommandAction
@@ -250,8 +250,8 @@
                 <ComboBox x:Uid="ProviderSelectionComboBox"
                           x:Name="ProviderSelectionComboBox"
                           Margin="0 3 0 0"
-                          MinWidth="180"
-                          ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}" 
+                          MinWidth="150"
+                          ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}"
                           SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
@@ -266,12 +266,10 @@
                 <ComboBox x:Uid="SortSelectionComboBox"
                           x:Name="SortSelectionComboBox"
                           Margin="0 3 0 0"
-                          MinWidth="236"
+                          MinWidth="165"
                           SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="SortByName"/>
                     <ComboBoxItem x:Uid="SortByNameDesc"/>
-                    <ComboBoxItem x:Uid="SortByAltName"/>
-                    <ComboBoxItem x:Uid="SortByAltNameDesc"/>
                     <ComboBoxItem x:Uid="SortByLastConnected"/>
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
@@ -283,8 +281,9 @@
                 <Button
                     x:Uid="SyncEnvironmentsButton"
                     Command="{x:Bind ViewModel.SyncButtonCommand}"
-                    Margin="0 3 0 0">
-                    <StackPanel Orientation="Horizontal" Padding="20 0" Spacing="8">
+                    Margin="0 3 0 0"
+                    Width="110">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />
                     </StackPanel>
@@ -320,6 +319,8 @@
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
                     </ListView>
+
+                    <!-- Shimmer -->
                     <StackPanel
                         Visibility="{x:Bind ViewModel.ShowLoadingShimmer, Mode=OneWay}">
                         <ContentControl
@@ -327,24 +328,26 @@
                             ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel 
+
+                <!-- No extension found, show link to extensions page-->
+                <StackPanel
                     Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Margin="0,0,0,250">
-                    <TextBlock 
+                    <TextBlock
                         Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
-                        HorizontalAlignment="Center" 
-                        TextWrapping="WrapWholeWords" 
+                        HorizontalAlignment="Center"
+                        TextWrapping="WrapWholeWords"
                         HorizontalTextAlignment="Center" />
-                    <views:AddCreateHyperlinkButton 
-                        Grid.Column="3" 
+                    <views:AddCreateHyperlinkButton
+                        Grid.Column="3"
                         HorizontalAlignment="Center"
                         Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                         Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
                         Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
-                    <HyperlinkButton 
-                        Grid.Column="3" 
+                    <HyperlinkButton
+                        Grid.Column="3"
                         HorizontalAlignment="Center"
                         Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
                         Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
@@ -352,6 +355,8 @@
                 </StackPanel>
             </Grid>
         </ScrollViewer>
+
+        <!-- Notification panel -->
         <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <InfoBar MaxWidth="600"
                 Margin="24"

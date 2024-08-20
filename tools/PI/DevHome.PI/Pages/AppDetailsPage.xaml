@@ -15,9 +15,12 @@
         <Grid.Resources>
             <Style TargetType="TextBlock">
                 <Setter Property="Margin" Value="0,2,0,6"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>
             <Style TargetType="TextBox">
                 <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -25,10 +28,25 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Uid="AppDetailsTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="AppDetailsTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+            <Button 
+                Grid.Column="1"
+                x:Uid="DetachAppButton" 
+                Height="40"
+                BorderThickness="0"
+                Visibility="{x:Bind ViewModel.AppSettingsVisibility, Mode=OneWay}" 
+                Command="{x:Bind ViewModel.DetachFromProcessCommand}">
+                <TextBlock Text="&#xe894;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
+            </Button>
+        </Grid>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <Grid x:Name="AppDetailsPanel">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -54,41 +72,66 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Uid="BasePriorityTextBlock"/>
-                    <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BasePriority, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BasePriority, Mode=OneWay}"/>
                     <TextBlock Grid.Row="1" x:Uid="PriorityClassTextBlock" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}"/>
                     <TextBlock Grid.Row="2" x:Uid="MainModuleTextBlock" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}"/>
                     <TextBlock Grid.Row="3" x:Uid="CpuArchitectureTextBlock" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.CpuArchitecture, Mode=OneWay}" IsReadOnly="True" />
-                    <TextBlock Grid.Row="4" x:Uid="MSIXPackagedTextBlock" />
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}" IsReadOnly="True" />
-                    <TextBlock Grid.Row="5" x:Uid="MicrosoftStoreAppTextBlock" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsStoreApp, Mode=OneWay}" IsReadOnly="True" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.CpuArchitecture, Mode=OneWay}"/>                    
+                    <TextBlock Grid.Row="4" x:Uid="FrameworkTypesTextBlock"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IdentifiedFrameWorkTypes, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="5" x:Uid="ActivationArgsTextBlock"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ActivationArgs, Mode=OneWay}"/>
+                    <TextBlock Grid.Row="6" x:Uid="MSIXPackagedTextBlock" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}"/>
 
-                    <TextBlock Grid.Row="6" x:Uid="FrameworkTypesTextBlock" TextWrapping="Wrap"/>
-                    <ListView 
-                        Grid.Row="6" Grid.Column="1" IsItemClickEnabled="False"
-                        ItemsSource="{x:Bind ViewModel.AppInfo.FrameworkTypes, Mode=OneWay}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:FrameworkType">
-                                <local:ReadOnlyCheckBox
-                                    Content="{x:Bind Name, Mode=OneWay}" IsChecked="{x:Bind IsTypeSupported, Mode=OneWay}" 
-                                    Width="180" IsReadOnly="True"/>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <controls:WrapPanel/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ListView>
+                    <!-- This panel is only visible if the target app is MSIX-packaged. -->
+                    <Grid Grid.Row="7" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ProcessPackageVisibility, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="PackageFullNameTextBlock"/>
+                        <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.FullName, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="1" x:Uid="PackageVersionTextBlock"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Version, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="2" x:Uid="PackageDisplayNameTextBlock"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.DisplayName, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="3" x:Uid="PackageInstalledDateTextBlock"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.InstalledDate, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="4" x:Uid="PackageInstalledPathTextBlock"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.InstalledPath, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="5" x:Uid="PackagePublisherTextBlock"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Publisher, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="6" x:Uid="PackageIsDevelopmentModeTextBlock"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.IsDevelopmentMode, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="7" x:Uid="PackageSignatureKindTextBlock"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.SignatureKind, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="8" x:Uid="PackageStatusTextBlock"/>
+                        <TextBox Grid.Row="8" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Status, Mode=OneWay}"/>
+                        <TextBlock Grid.Row="9" x:Uid="PackageDependenciesTextBlock"/>
+                        <TextBox Grid.Row="9" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Dependencies, Mode=OneWay}"/>
+                    </Grid>
                 </Grid>
 
                 <!-- These fields can't be reported if the target process has exited -->
@@ -109,9 +152,14 @@
                 </Grid>
 
                 <Button 
-                    Grid.Row="3" Grid.ColumnSpan="2" x:Uid="RunElevatedButton" Margin="0,8,0,0"
+                    Grid.Row="3" Grid.ColumnSpan="2" Margin="0,12,0,0"
                     Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" 
-                    Command="{x:Bind ViewModel.RunAsAdminCommand}"/>
+                    Command="{x:Bind ViewModel.RunAsAdminCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <SymbolIcon Symbol="Admin"/>
+                        <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </ScrollViewer>
     </Grid>

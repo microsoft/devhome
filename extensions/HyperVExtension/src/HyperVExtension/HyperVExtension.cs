@@ -10,7 +10,13 @@ using Serilog;
 namespace HyperVExtension;
 
 [ComVisible(true)]
+#if CANARY_BUILD
+[Guid("6B219EF0-E238-434C-952E-4DF3D452AC83")]
+#elif STABLE_BUILD
 [Guid("F8B26528-976A-488C-9B40-7198FB425C9E")]
+#else
+[Guid("28DD4098-162D-483C-9ED0-FB3887A22F61")]
+#endif
 [ComDefaultInterface(typeof(IExtension))]
 public sealed class HyperVExtension : IExtension, IDisposable
 {

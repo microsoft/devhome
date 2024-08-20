@@ -193,10 +193,6 @@
     <value>MSIX packaged</value>
     <comment>This refers to whether the application is using MSIX packaging technology.</comment>
   </data>
-  <data name="MicrosoftStoreAppTextBlock.Text" xml:space="preserve">
-    <value>Microsoft Store app</value>
-    <comment>This refers to whether the application was acquired via the Microsoft Store.</comment>
-  </data>
   <data name="ModulesHeaderTextBlock.Text" xml:space="preserve">
     <value>Loaded modules</value>
     <comment>The contents of a text block referring to loaded application modules.</comment>
@@ -281,21 +277,21 @@
     <value>Disk usage</value>
     <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
   </data>
-  <data name="WatsonsHeaderTextBlock.Text" xml:space="preserve">
+  <data name="WERHeaderTextBlock.Text" xml:space="preserve">
     <value>WER Reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
-  <data name="TimeGeneratedColumn.Header" xml:space="preserve">
+  <data name="WERTimeGeneratedColumn.Header" xml:space="preserve">
     <value>Time generated</value>
-    <comment>The time at which the Watson report was generated.</comment>
+    <comment>The time at which the WER report was generated.</comment>
   </data>
-  <data name="FaultingExecutableColumn.Header" xml:space="preserve">
+  <data name="WERFaultingExecutableColumn.Header" xml:space="preserve">
     <value>Faulting executable</value>
     <comment>Refers to the process/application executable which caused the fault which generated the crash report</comment>
   </data>
-  <data name="WatsonInfoTextBox.Text" xml:space="preserve">
-    <value>Info about the Watson crash</value>
-    <comment>Refers to the Watson diagnostic information about a process crash.</comment>
+  <data name="WERInfoTextBox.Text" xml:space="preserve">
+    <value>Info about the Windows Error Report</value>
+    <comment>Refers to the WER diagnostic information about a process crash.</comment>
   </data>
   <data name="WinLogsHeaderTextBlock.Text" xml:space="preserve">
     <value>Windows logs</value>
@@ -313,13 +309,17 @@
     <value>Entries from the event log for the target app</value>
     <comment>Tooltip for whether to enable event viewer logs in the log view output.</comment>
   </data>
-  <data name="WatsonCheckbox.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="WERCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to Watson report logs in the log view output.</comment>
+    <comment>Tooltip for whether to WER report logs are shown in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
     <comment>Tooltip for a button that will clear the log list.</comment>
+  </data>
+  <data name="LogTimeGenerated.Header" xml:space="preserve">
+    <value>Time Generated</value>
+    <comment>The time at which the log was generated.</comment>
   </data>
   <data name="LogCategoryColumn.Header" xml:space="preserve">
     <value>Category</value>
@@ -465,10 +465,6 @@
     <value>See more</value>
     <comment>The contents of a text label.</comment>
   </data>
-  <data name="ClickboardErrorTextBlock.Text" xml:space="preserve">
-    <value>Error on clipboard</value>
-    <comment>This refers to error codes being detected on the clipboard (HRESULT/NTSTATUS failures etc)</comment>
-  </data>
   <data name="HexLabelTextBlock.Text" xml:space="preserve">
     <value>Hex</value>
     <comment>This refers to a short hand for hexadecimal number notation.</comment>
@@ -488,10 +484,6 @@
   <data name="IsRunningAsSystemTextBlock.Text" xml:space="preserve">
     <value>Is running as System</value>
     <comment>This refers to whether the application is running as System</comment>
-  </data>
-  <data name="RunElevatedButton.Content" xml:space="preserve">
-    <value>Run Project Ironsides as Admin to get more data</value>
-    <comment>{Locked="Ironsides"} When the user clicks this button we relaunch Project Ironsides as admin to get more app details</comment>
   </data>
   <data name="InsightsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Go to the key insights</value>
@@ -565,9 +557,9 @@
     <value>The app is trying to access the file '{0}', but this is locked by an unknown process</value>
     <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
-  <data name="WatsonStartErrorMessage" xml:space="preserve">
-    <value>Could not start Watson</value>
-    <comment>Refers to being unable to start monitoring the Watson error logs.</comment>
+  <data name="WERStartErrorMessage" xml:space="preserve">
+    <value>Could not start WER Monitoring</value>
+    <comment>Refers to being unable to start monitoring the WER error logs.</comment>
   </data>
   <data name="WinLogCategoryError" xml:space="preserve">
     <value>Error</value>
@@ -689,8 +681,8 @@
     <value>Security issue</value>
     <comment>Describes an issue related to security.</comment>
   </data>
-  <data name="FaultingModuleColumn.Header" xml:space="preserve">
-    <value>Faulting module</value>
+  <data name="WERBucketColumn.Header" xml:space="preserve">
+    <value>Failure Bucket ID</value>
     <comment>Refers to the module which caused the fault which generated the crash report</comment>
   </data>
   <data name="GenericInsightDescription" xml:space="preserve">
@@ -698,7 +690,7 @@
     <comment>{Locked="{0}", "{1}"} A description to help a user that is dealing with non-specific error situation. {0} is the error name. {1} is the error description.</comment>
   </data>
   <data name="FrameworkTypesTextBlock.Text" xml:space="preserve">
-    <value>Framework types used in this app</value>
+    <value>Frameworks detected</value>
     <comment>This refers to the set of application frameworks this application uses.</comment>
   </data>
   <data name="BaseAddressTextBlock.Text" xml:space="preserve">
@@ -853,10 +845,6 @@
     <value>The executable used to start the process</value>
     <comment>Tooltip for the Main Module field.</comment>
   </data>
-  <data name="MicrosoftStoreAppTextBlock.ToolTipService.ToolTip" xml:space="preserve">
-    <value>True if this app was deployed via the Microsoft Store</value>
-    <comment>Tooltip for the Microsoft Store field.</comment>
-  </data>
   <data name="MSIXPackagedTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>True if this process is packaged with MSIX</value>
     <comment>Tooltip for the MSIX Packaged field.</comment>
@@ -925,10 +913,6 @@
     <value>Enable App Execution Alias for Project Ironsides and try again</value>
     <comment>{Locked="Ironsides"} Content Dialog title to enable app execution alias for Project Ironsides</comment>
   </data>
-  <data name="DetachAppButton.Content" xml:space="preserve">
-    <value>Detach from target app</value>
-    <comment>Button in the expanded view to detach from the target app</comment>
-  </data>
   <data name="DetachAppButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Detach from the currently targeted process</value>
     <comment>Used to describe what the DetachAppButton does</comment>
@@ -941,13 +925,17 @@
     <value>Detach the diagnostic bar from the target application</value>
     <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
   </data>
+  <data name="WERDumpColumn.Header" xml:space="preserve">
+    <value>Dump file</value>
+    <comment>Header text for the link to a WER dump</comment>
+  </data>
   <data name="ActivationTextBlock.Text" xml:space="preserve">
     <value>Activation</value>
     <comment>Header text for a group of radio buttons indicating the activation type</comment>
   </data>
-  <data name="AppListButton.Content" xml:space="preserve">
-    <value>App list</value>
-    <comment>Text for a button to get a list of apps</comment>
+  <data name="RefreshAppListButton.Content" xml:space="preserve">
+    <value>Refresh</value>
+    <comment>Text for a button to refresh the list of apps</comment>
   </data>
   <data name="AppsDataGridIconColumn.Header" xml:space="preserve">
     <value>Icon</value>
@@ -958,8 +946,8 @@
     <comment>Column heading for the name column in a datagrid</comment>
   </data>
   <data name="ArgumentsDescriptionTextBlock.Text" xml:space="preserve">
-    <value>Provide the command-line or protocol arguments here. Use {pid} or {hwnd} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
-    <comment>{Locked="Ironsides"} Description text for a section where the user can type in the arguments to be used for the app</comment>
+    <value>Provide the command-line or protocol arguments here. Use {pid}, {hwnd}, or {crashDumpPath} if you want Project Ironsides to substitute the target app's process ID or window handle. For example:</value>
+    <comment>{Locked="Ironsides", "{pid}", "{hwnd}", "{crashDumpPath}"} Description text for a section where the user can type in the arguments to be used for the app</comment>
   </data>
   <data name="ArgumentsHeaderTextBlock.Text" xml:space="preserve">
     <value>Arguments</value>
@@ -1017,13 +1005,9 @@
     <value>Name of the attached app</value>
     <comment>Refers to the app's name in the bar</comment>
   </data>
-  <data name="ClipboardMonitor.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open the Clipboard Monitor window</value>
-    <comment>Tooltip that tells users what the Clipboard Monitor button will do</comment>
-  </data>
-  <data name="ClipboardMonitorLabel.Text" xml:space="preserve">
+  <data name="ClipboardMonitorName" xml:space="preserve">
     <value>Clipboard Monitor</value>
-    <comment>A text label for the Clipboard Monitor button</comment>
+    <comment>A label for the Clipboard Monitor tool</comment>
   </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
     <value>See insights that Project Ironsides has gained</value>
@@ -1040,5 +1024,206 @@
   <data name="ManageExternalToolsMenuText" xml:space="preserve">
     <value>Manage Tools</value>
     <comment>Label for a button to allow users to manage external tools</comment>
+  </data>
+  <data name="FileDialogFilterAllFiles" xml:space="preserve">
+    <value>All Files</value>
+    <comment>Filter string to specify that the file dialog should include all files</comment>
+  </data>
+  <data name="FileDialogFilterBatchFiles" xml:space="preserve">
+    <value>Batch Files</value>
+    <comment>Filter string to specify that the file dialog should include batch files</comment>
+  </data>
+  <data name="FileDialogFilterCommandFiles" xml:space="preserve">
+    <value>Command Files</value>
+    <comment>Filter string to specify that the file dialog should include command files</comment>
+  </data>
+  <data name="FileDialogFilterExecutables" xml:space="preserve">
+    <value>Executables</value>
+    <comment>Filter string to specify that the file dialog should include executable files</comment>
+  </data>
+  <data name="FileDialogFilterMmcFiles" xml:space="preserve">
+    <value>Management Console Files</value>
+    <comment>Filter string to specify that the file dialog should include Management Console files</comment>
+  </data>
+  <data name="FileDialogFilterPowershell" xml:space="preserve">
+    <value>PowerShell Scripts</value>
+    <comment>Filter string to specify that the file dialog should include PowerShell files</comment>
+  </data>
+  <data name="LocalDumpCollectionLabel.Text" xml:space="preserve">
+    <value>Local WER collection for app</value>
+    <comment>Label for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalDumpCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Toggle settings to allow capture of Windows Error Reporting dumps for offline analysis</value>
+    <comment>Tooltip for Windows Error reporting toggle switch</comment>
+  </data>
+  <data name="LocalDumpMoreInfo.Content" xml:space="preserve">
+    <value>More</value>
+    <comment>Label for a link that navigates the user to a location to learn more about WER local dumps</comment>
+  </data>
+  <data name="RunElevatedButtonForWER.Text" xml:space="preserve">
+    <value>Change</value>
+    <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
+  </data>
+  <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to modify WER collection for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to change WER settings</comment>
+  </data>
+  <data name="RunElevatedButton.Text" xml:space="preserve">
+    <value>Get Information</value>
+    <comment>The contents of a button to allow the user to trigger elevation to get more information</comment>
+  </data>
+  <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Project Ironsides needs to run as Admin in order to get more data for an app.</value>
+    <comment>{Locked="Ironsides"} Tooltip for a button that relaunches Project Ironsides as admin to get more data</comment>
+  </data>
+  <data name="DumpInfoSelectorItem.Text" xml:space="preserve">
+    <value>Dump Info</value>
+    <comment>Selector Pivot that shows information about a Dump File</comment>
+  </data>
+  <data name="FilterDataToTargetAppToggleLabel.Text" xml:space="preserve">
+    <value>Filter Data to Target App</value>
+    <comment>Label on a toggle button that controls whether presented data is filtered to the selected app</comment>
+  </data>
+  <data name="FilterDataToTargetAppToggleLabel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Controls whether data presented is for the entire system or filtered to the selected app</value>
+    <comment>Tooltip for the FilterDataToTargetApp toggle</comment>
+  </data>
+  <data name="ActivationArgsTextBlock.Text" xml:space="preserve">
+    <value>Activation arguments</value>
+    <comment>Label for the arguments passed in when activating the target app.</comment>
+  </data>
+  <data name="ActivationArgsTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Any arguments provided to the app when it was activated</value>
+    <comment>Tooltip for the arguments passed in when activating the target app.</comment>
+  </data>
+  <data name="PackageFullNameTextBlock.Text" xml:space="preserve">
+    <value>Full name</value>
+    <comment>Textblock showing the full name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageFullNameTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Package full name</value>
+    <comment>Tooltip for the full name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageVersionTextBlock.Text" xml:space="preserve">
+    <value>Version</value>
+    <comment>Textblock showing the version of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageVersionTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Package version</value>
+    <comment>Tooltip for the version of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDisplayNameTextBlock.Text" xml:space="preserve">
+    <value>Display name</value>
+    <comment>Textblock showing the display name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDisplayNameTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Display name for this package</value>
+    <comment>Tooltip for the display name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.Text" xml:space="preserve">
+    <value>Installed date</value>
+    <comment>Textblock showing the installed date of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Date this package was installed</value>
+    <comment>Tooltip for the installed date of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledPathTextBlock.Text" xml:space="preserve">
+    <value>Installed path</value>
+    <comment>Textblock showing the installed path of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageInstalledPathTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Filesystem path where this package is installed</value>
+    <comment>Tooltip for the installed path of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackagePublisherTextBlock.Text" xml:space="preserve">
+    <value>Publisher</value>
+    <comment>Textblock showing the publisher name of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackagePublisherTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Name of the package publisher</value>
+    <comment>Tooltip for the full publisher of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageIsDevelopmentModeTextBlock.Text" xml:space="preserve">
+    <value>Development mode</value>
+    <comment>Textblock showing whether the MSIX package for this app was installed in development mode.</comment>
+  </data>
+  <data name="PackageIsDevelopmentModeTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Was this package sideloaded in development mode</value>
+    <comment>Tooltip for whether the MSIX package for this app was installed in development mode.</comment>
+  </data>
+  <data name="PackageSignatureKindTextBlock.Text" xml:space="preserve">
+    <value>Signature kind</value>
+    <comment>Textblock showing the signature kind of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageSignatureKindTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>The kind of signature used to sign this package, if any</value>
+    <comment>Tooltip for the signature kind of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageStatusTextBlock.Text" xml:space="preserve">
+    <value>Status</value>
+    <comment>Textblock showing the status of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageStatusTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Deployment status of this package</value>
+    <comment>Tooltip for the status of the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDependenciesTextBlock.Text" xml:space="preserve">
+    <value>Dependencies</value>
+    <comment>Textblock showing the list of dependencies for the MSIX package for this app.</comment>
+  </data>
+  <data name="PackageDependenciesTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Additional packages this app depends on</value>
+    <comment>Tooltip for the list of dependencies for the MSIX package for this app.</comment>
+  </data>
+  <data name="UnknownText" xml:space="preserve">
+    <value>(unknown)</value>
+    <comment>Text used in messages to indicate that the value of this item is unknown.</comment>
+  </data>
+  <data name="NoIssuesText" xml:space="preserve">
+    <value>No issues</value>
+    <comment>A message indicating that there are no issues with the given item.</comment>
+  </data>
+  <data name="ToolTypeButton.Content" xml:space="preserve">
+    <value>Tool Type</value>
+    <comment>Button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Set the type of the tool being added.</value>
+    <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
+    <value>WER Dump Analyzer</value>
+    <comment>Describes type of tool used to analyze WER dumps</comment>
+  </data>
+  <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <comment>Tooltip that describes what a WER Dump analyzer does</comment>
+  </data>
+  <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
+    <value>Project Ironsides Clipboard Monitor</value>
+    <comment>{Locked="Ironsides"} Window title for the clipboard monitor tool</comment>
+  </data>
+  <data name="WERAnalysisUnavailable" xml:space="preserve">
+    <value>Analysis unavailable.</value>
+    <comment>Message shown when there isn't crash analysis available.</comment>
+  </data>
+  <data name="WERBasicInfo" xml:space="preserve">
+    <value>Dump File Size: {0} bytes
+Dump File creation time: {1}</value>
+    <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
+  </data>
+  <data name="BucketUsingThisToolString" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
+    <value>Use this tool for WER bucketing</value>
+    <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
+  </data>
+  <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
+    <value>Regular Expression for WER bucket</value>
+    <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
   </data>
 </root>

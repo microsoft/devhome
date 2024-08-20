@@ -58,6 +58,8 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
     private bool _disposedValue;
 
+    private Action<ComputeSystemReviewItem>? _configurationAction;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ComputeSystemViewModel"/> class.
     /// This class requires a 3-step initialization:
@@ -73,6 +75,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         IComputeSystem system,
         ComputeSystemProvider provider,
         Func<ComputeSystemCardBase, bool> removalAction,
+        Action<ComputeSystemReviewItem>? configurationAction,
         string packageFullName,
         Window window)
     {
@@ -83,6 +86,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         ComputeSystem = new(system);
         PackageFullName = packageFullName;
         _removalAction = removalAction;
+        _configurationAction = configurationAction;
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
     }
 
@@ -133,7 +137,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             ShouldShowDotOperations = false;
             ShouldShowSplitButton = false;
 
-            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(ComputeSystem));
+            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(_provider, ComputeSystem, _configurationAction));
 
             _ = Task.Run(async () =>
             {

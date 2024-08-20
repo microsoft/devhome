@@ -7,6 +7,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
+    xmlns:commonBehaviors="using:DevHome.Common.Behaviors"
     Unloaded="ViewUnloaded"
     Loaded="ViewLoaded">
     <UserControl.Resources>
@@ -14,6 +15,9 @@
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectVisibleWhenEmptyConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
     </UserControl.Resources>
+    <i:Interaction.Behaviors >
+        <commonBehaviors:AutoFocusBehavior />
+    </i:Interaction.Behaviors>
 
     <!--- Show the Choose environment header on the page. -->
     <Grid>
@@ -41,7 +45,7 @@
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
                     <InfoBar
                         IsOpen="True"
-                        x:Uid="ErrorRetrievingAdaptiveCardSession"
+                        Title="{x:Bind ViewModel.SessionErrorTitle, Mode=OneWay}"
                         Severity="Error"
                         Message="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}" >
                     </InfoBar>

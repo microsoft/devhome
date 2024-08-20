@@ -49,6 +49,7 @@ public class ProcessSelectionButton : Button
         WindowHelper.GetAppInfoUnderMouseCursor(out p, out hwnd);
         if (p != null)
         {
+            WindowHelper.TranslateUWPProcess(hwnd, ref p);
             TargetAppData.Instance.SetNewAppData(p, hwnd);
         }
 

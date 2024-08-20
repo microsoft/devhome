@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.PI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,30 +16,32 @@ namespace DevHome.PI.Controls;
 
 internal sealed class ExternalToolsManagementButton : Button
 {
-    private const string _UnregisterButtonText = "\uECC9";
+    private const string UnregisterButtonGlyph = "\uECC9";
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
     private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
     private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
+    private readonly ExternalToolsHelper _externalTools;
 
     public event EventHandler<ExternalTool>? ExternalToolLaunchRequest;
 
     public ExternalToolsManagementButton()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _externalTools = Application.Current.GetService<ExternalToolsHelper>();
 
         InitializeExternalTools();
     }
 
     private void InitializeExternalTools()
     {
-        if (ExternalToolsHelper.Instance.AllExternalTools.Count > 0)
+        if (_externalTools.AllExternalTools.Count > 0)
         {
             var flyout = new MenuFlyout();
             this.ContextFlyout = flyout;
 
-            foreach (var tool in ExternalToolsHelper.Instance.AllExternalTools)
+            foreach (var tool in _externalTools.AllExternalTools)
             {
                 AddExternalToolToContextMenu(flyout, tool);
                 tool.PropertyChanged += ExternalToolItem_PropertyChanged;
@@ -47,7 +50,7 @@ internal sealed class ExternalToolsManagementButton : Button
 
         // We have to cast to INotifyCollectionChanged explicitly because the CollectionChanged
         // event in ReadOnlyObservableCollection is protected.
-        ((INotifyCollectionChanged)ExternalToolsHelper.Instance.AllExternalTools).CollectionChanged += ExternalTools_CollectionChanged;
+        ((INotifyCollectionChanged)_externalTools.AllExternalTools).CollectionChanged += ExternalTools_CollectionChanged;
     }
 
     private void ExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -112,10 +115,7 @@ internal sealed class ExternalToolsManagementButton : Button
     // and unregistering the tool.
     private MenuFlyoutItem CreateContextMenuItemForTool(ExternalTool tool)
     {
-        var imageIcon = new ImageIcon
-        {
-            Source = tool.ToolIcon,
-        };
+        var imageIcon = tool.GetIcon();
 
         var menuItem = new MenuFlyoutItem
         {
@@ -144,7 +144,7 @@ internal sealed class ExternalToolsManagementButton : Button
         var unRegisterMenuSubItemItem = new MenuFlyoutItem
         {
             Text = _unregisterMenuItemText,
-            Icon = GetFontIcon(_UnregisterButtonText),
+            Icon = GetFontIcon(UnregisterButtonGlyph),
             Tag = tool,
         };
         unRegisterMenuSubItemItem.Click += UnregisterMenuItem_Click;
@@ -188,10 +188,7 @@ internal sealed class ExternalToolsManagementButton : Button
                 // Update the name if it's changed
                 menuItem.Text = tool.Name;
 
-                var imageIcon = new ImageIcon
-                {
-                    Source = tool.ToolIcon,
-                };
+                var imageIcon = tool.GetIcon();
 
                 menuItem.Icon = imageIcon;
 

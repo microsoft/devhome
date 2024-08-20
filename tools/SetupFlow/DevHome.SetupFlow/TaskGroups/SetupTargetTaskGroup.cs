@@ -13,6 +13,7 @@ namespace DevHome.SetupFlow.TaskGroups;
 public class SetupTargetTaskGroup : ISetupTaskGroup
 {
     private readonly SetupTargetViewModel _setupTargetViewModel;
+
     private readonly SetupTargetReviewViewModel _setupTargetReviewViewModel;
 
     private readonly ConfigureTargetTask _setupTargetTaskGroup;

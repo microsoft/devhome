@@ -625,6 +625,10 @@
     <value>Already installed</value>
     <comment>Label for a package/application that already exists on the user's machine.</comment>
   </data>
+  <data name="PackageInstalledAnnouncement" xml:space="preserve">
+    <value>{0}. Already installed</value>
+    <comment>{Locked="{0}","."}Text announced for a package/application that already exists on the user's machine. {0} is replaced by the package name. A period (.) is used to add a pause for the narrator.</comment>
+  </data>
   <data name="PackageNameTooltip" xml:space="preserve">
     <value>Name: {0}</value>
     <comment>{Locked="{0}"} Label for a package name displayed on a tooltip. {0} is replaced by the package name.</comment>
@@ -661,7 +665,7 @@
     <value>Generate Configuration file</value>
     <comment>Text for a generating configuration file button</comment>
   </data>
-  <data name="Review_DownloadFileTooltip.Subtitle" xml:space="preserve">
+  <data name="Review_DownloadFileTooltip.Title" xml:space="preserve">
     <value>Generate a WinGet Configuration file (.winget) to repeat this setup in the future or share it with others.</value>
     <comment>{Locked="WinGet",".winget"}Tooltip text about the generated configuration file</comment>
   </data>
@@ -1808,9 +1812,9 @@
     <value>Add options to create your environment</value>
     <comment>Description for the configure environment page</comment>
   </data>
-  <data name="ErrorRetrievingAdaptiveCardSession.Title" xml:space="preserve">
-    <value>There was an error retrieving the adaptive card session from the extension</value>
-    <comment>Error text display when we are unable to retrieve the adaptive card information from an extension</comment>
+  <data name="ErrorLoadingCreationUITitle" xml:space="preserve">
+    <value>There was an error loading the data required to create {0} environments</value>
+    <comment>Locked={"{0}"} Error text display when we are unable to retrieve the creation data for a Dev Home provider. {0} is the name of the provider</comment>
   </data>
   <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
     <value>Environment</value>
@@ -1867,9 +1871,9 @@
     <value>We've started creating your environment</value>
     <comment>Text to tell the user that an environment is being created. Environments can be local or cloud virtual machines</comment>
   </data>
-  <data name="EnvironmentCreationAdaptiveCardLoadingMessage" xml:space="preserve">
-    <value>Loading adaptive card from the {0} provider</value>
-    <comment>Text to tell the user that Dev Home is loading the adaptive card content from a specific Dev Home extension provider. {0} is the display name of the provider</comment>
+  <data name="EnvironmentCreationUILoadingMessage" xml:space="preserve">
+    <value>Loading data needed to create {0} environments</value>
+    <comment>Text to tell the user that Dev Home is loading the creation UX from a specific Dev Home extension provider. {0} is the display name of the provider</comment>
   </data>
   <data name="RepoToolNoRepositoriesMessage" xml:space="preserve">
     <value>Added repositories are found in your {0} account and will appear here.</value>
@@ -2007,16 +2011,16 @@
     <value>Error: {0}</value>
     <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
   </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
-  </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
-  </data>
   <data name="SummaryPage_InstallationNotes.Text" xml:space="preserve">
     <value>Installation Notes</value>
     <comment>Text to introduce installation notes in the summary screen.</comment>
+  </data>
+  <data name="LoginUIDialogCloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Close</value>
+	<comment>Close button automation name for the login UI dialog</comment>
+  </data>
+  <data name="GenerateConfigInfoButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Generate configuration file info</value>
+	<comment>Narration for the informational icon next to the "Generate Configuration file" button</comment>
   </data>
 </root>

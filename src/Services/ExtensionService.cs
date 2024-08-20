@@ -9,36 +9,42 @@ using DevHome.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
+using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
 
 public class ExtensionService : IExtensionService, IDisposable
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionService));
+
     public event EventHandler OnExtensionsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new();
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
     private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
+
+    private readonly ILocalSettingsService _localSettingsService;
+
     private bool _disposedValue;
 
     private const string CreateInstanceProperty = "CreateInstance";
     private const string ClassIdProperty = "@ClassId";
 
-#pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IExtensionWrapper> _installedExtensions = new();
-    private static List<IExtensionWrapper> _enabledExtensions = new();
-    private static List<string> _installedWidgetsPackageFamilyNames = new();
-#pragma warning restore IDE0044 // Add readonly modifier
+    private static readonly List<IExtensionWrapper> _installedExtensions = new();
+    private static readonly List<IExtensionWrapper> _enabledExtensions = new();
+    private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
-    public ExtensionService()
+    public ExtensionService(ILocalSettingsService settingsService)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
+        _localSettingsService = settingsService;
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -148,7 +154,7 @@ public class ExtensionService : IExtensionService, IDisposable
         return (devHomeProvider, classIds);
     }
 
-    public async Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync()
+    private async Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync()
     {
         return await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
     }
@@ -217,6 +223,12 @@ public class ExtensionService : IExtensionService, IDisposable
         }
     }
 
+    public IExtensionWrapper? GetInstalledExtension(string extensionUniqueId)
+    {
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
+        return extension.FirstOrDefault();
+    }
+
     private async Task<IEnumerable<string>> GetInstalledWidgetExtensionsAsync()
     {
         await _getInstalledWidgetsLock.WaitAsync();
@@ -247,20 +259,6 @@ public class ExtensionService : IExtensionService, IDisposable
         var ids = devHomeExtensionWrappers.Select(x => x.PackageFamilyName).Intersect(widgetExtensionWrappers).ToList();
 
         return ids;
-    }
-
-    public async Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync()
-    {
-        var installedExtensions = await GetInstalledExtensionsAsync();
-        foreach (var installedExtension in installedExtensions)
-        {
-            if (!installedExtension.IsRunning())
-            {
-                await installedExtension.StartExtensionAsync();
-            }
-        }
-
-        return installedExtensions;
     }
 
     public async Task SignalStopExtensionsAsync()
@@ -371,13 +369,34 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public void EnableExtension(string extensionUniqueId)
     {
-        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
         _enabledExtensions.Add(extension.First());
     }
 
     public void DisableExtension(string extensionUniqueId)
     {
-        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
         _enabledExtensions.Remove(extension.First());
+    }
+
+    /// <inheritdoc cref="IExtensionService.DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper)"/>
+    public async Task<bool> DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension)
+    {
+        // Only attempt to disable feature if its available.
+        if (IsWindowsOptionalFeatureAvailableForExtension(extension.ExtensionClassId))
+        {
+            return false;
+        }
+
+        _log.Warning($"Disabling extension: '{extension.ExtensionDisplayName}' because its feature is absent or unknown");
+
+        // Remove extension from list of enabled extensions to prevent Dev Home from re-querying for this extension
+        // for the rest of its process lifetime.
+        DisableExtension(extension.ExtensionUniqueId);
+
+        // Update the local settings so the next time the user launches Dev Home the extension will be disabled.
+        await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
+
+        return true;
     }
 }

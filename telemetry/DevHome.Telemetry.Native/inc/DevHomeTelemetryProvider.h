@@ -44,10 +44,10 @@ class DevHomeTelemetryProvider : public wil::TraceLoggingProvider
 public:
 
     // Activity for quiet session
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS_WITH_LEVEL(
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS_WITH_LEVEL(
         QuietBackgroundProcesses_ElevatedServer_Session,
         PDT_ProductAndServicePerformance,
-        WINEVENT_LEVEL_CRITICAL);
+        WINEVENT_LEVEL_LOG_ALWAYS);
 
         DEFINE_ACTIVITY_START(bool isPlacebo, uint64_t expectedDuration)
         {
@@ -67,10 +67,10 @@ public:
 
 
     // Activity for process metrics
-    BEGIN_COMPLIANT_MEASURES_ACTIVITY_CLASS_WITH_LEVEL(
+    BEGIN_COMPLIANT_CRITICAL_DATA_ACTIVITY_CLASS_WITH_LEVEL(
         QuietBackgroundProcesses_PerformanceMetrics,
         PDT_ProductAndServicePerformance,
-        WINEVENT_LEVEL_CRITICAL);
+        WINEVENT_LEVEL_LOG_ALWAYS);
 
         DEFINE_ACTIVITY_START(uint32_t quietSessionVersion, uint64_t samplingPeriodInMs, uint64_t totalCpuUsageInMicroseconds)
         {

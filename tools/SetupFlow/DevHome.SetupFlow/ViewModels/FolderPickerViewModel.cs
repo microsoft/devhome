@@ -50,6 +50,12 @@ public partial class FolderPickerViewModel : ObservableObject
     private bool _isBrowseButtonEnabled;
 
     /// <summary>
+    /// Visually hides the browse button.
+    /// </summary>
+    [ObservableProperty]
+    private bool _showBrowseButton = true;
+
+    /// <summary>
     /// Used to show different content in the textbox based on whether the checkbox is checked or unchecked.
     /// </summary>
     /// <remarks>
@@ -96,6 +102,11 @@ public partial class FolderPickerViewModel : ObservableObject
     public void DisableBrowseButton()
     {
         IsBrowseButtonEnabled = false;
+    }
+
+    public void HideBrowseButton()
+    {
+        ShowBrowseButton = false;
     }
 
     public void SetCloneLocation(string cloneLocation)

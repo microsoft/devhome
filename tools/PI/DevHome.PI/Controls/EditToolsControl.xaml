@@ -32,7 +32,7 @@
             FrozenColumnCount="0"
             GridLinesVisibility="None"
             HeadersVisibility="Column"
-            ItemsSource="{x:Bind local:ExternalToolsHelper.Instance.AllExternalTools}"
+            ItemsSource="{x:Bind _externalTools.AllExternalTools}"
             SelectionChanged="ToolsDataGrid_SelectionChanged">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Name}" MinWidth="150"/>

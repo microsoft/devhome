@@ -25,7 +25,7 @@
 
         <TextBlock x:Uid="ProcessListHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
 
-        <Grid Margin="16,16,0,0" Grid.Row="1">
+        <Grid Margin="0,16,0,0" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -55,7 +55,7 @@
 
         <controls:DataGrid
             x:Uid="ProcessDataGrid"
-            x:Name="ProcessDataGrid" Grid.Row="2" Margin="16,4,0,0"
+            x:Name="ProcessDataGrid" Grid.Row="2" Margin="0,4,0,0"
             VerticalScrollBarVisibility="Visible"
             AlternatingRowBackground="Transparent"
             AlternatingRowForeground="Gray"

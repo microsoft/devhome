@@ -20,6 +20,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Common.Environments.Helpers;
 
@@ -99,7 +100,7 @@ public partial class EnvironmentsNotificationHelper
         }
 
         var userInAdminGroup = _windowsIdentityHelper.IsUserHyperVAdmin();
-        var featureEnabled = ManagementInfrastructureHelper.IsWindowsFeatureAvailable(CommonConstants.HyperVWindowsOptionalFeatureName) == FeatureAvailabilityKind.Enabled;
+        var featureEnabled = IsWindowsOptionalFeatureEnabled(CommonConstants.HyperVWindowsOptionalFeatureName);
 
         if (!featureEnabled && !userInAdminGroup)
         {
@@ -200,7 +201,7 @@ public partial class EnvironmentsNotificationHelper
 
         // Add the user to the Hyper-V Administrators group and enable the Hyper-V feature if it is not already enabled.
         // Using a string instead of a file for the script so it can't be manipulated via the file system.
-        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{HyperVSetupScript.SetupFunction}\"";
+        startInfo.Arguments = $"-ExecutionPolicy Bypass -Command \"{HyperVSetupScript.SetupFunction} {user}\"";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";
 

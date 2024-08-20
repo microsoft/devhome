@@ -11,88 +11,76 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.PI.Helpers;
 using DevHome.PI.Models;
+using DevHome.PI.Properties;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.PI.ViewModels;
 
 public partial class ExpandedViewControlViewModel : ObservableObject
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private Visibility perfMarkersVisibility = Visibility.Collapsed;
+    private Visibility _perfMarkersVisibility = Visibility.Collapsed;
 
     [ObservableProperty]
-    private string applicationPid = string.Empty;
+    private string _applicationPid = string.Empty;
 
     [ObservableProperty]
-    private string applicationName = string.Empty;
+    private string _applicationName = string.Empty;
 
     [ObservableProperty]
-    private string cpuUsage = string.Empty;
+    private string _cpuUsage = string.Empty;
 
     [ObservableProperty]
-    private string ramUsage = string.Empty;
+    private string _ramUsage = string.Empty;
 
     [ObservableProperty]
-    private string diskUsage = string.Empty;
+    private string _diskUsage = string.Empty;
 
     [ObservableProperty]
-    private string clipboardContentsHex = string.Empty;
+    private string _title = string.Empty;
 
     [ObservableProperty]
-    private string clipboardContentsDec = string.Empty;
+    private ObservableCollection<PageNavLink> _links;
 
     [ObservableProperty]
-    private string clipboardContentsCode = string.Empty;
+    private int _selectedNavLinkIndex = 0;
 
     [ObservableProperty]
-    private string clipboardContentsHelp = string.Empty;
+    private bool _applyAppFiltering;
 
-    [ObservableProperty]
-    private string title = string.Empty;
-
-    [ObservableProperty]
-    private string settingsHeader = string.Empty;
-
-    [ObservableProperty]
-    private ObservableCollection<PageNavLink> links;
-
-    [ObservableProperty]
-    private int selectedNavLinkIndex = 0;
-
-    [ObservableProperty]
-    private Visibility appSettingsVisibility = Visibility.Collapsed;
+    private string? _additionalNavigationInfo;
 
     public INavigationService NavigationService { get; }
 
-    private readonly PageNavLink appDetailsNavLink;
-    private readonly PageNavLink resourceUsageNavLink;
-    private readonly PageNavLink modulesNavLink;
-    private readonly PageNavLink watsonNavLink;
-    private readonly PageNavLink winLogsNavLink;
-    private readonly PageNavLink processListNavLink;
-    private readonly PageNavLink insightsNavLink;
+    private readonly PageNavLink _appDetailsNavLink;
+    private readonly PageNavLink _resourceUsageNavLink;
+    private readonly PageNavLink _modulesNavLink;
+    private readonly PageNavLink _werNavLink;
+    private readonly PageNavLink _winLogsNavLink;
+    private readonly PageNavLink _processListNavLink;
+    private readonly PageNavLink _insightsNavLink;
+    private readonly PageNavLink _settingsNavLink;
 
     public ExpandedViewControlViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
-        ClipboardMonitor.Instance.PropertyChanged += Clipboard_PropertyChanged;
 
-        appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
-        resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
-        modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
-        watsonNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WatsonsHeaderTextBlock/Text"), typeof(WatsonPageViewModel));
-        winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
-        processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
-        insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
+        _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
+        _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
+        _modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
+        _werNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));
+        _winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
+        _processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
+        _insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
+        _settingsNavLink = new PageNavLink("\uE713", CommonHelper.GetLocalizedString("SettingsToolHeaderTextBlock/Text"), typeof(SettingsPageViewModel));
 
-        links = new();
+        _links = [];
 
-        appSettingsVisibility = TargetAppData.Instance.TargetProcess is not null ? Visibility.Visible : Visibility.Collapsed;
-
+        ApplyAppFiltering = Settings.Default.ApplyAppFilteringToData;
         AddPagesIfNecessary(TargetAppData.Instance.TargetProcess);
 
         // Initial values
@@ -100,29 +88,27 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
         DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
         NavigationService = Application.Current.GetService<INavigationService>();
-
-        SettingsHeader = CommonHelper.GetLocalizedString("SettingsToolHeaderTextBlock/Text");
     }
 
     private void PerfCounterHelper_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(PerfCounters.CpuUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", PerfCounters.Instance.CpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.RamUsageInMB))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.DiskUsage))
         {
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
             });
@@ -135,7 +121,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         {
             var process = TargetAppData.Instance.TargetProcess;
 
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 // The App status bar is only visibile if we're attached to a process
                 PerfMarkersVisibility = process is null ? Visibility.Collapsed : Visibility.Visible;
@@ -144,8 +130,6 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
                 ApplicationName = process?.ProcessName ?? string.Empty;
                 Title = process?.ProcessName ?? string.Empty;
-
-                AppSettingsVisibility = process is not null ? Visibility.Visible : Visibility.Collapsed;
 
                 if (process is null)
                 {
@@ -161,7 +145,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         {
             var newAppName = TargetAppData.Instance.AppName;
 
-            dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(() =>
             {
                 ApplicationName = newAppName;
                 Title = newAppName;
@@ -175,7 +159,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
             var process = TargetAppData.Instance.TargetProcess;
             if (process != null && process.HasExited)
             {
-                dispatcher.TryEnqueue(() =>
+                _dispatcher.TryEnqueue(() =>
                 {
                     Title = CommonHelper.GetLocalizedString("TerminatedText", ApplicationName);
                 });
@@ -183,39 +167,28 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         }
     }
 
-    private void Clipboard_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var clipboardContents = ClipboardMonitor.Instance.Contents;
-        dispatcher.TryEnqueue(() =>
-        {
-            ClipboardContentsHex = clipboardContents.Hex;
-            ClipboardContentsDec = clipboardContents.Dec;
-            ClipboardContentsCode = clipboardContents.Code;
-            ClipboardContentsHelp = clipboardContents.Help;
-        });
-    }
-
     private void AddPagesIfNecessary(Process? process)
     {
-        if (!Links.Contains(processListNavLink))
+        if (!Links.Contains(_processListNavLink))
         {
-            Links.Add(processListNavLink);
-            Links.Add(watsonNavLink);
-            Links.Add(insightsNavLink);
+            Links.Add(_processListNavLink);
+            Links.Add(_werNavLink);
+            Links.Add(_insightsNavLink);
+            Links.Add(_settingsNavLink);
         }
 
         // If App Details is missing, add all other pages.
-        if (!Links.Contains(appDetailsNavLink))
+        if (!Links.Contains(_appDetailsNavLink))
         {
             if (process is not null)
             {
-                Links.Insert(0, appDetailsNavLink);
-                Links.Insert(1, resourceUsageNavLink);
-                Links.Insert(2, modulesNavLink);
+                Links.Insert(0, _appDetailsNavLink);
+                Links.Insert(1, _resourceUsageNavLink);
+                Links.Insert(2, _modulesNavLink);
 
                 // Process List #3
-                // Watson #4
-                Links.Insert(5, winLogsNavLink);
+                // WER #4
+                Links.Insert(5, _winLogsNavLink);
 
                 // Insights #6;
             }
@@ -225,12 +198,12 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     private void RemoveAppSpecificPages()
     {
         // First navigate to ProcessListPage, then remove all other pages.
-        SelectedNavLinkIndex = Links.IndexOf(processListNavLink);
+        SelectedNavLinkIndex = Links.IndexOf(_processListNavLink);
 
-        Links.Remove(appDetailsNavLink);
-        Links.Remove(resourceUsageNavLink);
-        Links.Remove(modulesNavLink);
-        Links.Remove(winLogsNavLink);
+        Links.Remove(_appDetailsNavLink);
+        Links.Remove(_resourceUsageNavLink);
+        Links.Remove(_modulesNavLink);
+        Links.Remove(_winLogsNavLink);
     }
 
     public void NavigateTo(Type viewModelType)
@@ -240,7 +213,21 @@ public partial class ExpandedViewControlViewModel : ObservableObject
             var link = Links[i];
             if (link.PageViewModel == viewModelType)
             {
-                SelectedNavLinkIndex = i;
+                if (SelectedNavLinkIndex == i)
+                {
+                    // Navigation between pages is a bit convoluted, as we set SelectedNavLinkIndex, which triggers a change
+                    // event on a ListView that calls Navigate() to perform the actual navigation.
+                    //
+                    // If we're trying to navigate to the same Listview item, we need to call Navigate() directly. ListViewItems != Pages (for example, Settings
+                    // is a ListView Item, but there are several pages under Settings). If we end up navigating to the same page,
+                    // the NavService will no-op it
+                    Navigate();
+                }
+                else
+                {
+                    SelectedNavLinkIndex = i;
+                }
+
                 break;
             }
         }
@@ -248,32 +235,32 @@ public partial class ExpandedViewControlViewModel : ObservableObject
 
     public void Navigate()
     {
-        if (SelectedNavLinkIndex != -1)
+        var navigationService = Application.Current.GetService<INavigationService>();
+
+        if (_additionalNavigationInfo is not null)
         {
-            var navigationService = Application.Current.GetService<INavigationService>();
+            Debug.Assert(Links[SelectedNavLinkIndex] == _settingsNavLink, "Additional Nav Info currently only supported for Settings");
+            navigationService.NavigateTo(_additionalNavigationInfo);
+            _additionalNavigationInfo = null;
+            return;
+        }
+        else
+        {
             navigationService.NavigateTo(Links[SelectedNavLinkIndex]?.PageViewModel?.FullName!);
         }
     }
 
     public void NavigateToSettings(string viewModelType)
     {
-        // Because the Settings item isn't part of our NavLink list, when the user selects Settings,
-        // we need to move the list selection so that when they subsequently select an item from
-        // the NavLinks, we'll navigate to the correct page even if that was the previously-selected item.
-        SelectedNavLinkIndex = -1;
-
-        var navigationService = Application.Current.GetService<INavigationService>();
-        var mainSettingsPage = typeof(SettingsPageViewModel).FullName!;
-        navigationService.NavigateTo(mainSettingsPage);
-        if (!string.Equals(mainSettingsPage, viewModelType, StringComparison.OrdinalIgnoreCase))
-        {
-            navigationService.NavigateTo(viewModelType);
-        }
+        _additionalNavigationInfo = viewModelType;
+        NavigateTo(typeof(SettingsPageViewModel));
     }
 
     [RelayCommand]
-    public void DetachFromProcess()
+    public void ApplyAppFilteringToData()
     {
-        TargetAppData.Instance.ClearAppData();
+        // This command is called before the control has had a chance to toggle the ApplyAppFiltering setting.
+        Settings.Default.ApplyAppFilteringToData = !ApplyAppFiltering;
+        Settings.Default.Save();
     }
 }

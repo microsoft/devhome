@@ -70,6 +70,7 @@ public static class StringResourceKey
     public static readonly string PackageDescriptionTwoParts = nameof(PackageDescriptionTwoParts);
     public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
     public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
+    public static readonly string PackageInstalledAnnouncement = nameof(PackageInstalledAnnouncement);
     public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);
     public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
     public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);
@@ -294,7 +295,7 @@ public static class StringResourceKey
     public static readonly string EnvironmentCreationReviewExpanderDescription = nameof(EnvironmentCreationReviewExpanderDescription);
     public static readonly string CreateEnvironmentButtonText = nameof(CreateEnvironmentButtonText);
     public static readonly string SetupShellReviewPageDescriptionForEnvironmentCreation = nameof(SetupShellReviewPageDescriptionForEnvironmentCreation);
-    public static readonly string EnvironmentCreationAdaptiveCardLoadingMessage = nameof(EnvironmentCreationAdaptiveCardLoadingMessage);
+    public static readonly string EnvironmentCreationUILoadingMessage = nameof(EnvironmentCreationUILoadingMessage);
 
     // Summary page
     public static readonly string SummaryPageOpenDashboard = nameof(SummaryPageOpenDashboard);

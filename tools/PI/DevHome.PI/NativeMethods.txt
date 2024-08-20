@@ -6,9 +6,11 @@ CombineRgn
 CreateEllipticRgn
 CreateRectRgn
 CreateRoundRectRgn
+DefSubclassProc
 DwmGetWindowAttribute
 DwmSetWindowAttribute
 DwmSetWindowAttribute
+EnumChildWindows
 EnumThreadWindows
 EnumWindows
 GetAncestor
@@ -42,6 +44,7 @@ GlobalUnlock
 IsIconic
 IsImmersiveProcess
 IsWindow
+IsWindowArranged
 IsWindowVisible
 IsWow64Process2
 IsZoomed
@@ -67,6 +70,7 @@ SetWindowLong
 SetWindowLong
 SetWindowPos
 SetWindowRgn
+SetWindowSubclass
 SetWinEventHook
 ShowWindow
 SystemParametersInfo
@@ -103,12 +107,13 @@ RM_UNIQUE_PROCESS
 RM_PROCESS_INFO
 RM_REBOOT_REASON
 SECTION_FLAGS
+SUBCLASSPROC
 SW_*
-VIRTUAL_KEY
 VIRTUAL_KEY
 WIN32_ERROR
 WINEVENT_*
 WINEVENT_OUTOFCONTEXT
 WINEVENT_SKIPOWNPROCESS
+WINDOWPOS
 WM_*
 WS_*
