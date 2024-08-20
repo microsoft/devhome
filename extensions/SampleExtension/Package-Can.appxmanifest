@@ -9,12 +9,12 @@
   IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
-    Name="Microsoft.Windows.DevHomeSampleExtension"
+    Name="Microsoft.Windows.DevHomeSampleExtension.Canary"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Dev Home Sample Extension</DisplayName>
+    <DisplayName>Dev Home Sample Extension (Canary)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -33,8 +33,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Dev Home Sample Extension"
-        Description="Dev Home Sample Extension"
+        DisplayName="Dev Home Sample Extension (Canary)"
+        Description="Dev Home Sample Extension (Canary)"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
@@ -45,7 +45,7 @@
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="DevHomeSampleExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="DevHomeSampleExtensionApp">
-              <com:Class Id="83650A38-FFE6-4F84-BF36-92674EB39738" DisplayName="DevHomeSampleExtension" />
+              <com:Class Id="EDAF64A1-B163-4E7E-935D-679C950704FE" DisplayName="DevHomeSampleExtension" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -53,12 +53,12 @@
           <uap3:AppExtension Name="com.microsoft.devhome"
             Id="PG-SP-ID"
             PublicFolder="Public"
-            DisplayName="Dev Home Sample Extension"
-            Description="Sample Extension for Dev Home">
+            DisplayName="Dev Home Sample Extension (Canary)"
+            Description="Sample Extension for Dev Home (Canary)">
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="83650A38-FFE6-4F84-BF36-92674EB39738" />
+                  <CreateInstance ClassId="EDAF64A1-B163-4E7E-935D-679C950704FE" />
                 </Activation>
                 <SupportedInterfaces>
                   <Settings />

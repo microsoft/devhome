@@ -13,7 +13,7 @@ internal sealed class DeveloperIdProvider : IDeveloperIdProvider
     public string DisplayName => $"Sample {nameof(DeveloperIdProvider)}";
 
 #pragma warning disable CS0067 // The event 'DeveloperIdProvider.Changed' is never used
-    public event TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
+    public event TypedEventHandler<IDeveloperIdProvider, IDeveloperId>? Changed;
 #pragma warning restore CS0067 // The event 'DeveloperIdProvider.Changed' is never used
 
     public DeveloperIdsResult GetLoggedInDeveloperIds() => throw new NotImplementedException();
