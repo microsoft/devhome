@@ -36,7 +36,8 @@ internal sealed class SettingsUIController() : IExtensionAdaptiveCardSession
 
     public IAsyncOperation<ProviderOperationResult> OnAction(string action, string inputs)
     {
-        return Task.Run(() =>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        return Task.Run(async () =>
         {
             try
             {
@@ -64,6 +65,10 @@ internal sealed class SettingsUIController() : IExtensionAdaptiveCardSession
                 return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
             }
         }).AsAsyncOperation();
+<<<<<<< HEAD
+=======
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+>>>>>>> 43880bf1 (Update Sample Extension)
     }
 
     private ProviderOperationResult UpdateCard()
@@ -103,9 +108,15 @@ internal sealed class SettingsUIController() : IExtensionAdaptiveCardSession
             _template = template;
             return _template;
         }
+<<<<<<< HEAD
         catch (Exception ex)
         {
             Log.Error(ex, "Error getting template.");
+=======
+        catch (Exception e)
+        {
+            Log.Error(e, "Error getting template.");
+>>>>>>> 43880bf1 (Update Sample Extension)
             return string.Empty;
         }
     }

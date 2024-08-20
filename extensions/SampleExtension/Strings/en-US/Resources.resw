@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDisplayNameDev" xml:space="preserve">
-    <value>Dev Home Sample Extension (Dev)</value>
+    <value>Dev Home Sample Extension(Dev)</value>
     <comment>The name of our application when built for dev ring</comment>
   </data>
   <data name="AppDisplayNameCanary" xml:space="preserve">
