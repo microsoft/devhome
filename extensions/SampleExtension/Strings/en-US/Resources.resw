@@ -153,4 +153,7 @@
   <data name="NavigationProviderDisplayName" xml:space="preserve">
     <value>Dev Home Sample Extension Navigation</value>
   </data>
+  <data name="NavigationPageDisplayName" xml:space="preserve">
+    <value>Sample Extension Navigation Page</value>
+  </data>
 </root>

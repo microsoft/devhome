@@ -1660,12 +1660,59 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        Windows.Foundation.Uri Icon
+        Windows.Foundation.IAsyncOperation<NavigationPagesResult> GetNavigationPagesAsync();
+    };
+
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    runtimeclass NavigationPagesResult
+    {
+        NavigationPagesResult(IIterable<INavigationPage> navigationPages);
+        NavigationPagesResult(HRESULT e, String diagnosticText);
+
+        IIterable<INavigationPage> NavigationPages
         {
             get;
         };
 
-        String PageDisplayName
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    interface INavigationPage
+        requires Windows.Foundation.IClosable
+    {
+        // Display name for the navigation menu entry.
+        String MenuDisplayName
+        {
+            get;
+        };
+
+        // Icon for the navigation menu entry.
+        Windows.Storage.Streams.IRandomAccessStreamReference MenuIcon
+        {
+            get;
+        };
+
+        // Page display name.
+        String DisplayName
+        {
+            get;
+        };
+
+        // Whether the provider has enabled this page.
+        Boolean Enabled
+        {
+            get;
+        };
+
+        // Display order rank relative to other pages in this provider.
+        // Lower ranked pages are displayed first.
+        UInt32 DisplayRank
         {
             get;
         };

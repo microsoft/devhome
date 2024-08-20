@@ -45,7 +45,7 @@
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="DevHomeSampleExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="DevHomeSampleExtensionApp">
-              <com:Class Id="BEA53870-57BA-4741-B849-DBC8A3A06CC6" DisplayName="DevHomeSampleExtension" />
+              <com:Class Id="83650A38-FFE6-4F84-BF36-92674EB39738" DisplayName="DevHomeSampleExtension" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -58,7 +58,7 @@
             <uap3:Properties>
               <DevHomeProvider>
                 <Activation>
-                  <CreateInstance ClassId="BEA53870-57BA-4741-B849-DBC8A3A06CC6" />
+                  <CreateInstance ClassId="83650A38-FFE6-4F84-BF36-92674EB39738" />
                 </Activation>
                 <SupportedInterfaces>
                   <Settings />

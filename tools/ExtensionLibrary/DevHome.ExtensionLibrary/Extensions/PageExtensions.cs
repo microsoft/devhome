@@ -13,5 +13,6 @@ public static class PageExtensions
     {
         pageService.Configure<ExtensionLibraryViewModel, ExtensionLibraryView>();
         pageService.Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
+        pageService.Configure<ExtensionNavigationViewModel, ExtensionNavigationPage>();
     }
 }

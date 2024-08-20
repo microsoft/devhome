@@ -18,6 +18,9 @@ public static class ServiceExtensions
         services.AddTransient<ExtensionSettingsViewModel>();
         services.AddTransient<ExtensionSettingsPage>();
 
+        services.AddTransient<ExtensionNavigationViewModel>();
+        services.AddTransient<ExtensionNavigationPage>();
+
         return services;
     }
 }
