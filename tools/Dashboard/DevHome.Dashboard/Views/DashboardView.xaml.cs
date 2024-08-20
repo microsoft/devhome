@@ -52,7 +52,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IWidgetExtensionService _widgetExtensionService;
-    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource;
+    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
     private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -67,8 +67,6 @@ public partial class DashboardView : ToolPage, IDisposable
         this.InitializeComponent();
 
         ViewModel.PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChangedAsync;
-
-        _initWidgetsCancellationTokenSource = new();
 
         _dispatcherQueue = Application.Current.GetService<DispatcherQueue>();
         _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
