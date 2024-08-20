@@ -281,7 +281,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
 
             _host.GetService<RepositoryManagementDataAccessService>()
-            .AddRepository(RepositoryName, CloneLocation.FullName, "Main");
+            .AddRepository(RepositoryName, CloneLocation.FullName);
 
             WasCloningSuccessful = true;
 

@@ -10,6 +10,8 @@ namespace DevHome.Database.Migrations;
 /// <inheritdoc />
 public partial class InitialMigration : Migration
 {
+    private static readonly string[] _columns = new[] { "RepositoryName", "RepositoryClonePath" };
+
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
@@ -21,34 +23,10 @@ public partial class InitialMigration : Migration
                     .Annotation("Sqlite:Autoincrement", true),
                 RepositoryName = table.Column<string>(type: "TEXT", nullable: true),
                 RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: true),
-                LocalBranchName = table.Column<string>(type: "TEXT", nullable: true),
             },
             constraints: table =>
             {
                 table.PrimaryKey("PK_Repositories", x => x.RepositoryId);
-            });
-
-        migrationBuilder.CreateTable(
-            name: "RepositoryCommits",
-            columns: table => new
-            {
-                RepositoryCommitId = table.Column<int>(type: "INTEGER", nullable: false)
-                    .Annotation("Sqlite:Autoincrement", true),
-                CommitHash = table.Column<Guid>(type: "TEXT", nullable: false),
-                CommitUri = table.Column<string>(type: "TEXT", nullable: true),
-                Author = table.Column<string>(type: "TEXT", nullable: true),
-                CommitDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                RepositoryId = table.Column<int>(type: "INTEGER", nullable: false),
-            },
-            constraints: table =>
-            {
-                table.PrimaryKey("PK_RepositoryCommits", x => x.RepositoryCommitId);
-                table.ForeignKey(
-                    name: "FK_RepositoryCommits_Repositories_RepositoryId",
-                    column: x => x.RepositoryId,
-                    principalTable: "Repositories",
-                    principalColumn: "RepositoryId",
-                    onDelete: ReferentialAction.Cascade);
             });
 
         migrationBuilder.CreateTable(
@@ -73,9 +51,10 @@ public partial class InitialMigration : Migration
             });
 
         migrationBuilder.CreateIndex(
-            name: "IX_RepositoryCommits_RepositoryId",
-            table: "RepositoryCommits",
-            column: "RepositoryId");
+            name: "IX_Repositories_RepositoryName_RepositoryClonePath",
+            table: "Repositories",
+            columns: _columns,
+            unique: true);
 
         migrationBuilder.CreateIndex(
             name: "IX_RepositoryMetadata_RepositoryId",
@@ -87,9 +66,6 @@ public partial class InitialMigration : Migration
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.DropTable(
-            name: "RepositoryCommits");
-
         migrationBuilder.DropTable(
             name: "RepositoryMetadata");
 

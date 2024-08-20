@@ -23,9 +23,6 @@ namespace DevHome.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("LocalBranchName")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("RepositoryClonePath")
                         .HasColumnType("TEXT");
 
@@ -34,35 +31,10 @@ namespace DevHome.Database.Migrations
 
                     b.HasKey("RepositoryId");
 
+                    b.HasIndex("RepositoryName", "RepositoryClonePath")
+                        .IsUnique();
+
                     b.ToTable("Repositories");
-                });
-
-            modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryCommit", b =>
-                {
-                    b.Property<int>("RepositoryCommitId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Author")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CommitDateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("CommitHash")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CommitUri")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RepositoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("RepositoryCommitId");
-
-                    b.HasIndex("RepositoryId");
-
-                    b.ToTable("RepositoryCommits");
                 });
 
             modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
@@ -88,17 +60,6 @@ namespace DevHome.Database.Migrations
                     b.ToTable("RepositoryMetadata");
                 });
 
-            modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryCommit", b =>
-                {
-                    b.HasOne("DevHome.Database.DatabaseModels.RepositoryManagement.Repository", "Repository")
-                        .WithMany("RemoteCommits")
-                        .HasForeignKey("RepositoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Repository");
-                });
-
             modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
                 {
                     b.HasOne("DevHome.Database.DatabaseModels.RepositoryManagement.Repository", "Repository")
@@ -112,8 +73,6 @@ namespace DevHome.Database.Migrations
 
             modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.Repository", b =>
                 {
-                    b.Navigation("RemoteCommits");
-
                     b.Navigation("RepositoryMetadata");
                 });
 #pragma warning restore 612, 618

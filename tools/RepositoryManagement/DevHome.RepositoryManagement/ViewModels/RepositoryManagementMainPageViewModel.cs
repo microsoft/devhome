@@ -3,11 +3,10 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
-using DevHome.Database;
 using DevHome.RepositoryManagement.Services;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -16,29 +15,17 @@ public partial class RepositoryManagementMainPageViewModel
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
 
-    private readonly IHost _host;
+    private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    private readonly List<RepositoryManagementItemViewModel> _items;
-
-    public ObservableCollection<RepositoryManagementItemViewModel> Items => RefreshItemsForUI();
+    public ObservableCollection<RepositoryManagementItemViewModel> Items => new(_dataAccessService.GetRepositories(true));
 
     [RelayCommand]
     public void AddExistingRepository()
     {
     }
 
-    public RepositoryManagementMainPageViewModel(IHost host)
+    public RepositoryManagementMainPageViewModel(RepositoryManagementDataAccessService dataAccessService)
     {
-        _items = new List<RepositoryManagementItemViewModel>();
-        _host = host;
-
-        var items = _host.GetService<RepositoryManagementDataAccessService>().GetRepositories();
-
-        _items.AddRange(items);
-    }
-
-    private ObservableCollection<RepositoryManagementItemViewModel> RefreshItemsForUI()
-    {
-        return new(_items);
+        _dataAccessService = dataAccessService;
     }
 }

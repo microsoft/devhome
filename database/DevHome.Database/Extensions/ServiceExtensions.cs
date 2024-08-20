@@ -10,7 +10,7 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddDatabaseContext(this IServiceCollection services, HostBuilderContext context)
     {
-        services.AddDbContext<DevHomeDatabaseContext>();
+        services.AddTransient<DevHomeDatabaseContext>();
 
         return services;
     }

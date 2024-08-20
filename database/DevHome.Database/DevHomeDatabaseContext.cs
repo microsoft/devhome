@@ -10,8 +10,6 @@ public class DevHomeDatabaseContext : DbContext
 {
     public DbSet<Repository> Repositories { get; set; }
 
-    public DbSet<RepositoryCommit> RepositoryCommits { get; set; }
-
     public DbSet<RepositoryMetadata> RepositoryMetadata { get; set; }
 
     public string DbPath { get; }
