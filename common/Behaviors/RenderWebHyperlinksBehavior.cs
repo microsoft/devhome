@@ -30,10 +30,15 @@ public partial class RenderWebHyperlinksBehavior : Behavior<TextBlock>
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        SetInlineCollection(ToInline(AssociatedObject.Text));
+        SetInlineCollection(CreateInlines(AssociatedObject.Text));
     }
 
-    private List<Inline> ToInline(string text)
+    /// <summary>
+    /// Create a collection of <see cref="Inline"/> elements.
+    /// </summary>
+    /// <param name="text">The text to parse.</param>
+    /// <returns>The collection of <see cref="Inline"/> elements.</returns>
+    private List<Inline> CreateInlines(string text)
     {
         List<Inline> elements = [];
         if (string.IsNullOrEmpty(text))
@@ -43,9 +48,9 @@ public partial class RenderWebHyperlinksBehavior : Behavior<TextBlock>
 
         foreach (var part in WebUrlRegex().Split(text))
         {
-            if (Uri.IsWellFormedUriString(part, UriKind.Absolute))
+            if (Uri.TryCreate(part, UriKind.Absolute, out var uri))
             {
-                elements.Add(CreateHyperlink(part));
+                elements.Add(CreateHyperlink(part, uri));
             }
             else
             {
@@ -61,18 +66,19 @@ public partial class RenderWebHyperlinksBehavior : Behavior<TextBlock>
     /// </summary>
     /// <param name="text">The text to display.</param>
     /// <returns>The <see cref="Run"/> element.</returns>
-    protected Run CreateRun(string text) => new() { Text = text };
+    private Run CreateRun(string text) => new() { Text = text };
 
     /// <summary>
     /// Create a <see cref="Hyperlink"/> element.
     /// </summary>
     /// <param name="text">The text to display.</param>
+    /// <param name="uri">The URI to navigate to.</param>
     /// <returns>The <see cref="Hyperlink"/> element.</returns>
-    protected Hyperlink CreateHyperlink(string text)
+    private Hyperlink CreateHyperlink(string text, Uri uri)
     {
         Hyperlink hyperlink = new()
         {
-            NavigateUri = new Uri(text),
+            NavigateUri = uri,
         };
         hyperlink.Inlines.Add(CreateRun(text));
         return hyperlink;
@@ -82,7 +88,7 @@ public partial class RenderWebHyperlinksBehavior : Behavior<TextBlock>
     /// Set the <see cref="TextBlock.Inlines"/> collection.
     /// </summary>
     /// <param name="inlineCollection">The collection of <see cref="Inline"/> elements.</param>
-    protected void SetInlineCollection(IEnumerable<Inline> inlineCollection)
+    private void SetInlineCollection(IEnumerable<Inline> inlineCollection)
     {
         AssociatedObject.Inlines.Clear();
         foreach (var inline in inlineCollection)
