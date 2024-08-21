@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.UI;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
