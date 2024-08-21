@@ -40,7 +40,8 @@
                             Orientation="Horizontal">
                             <DropDownButton 
                                 Name="SelectProviderButton"
-                                Content="{Binding SourceControlProviderDisplayName}">
+                                Content="{Binding SourceControlProviderDisplayName}"
+                                ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout 
                                         Placement="Bottom">
