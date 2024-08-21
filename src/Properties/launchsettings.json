@@ -8,7 +8,7 @@
     },
     "DevInsights (Package)": {
       "commandName": "MsixPackage",
-      "commandLineArgs": "--utilitylaunch DevHome.PI.Exe ",
+      "commandLineArgs": "--utilitylaunch DevHome.DevInsights.Exe ",
       "nativeDebugging": true
     }
   }
