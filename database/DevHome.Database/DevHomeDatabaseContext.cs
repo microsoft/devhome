@@ -24,7 +24,7 @@ public class DevHomeDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // If I have time, this should be split like the service extensions are.
+        // If I have time, this should be split like service extensions.
         // As more entities are added, the longer this method will get.
         var repositoryEntity = modelBuilder.Entity<Repository>();
         if (repositoryEntity != null)
