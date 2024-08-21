@@ -36,7 +36,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <WebView2 x:Name="webView2" Grid.Row="1" Grid.ColumnSpan="2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" x:Uid="ExtensionSettingsWebView2"/>
+                    <WebView2 x:Name="webView2" Grid.Row="1" Grid.ColumnSpan="2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" x:Uid="ExtensionSettingsWebView2" DefaultBackgroundColor="Transparent"/>
                 </Grid>
             </Grid>
         </ScrollViewer>
