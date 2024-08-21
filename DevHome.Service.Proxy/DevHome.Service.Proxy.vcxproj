@@ -74,7 +74,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;%(PreprocessorDefinitions);PROXY_CLSID_IS={0x549dccd1,0x6850,0x4d14,{0x99,0x60,0xea,0x53,0xaa,0xef,0x38,0x49}};</PreprocessorDefinitions>
+      <PreprocessorDefinitions>
+        WIN32;_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;%(PreprocessorDefinitions);PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -88,6 +89,12 @@
       <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
     </Link>
+    <Midl>
+      <TypeLibFormat>NewFormat</TypeLibFormat>
+    </Midl>
+    <PostBuildEvent>
+      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -95,7 +102,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x549dccd1,0x6850,0x4d14,{0x99,0x60,0xea,0x53,0xaa,0xef,0x38,0x49}};(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -111,12 +118,18 @@
       <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
     </Link>
+    <Midl>
+      <TypeLibFormat>NewFormat</TypeLibFormat>
+    </Midl>
+    <PostBuildEvent>
+      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;PROXY_CLSID_IS={0x549dccd1,0x6850,0x4d14,{0x99,0x60,0xea,0x53,0xaa,0xef,0x38,0x49}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -130,6 +143,12 @@
       <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
     </Link>
+    <Midl>
+      <TypeLibFormat>NewFormat</TypeLibFormat>
+    </Midl>
+    <PostBuildEvent>
+      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -137,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x549dccd1,0x6850,0x4d14,{0x99,0x60,0xea,0x53,0xaa,0xef,0x38,0x49}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -153,6 +172,12 @@
       <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
     </Link>
+    <Midl>
+      <TypeLibFormat>NewFormat</TypeLibFormat>
+    </Midl>
+    <PostBuildEvent>
+      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Midl Include="DevHome.Service.idl" />

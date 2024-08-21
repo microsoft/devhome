@@ -31,6 +31,9 @@
     <ClCompile Include="DevHome.Service_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dlldata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DevHome.Service.Proxy.rc">

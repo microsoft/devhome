@@ -1,14 +1,22 @@
 import "unknwn.idl";
 
 cpp_quote("#ifdef __cplusplus")
-cpp_quote("class DECLSPEC_UUID(\"695B4403-83BA-4E4B-AC03-ED4D7DBA21FE\") DevHome.Service;")
+cpp_quote("class DECLSPEC_UUID(\"1F98F450-C163-4A99-B257-E1E6CB3E1C57\") DevHome.Service;")
 cpp_quote("#endif")
 
 [
-    uuid(D1FF65D2-7CDA-489E-9AE0-701855C4F6A1),
-    pointer_default(unique),
-    object
-] interface ITimServer : IUnknown
+    uuid(9FE7DE96-E978-44D3-BD96-20DC7217381B),
+    version(1.0)
+]
+library DevHomeService
 {
-    HRESULT GetNumber([out, retval] int* number);
+    importlib("stdole2.tlb");
+    [
+        uuid(D1FF65D2-7CDA-489E-9AE0-701855C4F6A1),
+        pointer_default(unique),
+        object
+    ] interface ITimServer : IUnknown
+    {
+        HRESULT GetNumber([out, retval] long* number);
+    }
 }

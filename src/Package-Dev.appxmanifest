@@ -22,14 +22,6 @@
         <Interface Name="Microsoft.Windows.Widgets.Providers.IWidgetProvider2" InterfaceId="38C3A963-DD93-479D-9276-04BF84EE1816" />
       </ProxyStub>
     </Extension>
-
-    <Extension Category="windows.activatableClass.proxyStub">
-      <ProxyStub ClassId="76913B52-F9EB-4FAE-8DE7-24C20BDCF37B">
-        <Path>DevHome.Service.Proxy.dll</Path>
-        <Interface Name="ITimServer" InterfaceId="D1FF65D2-7CDA-489E-9AE0-701855C4F6A1" />
-      </ProxyStub>
-    </Extension>
-
   </Extensions>
   <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=timkur" Version="0.0.1.0" />
   <Properties>
@@ -372,9 +364,9 @@
 
         <com2:Extension Category="windows.comInterface">
           <com2:ComInterface>
-            <com:Interface Id="D1FF65D2-7CDA-489E-9AE0-701855C4F6A1" ProxyStubClsid="76913B52-F9EB-4FAE-8DE7-24C20BDCF37B" />
+            <com:Interface Id="D1FF65D2-7CDA-489E-9AE0-701855C4F6A1" ProxyStubClsid="4EA21821-933F-4973-96D0-CA5C41B53F7E" />
             <!-- ITimServer -->
-            <com:ProxyStub Id="76913B52-F9EB-4FAE-8DE7-24C20BDCF37B" Path="DevHome.Service.Proxy.dll" />
+            <com:ProxyStub Id="4EA21821-933F-4973-96D0-CA5C41B53F7E" Path="DevHome.Service.Proxy.dll" />
           </com2:ComInterface>
         </com2:Extension>
 

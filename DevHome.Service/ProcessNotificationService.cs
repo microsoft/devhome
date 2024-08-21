@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
+using DevHome.Service.Types;
 
 namespace DevHome.Service;
 
@@ -24,10 +25,9 @@ public sealed class ProcessNotificationService : ITimServer
         return $"{joke.Setup}{Environment.NewLine}{joke.Punchline}";
     }
 
-    int ITimServer.GetNumber(out int number)
+    int ITimServer.GetNumber()
     {
-        number = 48;
-        return 0;
+        return 48;
     }
 
     // Programming jokes borrowed from:
@@ -62,6 +62,7 @@ public sealed class ProcessNotificationService : ITimServer
 
 public readonly record struct Joke(string Setup, string Punchline);
 
+/*
 [ComVisible(true)]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 [Guid("D1FF65D2-7CDA-489E-9AE0-701855C4F6A1")]
@@ -69,3 +70,4 @@ public interface ITimServer
 {
     int GetNumber(out int number);
 }
+*/

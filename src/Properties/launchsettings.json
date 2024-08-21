@@ -10,7 +10,8 @@
     "PI (Package)": {
       "commandName": "MsixPackage",
       "commandLineArgs": "--utilitylaunch DevHome.PI.Exe ",
-      "nativeDebugging": true
+      "nativeDebugging": false,
+      "doNotLaunchApp": true
     }
   }
 }

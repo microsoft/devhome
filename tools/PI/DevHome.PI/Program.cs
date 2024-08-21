@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Models;
+using DevHome.Service.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -41,23 +42,15 @@ public static class Program
     public static void Main(string[] args)
     {
         Type? t = Type.GetTypeFromCLSID(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
+        Guid g = typeof(ITimServer).GUID;
 
-        object obj;
-        int hr = Ole32.CoCreateInstance(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"), IntPtr.Zero, Ole32._CLSCTX_LOCAL_SERVER, typeof(ITimServer).GUID, out obj);
-        if (hr < 0)
+        TimServer server = new TimServer();
+
+        ITimServer? server2 = server as ITimServer;
+
+        if (server2 is not null)
         {
-            Marshal.ThrowExceptionForHR(hr);
-        }
-
-        if (obj is not null)
-        {
-            var timServer2 = obj as ITimServer;
-
-            if (timServer2 is not null)
-            {
-                int num;
-                timServer2.GetJoke(out num);
-            }
+            int num = server2.GetNumber();
         }
 
         // Set up Logging
@@ -292,13 +285,15 @@ public static class Program
     }
 }
 
+/*
+
 [ComImport]
 [Guid("D1FF65D2-7CDA-489E-9AE0-701855C4F6A1")]
 public interface ITimServer
 {
     int GetJoke(out int prefix);
 }
-
+*/
 [ComImport]
 [Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57")]
 public class TimServer;
