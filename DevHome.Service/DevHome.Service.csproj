@@ -15,12 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj" />
+    <ProjectReference Include="..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj">
+      <EmbedInteropTypes></EmbedInteropTypes>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="DevHome.Service.Types">
       <HintPath>..\x64\Debug\DevHome.Service.Types.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
 </Project>

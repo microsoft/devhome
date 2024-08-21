@@ -41,9 +41,6 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Type? t = Type.GetTypeFromCLSID(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
-        Guid g = typeof(ITimServer).GUID;
-
         TimServer server = new TimServer();
 
         ITimServer? server2 = server as ITimServer;

@@ -23,6 +23,9 @@
     <None Include="DevHome.Service.Proxy.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="DevHome.Service.Proxy.tlb">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DevHome.Service_i.c">

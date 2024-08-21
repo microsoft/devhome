@@ -91,9 +91,11 @@
     </Link>
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <PostBuildEvent>
-      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Message>Generating interop assembly</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,9 +122,11 @@
     </Link>
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <PostBuildEvent>
-      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Message>Generating interop assembly</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -145,9 +149,11 @@
     </Link>
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <PostBuildEvent>
-      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Message>Generating interop assembly</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -174,9 +180,11 @@
     </Link>
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <PostBuildEvent>
-      <Command>tlbimp.exe "$(TargetDir)DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
+      <Message>Generating interop assembly</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -184,6 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DevHome.Service.Proxy.def" />
+    <None Include="DevHome.Service.Proxy.tlb" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DevHome.Service_i.c" />

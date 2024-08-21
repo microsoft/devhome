@@ -124,6 +124,7 @@
   -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
   <ItemGroup>
