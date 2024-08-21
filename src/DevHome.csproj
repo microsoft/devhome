@@ -92,7 +92,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj" />
+    <ProjectReference Include="..\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
@@ -199,6 +199,11 @@
   <ItemGroup>
     <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="DevHome.Service.Projection">
+      <HintPath>..\DevHome.Service.Projection\bin\x64\Debug\net8.0\DevHome.Service.Projection.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">

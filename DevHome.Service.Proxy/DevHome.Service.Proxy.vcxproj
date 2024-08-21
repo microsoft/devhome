@@ -92,11 +92,11 @@
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <EnableWindowsRuntime>true</EnableWindowsRuntime>
+      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
+      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
+      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
     </Midl>
-    <PostBuildEvent>
-      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
-      <Message>Generating interop assembly</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -123,11 +123,11 @@
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <EnableWindowsRuntime>true</EnableWindowsRuntime>
+      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
+      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
+      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
     </Midl>
-    <PostBuildEvent>
-      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
-      <Message>Generating interop assembly</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -150,11 +150,11 @@
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <EnableWindowsRuntime>true</EnableWindowsRuntime>
+      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
+      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
+      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
     </Midl>
-    <PostBuildEvent>
-      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
-      <Message>Generating interop assembly</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -181,26 +181,22 @@
     <Midl>
       <TypeLibFormat>NewFormat</TypeLibFormat>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <EnableWindowsRuntime>true</EnableWindowsRuntime>
+      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
+      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
+      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
     </Midl>
-    <PostBuildEvent>
-      <Command>tlbimp.exe /silence:3002 "DevHome.Service.Proxy.tlb" /out:"$(TargetDir)DevHome.Service.Types.dll"</Command>
-      <Message>Generating interop assembly</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Midl Include="DevHome.Service.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DevHome.Service.Proxy.def" />
-    <None Include="DevHome.Service.Proxy.tlb" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DevHome.Service_i.c" />
-    <ClCompile Include="DevHome.Service_p.c" />
-    <ClCompile Include="dlldata.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="DevHome.Service.Proxy.rc" />
+    <ClCompile Include="midl\DevHome.Service_i.c" />
+    <ClCompile Include="midl\DevHome.Service_p.c" />
+    <ClCompile Include="midl\dlldata.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

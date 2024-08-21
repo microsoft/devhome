@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.PI.Models;
-using DevHome.Service.Types;
+using DevHome.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -28,7 +28,7 @@ namespace DevHome.PI;
 public static class Program
 {
     private static App? _app;
-    private static bool firstActivation = true;
+    private static bool _firstActivation = true;
 
     [global::System.Runtime.InteropServices.DllImport("Microsoft.ui.xaml.dll")]
     [global::System.Runtime.InteropServices.DefaultDllImportSearchPaths(global::System.Runtime.InteropServices.DllImportSearchPath.SafeDirectories)]
@@ -47,7 +47,7 @@ public static class Program
 
         if (server2 is not null)
         {
-            int num = server2.GetNumber();
+            int num = server2.GetNumber2();
         }
 
         // Set up Logging
@@ -179,8 +179,8 @@ public static class Program
 
     private static void OnActivated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
     {
-        var wasFirstActivation = firstActivation;
-        firstActivation = false;
+        var wasFirstActivation = _firstActivation;
+        _firstActivation = false;
         var commandLine = string.Empty;
         if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.Launch)
         {

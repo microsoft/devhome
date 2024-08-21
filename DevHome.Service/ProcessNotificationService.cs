@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
-using DevHome.Service.Types;
+using DevHome.Service;
 
 namespace DevHome.Service;
 
@@ -25,7 +25,7 @@ public sealed class ProcessNotificationService : ITimServer
         return $"{joke.Setup}{Environment.NewLine}{joke.Punchline}";
     }
 
-    int ITimServer.GetNumber()
+    int ITimServer.GetNumber2()
     {
         return 48;
     }

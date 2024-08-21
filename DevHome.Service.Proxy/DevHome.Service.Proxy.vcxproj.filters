@@ -23,24 +23,21 @@
     <None Include="DevHome.Service.Proxy.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="DevHome.Service.Proxy.tlb">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="DevHome.Service_i.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DevHome.Service_p.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dlldata.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DevHome.Service.Proxy.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="midl\dlldata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="midl\DevHome.Service_i.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="midl\DevHome.Service_p.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
