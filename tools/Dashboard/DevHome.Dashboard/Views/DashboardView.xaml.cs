@@ -135,11 +135,19 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        await InitializeDashboard();
+        ViewModel.IsLoading = true;
+
+        if (await ValidateDashboardState())
+        {
+            await InitializeDashboard();
+        }
+
         TelemetryFactory.Get<ITelemetry>().Log(
             "Page_Loaded_Event",
             LogLevel.Critical,
             new PageLoadedEvent(GetType().Name));
+
+        ViewModel.IsLoading = false;
     }
 
     [RelayCommand]
@@ -183,15 +191,13 @@ public partial class DashboardView : ToolPage, IDisposable
         }
     }
 
-    private async Task InitializeDashboard()
+    private async Task<bool> ValidateDashboardState()
     {
-        LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
-        ViewModel.IsLoading = true;
-
         if (ViewModel.IsRunningAsAdmin())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
+            return false;
         }
         else if (!ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
@@ -207,40 +213,40 @@ public partial class DashboardView : ToolPage, IDisposable
                 _log.Error($"Initialization failed, WidgetServiceState unknown");
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
             }
+
+            return false;
         }
-        else
+        else if (!await SubscribeToWidgetCatalogEventsAsync())
         {
-            if (await SubscribeToWidgetCatalogEventsAsync())
-            {
-                ViewModel.HasWidgetServiceInitialized = true;
-
-                var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
-                _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
-                if (isFirstDashboardRun)
-                {
-                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
-                }
-
-                try
-                {
-                    await InitializePinnedWidgetListAsync(isFirstDashboardRun, _initWidgetsCancellationTokenSource.Token);
-                    Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
-                }
-                catch (OperationCanceledException ex)
-                {
-                    _log.Information(ex, "InitializePinnedWidgetListAsync operation was cancelled.");
-                    return;
-                }
-            }
-            else
-            {
-                _log.Error($"Catalog event subscriptions failed, show error");
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
-            }
+            _log.Error($"Catalog event subscriptions failed, show error");
+            RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            return false;
         }
 
-        LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
-        ViewModel.IsLoading = false;
+        return true;
+    }
+
+    private async Task InitializeDashboard()
+    {
+        ViewModel.HasWidgetServiceInitialized = true;
+
+        var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
+        _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
+        if (isFirstDashboardRun)
+        {
+            await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+        }
+
+        try
+        {
+            await InitializePinnedWidgetListAsync(isFirstDashboardRun, _initWidgetsCancellationTokenSource.Token);
+            Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _log.Information(ex, "InitializePinnedWidgetListAsync operation was cancelled.");
+            return;
+        }
     }
 
     private async Task InitializePinnedWidgetListAsync(bool isFirstDashboardRun, CancellationToken cancellationToken)

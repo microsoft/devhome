@@ -126,6 +126,7 @@
                     <ProgressRing x:Name="LoadingWidgetsProgressRing"
                                   Margin="0,150,0,0"
                                   IsActive="True"
+                                  Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
                                   HorizontalAlignment="Center"/>
 
                     <!-- Widget grid empty message -->
