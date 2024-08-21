@@ -39,7 +39,7 @@ public static class Program
     public static void Main(string[] args)
     {
         // Set up Logging
-        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHomePI"));
+        Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevInsights"));
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings_pi.json")
             .Build();

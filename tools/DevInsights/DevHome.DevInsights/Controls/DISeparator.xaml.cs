@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.DevInsights.Controls;
 
-public sealed partial class PISeparator : UserControl
+public sealed partial class DISeparator : UserControl
 {
     private Orientation _orientation = Orientation.Vertical;
 
@@ -31,7 +31,7 @@ public sealed partial class PISeparator : UserControl
         }
     }
 
-    public PISeparator()
+    public DISeparator()
     {
         InitializeComponent();
     }

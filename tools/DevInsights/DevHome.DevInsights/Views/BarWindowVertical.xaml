@@ -78,7 +78,7 @@
                 <TextBlock Text="&#xE8BB;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
             </Button>
 
-            <controls:PISeparator Orientation="Horizontal"/>
+            <controls:DISeparator Orientation="Horizontal"/>
 
             <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}">
                 <TextBlock Text="&#xe179;" />
@@ -100,7 +100,7 @@
                 <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
             </StackPanel>
 
-            <controls:PISeparator Orientation="Horizontal"/>
+            <controls:DISeparator Orientation="Horizontal"/>
 
             <!-- Per System controls -->
             <controls:ExternalToolsManagementButton
@@ -112,7 +112,7 @@
                 <TextBlock Text="&#xEC7A;"/>
             </controls:ExternalToolsManagementButton>
 
-            <controls:PISeparator Orientation="Horizontal"/>
+            <controls:DISeparator Orientation="Horizontal"/>
             <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind _externalTools.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
                 <DataTemplate x:DataType="helpers:Tool">
                     <Button Command="{x:Bind InvokeCommand}" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">

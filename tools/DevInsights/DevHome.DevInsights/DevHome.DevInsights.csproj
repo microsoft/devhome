@@ -26,8 +26,8 @@
 
   <ItemGroup>
     <None Remove="Controls\ClipboardMonitorControl.xaml" />
+    <None Remove="Controls\DISeparator.xaml" />
     <None Remove="Controls\ExpandedViewControl.xaml" />
-    <None Remove="Controls\PISeparator.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
     <None Remove="errors.db" />
     <None Remove="Images\PI.ico" />
@@ -55,8 +55,8 @@
   <!-- Needed to avoid conflicts with DevHome's App.xaml and to let
        XAML know where the main application object is defined-->
   <ItemGroup>
-    <Page Remove="PIApp.xaml" />
-    <ApplicationDefinition Include="PIApp.xaml">
+    <Page Remove="DIApp.xaml" />
+    <ApplicationDefinition Include="DIApp.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </ApplicationDefinition>
@@ -178,7 +178,7 @@
     <Page Update="Controls\ProgressTextRing.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Controls\PISeparator.xaml">
+    <Page Update="Controls\DISeparator.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\AboutPage.xaml">
