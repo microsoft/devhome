@@ -163,7 +163,7 @@
     <Page Update="Pages\InsightsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Update="appsettings_pi.json">
+    <None Update="appsettings_di.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Page Update="Views\ClipboardMonitoringWindow.xaml">

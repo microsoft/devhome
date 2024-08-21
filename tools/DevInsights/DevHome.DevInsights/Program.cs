@@ -41,7 +41,7 @@ public static class Program
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevInsights"));
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings_pi.json")
+            .AddJsonFile("appsettings_di.json")
             .Build();
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
