@@ -28,7 +28,7 @@ public class GetReposEvent : EventBase
 
     public int HResult { get; }
 
-    public string ExceptionMessage { get; }
+    public string ExceptionMessage { get; } = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetReposEvent"/> class.
@@ -41,7 +41,6 @@ public class GetReposEvent : EventBase
         StageName = stageName;
         ProviderName = providerName;
         DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
-        ExceptionMessage = string.Empty;
     }
 
     /// <summary>
@@ -57,7 +56,6 @@ public class GetReposEvent : EventBase
         ProviderName = providerName;
         DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
         NumberOfReposFound = reposFound;
-        ExceptionMessage = string.Empty;
     }
 
     public GetReposEvent(Exception exception, string providerName, IDeveloperId developerId)
