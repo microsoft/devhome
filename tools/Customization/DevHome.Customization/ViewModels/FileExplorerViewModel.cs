@@ -23,6 +23,7 @@ using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.Storage;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -163,7 +164,17 @@ public partial class FileExplorerViewModel : ObservableObject
             await Task.Run(async () =>
             {
                 using var folderDialog = new WindowOpenFolderDialog();
-                var repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<Window>());
+                StorageFolder? repoRootfolder = null;
+
+                try
+                {
+                    repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<Window>());
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error occured when selecting a folder for adding a repository.");
+                }
+
                 if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
                 {
                     _log.Information($"Selected '{repoRootfolder.Path}' as location to register");
