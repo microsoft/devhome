@@ -27,6 +27,8 @@ public class RepositoryManagementDataAccessService
         // dbContext can not be passed in because RepositoryManagementDataAccessService is singleton
         // and dbContext needs to be scoped.
         // RepositoryManagementItemViewModel can not be passed in because multiple are made.
+        // The best solution is to make factories for DevHomeContext and RepositoryManagementItemViewModel.
+        // Might be in a future change.
         _host = host;
     }
 
@@ -71,7 +73,7 @@ public class RepositoryManagementDataAccessService
         // Now the database record has the correct name, but the incorrect location.
         // Remove records where the directory does not exist.
         repositoriesFromDatabase
-            .ToList()
+            .ToList() // EF does not understand Directory.Exists.  Fetch the data first.
             .Where(x => !Directory.Exists(x.RepositoryClonePath))
             .ToList()
             .ForEach(x => dbContext.Repositories.Remove(x));
@@ -89,9 +91,9 @@ public class RepositoryManagementDataAccessService
         {
             var lineItem = _host.GetService<RepositoryManagementItemViewModel>();
             lineItem.ClonePath = repo.RepositoryClonePath;
-            lineItem.Branch = "main";
+            lineItem.Branch = "main"; // Test value.  Will change in the future.
             lineItem.RepositoryName = repo.RepositoryName;
-            lineItem.LatestCommit = "No commits found";
+            lineItem.LatestCommit = "No commits found"; // Test value.  Will change in the future.
 
             lineItem.IsHiddenFromPage = repo.RepositoryMetadata.IsHiddenFromPage;
             items.Add(lineItem);

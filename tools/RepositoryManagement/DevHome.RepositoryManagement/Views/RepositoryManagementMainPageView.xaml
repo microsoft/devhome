@@ -49,13 +49,19 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
+
+            <!-- Needs localization -->
             <TextBlock
                 x:Name="EnvironmentsHeader"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
-            <Button Grid.Column="1" Content="Add repository" Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"/>
+
+            <!-- Needs localization -->
+            <Button Grid.Column="1" Content="Add repository"/>
+            
+            <!-- Needs localization -->
             <Button
                 Grid.Column="2"
                 Margin="0,0,50,0"
@@ -68,12 +74,17 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
+            
+            <!-- Needs localization -->
             <TextBox Grid.Column="0" PlaceholderText="Filter" />
+
+            <!-- Needs localization -->
             <TextBlock
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 Text="Sort:" />
             <ComboBox Grid.Column="3" MinWidth="150">
+                <!-- Needs localization. -->
                 <ComboBoxItem Content="A to Z" IsSelected="True" />
                 <ComboBoxItem Content="Z to A" />
             </ComboBox>
@@ -101,9 +112,17 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="40" />
                         </Grid.ColumnDefinitions>
+
+                        <!-- Needs localization -->
                         <TextBlock Grid.Column="0" Text="Name" />
+
+                        <!-- Needs localization -->
                         <TextBlock Grid.Column="1" Text="Clone path" />
+
+                        <!-- Needs localization -->
                         <TextBlock Grid.Column="2" Text="Latest commit" />
+
+                        <!-- Needs localization -->
                         <TextBlock Grid.Column="3" Text="Branch" />
                     </Grid>
                 </ListView.Header>
@@ -138,6 +157,8 @@
                                 Grid.Column="4"
                                 Style="{StaticResource HorizontalThreeDotsStyle}">
                                 <Button.Flyout>
+
+                                    <!-- Needs localization -->
                                     <MenuFlyout>
                                         <MenuFlyoutItem Text="Open in File Explorer" />
                                         <MenuFlyoutItem Text="Open in Command Line" />

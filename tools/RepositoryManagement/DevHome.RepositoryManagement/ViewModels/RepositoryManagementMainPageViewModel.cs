@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.RepositoryManagement.Services;
@@ -19,6 +20,7 @@ public partial class RepositoryManagementMainPageViewModel
     [RelayCommand]
     public void AddExistingRepository()
     {
+        throw new NotImplementedException();
     }
 
     public RepositoryManagementMainPageViewModel(RepositoryManagementDataAccessService dataAccessService)

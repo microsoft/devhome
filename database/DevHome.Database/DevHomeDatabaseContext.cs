@@ -16,6 +16,7 @@ public class DevHomeDatabaseContext : DbContext
 
     public DevHomeDatabaseContext()
     {
+        // Not the final path.  It will change before going into main.
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
         DbPath = Path.Join(path, "DevHome.db");
@@ -23,6 +24,8 @@ public class DevHomeDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // If I have time, this should be split like the service extensions are.
+        // As more entities are added, the longer this method will get.
         var repositoryEntity = modelBuilder.Entity<Repository>();
         if (repositoryEntity != null)
         {
@@ -38,8 +41,6 @@ public class DevHomeDatabaseContext : DbContext
         }
     }
 
-    // The following configures EF to create a Sqlite database file in the
-    // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
 }
