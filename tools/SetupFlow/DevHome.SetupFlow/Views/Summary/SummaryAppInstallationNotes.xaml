@@ -7,6 +7,8 @@
     xmlns:local="using:DevHome.SetupFlow.Views.Summary"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
 
     <Grid>
@@ -56,7 +58,11 @@
                                     Tag="{Binding ElementName=ViewAllButton}"
                                     Text="{x:Bind InstallationNotes}"
                                     TextTrimming="WordEllipsis"
-                                    TextWrapping="WrapWholeWords" />
+                                    TextWrapping="WrapWholeWords">
+                                    <i:Interaction.Behaviors>
+                                        <behaviors:RenderWebHyperlinksBehavior />
+                                    </i:Interaction.Behaviors>
+                                </TextBlock>
                                 <Button
                                     Name="ViewAllButton"
                                     x:Uid="SummaryPage_ViewAll"
