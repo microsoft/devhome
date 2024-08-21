@@ -51,11 +51,7 @@
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.devhome"
-<<<<<<< HEAD
             Id="01"
-=======
-            Id="PG-SP-ID"
->>>>>>> 43880bf1 (Update Sample Extension)
             PublicFolder="Public"
             DisplayName="Dev Home Sample Extension (Canary)"
             Description="Sample Extension for Dev Home (Canary)">
