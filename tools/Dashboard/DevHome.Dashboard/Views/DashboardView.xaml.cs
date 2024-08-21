@@ -193,7 +193,22 @@ public partial class DashboardView : ToolPage, IDisposable
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
         }
-        else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        else if (!ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        {
+            var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
+            if (widgetServiceState == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
+                widgetServiceState == WidgetServiceService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            {
+                // Show error message that updating may help
+                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _log.Error($"Initialization failed, WidgetServiceState unknown");
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
+        }
+        else
         {
             if (await SubscribeToWidgetCatalogEventsAsync())
             {
@@ -209,6 +224,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 try
                 {
                     await InitializePinnedWidgetListAsync(isFirstDashboardRun, _initWidgetsCancellationTokenSource.Token);
+                    Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -222,23 +238,7 @@ public partial class DashboardView : ToolPage, IDisposable
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
             }
         }
-        else
-        {
-            var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
-                widgetServiceState == WidgetServiceService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
-            {
-                // Show error message that updating may help
-                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                _log.Error($"Initialization failed, WidgetServiceState unknown");
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
-            }
-        }
 
-        Application.Current.GetService<WidgetAdaptiveCardRenderingService>().RendererUpdated += HandleRendererUpdated;
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
     }

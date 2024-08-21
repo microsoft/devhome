@@ -37,15 +37,22 @@ public class WidgetServiceService : IWidgetServiceService
         _msStoreService = msStoreService;
     }
 
+    /// <inheritdoc/>
     public bool CheckForWidgetServiceAsync()
     {
-        // If we're on Windows 11, check if we have the right WebExperiencePack version of the WidgetService.
+        // If we're on Windows 11, check if we have a valid version of the WidgetService.
         if (RuntimeHelper.IsOnWindows11)
         {
             if (HasValidWebExperiencePack())
             {
                 _log.Information("On Windows 11, HasWebExperienceGoodVersion");
                 _widgetServiceState = WidgetServiceStates.HasWebExperienceGoodVersion;
+                return true;
+            }
+            else if (HasValidWidgetServicePackage())
+            {
+                _log.Information("On Windows 11, HasStoreWidgetServiceGoodVersion");
+                _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceGoodVersion;
                 return true;
             }
             else

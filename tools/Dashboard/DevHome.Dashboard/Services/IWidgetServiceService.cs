@@ -8,6 +8,10 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetServiceService
 {
+    /// <summary>
+    /// Checks whether a WidgetService is installed on the machine.
+    /// </summary>
+    /// <returns>Returns true if there is a valid WidgetService that meets the minimum required version, otherwise false.</returns>
     public bool CheckForWidgetServiceAsync();
 
     public Task<bool> TryInstallingWidgetService();
