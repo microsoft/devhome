@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
