@@ -39,6 +39,7 @@
                         <StackPanel 
                             Orientation="Horizontal">
                             <DropDownButton 
+                                Name="SelectProviderButton"
                                 Content="{Binding SourceControlProviderDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout 

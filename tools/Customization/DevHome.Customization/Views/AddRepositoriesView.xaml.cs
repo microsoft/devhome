@@ -2,12 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
 using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.Customization.Views;
@@ -25,6 +29,29 @@ public sealed partial class AddRepositoriesView : UserControl
     {
         ViewModel = Application.Current.GetService<FileExplorerViewModel>();
         this.InitializeComponent();
+        ItemsRepeaterForAllRepoPaths.ElementPrepared += PrepareItemForDisplay;
+    }
+
+    private void PrepareItemForDisplay(ItemsRepeater repeater, ItemsRepeaterElementPreparedEventArgs args)
+    {
+        var providerButton = (args.Element as SettingsCard)?.FindChild("SelectProviderButton") as DropDownButton;
+        if (providerButton != null)
+        {
+            var flyout = new MenuFlyout();
+            foreach (var extension in ViewModel.ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result)
+            {
+                var menuItem = new MenuFlyoutItem
+                {
+                    Text = extension.ExtensionDisplayName,
+                    Tag = extension,
+                };
+                menuItem.Click += AssignSourceControlProviderButton_Click;
+                ToolTipService.SetToolTip(menuItem, extension.PackageDisplayName);
+                flyout.Items.Add(menuItem);
+            }
+
+            providerButton.Flyout = flyout;
+        }
     }
 
     public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)
@@ -43,7 +70,7 @@ public sealed partial class AddRepositoriesView : UserControl
         MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
         if (menuItem.DataContext is RepositoryInformation repoInfo)
         {
-            ViewModel.AssignSourceControlProviderToRepository(menuItem.Text, repoInfo.RepositoryRootPath);
+            ViewModel.AssignSourceControlProviderToRepository(menuItem.Tag as IExtensionWrapper, repoInfo.RepositoryRootPath);
         }
     }
 
