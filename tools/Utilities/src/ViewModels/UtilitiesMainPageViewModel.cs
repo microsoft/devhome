@@ -50,13 +50,13 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
                 UtilityAutomationId = "DevHome.EnvironmentVariables",
             },
-            new(Path.Combine(appExAliasAbsFolderPath, "devhome.pi.exe"), experimentationService, "ProjectIronsidesExperiment")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.DevInsights.exe"), experimentationService, "DevInsightsExperiment")
             {
-                Title = stringResource.GetLocalized("ProjectIronsidesTitle"),
-                Description = stringResource.GetLocalized("ProjectIronsidesDesc"),
+                Title = stringResource.GetLocalized("DevInsightsTitle"),
+                Description = stringResource.GetLocalized("DevInsightsDesc"),
                 NavigateUri = "https://go.microsoft.com/fwlink/?linkid=2275140",
                 ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
-                UtilityAutomationId = "DevHome.PI",
+                UtilityAutomationId = "DevHome.DevInsights",
             },
         };
 
