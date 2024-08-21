@@ -21,6 +21,23 @@ public class DevHomeDatabaseContext : DbContext
         DbPath = Path.Join(path, "DevHome.db");
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var repositoryEntity = modelBuilder.Entity<Repository>();
+        if (repositoryEntity != null)
+        {
+            repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty);
+            repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty);
+        }
+
+        var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();
+        if (repositoryMetadataEntity != null)
+        {
+            repositoryMetadataEntity.Property(x => x.IsHiddenFromPage).HasDefaultValue(false);
+            repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(DateTime.MinValue);
+        }
+    }
+
     // The following configures EF to create a Sqlite database file in the
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

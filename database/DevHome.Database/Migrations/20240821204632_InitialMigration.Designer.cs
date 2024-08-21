@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHome.Database.Migrations
 {
     [DbContext(typeof(DevHomeDatabaseContext))]
-    [Migration("20240820225357_InitialMigration")]
+    [Migration("20240821204632_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -27,10 +27,14 @@ namespace DevHome.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RepositoryClonePath")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("");
 
                     b.Property<string>("RepositoryName")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("");
 
                     b.HasKey("RepositoryId");
 
@@ -47,13 +51,17 @@ namespace DevHome.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsHiddenFromPage")
-                        .HasColumnType("INTEGER");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("RepositoryId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UtcDateHidden")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
                     b.HasKey("RepositoryMetadataId");
 

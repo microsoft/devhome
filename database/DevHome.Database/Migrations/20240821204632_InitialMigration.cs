@@ -21,8 +21,8 @@ public partial class InitialMigration : Migration
             {
                 RepositoryId = table.Column<int>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
-                RepositoryName = table.Column<string>(type: "TEXT", nullable: true),
-                RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: true),
+                RepositoryName = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
+                RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
             },
             constraints: table =>
             {
@@ -35,8 +35,8 @@ public partial class InitialMigration : Migration
             {
                 RepositoryMetadataId = table.Column<int>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
-                IsHiddenFromPage = table.Column<bool>(type: "INTEGER", nullable: false),
-                UtcDateHidden = table.Column<DateTime>(type: "TEXT", nullable: false),
+                IsHiddenFromPage = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                UtcDateHidden = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)),
                 RepositoryId = table.Column<int>(type: "INTEGER", nullable: false),
             },
             constraints: table =>
