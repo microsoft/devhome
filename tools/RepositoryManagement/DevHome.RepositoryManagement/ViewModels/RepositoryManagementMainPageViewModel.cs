@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.RepositoryManagement.Services;
 using Serilog;
