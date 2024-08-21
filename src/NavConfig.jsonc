@@ -111,7 +111,7 @@
       ]
     },
     {
-      "identity": "ProjectIronsidesExperiment",
+      "identity": "DevInsightsExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {

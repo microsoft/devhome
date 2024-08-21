@@ -144,11 +144,11 @@
     <value>Utilities</value>
     <comment>Utilities</comment>
   </data>
-  <data name="ProjectIronsidesDesc" xml:space="preserve">
+  <data name="DevInsightsDesc" xml:space="preserve">
     <value>An application for gaining deeper insights into your applications.</value>
     <comment>A description of the Dev Insights utility</comment>
   </data>
-  <data name="ProjectIronsidesTitle" xml:space="preserve">
+  <data name="DevInsightsTitle" xml:space="preserve">
     <value>Dev Insights</value>
     <comment>Name of the Dev Insights product</comment>
   </data>

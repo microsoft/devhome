@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.DevInsights.Pages.ModulesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DevHome.DevInsights.Models"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
+
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,0,0,6"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Uid="ModulesHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
+        <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <SymbolIcon Symbol="Admin"/>
+                <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+            </StackPanel>
+        </Button>
+        <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView x:Name="ModulesListView" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.ModuleList, Mode=OneWay}"
+                      SelectedIndex="{x:Bind ViewModel.SelectedModuleIndex, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ProcessModuleInfo">
+                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                            <TextBlock Text="{x:Bind ModuleName}" FontWeight="Bold"/>
+                            <TextBlock Text="{x:Bind FileVersion}" Margin="0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <controls:GridSplitter
+                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
+
+            <ScrollViewer Grid.Column="2" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="ModuleDetailsPanel" Margin="8,0,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <TextBlock Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleName, Mode=OneWay}"
+                                   FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="Bold"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock x:Uid="FileVersionInfoTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" />
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).FileVersionInfo, Mode=OneWay}"
+                                 FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True"/>
+
+                        <TextBlock x:Uid="BaseAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True"/>
+                        <TextBlock x:Uid="EntrypointAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>
+                        <TextBlock x:Uid="MemorySizeTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</Page>
