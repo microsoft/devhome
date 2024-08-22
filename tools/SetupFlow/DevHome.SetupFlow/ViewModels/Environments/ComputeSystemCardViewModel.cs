@@ -51,6 +51,9 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     private string _computeSystemTitle;
 
     [ObservableProperty]
+    private string _computeSystemAlternativeTitle;
+
+    [ObservableProperty]
     private string _computeSystemProviderDisplayName;
 
     [ObservableProperty]
@@ -69,6 +72,7 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         _dispatcherQueue = dispatcherQueue;
         _computeSystemManager = manager;
         ComputeSystemTitle = computeSystem.DisplayName.Value;
+        ComputeSystemAlternativeTitle = computeSystem.SupplementalDisplayName.Value;
         ComputeSystem = computeSystem;
         ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;
