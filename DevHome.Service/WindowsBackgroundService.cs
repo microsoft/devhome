@@ -15,8 +15,8 @@ public sealed class WindowsBackgroundService(
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         RegisterClass(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
-        EnableFastCOMRundown();
 
+        // EnableFastCOMRundown();
         try
         {
             while (!stoppingToken.IsCancellationRequested)
