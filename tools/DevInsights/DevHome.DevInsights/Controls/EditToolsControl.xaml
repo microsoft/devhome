@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.DevInsights.Controls.EditToolsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:local="using:DevHome.DevInsights.Helpers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="12,4,12,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <controls:DataGrid
+            x:Name="ToolsDataGrid"
+            VerticalScrollBarVisibility="Visible"
+            AlternatingRowBackground="Transparent"
+            AlternatingRowForeground="Gray"
+            AreRowDetailsFrozen="False"
+            AreRowGroupHeadersFrozen="True"
+            AutoGenerateColumns="False"
+            CanUserSortColumns="False"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            ColumnHeaderHeight="32"
+            FrozenColumnCount="0"
+            GridLinesVisibility="None"
+            HeadersVisibility="Column"
+            ItemsSource="{x:Bind _externalTools.AllExternalTools}"
+            SelectionChanged="ToolsDataGrid_SelectionChanged">
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Name}" MinWidth="150"/>
+                <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Executable}" Width="*"/>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+
+        <StackPanel x:Name="GridButtonPanel" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,0,8">
+            <Button 
+                x:Uid="UnregisterToolButton" 
+                x:Name="UnregisterToolButton" 
+                Width="120" 
+                Height="36" 
+                Margin="4,0,0,0" 
+                Click="UnregisterToolButton_Click"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
