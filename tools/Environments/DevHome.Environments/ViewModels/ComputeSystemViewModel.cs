@@ -221,6 +221,10 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem!, PackageFullName);
+
+        // Remove properties with empty values
+        properties.RemoveAll(p => p?.Value == null || string.IsNullOrEmpty(p.Value.ToString()));
+
         if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(Properties, properties))
         {
             Properties = new(properties);
