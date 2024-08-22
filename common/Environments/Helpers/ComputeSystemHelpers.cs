@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
@@ -88,7 +89,13 @@ public static class ComputeSystemHelpers
         try
         {
             var currentProperties = await computeSystem.GetComputeSystemPropertiesAsync(string.Empty);
-            return GetComputeSystemCardProperties(currentProperties, packageFullName);
+
+            // Remove properties with empty values
+            var filteredProperties = currentProperties
+                .Where(p => p?.Value != null && !string.IsNullOrEmpty(p.Value.ToString()))
+                .ToList();
+
+            return GetComputeSystemCardProperties(filteredProperties, packageFullName);
         }
         catch (Exception ex)
         {
