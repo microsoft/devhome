@@ -14,9 +14,23 @@ public class ByteTransferProgress
 
     public uint PercentageComplete => (uint)((BytesReceived / (double)TotalBytesToReceive) * 100);
 
+    public string ErrorMessage { get; set; } = string.Empty;
+
     public ByteTransferProgress(long bytesReceived, long totalBytesToReceive)
     {
         BytesReceived = bytesReceived;
         TotalBytesToReceive = totalBytesToReceive;
+    }
+
+    public ByteTransferProgress(string errorMessage)
+    {
+        ErrorMessage = errorMessage;
+    }
+
+    public bool CompletedSuccessfully => BytesReceived == TotalBytesToReceive;
+
+    public bool Failed()
+    {
+        return !string.IsNullOrEmpty(ErrorMessage);
     }
 }

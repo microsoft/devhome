@@ -18,7 +18,7 @@ public delegate VMGalleryVMCreationOperation VmGalleryCreationOperationFactory(V
 /// <summary>
 /// Class that represents the VM gallery VM creation operation.
 /// </summary>
-public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
+public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
 
@@ -38,15 +38,19 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 
     private readonly VMGalleryCreationUserInput _userInputParameters;
 
+    private readonly ManualResetEvent _waitForDownloadCompletion = new(false);
+
     public CancellationTokenSource CancellationTokenSource { get; private set; } = new();
 
     private readonly object _lock = new();
 
+    private IOperationReport? _lastDownloadReport;
+
+    private bool _disposed;
+
     public bool IsOperationInProgress { get; private set; }
 
     public bool IsOperationCompleted { get; private set; }
-
-    public CreateComputeSystemResult? ComputeSystemResult { get; private set; }
 
     public StorageFile? ArchivedFile { get; private set; }
 
@@ -85,67 +89,82 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     /// Starts the VM gallery operation.
     /// </summary>
     /// <returns>A result that contains information on whether the operation succeeded or failed</returns>
-    public IAsyncOperation<CreateComputeSystemResult?> StartAsync()
+    public IAsyncOperation<CreateComputeSystemResult> StartAsync()
     {
         return Task.Run(async () =>
         {
-            try
+            // We'll attempt to create the VM from the gallery twice before completely failing and returning
+            // an error back to Dev Home.
+            var creationAttempt = 1;
+            var maxAttempts = 2;
+            while (creationAttempt <= maxAttempts)
             {
-                lock (_lock)
+                try
                 {
-                    if (IsOperationInProgress)
+                    if (creationAttempt < maxAttempts)
                     {
-                        var exception = new OperationInProgressException(_stringResource);
-                        return new CreateComputeSystemResult(exception, exception.Message, exception.Message);
+                        UpdateProgress(_stringResource.GetLocalized("CreationStarting", $"({_userInputParameters.NewEnvironmentName})"));
                     }
-                    else if (IsOperationCompleted)
+                    else
                     {
-                        return ComputeSystemResult;
+                        UpdateProgress(_stringResource.GetLocalized("CreationRetry", $"({_userInputParameters.NewEnvironmentName})"));
                     }
 
-                    IsOperationInProgress = true;
+                    var imageList = await _vmGalleryService.GetGalleryImagesAsync();
+                    if (imageList.Images.Count == 0)
+                    {
+                        throw new NoVMImagesAvailableException(_stringResource);
+                    }
+
+                    Image = imageList.Images[_userInputParameters.SelectedImageListIndex];
+
+                    await DownloadImageAsync(Image);
+                    var virtualMachineHost = _hyperVManager.GetVirtualMachineHost();
+                    var absoluteFilePathForVhd = GetUniqueAbsoluteFilePath(virtualMachineHost.VirtualHardDiskPath);
+
+                    // extract the archive file to the destination file.
+                    var archiveProvider = _archiveProviderFactory.CreateArchiveProvider(ArchivedFile!.FileType);
+
+                    UpdateProgress(_stringResource.GetLocalized("ExtractionStarting", $"({Image.Name})"));
+                    await archiveProvider.ExtractArchiveAsync(this, ArchivedFile!, absoluteFilePathForVhd, CancellationTokenSource.Token);
+                    var virtualMachineName = MakeFileNameValid(_userInputParameters.NewEnvironmentName);
+
+                    // Use the Hyper-V manager to create the VM.
+                    UpdateProgress(_stringResource.GetLocalized("CreationInProgress", virtualMachineName));
+                    var creationParameters = new VirtualMachineCreationParameters(
+                        _userInputParameters.NewEnvironmentName,
+                        GetVirtualMachineProcessorCount(),
+                        absoluteFilePathForVhd,
+                        Image.Config.SecureBoot,
+                        Image.Config.EnhancedSessionTransportType);
+
+                    return new CreateComputeSystemResult(_hyperVManager.CreateVirtualMachineFromGallery(creationParameters));
+                }
+                catch (Exception ex)
+                {
+                    if (creationAttempt == maxAttempts)
+                    {
+                        _log.Error(ex, "Operation to create compute system failed on the last attempt");
+                        return new CreateComputeSystemResult(ex, ex.Message, ex.Message);
+                    }
+                    else
+                    {
+                        _log.Error(ex, "Operation to create compute system failed on the first attempt, retrying.");
+                    }
                 }
 
-                UpdateProgress(_stringResource.GetLocalized("CreationStarting", $"({_userInputParameters.NewEnvironmentName})"));
-                var imageList = await _vmGalleryService.GetGalleryImagesAsync();
-                if (imageList.Images.Count == 0)
-                {
-                    throw new NoVMImagesAvailableException(_stringResource);
-                }
-
-                Image = imageList.Images[_userInputParameters.SelectedImageListIndex];
-
-                await DownloadImageAsync();
-                var virtualMachineHost = _hyperVManager.GetVirtualMachineHost();
-                var absoluteFilePathForVhd = GetUniqueAbsoluteFilePath(virtualMachineHost.VirtualHardDiskPath);
-
-                // extract the archive file to the destination file.
-                var archiveProvider = _archiveProviderFactory.CreateArchiveProvider(ArchivedFile!.FileType);
-
-                await archiveProvider.ExtractArchiveAsync(this, ArchivedFile!, absoluteFilePathForVhd, CancellationTokenSource.Token);
-                var virtualMachineName = MakeFileNameValid(_userInputParameters.NewEnvironmentName);
-
-                // Use the Hyper-V manager to create the VM.
-                UpdateProgress(_stringResource.GetLocalized("CreationInProgress", virtualMachineName));
-                var creationParameters = new VirtualMachineCreationParameters(
-                    _userInputParameters.NewEnvironmentName,
-                    GetVirtualMachineProcessorCount(),
-                    absoluteFilePathForVhd,
-                    Image.Config.SecureBoot,
-                    Image.Config.EnhancedSessionTransportType);
-
-                ComputeSystemResult = new CreateComputeSystemResult(_hyperVManager.CreateVirtualMachineFromGallery(creationParameters));
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "Operation to create compute system failed");
-                ComputeSystemResult = new CreateComputeSystemResult(ex, ex.Message, ex.Message);
+                creationAttempt++;
             }
 
-            IsOperationCompleted = true;
-            IsOperationInProgress = false;
+            // We shouldn't get here since we should either complete successfully or throw an error and
+            // send that error message back to Dev Home on the second try if it fails..
+            var exception = new InvalidOperationException($"Failed to create VM after two attempts");
+            var errorDisplayText = _stringResource.GetLocalized(
+                "CreationRetryFailed",
+                _userInputParameters.NewEnvironmentName,
+                Logging.LogFolderRoot);
 
-            return ComputeSystemResult;
+            return new CreateComputeSystemResult(exception, errorDisplayText, exception.Message);
         }).AsAsyncOperation();
     }
 
@@ -161,6 +180,16 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         catch (Exception ex)
         {
             _log.Error(ex, "Failed to update progress");
+        }
+
+        if (report.ReportKind == ReportKind.Download)
+        {
+            _lastDownloadReport = report;
+
+            if (report.ProgressObject.CompletedSuccessfully || report.ProgressObject.Failed())
+            {
+                _waitForDownloadCompletion.Set();
+            }
         }
     }
 
@@ -179,16 +208,18 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     /// <summary>
     /// Downloads the disk image from the Hyper-V VM gallery.
     /// </summary>
-    private async Task DownloadImageAsync()
+    private async Task DownloadImageAsync(VMGalleryImage image)
     {
         var downloadUri = new Uri(Image.Disk.Uri);
         var archivedFileName = _vmGalleryService.GetDownloadedArchiveFileName(Image);
         var archivedFileAbsolutePath = Path.Combine(_tempFolderSaveLocation, archivedFileName);
+        var isFileBeingDownloaded = _downloaderService.IsFileBeingDownloaded(archivedFileAbsolutePath);
 
         // If the file already exists and has the correct hash, we don't need to download it again.
-        if (File.Exists(archivedFileAbsolutePath))
+        if (File.Exists(archivedFileAbsolutePath) && !isFileBeingDownloaded)
         {
             ArchivedFile = await StorageFile.GetFileFromPathAsync(archivedFileAbsolutePath);
+            UpdateProgress(_stringResource.GetLocalized("VerifyingHashForExistingFile", $"({image.Name})"));
             if (await _vmGalleryService.ValidateFileSha256Hash(ArchivedFile))
             {
                 return;
@@ -196,17 +227,33 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 
             // hash is not valid, so we'll delete/overwrite the file and download it again.
             _log.Information("File already exists but hash is not valid. Deleting file and downloading again.");
+            UpdateProgress(_stringResource.GetLocalized("HashVerificationFailed", $"({image.Name})"));
             await DeleteFileIfExists(ArchivedFile!);
         }
 
+        UpdateProgress(_stringResource.GetLocalized("DownloadStarting", $"({image.Name})"));
         await _downloaderService.StartDownloadAsync(this, downloadUri, archivedFileAbsolutePath, CancellationTokenSource.Token);
+
+        if (!HasDownloadCompleted())
+        {
+            // Wait for the last download to complete before moving on.
+            _waitForDownloadCompletion.WaitOne();
+        }
+
+        if (_lastDownloadReport!.ProgressObject.Failed())
+        {
+            throw new DownloadOperationFailedException(
+                $"Failed to download file due to error: {_lastDownloadReport!.ProgressObject.ErrorMessage}");
+        }
 
         // Create the file to save the downloaded archive image to.
         ArchivedFile = await StorageFile.GetFileFromPathAsync(archivedFileAbsolutePath);
 
         // Download was successful, we'll check the hash of the file, and if it's valid, we'll extract it.
+        UpdateProgress(_stringResource.GetLocalized("VerifyingHashForNewFile", $"({image.Name})"));
         if (!await _vmGalleryService.ValidateFileSha256Hash(ArchivedFile))
         {
+            UpdateProgress(_stringResource.GetLocalized("HashVerificationFailed", $"({image.Name})"));
             await ArchivedFile.DeleteAsync();
             throw new DownloadOperationFailedException(_stringResource.GetLocalized("DownloadOperationFailedCheckingHash"));
         }
@@ -252,5 +299,37 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     {
         // We'll use half the number of processors for the processor count of the VM just like VM gallery in Windows.
         return Math.Max(1, Environment.ProcessorCount / 2);
+    }
+
+    private bool HasDownloadCompleted()
+    {
+        var lastProgressReceived = _lastDownloadReport?.ProgressObject;
+
+        if (lastProgressReceived == null)
+        {
+            return false;
+        }
+
+        return lastProgressReceived.CompletedSuccessfully || lastProgressReceived.Failed();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            _log.Debug("Disposing VMGalleryVMCreationOperation");
+            if (disposing)
+            {
+                _waitForDownloadCompletion.Dispose();
+            }
+        }
+
+        _disposed = true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

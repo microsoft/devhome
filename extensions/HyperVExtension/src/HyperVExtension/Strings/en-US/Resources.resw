@@ -125,6 +125,34 @@
     <value>Starting the creation process for {0}</value>
     <comment>Locked="{0}" Text to tell the user that we're starting the process to create the virtual machine. {0} is the name of the virtual machine</comment>
   </data>
+  <data name="DownloadStarting" xml:space="preserve">
+    <value>Starting download of {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're starting the download to the virtual machine image. {0} is the name of the virtual machine image</comment>
+  </data>
+  <data name="ExtractionStarting" xml:space="preserve">
+    <value>Starting file extraction for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we're starting to extract the virtual machine image. {0} is the name of the virtual machine image</comment>
+  </data>
+  <data name="VerifyingHashForExistingFile" xml:space="preserve">
+    <value>Found previously downloaded archive file for {0}. Starting hash verification.</value>
+    <comment>Locked="{0}" Text to tell the user that we're verifying the hash of the zip file to the virtual machine image is contained in. {0} is the name of the virtual machine image</comment>
+  </data>
+  <data name="VerifyingHashForNewFile" xml:space="preserve">
+    <value>Archive file downloaded successfully for {0}. Starting hash verification.</value>
+    <comment>Locked="{0}" Text to tell the user that we're verifying the hash of the zip file to the virtual machine image is contained in. {0} is the name of the virtual machine image</comment>
+  </data>
+  <data name="HashVerificationFailed" xml:space="preserve">
+    <value>Hash verification failed for {0}</value>
+    <comment>Locked="{0}" Text to tell the user that we verified the hash verification of the zip file the virtual machine image is contained in failed. {0} is the name of the virtual machine image</comment>
+  </data>
+  <data name="CreationRetry" xml:space="preserve">
+    <value>There was a problem creating '{0}'. Retrying now.</value>
+    <comment>Locked="{0}" Text to tell the user that we failed to create the VM on the first try and that we're retrying. {0} is the name of the virtual machine</comment>
+  </data>
+  <data name="CreationRetryFailed" xml:space="preserve">
+    <value>We couldn't create '{0}' after two tries. Please view the logs at {1} for more information.</value>
+    <comment>{Locked="{0}", "{1}"} Text to tell the user that we failed to create the VM twice and to view the logs. {0} is the name of the virtual machine, {1} is the location of the logs on the system</comment>
+  </data>
   <data name="CurrentCheckpoint" xml:space="preserve">
     <value>Current Checkpoint</value>
     <comment>Label text to display in front of the users current checkpoint name. </comment>
