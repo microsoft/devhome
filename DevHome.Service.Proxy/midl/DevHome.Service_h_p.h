@@ -6,7 +6,7 @@
  /* File created by MIDL compiler version 8.01.0628 */
 /* at Mon Jan 18 19:14:07 2038
  */
-/* Compiler settings for C:\Users\timkur\AppData\Local\Temp\DevHome.Service.idl-4ecc4145:
+/* Compiler settings for C:\Users\SERGEY~1.RED\AppData\Local\Temp\DevHome.Service.idl-82e54409:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.01.0628 
     protocol : all , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 

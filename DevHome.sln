@@ -181,7 +181,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Service", "DevHome.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevHome.Service.Proxy", "DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj", "{291E7E80-010C-4336-843C-35A5303C8251}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Service.Projection", "DevHome.Service.Projection\DevHome.Service.Projection.csproj", "{13F1F098-262B-432D-977C-F710E6826C5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Service.Projection", "DevHome.Service.Projection\DevHome.Service.Projection.csproj", "{13F1F098-262B-432D-977C-F710E6826C5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1666,7 +1666,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		build\cppversion\version.vcxitems*{092ac740-da01-4872-8e93-b9557dad6be5}*SharedItemsImports = 5
-		build\cppversion\version.vcxitems*{13f1f098-262b-432d-977c-f710e6826c5c}*SharedItemsImports = 5
 		build\cppversion\version.vcxitems*{60e0fd98-5396-436d-bab7-187a853a5dc6}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

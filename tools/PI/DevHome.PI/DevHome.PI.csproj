@@ -128,11 +128,6 @@
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevHome.Service.Projection">
-      <HintPath>..\..\..\DevHome.Service.Projection\bin\x64\Debug\net8.0\DevHome.Service.Projection.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
