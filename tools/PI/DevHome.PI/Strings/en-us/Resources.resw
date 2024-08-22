@@ -561,22 +561,6 @@
     <value>Could not start WER Monitoring</value>
     <comment>Refers to being unable to start monitoring the WER error logs.</comment>
   </data>
-  <data name="WinLogCategoryError" xml:space="preserve">
-    <value>Error</value>
-    <comment>Refers to an error level message.</comment>
-  </data>
-  <data name="WinLogCategoryWarning" xml:space="preserve">
-    <value>Warning</value>
-    <comment>Refers to a warning level message.</comment>
-  </data>
-  <data name="WinLogCategoryInformation" xml:space="preserve">
-    <value>Information</value>
-    <comment>Refers to an information level message.</comment>
-  </data>
-  <data name="WinLogCategoryDebug" xml:space="preserve">
-    <value>Debug</value>
-    <comment>Refers to a debug level message.</comment>
-  </data>
   <data name="PreferencesTabName" xml:space="preserve">
     <value>Preferences</value>
     <comment>Refers to a user's settings preferences.</comment>
