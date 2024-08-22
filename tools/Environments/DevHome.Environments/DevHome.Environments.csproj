@@ -6,7 +6,6 @@
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,12 +15,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CustomControls\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Strings\" />
-    <Folder Include="Views\" />
   </ItemGroup>
 </Project>

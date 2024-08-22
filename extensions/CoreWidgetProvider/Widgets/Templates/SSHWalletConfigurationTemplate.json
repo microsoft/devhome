@@ -1,7 +1,7 @@
 {
   "type": "AdaptiveCard",
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-  "version": "1.5",
+  "version": "1.6",
   "body": [
     {
       "type": "Input.Text",
@@ -18,36 +18,24 @@
     {
       "type": "ColumnSet",
       "spacing": "Medium",
+      "horizontalAlignment": "center",
       "columns": [
-        {
-          "type": "Column",
-          "width": "stretch"
-        },
         {
           "type": "Column",
           "width": "auto",
           "items": [
             {
-              "type": "Container",
-              "items": [
+              "type": "ActionSet",
+              "actions": [
                 {
-                  "type": "ActionSet",
-                  "actions": [
-                    {
-                      "type": "Action.Execute",
-                      "title": "%Widget_Template_Button/Preview%",
-                      "verb": "CheckPath",
-                      "associatedInputs": "Auto"
-                    }
-                  ]
+                  "type": "Action.Execute",
+                  "title": "%Widget_Template_Button/Preview%",
+                  "verb": "CheckPath",
+                  "associatedInputs": "Auto"
                 }
               ]
             }
           ]
-        },
-        {
-          "type": "Column",
-          "width": "stretch"
         }
       ]
     },
@@ -93,11 +81,8 @@
     {
       "type": "ColumnSet",
       "spacing": "Large",
+      "horizontalAlignment": "center",
       "columns": [
-        {
-          "type": "Column",
-          "width": "stretch"
-        },
         {
           "type": "Column",
           "width": "auto",
@@ -125,10 +110,6 @@
               ]
             }
           ]
-        },
-        {
-          "type": "Column",
-          "width": "stretch"
         }
       ]
     }

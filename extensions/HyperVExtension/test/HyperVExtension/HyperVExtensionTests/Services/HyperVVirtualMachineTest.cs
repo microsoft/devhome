@@ -48,8 +48,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Running;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -72,8 +70,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Off;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -96,8 +92,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Off;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -119,7 +113,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         SetupHyperVTestMethod(HyperVStrings.HyperVModuleName, ServiceControllerStatus.Running);
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObjectAfterDeletion);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -142,8 +135,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Saved;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -166,8 +157,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Paused;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -190,8 +179,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Running;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
-            .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -214,7 +201,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Running;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psCheckpointAfterItWasCreated);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
         var hyperVManager = TestHost!.GetService<IHyperVManager>();
@@ -237,7 +223,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         _psVirtualMachineObject.State = HyperVState.Running;
         var expectedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return expectedPsObjectCollection; })
             .Returns(() => { return expectedPsObjectCollection; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;
@@ -262,7 +247,6 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         var initialReturnedPsObjectCollection = CreatePSObjectCollection(_psVirtualMachineObject);
         var psObjectCollectionReturnedAfterDeletion = CreatePSObjectCollection(_psVirtualMachineObjectAfterDeletingCheckpoint);
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() => { return initialReturnedPsObjectCollection; })
             .Returns(() => { return psObjectCollectionReturnedAfterDeletion; });
         var expectedProviderOperationStatus = ProviderOperationStatus.Success;

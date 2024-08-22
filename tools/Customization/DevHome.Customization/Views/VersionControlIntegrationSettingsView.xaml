@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Customization.Views.VersionControlIntegrationSettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Customization.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls" 
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core" 
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    mc:Ignorable="d">
+
+    <StackPanel>
+        <TextBlock 
+            x:Uid="FileExplorerSettingsTextBlock"
+            Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
+
+        <ctControls:SettingsCard
+            x:Uid="EnableVersionControlIntegrationCard"
+            Margin="{ThemeResource SettingsCardMargin}">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.IsVersionControlIntegrationEnabled, Mode=TwoWay}"/>
+        </ctControls:SettingsCard>
+
+        <ctControls:SettingsCard
+            x:Uid="ShowVersionControlInfoCard"
+            Margin="{ThemeResource SettingsCardMargin}">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowVersionControlInformation, Mode=TwoWay}"/>
+        </ctControls:SettingsCard>
+
+        <ctControls:SettingsCard
+            x:Uid="ShowRepositoryStatusCard"
+            Margin="{ThemeResource SettingsCardMargin}">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.ShowRepositoryStatus, Mode=TwoWay}"/>
+        </ctControls:SettingsCard>
+
+    </StackPanel>
+</UserControl>

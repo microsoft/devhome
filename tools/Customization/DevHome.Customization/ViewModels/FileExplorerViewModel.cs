@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -21,7 +23,6 @@ using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx;
 
 namespace DevHome.Customization.ViewModels;
 
@@ -43,13 +44,16 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public IExtensionService ExtensionService { get; }
 
+    public static ILocalSettingsService? LocalSettingsService { get; set; }
+
     public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration") && ExtraFolderPropertiesWrapper.IsSupported();
 
-    public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService)
+    public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService, ILocalSettingsService localSettingsService)
     {
         _shellSettings = new ShellSettings();
         ExperimentationService = experimentationService;
         ExtensionService = extensionService;
+        LocalSettingsService = localSettingsService;
 
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
@@ -133,6 +137,24 @@ public partial class FileExplorerViewModel : ObservableObject
         }
     }
 
+    public bool IsVersionControlIntegrationEnabled
+    {
+        get => CalculateEnabled("VersionControlIntegration");
+        set => OnToggledVersionControlIntegrationSettingAsync(value);
+    }
+
+    public bool ShowVersionControlInformation
+    {
+        get => CalculateEnabled("ShowVersionControlInformation");
+        set => OnToggledVersionControlInformationSettingAsync(value);
+    }
+
+    public bool ShowRepositoryStatus
+    {
+        get => CalculateEnabled("ShowRepositoryStatus");
+        set => OnToggledRepositoryStatusSettingAsync(value);
+    }
+
     [RelayCommand]
     public async Task AddFolderClick()
     {
@@ -176,15 +198,76 @@ public partial class FileExplorerViewModel : ObservableObject
                 return;
             }
 
-            var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
-            if (!wrapperResult.Succeeded)
+            try
             {
-                _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                return;
+                var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
+                if (!wrapperResult.Succeeded)
+                {
+                    _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "An exception occurred while registering folder for File Explorer source control integration");
             }
 
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
         });
         RefreshTrackedRepositories();
+    }
+
+    public bool CalculateEnabled(string settingName)
+    {
+        if (LocalSettingsService!.HasSettingAsync(settingName).Result)
+        {
+            return LocalSettingsService.ReadSettingAsync<bool>(settingName).Result;
+        }
+
+        // Settings disabled by default
+        return false;
+    }
+
+    public async void OnToggledVersionControlIntegrationSettingAsync(bool value)
+    {
+        await LocalSettingsService!.SaveSettingAsync("VersionControlIntegration", value);
+
+        if (!value)
+        {
+            _log.Information("The user has disabled version control integration inside Dev Home");
+            ExtraFolderPropertiesWrapper.UnregisterAllForCurrentApp();
+            _log.Information("Unregistered all repositories in File Explorer as setting is disabled");
+        }
+        else
+        {
+            _log.Information("The user has enabled version control integration in Dev Home.");
+            var repoCollection = RepoTracker.GetAllTrackedRepositories();
+            foreach (var repo in repoCollection)
+            {
+                ExtraFolderPropertiesWrapper.Register(repo.Key, typeof(SourceControlProvider).GUID);
+            }
+
+            _log.Information("Dev Home has restored registration for enhanced repositories it is aware about");
+        }
+    }
+
+    public async void OnToggledVersionControlInformationSettingAsync(bool value)
+    {
+        if (!value)
+        {
+            _log.Information("The user has disabled display of version control information in File Explorer");
+        }
+
+        await LocalSettingsService!.SaveSettingAsync("ShowVersionControlInformation", value);
+    }
+
+    public async void OnToggledRepositoryStatusSettingAsync(bool value)
+    {
+        if (!value)
+        {
+            _log.Information("The user has disabled display or repository status in File Explorer");
+        }
+
+        await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", value);
     }
 }

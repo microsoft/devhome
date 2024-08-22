@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:windows="using:DevHome.Common.Windows"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
     IsTopLevel="True"
     MinHeight="385"
     Height="385"
@@ -17,6 +19,10 @@
 
     <StackPanel Padding="24,0">
         <TextBlock Padding="0,8" Style="{ThemeResource SubtitleTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
-        <TextBlock Grid.Row="1" IsTextSelectionEnabled="True" Text="{x:Bind InstallationNotes}" TextWrapping="WrapWholeWords"/>
+        <TextBlock Grid.Row="1" IsTextSelectionEnabled="True" Text="{x:Bind InstallationNotes}" TextWrapping="WrapWholeWords">
+            <i:Interaction.Behaviors>
+                <behaviors:RenderWebHyperlinksBehavior />
+            </i:Interaction.Behaviors>
+        </TextBlock>
     </StackPanel>
 </windows:SecondaryWindow>

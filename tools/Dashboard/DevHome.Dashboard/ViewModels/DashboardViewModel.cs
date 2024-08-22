@@ -25,7 +25,7 @@ public partial class DashboardViewModel : ObservableObject
     private bool _isLoading;
 
     [ObservableProperty]
-    private bool _hasWidgetService;
+    private bool _hasWidgetServiceInitialized;
 
     public DashboardViewModel(
         IWidgetServiceService widgetServiceService,
@@ -43,7 +43,7 @@ public partial class DashboardViewModel : ObservableObject
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
+        return (widgetCount == 0 && !isLoading && HasWidgetServiceInitialized) ? Visibility.Visible : Visibility.Collapsed;
     }
 
     public bool IsRunningAsAdmin()
