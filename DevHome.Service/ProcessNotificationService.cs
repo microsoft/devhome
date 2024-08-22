@@ -25,9 +25,9 @@ public sealed class ProcessNotificationService : ITimServer
         return $"{joke.Setup}{Environment.NewLine}{joke.Punchline}";
     }
 
-    int ITimServer.GetNumber2()
+    void ITimServer.GetNumber2(out int i)
     {
-        return 48;
+        i = 48;
     }
 
     // Programming jokes borrowed from:

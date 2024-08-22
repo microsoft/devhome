@@ -362,14 +362,6 @@
           </com2:ComServer>
         </com2:Extension>
 
-        <com2:Extension Category="windows.comInterface">
-          <com2:ComInterface>
-            <com:Interface Id="D1FF65D2-7CDA-489E-9AE0-701855C4F6A1" ProxyStubClsid="4EA21821-933F-4973-96D0-CA5C41B53F7E" />
-            <!-- ITimServer -->
-            <com:ProxyStub Id="4EA21821-933F-4973-96D0-CA5C41B53F7E" Path="DevHome.Service.Proxy.dll" />
-          </com2:ComInterface>
-        </com2:Extension>
-
       </Extensions>
     </Application>
     <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">

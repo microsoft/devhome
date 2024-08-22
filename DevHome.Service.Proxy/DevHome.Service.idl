@@ -3,10 +3,9 @@ import "windows.foundation.idl";
 
 namespace DevHome.Service
 {
-    [uuid(D1FF65D2-7CDA-489E-9AE0-701855C4F6A1)]
     [version(1)]
-    interface ITimServer : IInspectable
+    interface ITimServer
     {
-        HRESULT GetNumber2([out, retval] long* number);
+        void GetNumber2(out long number);
     }
 }

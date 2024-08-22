@@ -6,7 +6,7 @@
  /* File created by MIDL compiler version 8.01.0628 */
 /* at Mon Jan 18 19:14:07 2038
  */
-/* Compiler settings for C:\Users\timkur\AppData\Local\Temp\DevHome.Service.idl-57a1f141:
+/* Compiler settings for C:\Users\timkur\AppData\Local\Temp\DevHome.Service.idl-4ecc4145:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.01.0628 
     protocol : all , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
@@ -81,19 +81,19 @@ extern RPC_IF_HANDLE __MIDL_itf_DevHome2EService_0000_0000_v0_0_s_ifspec;
 #define ____x_DevHome_CService_CITimServer_INTERFACE_DEFINED__
 
 /* interface __x_DevHome_CService_CITimServer */
-/* [uuid][object] */ 
+/* [object][uuid] */ 
 
 
 EXTERN_C const IID IID___x_DevHome_CService_CITimServer;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D1FF65D2-7CDA-489E-9AE0-701855C4F6A1")
+    MIDL_INTERFACE("f0fdac8b-19da-5298-ad85-aea3c7be2281")
     __x_DevHome_CService_CITimServer : public IInspectable
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE GetNumber2( 
-            /* [out][retval] */ long *number) = 0;
+            /* [out] */ long *number) = 0;
         
     };
     
@@ -138,7 +138,7 @@ EXTERN_C const IID IID___x_DevHome_CService_CITimServer;
         DECLSPEC_XFGVIRT(__x_DevHome_CService_CITimServer, GetNumber2)
         HRESULT ( STDMETHODCALLTYPE *GetNumber2 )( 
             __x_DevHome_CService_CITimServer * This,
-            /* [out][retval] */ long *number);
+            /* [out] */ long *number);
         
         END_INTERFACE
     } __x_DevHome_CService_CITimServerVtbl;

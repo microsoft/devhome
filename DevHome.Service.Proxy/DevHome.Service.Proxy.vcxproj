@@ -96,6 +96,8 @@
       <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
       <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
       <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
+      <MinimumTargetSystem>NT100</MinimumTargetSystem>
+      <GenerateStublessProxies>false</GenerateStublessProxies>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,6 +129,8 @@
       <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
       <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
       <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
+      <MinimumTargetSystem>NT100</MinimumTargetSystem>
+      <GenerateStublessProxies>false</GenerateStublessProxies>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,6 +158,8 @@
       <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
       <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
       <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
+      <MinimumTargetSystem>NT100</MinimumTargetSystem>
+      <GenerateStublessProxies>false</GenerateStublessProxies>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,6 +191,8 @@
       <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
       <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
       <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
+      <MinimumTargetSystem>NT100</MinimumTargetSystem>
+      <GenerateStublessProxies>false</GenerateStublessProxies>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>

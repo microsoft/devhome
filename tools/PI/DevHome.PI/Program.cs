@@ -43,11 +43,11 @@ public static class Program
     {
         TimServer server = new TimServer();
 
-        ITimServer? server2 = server as ITimServer;
+        ITimServer? server2 = (ITimServer)server;
 
         if (server2 is not null)
         {
-            int num = server2.GetNumber2();
+            server2.GetNumber2(out int num);
         }
 
         // Set up Logging
