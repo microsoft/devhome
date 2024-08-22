@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DevHome.Common.Extensions;
+using DevHome.DevInsights.Models;
 using DevHome.DevInsights.Telemetry;
 using DevHome.DevInsights.ViewModels;
 using Microsoft.UI.Xaml;
