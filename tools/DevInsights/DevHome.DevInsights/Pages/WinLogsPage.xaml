@@ -18,7 +18,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="primitives:DataGridColumnHeader">
-                        <ComboBox ItemsSource="{Binding WinLogCategories}" />
+                        <ComboBox ItemsSource="{Binding WinLogCategories}" PlaceholderText="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
