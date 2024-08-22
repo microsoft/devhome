@@ -198,11 +198,18 @@ public partial class FileExplorerViewModel : ObservableObject
                 return;
             }
 
-            var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
-            if (!wrapperResult.Succeeded)
+            try
             {
-                _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                return;
+                var wrapperResult = ExtraFolderPropertiesWrapper.Register(rootPath, typeof(SourceControlProvider).GUID);
+                if (!wrapperResult.Succeeded)
+                {
+                    _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, "An exception occurred while registering folder for File Explorer source control integration");
             }
 
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
