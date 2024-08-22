@@ -102,7 +102,7 @@ internal sealed class RepositoryWrapper : IDisposable
         return _commits;
     }
 
-    public string GetRepoStatus()
+    public string GetRepoStatus(string relativePath)
     {
         var repoStatus = _statusCache.Status;
 

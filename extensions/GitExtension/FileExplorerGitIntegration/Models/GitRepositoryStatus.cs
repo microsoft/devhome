@@ -19,6 +19,7 @@ internal sealed class GitRepositoryStatus
     private readonly List<GitStatusEntry> _renamedInWorkDir = new();
     private readonly List<GitStatusEntry> _conflicted = new();
     private readonly Dictionary<FileStatus, List<GitStatusEntry>> _statusEntries = new();
+    private readonly Dictionary<string, SubmoduleStatus> _submoduleEntries = new();
 
     public GitRepositoryStatus()
     {
@@ -45,6 +46,11 @@ internal sealed class GitRepositoryStatus
         }
     }
 
+    public bool TryAdd(string path, SubmoduleStatus status)
+    {
+        return _submoduleEntries.TryAdd(path, status);
+    }
+
     public Dictionary<string, GitStatusEntry> FileEntries => _fileEntries;
 
     public List<GitStatusEntry> Added => _statusEntries[FileStatus.NewInIndex];
@@ -64,4 +70,6 @@ internal sealed class GitRepositoryStatus
     public List<GitStatusEntry> RenamedInWorkDir => _statusEntries[FileStatus.RenamedInWorkdir];
 
     public List<GitStatusEntry> Conflicted => _statusEntries[FileStatus.Conflicted];
+
+    public Dictionary<string, SubmoduleStatus> SubmoduleEntries => _submoduleEntries;
 }
