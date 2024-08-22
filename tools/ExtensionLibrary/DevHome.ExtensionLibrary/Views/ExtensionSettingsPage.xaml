@@ -36,7 +36,13 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <WebView2 x:Name="webView2" Grid.Row="1" Grid.ColumnSpan="2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" x:Uid="ExtensionSettingsWebView2" DefaultBackgroundColor="Transparent"/>
+                    <WebView2 x:Name="webView2" Grid.Row="1" Grid.ColumnSpan="2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" x:Uid="ExtensionSettingsWebView2" DefaultBackgroundColor="Transparent">
+                        <WebView2.Resources>
+                            <SolidColorBrush x:Name="BrushForThemeBackgroundColor" Color="Transparent" />
+                            <!-- High Contrast color chosen because it is used as a border color in high contrast modes -->
+                            <SolidColorBrush x:Name="BrushForThemeBackgroundColor_HC" Color="#f5c52a" />
+                        </WebView2.Resources>
+                    </WebView2>
                 </Grid>
             </Grid>
         </ScrollViewer>
