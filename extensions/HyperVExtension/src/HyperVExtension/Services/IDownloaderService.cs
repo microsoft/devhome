@@ -41,7 +41,7 @@ public interface IDownloaderService
     /// <summary>
     /// Checks whether a file based on its destinations absolute path is being downloaded by the downloaderService.
     /// </summary>
-    /// <param name="destinationFilePath">The Absolute path to the file once its downloaded.</param>
+    /// <param name="destinationFilePath">The Absolute path to the file once it's downloaded.</param>
     /// <returns>True if the DownloaderService is downloading the file. False otherwise</returns>
     public bool IsFileBeingDownloaded(string destinationFilePath);
 }

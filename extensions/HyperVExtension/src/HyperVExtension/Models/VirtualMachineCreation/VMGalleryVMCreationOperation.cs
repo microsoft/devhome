@@ -185,8 +185,9 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         if (report.ReportKind == ReportKind.Download)
         {
             _lastDownloadReport = report;
+            var progressObject = _lastDownloadReport.ProgressObject;
 
-            if (report.ProgressObject.CompletedSuccessfully || report.ProgressObject.Failed())
+            if (progressObject.Succeeded || progressObject.Failed)
             {
                 _waitForDownloadCompletion.Set();
             }
@@ -240,7 +241,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             _waitForDownloadCompletion.WaitOne();
         }
 
-        if (_lastDownloadReport!.ProgressObject.Failed())
+        if (_lastDownloadReport!.ProgressObject.Failed)
         {
             throw new DownloadOperationFailedException(
                 $"Failed to download file due to error: {_lastDownloadReport!.ProgressObject.ErrorMessage}");
@@ -310,7 +311,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             return false;
         }
 
-        return lastProgressReceived.CompletedSuccessfully || lastProgressReceived.Failed();
+        return lastProgressReceived.Succeeded || lastProgressReceived.Failed;
     }
 
     private void Dispose(bool disposing)

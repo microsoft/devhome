@@ -23,15 +23,15 @@ internal sealed class FileDownloadMonitor
 
     private bool _downloadInProgress;
 
-    private DownloadOperationReport? _lastSentReport;
+    private DownloadOperationReport _lastSentReport = new(new ByteTransferProgress());
 
-    public FileDownloadMonitor(IProgress<IOperationReport> progressProvider)
+    public FileDownloadMonitor(IProgress<IOperationReport> progressSubscriber)
     {
-        AddSubscriber(progressProvider);
+        AddSubscriber(progressSubscriber);
         _progressReporter = new(PublishProgress);
     }
 
-    public void AddSubscriber(IProgress<IOperationReport> progressProvider)
+    public void AddSubscriber(IProgress<IOperationReport> progressSubscriber)
     {
         lock (_lock)
         {
@@ -39,17 +39,20 @@ internal sealed class FileDownloadMonitor
             {
                 // Subscriber addition requested so we'll submit the last recorded
                 // progress we received before adding it to the subscriber list
-                progressProvider.Report(_lastSentReport);
+                progressSubscriber.Report(_lastSentReport);
             }
 
-            _subscriberList.Add(progressProvider);
+            _subscriberList.Add(progressSubscriber);
         }
     }
 
     private void PublishProgress(ByteTransferProgress transferProgress)
     {
-        _lastSentReport = new DownloadOperationReport(transferProgress);
-        _subscriberList.ForEach(subscriber => subscriber.Report(_lastSentReport));
+        lock (_lock)
+        {
+            _lastSentReport = new DownloadOperationReport(transferProgress);
+            _subscriberList.ForEach(subscriber => subscriber.Report(_lastSentReport));
+        }
     }
 
     public async Task StartAsync(
@@ -69,10 +72,6 @@ internal sealed class FileDownloadMonitor
             }
 
             _downloadInProgress = true;
-
-            // Before starting the initial download, we'll update _lastSentReport so any
-            // subscribers who are added before and after we leave the lock are notified.
-            PublishProgress(new(bytesReceived: 0, totalBytesToReceive: totalBytesToExtract));
         }
 
         await source.CopyToAsync(
@@ -87,6 +86,21 @@ internal sealed class FileDownloadMonitor
 
     public void StopMonitor(string? errorMessage = null)
     {
+        // Send error message to all subscribers.
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            PublishProgress(new ByteTransferProgress(errorMessage));
+        }
+        else
+        {
+            var lastProgress = _lastSentReport.ProgressObject;
+            PublishProgress(
+                new ByteTransferProgress(
+                    lastProgress.BytesReceived,
+                    lastProgress.TotalBytesToReceive,
+                    TransferStatus.Succeeded));
+        }
+
         lock (_lock)
         {
             // Download already stopped.
@@ -96,12 +110,6 @@ internal sealed class FileDownloadMonitor
             }
 
             _downloadInProgress = false;
-
-            // Send error message to all subscribers.
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                PublishProgress(new ByteTransferProgress(errorMessage));
-            }
         }
     }
 }

@@ -13,7 +13,7 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// archive extraction libraries will be added.
 /// </summary>
 /// <remarks>
-/// .Net cores ZipFile and ZipArchive implementations for extracting large files (Gbs) are slow when used in Dev Homes Debug configuration.
+/// .Net core's ZipFile and ZipArchive implementations for extracting large files (GBs) are slow when used in Dev Homes Debug configuration.
 /// In release they are much quicker. So, to see the actual extraction speed that users will see use the release configuration.
 /// </remarks>
 public sealed class DotNetZipArchiveProvider : IArchiveProvider

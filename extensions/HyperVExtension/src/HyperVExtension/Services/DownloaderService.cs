@@ -40,30 +40,29 @@ public class DownloaderService : IDownloaderService
         CancellationToken cancellationToken)
     {
         var downloadMonitor = new FileDownloadMonitor(progressProvider);
+        lock (_lock)
+        {
+            // If the destination file is being downloaded already subscribe the progress provider
+            // to the monitor and return. No extra work is needed by us.
+            if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var monitor))
+            {
+                monitor.AddSubscriber(progressProvider);
+                return;
+            }
+
+            // If the destination file isn't being downloaded and it exists already throw an exception
+            // since we're not overwriting it with a new download.
+            if (File.Exists(destinationFilePath))
+            {
+                throw new InvalidOperationException(
+                    "Destination file already exists and is not currently being downloaded");
+            }
+
+            _destinationFileDownloadMap.Add(destinationFilePath, downloadMonitor);
+        }
 
         try
         {
-            lock (_lock)
-            {
-                // If the destination file is being downloaded already subscribe the progress provider
-                // to the monitor and return. No extra work is needed by us.
-                if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var monitor))
-                {
-                    monitor.AddSubscriber(progressProvider);
-                    return;
-                }
-
-                // If the destination file isn't being downloaded and it exists already throw an exception
-                // since we're not overwriting it with a new download.
-                if (File.Exists(destinationFilePath))
-                {
-                    throw new InvalidOperationException(
-                        "Destination file already exists and is not currently being downloaded");
-                }
-
-                _destinationFileDownloadMap.Add(destinationFilePath, downloadMonitor);
-            }
-
             var httpClient = _httpClientFactory.CreateClient();
             var totalBytesToReceive = GetTotalBytesToReceive(
                 await httpClient.GetAsync(sourceWebUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken));
