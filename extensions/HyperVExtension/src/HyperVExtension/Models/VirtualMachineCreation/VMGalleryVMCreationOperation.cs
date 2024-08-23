@@ -40,6 +40,8 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 
     private readonly ManualResetEvent _waitForDownloadCompletion = new(false);
 
+    private const uint MaximumCreationAttempts = 2;
+
     public CancellationTokenSource CancellationTokenSource { get; private set; } = new();
 
     private readonly object _lock = new();
@@ -93,15 +95,15 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     {
         return Task.Run(async () =>
         {
-            // We'll attempt to create the VM from the gallery twice before completely failing and returning
+            // We attempt to retry creating the VM at least once before completely failing and returning
             // an error back to Dev Home.
-            var creationAttempt = 1;
-            var maxAttempts = 2;
-            while (creationAttempt <= maxAttempts)
+            var creationAttempt = 1U;
+
+            while (creationAttempt <= MaximumCreationAttempts)
             {
                 try
                 {
-                    if (creationAttempt < maxAttempts)
+                    if (creationAttempt < MaximumCreationAttempts)
                     {
                         UpdateProgress(_stringResource.GetLocalized("CreationStarting", $"({_userInputParameters.NewEnvironmentName})"));
                     }
@@ -142,14 +144,14 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                 }
                 catch (Exception ex)
                 {
-                    if (creationAttempt == maxAttempts)
+                    if (creationAttempt == MaximumCreationAttempts)
                     {
                         _log.Error(ex, "Operation to create compute system failed on the last attempt");
                         return new CreateComputeSystemResult(ex, ex.Message, ex.Message);
                     }
                     else
                     {
-                        _log.Error(ex, "Operation to create compute system failed on the first attempt, retrying.");
+                        _log.Error(ex, $"Operation to create compute system failed on attempt {creationAttempt}, retrying.");
                     }
                 }
 
@@ -157,7 +159,8 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
             }
 
             // We shouldn't get here since we should either complete successfully or throw an error and
-            // send that error message back to Dev Home on the second try if it fails..
+            // send that error message back to Dev Home, when we've reached the maximum creation attempts
+            // allowed.
             var exception = new InvalidOperationException($"Failed to create VM after two attempts");
             var errorDisplayText = _stringResource.GetLocalized(
                 "CreationRetryFailed",
@@ -216,7 +219,8 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         var archivedFileAbsolutePath = Path.Combine(_tempFolderSaveLocation, archivedFileName);
         var isFileBeingDownloaded = _downloaderService.IsFileBeingDownloaded(archivedFileAbsolutePath);
 
-        // If the file already exists and has the correct hash, we don't need to download it again.
+        // If the file already exists, isn't currently being downloaded and has the correct hash
+        // we don't need to download it again.
         if (File.Exists(archivedFileAbsolutePath) && !isFileBeingDownloaded)
         {
             ArchivedFile = await StorageFile.GetFileFromPathAsync(archivedFileAbsolutePath);

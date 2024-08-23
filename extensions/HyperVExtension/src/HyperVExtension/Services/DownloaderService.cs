@@ -34,19 +34,19 @@ public class DownloaderService : IDownloaderService
 
     /// <inheritdoc cref="IDownloaderService.StartDownloadAsync"/>
     public async Task StartDownloadAsync(
-        IProgress<IOperationReport> progressProvider,
+        IProgress<IOperationReport> progressSubscriber,
         Uri sourceWebUri,
         string destinationFilePath,
         CancellationToken cancellationToken)
     {
-        var downloadMonitor = new FileDownloadMonitor(progressProvider);
+        var downloadMonitor = new FileDownloadMonitor(progressSubscriber);
         lock (_lock)
         {
-            // If the destination file is being downloaded already subscribe the progress provider
+            // If the destination file is being downloaded already subscribe the progress subscriber
             // to the monitor and return. No extra work is needed by us.
             if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var monitor))
             {
-                monitor.AddSubscriber(progressProvider);
+                monitor.AddSubscriber(progressSubscriber);
                 return;
             }
 
@@ -134,7 +134,7 @@ public class DownloaderService : IDownloaderService
     {
         lock (_lock)
         {
-            if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var subscribers))
+            if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var _))
             {
                 return true;
             }
