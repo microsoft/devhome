@@ -42,6 +42,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _isWebView2Enabled;
 
+    public event Action? SettingsContentLoaded;
+
     public ExtensionSettingsViewModel(
         IExtensionService extensionService,
         INavigationService navigationService,
@@ -103,6 +105,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             }
         }
 
+        SettingsContentLoaded?.Invoke();
         await Task.CompletedTask;
     }
 
