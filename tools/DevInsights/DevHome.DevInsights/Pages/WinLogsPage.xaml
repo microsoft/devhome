@@ -18,7 +18,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="primitives:DataGridColumnHeader">
-                        <ComboBox ItemsSource="{Binding ViewModel.WinLogCategories}" PlaceholderText="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                        <ComboBox ItemsSource="{Binding ViewModel.WinLogCategories}" PlaceholderText="{TemplateBinding Content}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}" Checked="ViewModel.CheckBoxChanged" Unchecked="ViewModel.CheckBoxChanged"/>
