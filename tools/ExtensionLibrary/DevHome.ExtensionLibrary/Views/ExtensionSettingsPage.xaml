@@ -14,7 +14,12 @@
 
     <Grid>
         <ScrollViewer VerticalAlignment="Top">
-            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}"
+                        Margin="{ThemeResource ContentPageMargin}"
+                        Background="{ThemeResource WidgetCardBackground}"
+                        BorderBrush="{ThemeResource WidgetCardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource ControlCornerRadius}">
                 <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="Loaded">
