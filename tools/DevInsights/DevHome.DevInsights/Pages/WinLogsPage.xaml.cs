@@ -16,13 +16,10 @@ namespace DevHome.DevInsights.Pages;
 
 public partial class WinLogsPage : Page, IDisposable
 {
-    private WinLogsPageViewModel ViewModel { get; }
-
-    public ObservableCollection<WinLogCategory> WinLogCategories { get; }
+    public WinLogsPageViewModel ViewModel { get; }
 
     public WinLogsPage()
     {
-        WinLogCategories = new ObservableCollection<WinLogCategory>(Enum.GetValues(typeof(WinLogCategory)).Cast<WinLogCategory>());
         ViewModel = Application.Current.GetService<WinLogsPageViewModel>();
         InitializeComponent();
         DataContext = this;

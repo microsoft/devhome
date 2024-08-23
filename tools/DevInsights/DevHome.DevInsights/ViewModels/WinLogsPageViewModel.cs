@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,6 +35,9 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private ObservableCollection<WinLogsEntry> _winLogEntries;
+
+    [ObservableProperty]
+    private Dictionary<WinLogCategory, bool> _winLogCategories;
 
     [ObservableProperty]
     private AdvancedCollectionView _winLogsView;
@@ -76,9 +81,10 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         _winLogEntries = [];
         _winLogsOutput = [];
         _winLogsOutput.CollectionChanged += WinLogsOutput_CollectionChanged;
+        _winLogCategories = Enum.GetValues(typeof(WinLogCategory)).Cast<WinLogCategory>().ToDictionary(category => category, category => true);
         _winLogsView = new AdvancedCollectionView(_winLogEntries, true);
         _winLogsView.SortDescriptions.Add(new SortDescription(nameof(WinLogsEntry.TimeGenerated), SortDirection.Ascending));
-        _winLogsView.Filter = entry => string.IsNullOrEmpty(FilterMessageText) || ((WinLogsEntry)entry).Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase);
+        _winLogsView.Filter = entry => FilterLog((WinLogsEntry)entry);
 
         var process = TargetAppData.Instance.TargetProcess;
         if (process is not null)
@@ -165,6 +171,33 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
+    private void FindPattern(string message)
+    {
+        var newInsight = InsightsHelper.FindPattern(message);
+        if (newInsight is not null)
+        {
+            _dispatcher.TryEnqueue(() =>
+            {
+                _insightsService.AddInsight(newInsight);
+            });
+        }
+    }
+
+    private bool FilterLog(WinLogsEntry entry)
+    {
+        if (IsCategoryEnabled(entry.Category))
+        {
+            return string.IsNullOrEmpty(FilterMessageText) || entry.Message.Contains(FilterMessageText, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        return false;
+    }
+
+    private bool IsCategoryEnabled(WinLogCategory category)
+    {
+        return WinLogCategories.GetValueOrDefault(category);
+    }
+
     public void Dispose()
     {
         _winLogsHelper?.Dispose();
@@ -207,15 +240,12 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    private void FindPattern(string message)
+    public void CheckBoxChanged(object sender, RoutedEventArgs e)
     {
-        var newInsight = InsightsHelper.FindPattern(message);
-        if (newInsight is not null)
+        if (sender is CheckBox checkBox && checkBox.DataContext is KeyValuePair<WinLogCategory, bool> item)
         {
-            _dispatcher.TryEnqueue(() =>
-            {
-                _insightsService.AddInsight(newInsight);
-            });
+            WinLogCategories[item.Key] = checkBox.IsChecked ?? false;
+            UpdateWinLogs();
         }
     }
 
@@ -247,6 +277,6 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void UpdateWinLogs()
     {
-        WinLogsView.RefreshFilter();
+        WinLogsView.Refresh();
     }
 }
