@@ -29,8 +29,8 @@
                     </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToObjectVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
-            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToObjectBooleanConverter" NotEmptyValue="True" EmptyValue="False"/>
+            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToBooleanConverter" NotEmptyValue="True" EmptyValue="False"/>
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
@@ -65,9 +65,9 @@
                 <Grid
                     Grid.Row="0"
                     HorizontalAlignment="Stretch"
-                    Visibility="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToObjectVisibilityConverter}}">
+                    Visibility="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToVisibilityConverter}}">
                     <InfoBar
-                        IsOpen="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToObjectBooleanConverter}}"
+                        IsOpen="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToBooleanConverter}}"
                         Severity="Error"
                         Message="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay}" >
                     </InfoBar>

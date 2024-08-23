@@ -187,7 +187,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase, IRecipient<NewAda
                 new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages),
                 relatedActivityId: Orchestrator.ActivityId);
 
-            // Invoke adaptive card next button. We'll move on in the follow only if we did not
+            // Invoke adaptive card next button. We'll move on in the flow only if we did not
             // receive any errors in the adaptive card session in the Receive method below.
             if (Orchestrator.AdaptiveCardFlowNavigator.IsActionInvokerAvailable())
             {

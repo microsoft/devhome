@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Models;
 
 namespace DevHome.SetupFlow.Models.Environments;
 
