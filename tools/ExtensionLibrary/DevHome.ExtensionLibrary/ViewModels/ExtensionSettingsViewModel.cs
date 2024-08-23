@@ -10,6 +10,11 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Contracts.Services;
+using DevHome.ExtensionLibrary.Views;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Web.WebView2.Core;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -40,14 +45,14 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     public ExtensionSettingsViewModel(
         IExtensionService extensionService,
         INavigationService navigationService,
-        AdaptiveCardRenderingService adaptiveCardRenderingService)
+        AdaptiveCardRenderingService adaptiveCardRenderingService,
+        IThemeSelectorService themeSelectorService)
     {
         _extensionService = extensionService;
         _navigationService = navigationService;
         _adaptiveCardRenderingService = adaptiveCardRenderingService;
         _webMessageReceived = string.Empty;
         _webViewUrl = null;
-
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
 
