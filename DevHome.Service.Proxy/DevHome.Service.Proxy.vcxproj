@@ -1,212 +1,320 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <PropertyGroup Label="Globals">
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
+    <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
+    <MinimalCoreWin>true</MinimalCoreWin>
+    <ProjectGuid>{291E7E80-010C-4336-843C-35A5303C8251}</ProjectGuid>
+    <ProjectName>DevHome.Service.IDL</ProjectName>
+    <RootNamespace>Microsoft.Windows.DevHome.Service</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <!-- SDK version needs to stay in sync with ToolingVersion.props, and BuildDevSetupAgentHelper.ps1 -->
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|ARM64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_FailFast|Win32">
+      <Configuration>Debug_FailFast</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="Debug_FailFast|x64">
+      <Configuration>Debug_FailFast</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{291e7e80-010c-4336-843c-35a5303c8251}</ProjectGuid>
-    <RootNamespace>DevHomeServiceProxy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'" Label="Configuration">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'" Label="Configuration">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'" Label="Configuration">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <DesktopCompatible>true</DesktopCompatible>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\x86\$(Configuration)\</OutDir>
+    <IntDir>obj\x86\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\x86\$(Configuration)\</OutDir>
+    <IntDir>obj\x86\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">
+    <OutDir>bin\x86\$(Configuration)\</OutDir>
+    <IntDir>obj\x86\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>
-        WIN32;_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;%(PreprocessorDefinitions);PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile />
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <!--Temporarily disable cppwinrt heap enforcement to work around xaml compiler generated std::shared_ptr use -->
+      <AdditionalOptions Condition="'$(CppWinRTHeapEnforcement)'==''">/DWINRT_NO_MAKE_DETECTION %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <PreprocessorDefinitions>_WINRT_DLL;WIN32_LEAN_AND_MEAN;WINRT_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
-    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <Midl>
-      <TypeLibFormat>NewFormat</TypeLibFormat>
-      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
-      <EnableWindowsRuntime>true</EnableWindowsRuntime>
-      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
-      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
-      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
-      <GenerateStublessProxies>false</GenerateStublessProxies>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NT100</MinimumTargetSystem>
+    </Midl>
+    <Midl>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NT100</MinimumTargetSystem>
+    </Midl>
+    <Midl>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_FailFast'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile />
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Midl>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|ARM64'">NT100</MinimumTargetSystem>
+    </Midl>
+    <Midl>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|Win32'">NT100</MinimumTargetSystem>
+    </Midl>
+    <Midl>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Debug_FailFast|x64'">NT100</MinimumTargetSystem>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <TypeLibFormat>NewFormat</TypeLibFormat>
-      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
-      <EnableWindowsRuntime>true</EnableWindowsRuntime>
-      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
-      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
-      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
-      <GenerateStublessProxies>false</GenerateStublessProxies>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">NT100</MinimumTargetSystem>
     </Midl>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile />
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
-    </Link>
     <Midl>
-      <TypeLibFormat>NewFormat</TypeLibFormat>
-      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
-      <EnableWindowsRuntime>true</EnableWindowsRuntime>
-      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
-      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
-      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
-      <GenerateStublessProxies>false</GenerateStublessProxies>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NT100</MinimumTargetSystem>
     </Midl>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;DEVHOMESERVICEPROXY_EXPORTS;_WINDOWS;_USRDLL;REGISTER_PROXY_DLL;PROXY_CLSID_IS={0x4ea21821,0x933f,0x4973,{0x96,0xd0,0xca,0x5c,0x41,0xb5,0x3f,0x7e}};%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile />
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>rpcrt4.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DevHome.Service.Proxy.def</ModuleDefinitionFile>
-    </Link>
     <Midl>
-      <TypeLibFormat>NewFormat</TypeLibFormat>
-      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
-      <EnableWindowsRuntime>true</EnableWindowsRuntime>
-      <OutputDirectory>$(ProjectDir)$(GeneratedFilesDir)midl</OutputDirectory>
-      <MetadataFileName>$(ProjectDir)$(GeneratedFilesDir)winmd\%(Filename).winmd</MetadataFileName>
-      <AdditionalMetadataDirectories>$(WindowsSDK_MetadataFoundationPath);%(AdditionalMetadataDirectories)</AdditionalMetadataDirectories>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
-      <GenerateStublessProxies>false</GenerateStublessProxies>
+      <MetadataFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(IntDir)%(Filename).winmd</MetadataFileName>
+      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateTypeLibrary>
+      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</GenerateClientFiles>
+      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</GenerateServerFiles>
+      <DllDataFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</DllDataFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</ProxyFileName>
+      <ClientStubFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</ClientStubFile>
+      <ServerStubFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</ServerStubFile>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nul</HeaderFileName>
+      <MinimumTargetSystem Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Midl Include="DevHome.Service.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DevHome.Service.Proxy.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="midl\DevHome.Service_i.c" />
-    <ClCompile Include="midl\DevHome.Service_p.c" />
-    <ClCompile Include="midl\dlldata.c" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.240111.5\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>

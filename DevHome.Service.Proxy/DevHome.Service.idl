@@ -3,9 +3,8 @@ import "windows.foundation.idl";
 
 namespace DevHome.Service
 {
-    [version(1)]
     interface ITimServer
     {
-        void GetNumber2(out long number);
+        Int32 GetNumber();
     }
 }

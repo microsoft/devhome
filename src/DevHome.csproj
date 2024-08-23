@@ -92,7 +92,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
@@ -198,17 +197,9 @@
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DevHome.Service.Proxy\winmd\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+    <None Include="..\DevHome.Service.Proxy\DevHome.Service.winmd" Link="DevHome.Service.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\x64\Debug\DevHome.Service.Proxy.dll" Link="DevHome.Service.Proxy.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="DevHome.Service.Projection">
-      <HintPath>..\DevHome.Service.Projection\bin\x64\Debug\net8.0\DevHome.Service.Projection.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using COMRegistration;
+using DevHome.Service.Runtime;
 
 namespace DevHome.Service;
 
@@ -14,16 +15,15 @@ public sealed class WindowsBackgroundService(
 {
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Thread.Sleep(20 * 1000);
         RegisterClass(new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
-        EnableFastCOMRundown();
+        jokeService.GetNumber();
 
+        // EnableFastCOMRundown();
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string joke = jokeService.GetJokeInternal();
-                logger.LogWarning("{Joke}", joke);
-
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
@@ -57,6 +57,7 @@ public sealed class WindowsBackgroundService(
         Trace.WriteLine($"CLSID: {clsid:B}");
 
         int cookie;
+
         int hr = Ole32.CoRegisterClassObject(ref clsid, new BasicClassFactory<ProcessNotificationService>(), Ole32.CLSCTX_LOCAL_SERVER, Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED, out cookie);
         if (hr < 0)
         {
@@ -102,6 +103,7 @@ public sealed class WindowsBackgroundService(
         public static extern int CoRevokeClassObject(int register);
     }
 
+    /*
     private void EnableFastCOMRundown()
     {
         CGlobalOptions options = new CGlobalOptions();
@@ -115,19 +117,19 @@ public sealed class WindowsBackgroundService(
 
     [ComImport]
     [Guid("0000034B-0000-0000-C000-000000000046")]
-    public class CGlobalOptions;
+    private class CGlobalOptions;
 
     [ComImport]
     [Guid("0000015B-0000-0000-C000-000000000046")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IGlobalOptions
+    private interface IGlobalOptions
     {
         void SetItem(COMGlobalOptions dwProperty, uint dwValue);
 
         void Query(COMGlobalOptions dwProperty, out uint pdwValue);
     }
 
-    public enum COMGlobalOptions
+    private enum COMGlobalOptions
     {
         COMGLB_EXCEPTION_HANDLING = 1,
         COMGLB_APPID = 2,
@@ -136,7 +138,7 @@ public sealed class WindowsBackgroundService(
         COMGLB_UNMARSHALING_POLICY = 5,
     }
 
-    public enum COMExeceptionHandling
+    private enum COMExeceptionHandling
     {
         COMGLB_EXCEPTION_HANDLE = 0,
         COMGLB_EXCEPTION_DONOT_HANDLE_FATAL = 1,
@@ -144,7 +146,7 @@ public sealed class WindowsBackgroundService(
         COMGLB_EXCEPTION_DONOT_HANDLE_ANY = 2,
     }
 
-    public enum COM_RO_FLAGS
+    private enum COM_RO_FLAGS
     {
         // Remove touch messages from the message queue in the STA modal loop.
         COMGLB_STA_MODALLOOP_REMOVE_TOUCH_MESSAGES = 0x1,
@@ -170,4 +172,5 @@ public sealed class WindowsBackgroundService(
         COMGLB_RESERVED5 = 0x200,
         COMGLB_RESERVED6 = 0x400,
     }
+    */
 }

@@ -1,26 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
-
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>DevHome.WindowsService</RootNamespace>
+    <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <EnableComHosting>true</EnableComHosting>
+    <UseWinUI>false</UseWinUI>
+    <CsWinRTEnabled>false</CsWinRTEnabled>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="DevHome.Service.Projection">
-      <HintPath>..\DevHome.Service.Projection\bin\x64\Debug\net8.0\DevHome.Service.Projection.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

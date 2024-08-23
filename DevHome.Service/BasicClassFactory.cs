@@ -3,115 +3,70 @@
 
 using System;
 using System.Runtime.InteropServices;
+using DevHome.Service.Runtime;
+using WinRT;
 
 namespace COMRegistration;
 
 [ComVisible(true)]
 #pragma warning disable SA1649 // File name should match first type name
-internal sealed class BasicClassFactory<T> : IClassFactory
+public class BasicClassFactory<T> : IClassFactory
 #pragma warning restore SA1649 // File name should match first type name
-    where T : new()
+where T : ProcessNotificationService
 {
-    public void CreateInstance(
-        [MarshalAs(UnmanagedType.Interface)] object pUnkOuter,
-        ref Guid riid,
-        out IntPtr ppvObject)
-    {
-        Type interfaceType = GetValidatedInterfaceType(typeof(T), ref riid, pUnkOuter);
-
-        object obj = new T();
-        if (pUnkOuter != null)
-        {
-            obj = CreateAggregatedObject(pUnkOuter, obj);
-        }
-
-        ppvObject = GetObjectAsInterface(obj, interfaceType);
-    }
-
-    public void LockServer([MarshalAs(UnmanagedType.Bool)] bool fLock)
+    public BasicClassFactory()
     {
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable SA1310 // Field names should not contain underscore
-    private static readonly Guid IID_IUnknown = Guid.Parse("00000000-0000-0000-C000-000000000046");
-#pragma warning restore SA1310 // Field names should not contain underscore
-#pragma warning restore IDE1006 // Naming Styles
-
-    private static Type GetValidatedInterfaceType(Type classType, ref Guid riid, object outer)
+    public int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject)
     {
-        if (riid == IID_IUnknown)
+        ppvObject = IntPtr.Zero;
+
+        if (pUnkOuter != IntPtr.Zero)
         {
-            return typeof(object);
+            Marshal.ThrowExceptionForHR(CLASSENOAGGREGATION);
         }
 
-        // Aggregation can only be done when requesting IUnknown.
-        if (outer != null)
+        if (riid == typeof(T).GUID || riid == Guid.Parse(Guids.IUnknown))
         {
-            // const int CLASS_E_NOAGGREGATION = unchecked((int)0x80040110);
-            // throw new COMException(string.Empty, CLASS_E_NOAGGREGATION);
-            throw new InvalidDataException();
+            // Create the instance of the .NET object
+            ppvObject = MarshalInspectable<ProcessNotificationService>.FromManaged(new ProcessNotificationService());
+        }
+        else
+        {
+            // The object that ppvObject points to does not support the
+            // interface identified by riid.
+            Marshal.ThrowExceptionForHR(ENOINTERFACE);
         }
 
-        // Verify the class implements the desired interface
-        foreach (Type i in classType.GetInterfaces())
-        {
-            if (i.GUID == riid)
-            {
-                return i;
-            }
-        }
-
-        // E_NOINTERFACE
-        throw new InvalidCastException();
+        return 0;
     }
 
-    private static IntPtr GetObjectAsInterface(object obj, Type interfaceType)
+    int IClassFactory.LockServer(bool fLock)
     {
-        // If the requested "interface type" is type object then return as IUnknown
-        if (interfaceType == typeof(object))
-        {
-            return Marshal.GetIUnknownForObject(obj);
-        }
-
-        IntPtr interfaceMaybe = Marshal.GetComInterfaceForObject(obj, interfaceType, CustomQueryInterfaceMode.Ignore);
-        if (interfaceMaybe == IntPtr.Zero)
-        {
-            // E_NOINTERFACE
-            throw new InvalidCastException();
-        }
-
-        return interfaceMaybe;
+        return 0;
     }
 
-    private static object CreateAggregatedObject(object pUnkOuter, object comObject)
-    {
-        IntPtr outerPtr = Marshal.GetIUnknownForObject(pUnkOuter);
-
-        try
-        {
-            IntPtr innerPtr = Marshal.CreateAggregatedObject(outerPtr, comObject);
-            return Marshal.GetObjectForIUnknown(innerPtr);
-        }
-        finally
-        {
-            // Decrement the above 'Marshal.GetIUnknownForObject()'
-            Marshal.Release(outerPtr);
-        }
-    }
+    private const int CLASSENOAGGREGATION = unchecked((int)0x80040110);
+    private const int ENOINTERFACE = unchecked((int)0x80004002);
 }
 
-// https://docs.microsoft.com/windows/win32/api/unknwn/nn-unknwn-iclassfactory
+internal static class Guids
+{
+    public const string IClassFactory = "00000001-0000-0000-C000-000000000046";
+    public const string IUnknown = "00000000-0000-0000-C000-000000000046";
+}
+
+// IClassFactory declaration
 [ComImport]
 [ComVisible(false)]
-[Guid("00000001-0000-0000-C000-000000000046")]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid(Guids.IClassFactory)]
 internal interface IClassFactory
 {
-    void CreateInstance(
-        [MarshalAs(UnmanagedType.Interface)] object pUnkOuter,
-        ref Guid riid,
-        out IntPtr ppvObject);
+    [PreserveSig]
+    int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject);
 
-    void LockServer([MarshalAs(UnmanagedType.Bool)] bool fLock);
+    [PreserveSig]
+    int LockServer(bool fLock);
 }

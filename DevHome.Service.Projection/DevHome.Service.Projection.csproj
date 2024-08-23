@@ -1,30 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="$(SolutionDir)ToolingVersions.props" />
-  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <CsWinRTInputs Include="..\DevHome.Service.Proxy\DevHome.Service.winmd" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
     <CsWinRTIncludes>DevHome.Service</CsWinRTIncludes>
-    <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
+    <CsWinRTGeneratedFilesDir>$(SolutionDir)DevHome.Service.Projection\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <CsWinRTInputs Include="..\DevHome.Service.Proxy\winmd\DevHome.Service.winmd" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj" />
-  </ItemGroup>
 
 </Project>

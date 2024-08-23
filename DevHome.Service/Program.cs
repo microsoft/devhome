@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Service;
+using DevHome.Service.Runtime;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddWindowsService(options =>
