@@ -77,10 +77,22 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     {
                         IsAdaptiveCardEnabled = false;
                         IsWebView2Enabled = true;
-                        var webViewUrl = settingsProvider2.GetSettingsWebView();
-                        if (webViewUrl != null)
+                        var webViewResult = settingsProvider2.GetSettingsWebView();
+                        try
                         {
-                            WebViewUrl = new Uri(webViewUrl.Url);
+                            WebViewUrl = new Uri(webViewResult.Url);
+                        }
+                        catch (UriFormatException)
+                        {
+                            // TODO: Provide a better error message to the user
+                            _log.Error($"Invalid URL: {webViewResult.Url}");
+                            await Task.CompletedTask;
+                        }
+                        catch (NullReferenceException)
+                        {
+                            // Log the error and continue
+                            _log.Error("webViewResult was null");
+                            await Task.CompletedTask;
                         }
                     }
                     else
