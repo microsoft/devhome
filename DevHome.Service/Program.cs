@@ -4,10 +4,13 @@
 using DevHome.Service;
 using DevHome.Service.Runtime;
 
+// ComHelpers.EnableFastCOMRundown();
+ComHelpers.InitializeSecurity();
+
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddWindowsService(options =>
 {
-    options.ServiceName = ".NET Joke Service";
+    options.ServiceName = "DevHome Service";
 });
 
 builder.Services.AddSingleton<ProcessNotificationService>();

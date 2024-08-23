@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using DevHome.Service.Runtime;
+using Windows.Win32;
 using WinRT;
 
 namespace COMRegistration;
@@ -12,10 +13,13 @@ namespace COMRegistration;
 #pragma warning disable SA1649 // File name should match first type name
 public class BasicClassFactory<T> : IClassFactory
 #pragma warning restore SA1649 // File name should match first type name
-where T : ProcessNotificationService
+where T : new()
 {
-    public BasicClassFactory()
+    private readonly T _classInstance;
+
+    public BasicClassFactory(T classInstance)
     {
+        _classInstance = classInstance;
     }
 
     public int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject)
@@ -30,7 +34,7 @@ where T : ProcessNotificationService
         if (riid == typeof(T).GUID || riid == Guid.Parse(Guids.IUnknown))
         {
             // Create the instance of the .NET object
-            ppvObject = MarshalInspectable<ProcessNotificationService>.FromManaged(new ProcessNotificationService());
+            ppvObject = MarshalInspectable<T>.FromManaged(_classInstance);
         }
         else
         {

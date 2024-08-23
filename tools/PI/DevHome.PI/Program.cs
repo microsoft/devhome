@@ -42,30 +42,14 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var devSetupEnginePtr = IntPtr.Zero;
-        var devSetupEngine = default(ITimServer);
+        TimServer serverClass = new TimServer();
+        var serverPtr = IntPtr.Zero;
+        var server = default(ITimServer);
 
-        var hr = Ole32.CoCreateInstance(Guid.Parse("1F98F450-C163-4A99-B257-E1E6CB3E1C57"), 0, 4, typeof(ITimServer).GUID, out var devSetupEngineObj);
-        if (hr < 0)
-        {
-            Marshal.ThrowExceptionForHR(hr);
-        }
+        serverPtr = Marshal.GetIUnknownForObject(serverClass);
 
-        devSetupEnginePtr = Marshal.GetIUnknownForObject(devSetupEngineObj);
-
-        devSetupEngine = MarshalInterface<ITimServer>.FromAbi(devSetupEnginePtr);
-        int num = devSetupEngine.GetNumber();
-
-        /*
-        TimServer server = new TimServer();
-        ITimServer server2 = (ITimServer)server;
-
-        if (server2 is not null)
-        {
-            // server2.GetNumber2(out int num);
-            int num = server2.GetNumber();
-        }
-        */
+        server = MarshalInterface<ITimServer>.FromAbi(serverPtr);
+        int num = server.GetNumber();
 
         // Set up Logging
         try
@@ -299,15 +283,6 @@ public static class Program
     }
 }
 
-/*
-
-[ComImport]
-[Guid("D1FF65D2-7CDA-489E-9AE0-701855C4F6A1")]
-public interface ITimServer
-{
-    int GetJoke(out int prefix);
-}
-*/
 [ComImport]
 [Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57")]
 public class TimServer;
