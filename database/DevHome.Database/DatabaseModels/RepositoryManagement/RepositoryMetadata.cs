@@ -12,6 +12,10 @@ public class RepositoryMetadata
 
     public DateTime UtcDateHidden { get; set; }
 
+    public DateTime? CreatedUTCDate { get; set; }
+
+    public DateTime? UpdatedUTCDate { get; set; }
+
     public int RepositoryId { get; set; }
 
     public Repository Repository { get; set; } = null!;

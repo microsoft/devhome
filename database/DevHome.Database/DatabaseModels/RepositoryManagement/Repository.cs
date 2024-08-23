@@ -14,6 +14,10 @@ public class Repository
 
     public string? RepositoryClonePath { get; set; }
 
+    public DateTime? CreatedUTCDate { get; set; }
+
+    public DateTime? UpdatedUTCDate { get; set; }
+
     // 1:1 relationship.  Repository is the parent and needs only
     // the object of the dependant.
     public RepositoryMetadata? RepositoryMetadata { get; set; }
@@ -37,8 +41,8 @@ public class Repository
             return false;
         }
 
-        if (objAsRepository.RepositoryName.Equals(RepositoryName, StringComparison.OrdinalIgnoreCase)
-            || objAsRepository.RepositoryClonePath.Equals(RepositoryClonePath, StringComparison.OrdinalIgnoreCase))
+        if (!objAsRepository.RepositoryName.Equals(RepositoryName, StringComparison.OrdinalIgnoreCase)
+            || !objAsRepository.RepositoryClonePath.Equals(RepositoryClonePath, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }

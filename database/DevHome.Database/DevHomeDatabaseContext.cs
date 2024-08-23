@@ -17,6 +17,7 @@ public class DevHomeDatabaseContext : DbContext
     public DevHomeDatabaseContext()
     {
         // Not the final path.  It will change before going into main.
+        // Needs a configurable location for testing.
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
         DbPath = Path.Join(path, "DevHome.db");
@@ -29,15 +30,19 @@ public class DevHomeDatabaseContext : DbContext
         var repositoryEntity = modelBuilder.Entity<Repository>();
         if (repositoryEntity != null)
         {
-            repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty);
-            repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty);
+            repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
+            repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
+            repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
+            repositoryEntity.Property(x => x.UpdatedUTCDate).ValueGeneratedOnAddOrUpdate();
         }
 
         var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();
         if (repositoryMetadataEntity != null)
         {
-            repositoryMetadataEntity.Property(x => x.IsHiddenFromPage).HasDefaultValue(false);
-            repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(DateTime.MinValue);
+            repositoryMetadataEntity.Property(x => x.IsHiddenFromPage).HasDefaultValue(false).IsRequired(true);
+            repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc)).IsRequired(true);
+            repositoryMetadataEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
+            repositoryMetadataEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         }
     }
 

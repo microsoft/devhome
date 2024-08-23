@@ -21,8 +21,10 @@ public partial class InitialMigration : Migration
             {
                 RepositoryId = table.Column<int>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
-                RepositoryName = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
-                RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
+                RepositoryName = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
+                RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
+                CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
+                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true),
             },
             constraints: table =>
             {
@@ -30,20 +32,22 @@ public partial class InitialMigration : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "RepositoryMetadata",
+            name: "RepositoryMetadatas",
             columns: table => new
             {
                 RepositoryMetadataId = table.Column<int>(type: "INTEGER", nullable: false)
                     .Annotation("Sqlite:Autoincrement", true),
                 IsHiddenFromPage = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                UtcDateHidden = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)),
+                UtcDateHidden = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
+                CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
+                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
                 RepositoryId = table.Column<int>(type: "INTEGER", nullable: false),
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_RepositoryMetadata", x => x.RepositoryMetadataId);
+                table.PrimaryKey("PK_RepositoryMetadatas", x => x.RepositoryMetadataId);
                 table.ForeignKey(
-                    name: "FK_RepositoryMetadata_Repositories_RepositoryId",
+                    name: "FK_RepositoryMetadatas_Repositories_RepositoryId",
                     column: x => x.RepositoryId,
                     principalTable: "Repositories",
                     principalColumn: "RepositoryId",
@@ -57,8 +61,8 @@ public partial class InitialMigration : Migration
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "IX_RepositoryMetadata_RepositoryId",
-            table: "RepositoryMetadata",
+            name: "IX_RepositoryMetadatas_RepositoryId",
+            table: "RepositoryMetadatas",
             column: "RepositoryId",
             unique: true);
     }
@@ -67,7 +71,7 @@ public partial class InitialMigration : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
-            name: "RepositoryMetadata");
+            name: "RepositoryMetadatas");
 
         migrationBuilder.DropTable(
             name: "Repositories");

@@ -22,15 +22,26 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("INTEGER");
 
+                b.Property<DateTime?>("CreatedUTCDate")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValueSql("datetime()");
+
                 b.Property<string>("RepositoryClonePath")
+                    .IsRequired()
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
                     .HasDefaultValue(string.Empty);
 
                 b.Property<string>("RepositoryName")
+                    .IsRequired()
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
                     .HasDefaultValue(string.Empty);
+
+                b.Property<DateTime?>("UpdatedUTCDate")
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("TEXT");
 
                 b.HasKey("RepositoryId");
 
@@ -46,6 +57,12 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("INTEGER");
 
+                b.Property<DateTime?>("CreatedUTCDate")
+                    .IsRequired()
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+
                 b.Property<bool>("IsHiddenFromPage")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("INTEGER")
@@ -54,17 +71,22 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                 b.Property<int>("RepositoryId")
                     .HasColumnType("INTEGER");
 
+                b.Property<DateTime?>("UpdatedUTCDate")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+
                 b.Property<DateTime>("UtcDateHidden")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
-                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
 
                 b.HasKey("RepositoryMetadataId");
 
                 b.HasIndex("RepositoryId")
                     .IsUnique();
 
-                b.ToTable("RepositoryMetadata");
+                b.ToTable("RepositoryMetadatas");
             });
 
         modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
