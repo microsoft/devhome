@@ -19,9 +19,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
-using WinUIEx.Messaging;
 
 namespace DevHome.SetupFlow.ViewModels;
 

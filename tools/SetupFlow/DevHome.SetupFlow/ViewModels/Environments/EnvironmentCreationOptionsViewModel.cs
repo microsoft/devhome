@@ -16,7 +16,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Dispatching;
