@@ -71,10 +71,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     {
         await GetInstalledPackagesAndExtensionsAsync();
         GetAvailablePackages();
-
-        // Send a message to the Environments page to let it know that the Extensions page has been loaded.
-        // And that the Environments page should update its list of environments.
-        WeakReferenceMessenger.Default.Send(new ExtensionsPageLoaded(true));
     }
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)
