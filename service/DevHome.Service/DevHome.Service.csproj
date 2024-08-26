@@ -6,6 +6,7 @@
     <RootNamespace>DevHome.Service</RootNamespace>
     <Nullable>enable</Nullable>
     <OutputType>WinExe</OutputType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
   <ItemGroup>
