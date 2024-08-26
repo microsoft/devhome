@@ -40,15 +40,16 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasDefaultValue(string.Empty);
 
                 b.Property<DateTime?>("UpdatedUTCDate")
-                    .ValueGeneratedOnAddOrUpdate()
-                    .HasColumnType("TEXT");
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
 
                 b.HasKey("RepositoryId");
 
                 b.HasIndex("RepositoryName", "RepositoryClonePath")
                     .IsUnique();
 
-                b.ToTable("Repositories");
+                b.ToTable("Repository", (string)null);
             });
 
         modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
@@ -58,10 +59,9 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasColumnType("INTEGER");
 
                 b.Property<DateTime?>("CreatedUTCDate")
-                    .IsRequired()
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
-                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+                    .HasDefaultValueSql("datetime()");
 
                 b.Property<bool>("IsHiddenFromPage")
                     .ValueGeneratedOnAdd()
@@ -86,7 +86,7 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                 b.HasIndex("RepositoryId")
                     .IsUnique();
 
-                b.ToTable("RepositoryMetadatas");
+                b.ToTable("RepositoryMetadata", (string)null);
             });
 
         modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>

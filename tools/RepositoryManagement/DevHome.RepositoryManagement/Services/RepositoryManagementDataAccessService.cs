@@ -34,6 +34,8 @@ public class RepositoryManagementDataAccessService
 
     public void AddRepository(string repositoryName, string cloneLocation)
     {
+        // Check if repositoryName and cloneLocation is null or empty and
+        // return a correct value indicating such.
         Repository newRepo = new();
         newRepo.RepositoryName = repositoryName;
         newRepo.RepositoryClonePath = cloneLocation;
@@ -53,6 +55,9 @@ public class RepositoryManagementDataAccessService
 
     public List<RepositoryManagementItemViewModel> GetRepositories(bool removeRepositoriesNotInTheirSavedLocation)
     {
+        // This class should not know about RepositoryManagementItemViewModel.
+        // This should be moved to RepositoryManagementMainpageViewModel instead.
+        // Do that in the next PR.
         var repos = QueryDatabaseForRepositories(removeRepositoriesNotInTheirSavedLocation);
         return ConvertToLineItems(repos);
     }

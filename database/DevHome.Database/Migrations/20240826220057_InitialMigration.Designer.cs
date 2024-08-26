@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHome.Database.Migrations
 {
     [DbContext(typeof(DevHomeDatabaseContext))]
-    [Migration("20240823230859_InitialMigration")]
+    [Migration("20240826220057_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -44,15 +44,16 @@ namespace DevHome.Database.Migrations
                         .HasDefaultValue("");
 
                     b.Property<DateTime?>("UpdatedUTCDate")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
 
                     b.HasKey("RepositoryId");
 
                     b.HasIndex("RepositoryName", "RepositoryClonePath")
                         .IsUnique();
 
-                    b.ToTable("Repositories");
+                    b.ToTable("Repository", (string)null);
                 });
 
             modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
@@ -62,10 +63,9 @@ namespace DevHome.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("CreatedUTCDate")
-                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
-                        .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+                        .HasDefaultValueSql("datetime()");
 
                     b.Property<bool>("IsHiddenFromPage")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace DevHome.Database.Migrations
                     b.HasIndex("RepositoryId")
                         .IsUnique();
 
-                    b.ToTable("RepositoryMetadatas");
+                    b.ToTable("RepositoryMetadata", (string)null);
                 });
 
             modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>

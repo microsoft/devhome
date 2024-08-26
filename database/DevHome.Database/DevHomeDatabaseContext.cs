@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ComponentModel.DataAnnotations.Schema;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,7 @@ public class DevHomeDatabaseContext : DbContext
             repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
             repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
             repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            repositoryEntity.ToTable("Repository");
         }
 
         var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();
@@ -43,6 +45,7 @@ public class DevHomeDatabaseContext : DbContext
             repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc)).IsRequired(true);
             repositoryMetadataEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
             repositoryMetadataEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            repositoryMetadataEntity.ToTable("RepositoryMetadata");
         }
     }
 
