@@ -361,6 +361,7 @@
             </com3:ServiceServer>
           </com2:ComServer>
         </com2:Extension>
+        
       </Extensions>
     </Application>
     <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">

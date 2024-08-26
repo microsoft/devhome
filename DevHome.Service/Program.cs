@@ -13,7 +13,7 @@ builder.Services.AddWindowsService(options =>
     options.ServiceName = "DevHome Service";
 });
 
-builder.Services.AddSingleton<ProcessNotificationService>();
+builder.Services.AddSingleton<DevHomeService>();
 builder.Services.AddHostedService<WindowsBackgroundService>();
 
 IHost host = builder.Build();

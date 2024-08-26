@@ -12,7 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <CsWinRTInputs Include="..\DevHome.Service.Proxy\DevHome.Service.winmd" />
+    <CsWinRTInputs Include="..\DevHome.Service.IDL\winmd\DevHome.Service.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
   </ItemGroup>
 
   <PropertyGroup>

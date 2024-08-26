@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.PI.Helpers;
 using DevHome.PI.Models;
 
 using DevHome.Service;
@@ -42,14 +43,8 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        TimServer serverClass = new TimServer();
-        var serverPtr = IntPtr.Zero;
-        var server = default(ITimServer);
-
-        serverPtr = Marshal.GetIUnknownForObject(serverClass);
-
-        server = MarshalInterface<ITimServer>.FromAbi(serverPtr);
-        int num = server.GetNumber();
+        var service = CommonHelper.GetDevHomeService();
+        int num = service.GetNumber();
 
         // Set up Logging
         try
@@ -266,23 +261,4 @@ public static class Program
             }
         });
     }
-
-    private sealed class Ole32
-    {
-        // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-        public const int _CLSCTX_LOCAL_SERVER = 0x4;
-
-        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
-        [DllImport(nameof(Ole32))]
-        public static extern int CoCreateInstance(
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
-            IntPtr pUnkOuter,
-            uint dwClsContext,
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-            [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
-    }
 }
-
-[ComImport]
-[Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57")]
-public class TimServer;

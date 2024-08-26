@@ -11,12 +11,14 @@ using System.Management;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Service;
 using Microsoft.UI.Xaml;
 using Serilog;
 using Windows.ApplicationModel;
 using Windows.Wdk.System.Threading;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
+using WinRT;
 using PInvokeWdk = Windows.Wdk.PInvoke;
 
 namespace DevHome.PI.Helpers;
@@ -173,4 +175,31 @@ internal sealed class CommonHelper
     {
         return (int)((((long)number * numerator) + (denominator >> 1)) / denominator);
     }
+
+    public static IDevHomeService GetDevHomeService()
+    {
+#if CANARY_BUILD
+        var serverClass = new DevHomeServerCan();
+#elif STABLE_BUILD
+        var serverClass = new DevHomeServer();
+#else
+        var serverClass = new DevHomeServerDev();
+#endif
+        var serverPtr = Marshal.GetIUnknownForObject(serverClass);
+        var server = MarshalInterface<IDevHomeService>.FromAbi(serverPtr);
+
+        return server;
+    }
+
+    [ComImport]
+    [Guid("0A920C6E-2569-44D1-A6E4-CE9FA44CD2A7")]
+    public class DevHomeServerCan;
+
+    [ComImport]
+    [Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57")]
+    public class DevHomeServerDev;
+
+    [ComImport]
+    [Guid("E8D40232-20A1-4F3B-9C0C-AAA6538698C6")]
+    public class DevHomeServer;
 }

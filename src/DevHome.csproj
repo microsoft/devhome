@@ -92,6 +92,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+    <ProjectReference Include="..\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
@@ -197,7 +199,7 @@
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\DevHome.Service.Proxy\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+    <None Include="..\Devhome.Service.IDL\winmd\DevHome.Service.winmd" Link="DevHome.Service.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

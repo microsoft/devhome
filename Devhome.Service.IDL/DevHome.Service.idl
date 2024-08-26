@@ -3,7 +3,7 @@ import "windows.foundation.idl";
 
 namespace DevHome.Service
 {
-    interface ITimServer
+    interface IDevHomeService
     {
         Int32 GetNumber();
     }

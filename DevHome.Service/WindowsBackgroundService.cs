@@ -1,8 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using COMRegistration;
 using DevHome.Service.Runtime;
@@ -13,13 +11,12 @@ using Windows.Win32.System.Com;
 namespace DevHome.Service;
 
 public sealed class WindowsBackgroundService(
-    ProcessNotificationService processNotificationService,
+    DevHomeService devHomeService,
     ILogger<WindowsBackgroundService> logger) : BackgroundService
 {
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        RegisterClass<ProcessNotificationService>(processNotificationService, new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
-        processNotificationService.GetNumber();
+        RegisterClass<DevHomeService>(devHomeService, new Guid("1F98F450-C163-4A99-B257-E1E6CB3E1C57"));
         try
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -55,7 +52,7 @@ public sealed class WindowsBackgroundService(
     {
         uint cookie;
 
-        HRESULT hr = PInvoke.CoRegisterClassObject(clsid, new BasicClassFactory<T>(instance), CLSCTX.CLSCTX_LOCAL_SERVER, REGCLS.REGCLS_MULTIPLEUSE | REGCLS.REGCLS_SUSPENDED, out cookie);
+        HRESULT hr = PInvoke.CoRegisterClassObject(clsid, new BasicClassWinRTFactory<T>(instance), CLSCTX.CLSCTX_LOCAL_SERVER, REGCLS.REGCLS_MULTIPLEUSE | REGCLS.REGCLS_SUSPENDED, out cookie);
         Marshal.ThrowExceptionForHR(hr);
 
         _registrationCookies.Add(cookie);
