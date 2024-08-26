@@ -314,7 +314,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Settings
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     runtimeclass WebViewResult
     {
         WebViewResult(String url);
@@ -330,7 +330,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 3)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface ISettingsProvider2
         requires ISettingsProvider
     {
