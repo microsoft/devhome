@@ -33,7 +33,7 @@ public class DevHomeDatabaseContext : DbContext
             repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
             repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
             repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
-            repositoryEntity.Property(x => x.UpdatedUTCDate).ValueGeneratedOnAddOrUpdate();
+            repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
         }
 
         var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();

@@ -17,6 +17,8 @@ public class RepositoryTests
         var dbContext = new DevHomeDatabaseContext();
 
         // Reset the database
+        // Not the best way to test.  I will change the test to a mock database
+        // in the future.
         dbContext.ChangeTracker
             .Entries()
             .ToList()
@@ -36,8 +38,31 @@ public class RepositoryTests
         var savedRepository = allRepositories[0];
         Assert.AreEqual(string.Empty, savedRepository.RepositoryName);
         Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
-        Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.CreatedUTCDate);
+        Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
         Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
         Assert.IsNull(savedRepository.RepositoryMetadata);
+
+        // Modify the record.
+        savedRepository.RepositoryName = "MyNewName";
+        dbContext.SaveChanges();
+
+        allRepositories = dbContext.Repositories.ToList();
+        Assert.AreEqual(1, allRepositories.Count);
+
+        savedRepository = allRepositories[0];
+        Assert.AreEqual("MyNewName", savedRepository.RepositoryName);
+        Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
+        Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
+        Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
+        Assert.IsNull(savedRepository.RepositoryMetadata);
+
+        RepositoryMetadata savedRepositoryMetadata = new RepositoryMetadata();
+        savedRepositoryMetadata.IsHiddenFromPage = true;
+        savedRepository.RepositoryMetadata = savedRepositoryMetadata;
+        dbContext.SaveChanges();
+
+        allRepositories = dbContext.Repositories.ToList();
+        savedRepository = allRepositories[0];
+        Assert.IsNotNull(savedRepository.RepositoryMetadata);
     }
 }
