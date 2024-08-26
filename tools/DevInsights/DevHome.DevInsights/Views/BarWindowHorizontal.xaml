@@ -11,7 +11,7 @@
     xmlns:helpers="using:DevHome.DevInsights.Helpers"
     mc:Ignorable="d"
     Title="" MinHeight="90" MinWidth="700" Height="90" Width="700"
-    TaskBarIcon="Images/pi.ico"
+    TaskBarIcon="Images/di.ico"
     Activated="Window_Activated"
     WindowStateChanged="WindowEx_WindowStateChanged"
     Closed="WindowEx_Closed">
@@ -35,7 +35,10 @@
                 <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Uid="Title" Grid.Column="1" Style="{StaticResource CaptionTextBlockStyle}" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <Image Source="/Images/di.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="Title" Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+            </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
                     x:Uid="SnapButton"
