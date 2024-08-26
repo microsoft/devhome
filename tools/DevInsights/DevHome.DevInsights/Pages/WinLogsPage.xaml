@@ -6,13 +6,30 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
     xmlns:models="using:DevHome.DevInsights.Models"
     xmlns:helpers="using:DevHome.DevInsights.Helpers"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
-
+    <Page.Resources>
+        <Style x:Key="CustomComboBoxHeader" TargetType="primitives:DataGridColumnHeader">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="primitives:DataGridColumnHeader">
+                        <ComboBox ItemsSource="{Binding ViewModel.WinLogCategories}" PlaceholderText="{TemplateBinding Content}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}" Checked="ViewModel.CheckBoxChanged" Unchecked="ViewModel.CheckBoxChanged"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -62,8 +79,6 @@
         <toolkit:DataGrid
             x:Name="WinLogsDataGrid" Grid.Row="4" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
-            AlternatingRowBackground="Transparent"
-            AlternatingRowForeground="Gray"
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
@@ -77,17 +92,17 @@
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
             ItemsSource="{x:Bind ViewModel.WinLogsView, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
-        <toolkit:DataGrid.Columns>
-            <toolkit:DataGridTextColumn x:Uid="LogTimeGenerated" Binding="{Binding TimeGeneratedString}" Width="180"/>
-            <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110"/>
-            <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
-            <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}">
-                <toolkit:DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                    <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" Foreground="{Binding RowColor}" IsReadOnly="True"/>
-                </DataTemplate>
-                </toolkit:DataGridTemplateColumn.CellTemplate>
-            </toolkit:DataGridTemplateColumn>
+            <toolkit:DataGrid.Columns>
+                <toolkit:DataGridTextColumn x:Uid="LogTimeGenerated" Binding="{Binding TimeGeneratedString}" Width="180"/>
+                <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110" HeaderStyle="{StaticResource CustomComboBoxHeader}"/>
+                <toolkit:DataGridTextColumn x:Uid="LogToolColumn" Binding="{Binding Tool}" Width="100"/>
+                <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}" >
+                    <toolkit:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" IsReadOnly="True"/>
+                        </DataTemplate>
+                    </toolkit:DataGridTemplateColumn.CellTemplate>
+                </toolkit:DataGridTemplateColumn>
             </toolkit:DataGrid.Columns>
         </toolkit:DataGrid>
     </Grid>
