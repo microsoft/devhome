@@ -11,7 +11,7 @@ namespace DevHome.DevInsights.Services;
 
 public class DIAppInfoService
 {
-    public string IconPath { get; } = Path.Combine(AppContext.BaseDirectory, "Images/PI.ico");
+    public string IconPath { get; } = Path.Combine(AppContext.BaseDirectory, "Images/DI.ico");
 
     public Version GetAppVersion()
     {

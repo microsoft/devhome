@@ -10,7 +10,7 @@
     xmlns:helpers="using:DevHome.DevInsights.Helpers"
     mc:Ignorable="d"
     Title="" MinHeight="500" MinWidth="72" MaxWidth="72" Width="72" Height="700"
-    TaskBarIcon="Images/pi.ico" IsTitleBarVisible="False"
+    TaskBarIcon="Images/di.ico" IsTitleBarVisible="False"
     IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=OneWay}"
     Closed="WindowEx_Closed">
     <Window.SystemBackdrop>
