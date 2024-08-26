@@ -234,6 +234,7 @@
     <ClInclude Include="RepositoriesSearchResult.h" />
     <ClInclude Include="RepositoryResult.h" />
     <ClInclude Include="RepositoryUriSupportResult.h" />
+    <ClInclude Include="WebViewResult.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdaptiveCardSessionResult.cpp" />
@@ -274,6 +275,7 @@
     <ClCompile Include="RepositoriesSearchResult.cpp" />
     <ClCompile Include="RepositoryResult.cpp" />
     <ClCompile Include="RepositoryUriSupportResult.cpp" />
+    <ClCompile Include="WebViewResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.DevHome.SDK.idl" />
