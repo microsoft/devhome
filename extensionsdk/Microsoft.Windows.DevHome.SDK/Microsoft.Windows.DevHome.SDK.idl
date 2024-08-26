@@ -1740,7 +1740,10 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        //DevHomeIntegratedCard
+        // DevHomeIntegratedCard
         AdaptiveCardSessionResult GetNavigationAdaptiveCardSession();
+
+        // Webview
+        WebViewResult GetNavigationWebView();
     };
 }
