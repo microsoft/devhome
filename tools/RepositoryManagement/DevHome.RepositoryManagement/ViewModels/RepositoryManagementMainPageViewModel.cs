@@ -2,41 +2,29 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DevHome.Common.Extensions;
-using Microsoft.Extensions.Hosting;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.RepositoryManagement.Services;
+using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
-public class RepositoryManagementMainPageViewModel
+public partial class RepositoryManagementMainPageViewModel
 {
-    private readonly IHost _host;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
 
-    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; } = new();
+    private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    public RepositoryManagementMainPageViewModel(IHost host)
+    public ObservableCollection<RepositoryManagementItemViewModel> Items => new(_dataAccessService.GetRepositories(true));
+
+    [RelayCommand]
+    public void AddExistingRepository()
     {
-        _host = host;
+        throw new NotImplementedException();
     }
 
-    // Some test data to show off in the Repository Management page.
-    public void PopulateTestData()
+    public RepositoryManagementMainPageViewModel(RepositoryManagementDataAccessService dataAccessService)
     {
-        Items.Clear();
-        for (var x = 0; x < 5; x++)
-        {
-            var listItem = _host.GetService<RepositoryManagementItemViewModel>();
-            listItem.RepositoryName = $"MicrosoftRepository{x}";
-            listItem.ClonePath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), x.ToString(CultureInfo.InvariantCulture));
-            listItem.LatestCommit = $"dhoehna * author {x} min";
-            listItem.Branch = "main";
-            Items.Add(listItem);
-        }
+        _dataAccessService = dataAccessService;
     }
 }

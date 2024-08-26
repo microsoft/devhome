@@ -16,6 +16,5 @@ public sealed partial class RepositoryManagementMainPageView : ToolPage
     {
         ViewModel = Application.Current.GetService<RepositoryManagementMainPageViewModel>();
         this.InitializeComponent();
-        ViewModel.PopulateTestData();
     }
 }

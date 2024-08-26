@@ -12,6 +12,7 @@ using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
+using DevHome.Database.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.RepositoryManagement.Extensions;
@@ -98,6 +99,9 @@ public partial class App : Application, IApp
         }).
         ConfigureServices((context, services) =>
         {
+            // Add databse connection
+            services.AddDatabaseContext(context);
+
             // Add Serilog logging for ILogger.
             services.AddLogging(lb => lb.AddSerilog(dispose: true));
 
