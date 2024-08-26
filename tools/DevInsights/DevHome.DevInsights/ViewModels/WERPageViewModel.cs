@@ -46,11 +46,6 @@ public partial class WERPageViewModel : ObservableObject
     [ObservableProperty]
     private bool _allowElevationOption;
 
-    private delegate int WERCompareFunction(WERAnalysisReport info1, WERAnalysisReport info2, bool sortAscending);
-
-    [ObservableProperty]
-    private ObservableCollection<WERAnalysisReport> _displayedReports;
-
     [ObservableProperty]
     private AdvancedCollectionView _reportsView;
 
@@ -61,9 +56,7 @@ public partial class WERPageViewModel : ObservableObject
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        _displayedReports = new ObservableCollection<WERAnalysisReport>();
-        _reportsView = new AdvancedCollectionView(_displayedReports, true);
-        _reportsView.SortDescriptions.Add(new SortDescription(nameof(WERAnalysisReport.Report), SortDirection.Ascending, Comparer<WERReport>.Create((x, y) => x.TimeStamp.CompareTo(y.TimeStamp))));
+        _reportsView = new AdvancedCollectionView(werAnalyzer.WERAnalysisReports, true);
 
         _werInfoText = string.Empty;
         _applyFilter = Settings.Default.ApplyAppFilteringToData;
@@ -83,7 +76,12 @@ public partial class WERPageViewModel : ObservableObject
         _werAnalyzer = werAnalyzer;
         ((INotifyCollectionChanged)_werAnalyzer.WERAnalysisReports).CollectionChanged += WER_CollectionChanged;
 
-        PopulateCurrentLogs();
+        _reportsView.Filter = entry => FilterReport((WERAnalysisReport)entry);
+        _reportsView.SortDescriptions.Add(new SortDescription(
+            nameof(WERAnalysisReport.Report),
+            SortDirection.Descending,
+            Comparer<WERReport>.Create((x, y) => x.TimeStamp.CompareTo(y.TimeStamp))));
+        RefreshView();
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -91,7 +89,7 @@ public partial class WERPageViewModel : ObservableObject
         if (e.PropertyName == nameof(Settings.ApplyAppFilteringToData))
         {
             _applyFilter = Settings.Default.ApplyAppFilteringToData;
-            PopulateCurrentLogs();
+            RefreshView();
         }
     }
 
@@ -99,7 +97,7 @@ public partial class WERPageViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(TargetAppData.TargetProcess))
         {
-            PopulateCurrentLogs();
+            RefreshView();
 
             string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
             AttachedToApp = attachedApp is not null;
@@ -111,27 +109,33 @@ public partial class WERPageViewModel : ObservableObject
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            _dispatcher.TryEnqueue(() =>
-            {
-                FilterWERReportList(e.NewItems);
-            });
+            RefreshView();
         }
     }
 
-    private void PopulateCurrentLogs()
+    private void RefreshView()
     {
         _dispatcher.TryEnqueue(() =>
         {
-            DisplayedReports.Clear();
-
-            FilterWERReportList(_werAnalyzer.WERAnalysisReports.ToList<WERAnalysisReport>());
+            ReportsView.Refresh();
         });
+    }
+
+    private bool FilterReport(WERAnalysisReport analysisReport)
+    {
+        if (_applyFilter)
+        {
+            return TargetAppData.Instance.TargetProcess is not null &&
+                analysisReport.Report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return true;
     }
 
     public void SetBucketingTool(Tool tool)
     {
         _selectedAnalysisTool = tool;
-        foreach (WERAnalysisReport report in DisplayedReports)
+        foreach (WERAnalysisReport report in _werAnalyzer.WERAnalysisReports)
         {
             report.SetFailureBucketTool(tool);
         }
@@ -189,29 +193,9 @@ public partial class WERPageViewModel : ObservableObject
     public void ResetBucketingTool()
     {
         _selectedAnalysisTool = null;
-        foreach (WERAnalysisReport report in DisplayedReports)
+        foreach (WERAnalysisReport report in _werAnalyzer.WERAnalysisReports)
         {
             report.SetFailureBucketTool(null);
-        }
-    }
-
-    private void FilterWERReportList(System.Collections.IList? reportList)
-    {
-        if (reportList is null)
-        {
-            return;
-        }
-
-        // Get all existing reports
-        foreach (WERAnalysisReport report in reportList)
-        {
-            // Provide filtering if needed
-            if (!_applyFilter ||
-                (TargetAppData.Instance.TargetProcess is not null &&
-                report.Report.FilePath.Contains(TargetAppData.Instance.TargetProcess.ProcessName, StringComparison.OrdinalIgnoreCase)))
-            {
-                DisplayedReports.Add(report);
-            }
         }
     }
 
