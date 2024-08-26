@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DevHome.Service</RootNamespace>
     <Nullable>enable</Nullable>
     <OutputType>WinExe</OutputType>
-    <Platforms>x86;x64;ARM64</Platforms>
-    <PlatformTarget>$(Platform)</PlatformTarget>
-    <EnableMsixTooling>false</EnableMsixTooling>
   </PropertyGroup>
 
   <ItemGroup>
