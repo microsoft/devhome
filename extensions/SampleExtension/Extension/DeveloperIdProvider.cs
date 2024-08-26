@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.UI;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -12,8 +11,9 @@ internal sealed class DeveloperIdProvider : IDeveloperIdProvider
 {
     public string DisplayName => $"Sample {nameof(DeveloperIdProvider)}";
 
+// Stub class does not use the Changed event. A proper implementation of this class should use Changed and remove the this #pragma
 #pragma warning disable CS0067 // The event 'DeveloperIdProvider.Changed' is never used
-    public event TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
+    public event TypedEventHandler<IDeveloperIdProvider, IDeveloperId>? Changed;
 #pragma warning restore CS0067 // The event 'DeveloperIdProvider.Changed' is never used
 
     public DeveloperIdsResult GetLoggedInDeveloperIds() => throw new NotImplementedException();
