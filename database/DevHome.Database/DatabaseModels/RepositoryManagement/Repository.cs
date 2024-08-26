@@ -46,8 +46,19 @@ public class Repository
             return false;
         }
 
-        if (!objAsRepository.RepositoryName.Equals(RepositoryName, StringComparison.OrdinalIgnoreCase)
-            || !objAsRepository.RepositoryClonePath.Equals(RepositoryClonePath, StringComparison.OrdinalIgnoreCase))
+        // Compare names.  Comparing paths will add too much code in one place.
+        if (!objAsRepository.RepositoryName.Equals(RepositoryName, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var leftPath = Path.GetFullPath(objAsRepository.RepositoryClonePath);
+
+        // Made sure RepositoryClonePath is not null earlier.
+        var rightPath = Path.GetFullPath(RepositoryClonePath!);
+
+        // DevHome is on windows.  If not on windows, this will change.
+        if (!string.Equals(leftPath, rightPath, StringComparison.OrdinalIgnoreCase))
         {
             return false;
         }
