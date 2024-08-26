@@ -122,9 +122,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSetupAgent.Test", "exten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyperVExtension.HostGuestCommunication", "extensions\HyperVExtension\src\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj", "{D759CD66-494C-4A00-8075-8B65A9891349}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.PI", "tools\PI\DevHome.PI\DevHome.PI.csproj", "{CAAC0CDF-9AB8-4F43-A3EB-38D785AF5725}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.DevInsights", "tools\DevInsights\DevHome.DevInsights\DevHome.DevInsights.csproj", "{CAAC0CDF-9AB8-4F43-A3EB-38D785AF5725}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PI", "PI", "{DB3D0F2C-1A7F-44B4-B408-B21A56212985}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevInsights", "DevInsights", "{DB3D0F2C-1A7F-44B4-B408-B21A56212985}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Customization", "Customization", "{623998FD-B0A6-4980-95D5-A5072301CA10}"
 EndProject

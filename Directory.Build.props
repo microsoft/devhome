@@ -13,6 +13,7 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <PlatformTarget>$(Platform)</PlatformTarget>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
 <!--
@@ -33,6 +34,14 @@
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_FailFast'">
+    <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
@@ -43,7 +52,7 @@
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\codeAnalysis\StyleCop.json" Link="StyleCop.json" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug_FailFast'">
     <DisableXbfLineInfo>False</DisableXbfLineInfo>
   </PropertyGroup>
 

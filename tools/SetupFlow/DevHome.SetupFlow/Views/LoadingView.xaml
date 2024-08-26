@@ -20,7 +20,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:EmptyObjectToObjectConverter
-                        x:Key="EmptyObjectToObjectConverter"
+                        x:Key="EmptyObjectToVisibilityConverter"
                         EmptyValue="Collapsed"
                         NotEmptyValue="Visible" />
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border">
@@ -255,9 +255,18 @@
             <ListView
                 Grid.Row="1"
                 Margin="0,0,0,5"
-                IsEnabled="False"
                 ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}"
                 SelectionMode="None">
+                <!-- 
+                    Make item container not recieve a tab stop by default since
+                    we don't want the container to recieve the tab stop. We only 
+                    want the controls within the ItemTemplate itself to get a TabStop.
+                -->
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="IsTabStop" Value="False"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="commonModels:ActionCenterMessages">
                         <Grid>
@@ -269,9 +278,10 @@
                                 Grid.Row="0"
                                 Margin="0,0,0,10"
                                 Padding="20"
+                                IsTabStop="False"
                                 Background="{ThemeResource CardBackgroundFillColorDefault}"
                                 CornerRadius="10"
-                                Visibility="{x:Bind PrimaryMessage, Converter={StaticResource EmptyObjectToObjectConverter}}">
+                                Visibility="{x:Bind PrimaryMessage, Converter={StaticResource EmptyObjectToVisibilityConverter}}">
                                 <TextBlock
                                     IsTextSelectionEnabled="True"
                                     Style="{StaticResource BodyStrongTextBlockStyle}"
@@ -280,10 +290,12 @@
                             </StackPanel>
                             <ContentControl
                                 Grid.Row="1"
+                                IsTabStop="False"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch"
+                                Visibility="{x:Bind ExtensionAdaptiveCardPanel, Converter={StaticResource EmptyObjectToVisibilityConverter}}"
                                 Content="{x:Bind ExtensionAdaptiveCardPanel}"
                                 CornerRadius="10"
                                 Unloaded="ContentControl_Unloaded" />

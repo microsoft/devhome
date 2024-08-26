@@ -1,35 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="$(SolutionDir)ToolingVersions.props" />
-    <PropertyGroup>
-        <RootNamespace>DevHome.Services.WindowsPackageManager</RootNamespace>
-        <Platforms>x86;x64;arm64</Platforms>
-        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    </PropertyGroup>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <PropertyGroup>
+    <RootNamespace>DevHome.Services.WindowsPackageManager</RootNamespace>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+  </PropertyGroup>
 
-    <!--
+  <!--
       CsWinRT properties:
       https://github.com/microsoft/CsWinRT/blob/master/nuget/readme.md
     -->
-    <PropertyGroup>
-        <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
-        <CsWinRTIncludes>Microsoft.Management.Deployment</CsWinRTIncludes>
-    </PropertyGroup>
+  <PropertyGroup>
+    <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
+    <CsWinRTIncludes>Microsoft.Management.Deployment</CsWinRTIncludes>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <CsWinRTInputs Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" />
-        <Content Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" Link="Microsoft.Management.Deployment.winmd" CopyToOutputDirectory="PreserveNewest" />
+  <ItemGroup>
+    <CsWinRTInputs Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" />
+    <Content Include="$(TargetDir)\Microsoft.Management.Deployment.winmd" Link="Microsoft.Management.Deployment.winmd" CopyToOutputDirectory="PreserveNewest" />
 
-        <!-- This DLL from the winget COM interop package allows activating the winget server elevated -->
-        <Content Include="$(TargetDir)\winrtact.dll" Link="winrtact.dll" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>
+    <!-- This DLL from the winget COM interop package allows activating the winget server elevated -->
+    <Content Include="$(TargetDir)\winrtact.dll" Link="winrtact.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <ProjectReference Include="..\DevHome.Services.Core\DevHome.Services.Core.csproj" />
-        <!--
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <ProjectReference Include="..\DevHome.Services.Core\DevHome.Services.Core.csproj" />
+    <!--
             Microsoft.WindowsPackageManager.ComInterop nuget targets .NET Framework:
             https://www.nuget.org/packages/Microsoft.WindowsPackageManager.ComInterop#readme-body-tab
             To workaround this issue in this .net project:
@@ -40,14 +40,14 @@
             - Feed the $(TargetDir)\WINMD path to CsWinRT in order to generate the projected classes
             NOTE: Suppressing the warning only is not enough as this will cause CoreClrInitFailure (0x80008089) error.
         -->
-        <PackageReference Include="Microsoft.WindowsPackageManager.ComInterop" Version="1.7.10091-preview">
-            <NoWarn>NU1701</NoWarn>
-            <GeneratePathProperty>true</GeneratePathProperty>
-            <IncludeAssets>none</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
-    <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
-        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\lib\Microsoft.Management.Deployment.winmd" DestinationFolder="$(TargetDir)" />
-        <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\runtimes\win10-$(Platform)\native\winrtact.dll" DestinationFolder="$(TargetDir)" />
-    </Target>
+    <PackageReference Include="Microsoft.WindowsPackageManager.ComInterop" Version="1.7.10091-preview">
+      <NoWarn>NU1701</NoWarn>
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\lib\Microsoft.Management.Deployment.winmd" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="$(PkgMicrosoft_WindowsPackageManager_ComInterop)\runtimes\win10-$(Platform)\native\winrtact.dll" DestinationFolder="$(TargetDir)" />
+  </Target>
 </Project>

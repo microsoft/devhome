@@ -1,0 +1,3 @@
+GetCurrentPackageFullName
+WIN32_ERROR
+SHLoadIndirectString

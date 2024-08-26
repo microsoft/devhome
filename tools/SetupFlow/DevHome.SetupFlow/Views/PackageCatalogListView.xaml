@@ -69,7 +69,7 @@
             <ListView Margin="0,0,8,0" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ViewAllCatalog.Packages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <ContentControl AutomationProperties.Name="{Binding PackageTitle}"
+                        <ContentControl AutomationProperties.Name="{Binding PackageAnnouncement}"
                                         Template="{ThemeResource AppManagementSelectablePackageTemplate}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>

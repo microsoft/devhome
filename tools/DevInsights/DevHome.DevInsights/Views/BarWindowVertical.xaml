@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winex:WindowEx
+    x:Class="DevHome.DevInsights.BarWindowVertical"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:winex="using:WinUIEx"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:DevHome.DevInsights.Controls"
+    xmlns:helpers="using:DevHome.DevInsights.Helpers"
+    mc:Ignorable="d"
+    Title="" MinHeight="500" MinWidth="72" MaxWidth="72" Width="72" Height="700"
+    TaskBarIcon="Images/di.ico" IsTitleBarVisible="False"
+    IsAlwaysOnTop="{x:Bind _viewModel.IsAlwaysOnTop, Mode=OneWay}"
+    Closed="WindowEx_Closed">
+    <Window.SystemBackdrop>
+        <MicaBackdrop/>
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="MainPanel" Loaded="MainPanel_Loaded" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="AllControls" Orientation="Vertical" Grid.Row="0" HorizontalAlignment="Center" Margin="0" Background="Transparent" Spacing="5">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
+                    <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="controls:ExternalToolsManagementButton">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style TargetType="controls:ProcessSelectionButton">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </StackPanel.Resources>
+
+            <Rectangle x:Name="Gripper" RadiusX="2" RadiusY="2" Width="32" Height="5" Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}" Margin="10" PointerPressed="Window_PointerPressed" PointerMoved="Window_PointerMoved" PointerReleased="Window_PointerReleased"/>
+
+            <Button
+                x:Uid="SnapButton"
+                Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
+                HorizontalAlignment="Center"
+                IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
+                Command="{x:Bind _viewModel.ToggleSnapCommand}" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+            <Button 
+                x:Uid="RotateLayoutButton" 
+                x:Name="RotateLayoutButton" 
+                Command="{x:Bind _viewModel.RotateLayoutCommand}" 
+                HorizontalAlignment="Center">
+                <TextBlock Text="&#xe8b4;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+            <Button
+                x:Uid="ExpandLayoutButton" 
+                Style="{StaticResource ChromeButton}" 
+                Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}" 
+                HorizontalAlignment="Center" 
+                ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                <TextBlock Text="&#xF745;" FontSize="{StaticResource CaptionTextBlockFontSize}" /> <!-- ChevronRight -->
+            </Button>
+            <Button
+                x:Uid="VerticalCloseButton"
+                Click="CloseButton_Click" 
+                HorizontalAlignment="Center" 
+                Style="{StaticResource ChromeButton}" >
+                <TextBlock Text="&#xE8BB;" FontSize="{StaticResource CaptionTextBlockFontSize}"/>
+            </Button>
+
+            <controls:DISeparator Orientation="Horizontal"/>
+
+            <controls:ProcessSelectionButton x:Uid="ProcessChooserButton" x:Name="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" HorizontalAlignment="Center" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}">
+                <TextBlock Text="&#xe179;" />
+            </controls:ProcessSelectionButton>
+
+            <!-- Per App controls -->
+            <StackPanel Orientation="Vertical" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
+                <StackPanel.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </StackPanel.ContextFlyout>
+                <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="5" Height="20" Width="20" />
+                <TextBlock x:Uid="AppPID" Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
+                <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" Margin="5" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <controls:DISeparator Orientation="Horizontal"/>
+
+            <!-- Per System controls -->
+            <controls:ExternalToolsManagementButton
+                x:Name="ManageExternalToolsButton"
+                x:Uid="ManageExternalToolsButton"
+                HorizontalAlignment="Center"
+                Command="{x:Bind _viewModel.ManageExternalToolsButtonCommand}"
+                ExternalToolLaunchRequest="{x:Bind _viewModel.ManageExternalToolsButton_ExternalToolLaunchRequest}">
+                <TextBlock Text="&#xEC7A;"/>
+            </controls:ExternalToolsManagementButton>
+
+            <controls:DISeparator Orientation="Horizontal"/>
+            <ItemsRepeater x:Name="ExternalToolsRepeater" ItemsSource="{x:Bind _externalTools.FilteredExternalTools, Mode=OneWay}" Layout="{StaticResource ExternalToolsVerticalLayout}">
+                <DataTemplate x:DataType="helpers:Tool">
+                    <Button Command="{x:Bind InvokeCommand}" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Name, Mode=OneWay}" Tag="{x:Bind}">
+                        <Image Source="{x:Bind ToolIconSource, Mode=OneWay}" Width="22" Height="22" Stretch="Uniform" />
+                        <Button.ContextFlyout>
+                            <MenuFlyout x:Name="ToolContextMenu">
+                                <MenuFlyoutItem x:Uid="UnpinMenuItem" Name="UnpinMenuItem" Click="{x:Bind TogglePinnedState}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE77A;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem x:Uid="UnregisterMenuItem" Name="UnregisterMenuItem" Click="{x:Bind UnregisterTool}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xECC9;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.ContextFlyout>
+                    </Button>
+                </DataTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+
+        <StackPanel x:Name="SystemResourceStackPanel" Orientation="Vertical" Grid.Row="1" Margin="0,0,0,5">
+            <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
+            <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 5, 5, 5"/>
+            <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5, 0, 5, 0"/>
+        </StackPanel>
+    </Grid>
+</winex:WindowEx>

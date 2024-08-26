@@ -278,7 +278,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private void StartQuickstart(string flowTitle)
+    public void StartQuickstart(string flowTitle)
     {
         _log.Information("Starting flow for developer quickstart playground");
         StartSetupFlowForTaskGroups(flowTitle, "DeveloperQuickstartPlayground", _host.GetService<DeveloperQuickstartTaskGroup>());

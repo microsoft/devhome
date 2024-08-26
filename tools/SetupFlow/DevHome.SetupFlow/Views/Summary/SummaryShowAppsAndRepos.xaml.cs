@@ -3,6 +3,7 @@
 
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Messaging;
+using DevHome.SetupFlow.Controls;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -63,5 +64,25 @@ public sealed partial class SummaryShowAppsAndRepos : UserControl, IRecipient<Ne
 
         AdaptiveCardGrid.Children.Clear();
         AdaptiveCardGrid.Children.Add(frameworkElement);
+    }
+
+    private void PackagesGridView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not GridView gridView)
+        {
+            return;
+        }
+
+        // Set the tooltip for each item in the grid view
+        for (var i = 0; i < gridView.Items.Count; i++)
+        {
+            if (gridView.ContainerFromIndex(i) is GridViewItem item && item.Content is PackageViewModel packageViewModel)
+            {
+                ToolTipService.SetToolTip(item, new PackageDetailsTooltip()
+                {
+                    Package = packageViewModel,
+                });
+            }
+        }
     }
 }
