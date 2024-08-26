@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <PropertyGroup>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Configurations>Debug;Release;Debug_FailFast</Configurations>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="..\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CsWinRTIncludes>DevHome.Service</CsWinRTIncludes>
+    <CsWinRTGeneratedFilesDir>$(SolutionDir)DevHome.Service.Projection\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>
+  </PropertyGroup>
+
+</Project>
