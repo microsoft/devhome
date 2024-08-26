@@ -39,8 +39,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
-        <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
+        <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}" AutomationProperties.AutomationId="WinLogsHeaderTextBlock"/>
+        <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunAsAdminButton">
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <SymbolIcon Symbol="Admin"/>
                 <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
@@ -50,26 +50,26 @@
             <CheckBox
                 x:Uid="EtwCheckbox" x:Name="EtwCheckbox" IsChecked="{x:Bind ViewModel.IsETWLogsEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.ETWLogs}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.EtwLogsName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.EtwLogsName}" AutomationProperties.AutomationId="EtwCheckbox"/>
             <CheckBox
                 x:Uid="DebugOutputCheckbox" x:Name="DebugOutputCheckbox" IsChecked="{x:Bind ViewModel.IsDebugOutputEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.DebugOutput}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.DebugOutputLogsName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.DebugOutputLogsName}" AutomationProperties.AutomationId="DebugOutputCheckbox"/>
             <CheckBox
                 x:Uid="EventViewerCheckbox" x:Name="EventViewerCheckbox" IsChecked="{x:Bind ViewModel.IsEventViewerEnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.EventViewer}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.EventViewerName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.EventViewerName}" AutomationProperties.AutomationId="EventViewerCheckbox"/>
             <CheckBox
                 x:Uid="WERCheckbox" x:Name="WERCheckbox" IsChecked="{x:Bind ViewModel.IsWEREnabled, Mode=TwoWay}" Tag="{x:Bind models:WinLogsTool.WER}"
                 Checked="{x:Bind ViewModel.LogStateChanged}" Unchecked="{x:Bind ViewModel.LogStateChanged}" Margin="0,0,8,0"
-                Content="{x:Bind helpers:WinLogsHelper.WERName}"/>
+                Content="{x:Bind helpers:WinLogsHelper.WERName}" AutomationProperties.AutomationId="WERCheckbox"/>
             <Button
                 x:Uid="ClearWinLogsButton" x:Name="ClearWinLogsButton"
-                BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}">
+                BorderThickness="0" Command="{x:Bind ViewModel.ClearWinLogsCommand}" AutomationProperties.AutomationId="ClearWinLogsButton">
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
         </StackPanel>
-        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="FilterMessageTextBox">
             <i:Interaction.Behaviors>
                 <ic:EventTriggerBehavior EventName="TextChanged">
                     <ic:InvokeCommandAction Command="{x:Bind ViewModel.UpdateWinLogsCommand}" />
@@ -91,7 +91,7 @@
             HeadersVisibility="Column"
             CopyingRowClipboardContent="ViewModel.UpdateClipboardContent"
             ItemsSource="{x:Bind ViewModel.WinLogsView, Mode=OneWay}"
-            Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
+            Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}" AutomationProperties.AutomationId="WinLogsDataGrid">
             <toolkit:DataGrid.Columns>
                 <toolkit:DataGridTextColumn x:Uid="LogTimeGenerated" Binding="{Binding TimeGeneratedString}" Width="180"/>
                 <toolkit:DataGridTextColumn x:Uid="LogCategoryColumn" Binding="{Binding Category}" Width="110" HeaderStyle="{StaticResource CustomComboBoxHeader}"/>
