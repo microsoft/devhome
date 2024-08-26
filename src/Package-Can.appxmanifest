@@ -410,6 +410,8 @@
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="unvirtualizedResources" />
+    <rescap:Capability Name="packagedServices"/>
+    <rescap:Capability Name="localSystemServices"/>
   </Capabilities>
   <genTemplate:Metadata>
     <genTemplate:Item Name="generator" Value="Template Studio" />

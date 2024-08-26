@@ -23,7 +23,7 @@
       </ProxyStub>
     </Extension>
   </Extensions>
-  <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=timkur" Version="0.0.1.0" />
+  <Identity Name="Microsoft.Windows.DevHome.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
   <Properties>
     <DisplayName>Dev Home (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
@@ -435,5 +435,4 @@
     <genTemplate:Item Name="platform" Value="WinUI" />
     <genTemplate:Item Name="appmodel" Value="Desktop" />
   </genTemplate:Metadata>
-
 </Package>
