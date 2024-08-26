@@ -105,9 +105,6 @@ public partial class ComputeSystemCardViewModel : ObservableObject
     {
         var properties = await ComputeSystemHelpers.GetComputeSystemCardPropertiesAsync(ComputeSystem, _packageFullName);
 
-        // Remove properties with empty values
-        properties.RemoveAll(p => p?.Value == null || string.IsNullOrEmpty(p.Value.ToString()));
-
         lock (_lock)
         {
             if (!ComputeSystemHelpers.RemoveAllItemsAndReplace(ComputeSystemProperties, properties))

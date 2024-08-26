@@ -92,7 +92,7 @@ public static class ComputeSystemHelpers
 
             // Remove properties with empty values
             var filteredProperties = currentProperties
-                .Where(p => p?.Value != null && !string.IsNullOrEmpty(p.Value.ToString()))
+                .Where(property => property?.Value != null && !string.IsNullOrEmpty(property.Value.ToString()))
                 .ToList();
 
             return GetComputeSystemCardProperties(filteredProperties, packageFullName);

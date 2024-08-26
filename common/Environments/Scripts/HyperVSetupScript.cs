@@ -108,7 +108,9 @@ public static class HyperVSetupScript
             }
             # If both operations have not been run at this point, then user is already in the Hyper-V admin group and the Hyper-V feature is enabled.
             # This could happen if the script runs the first time without the user being in the group, while Hyper-V is enabled but the user doesn't
-            # log off/on again or reboot. The second time we run the script there would be no work to be done.
+            # log off/on again or reboot. The second time we run the script there would be no work to be done. Since the actual token of the user
+            # doesn't update until they log off, the $doesUserSecurityTokenContainHyperAdminGroup variable above will still remain false, which is
+            # how we ended up here.
             elseif ($featureEnablementResult -eq [OperationStatus]::OperationNotRun -and $adminGroupResult -eq [OperationStatus]::OperationNotRun)
             {
                 exit 6
