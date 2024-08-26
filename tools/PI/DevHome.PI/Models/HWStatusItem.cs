@@ -13,8 +13,13 @@ namespace DevHome.PI.Models;
 
 public partial class HWStatusItem : ObservableObject
 {
+    public string Name => GetName();
+
     private readonly ISensor _sensor;
     private readonly string _format;
+
+    [ObservableProperty]
+    private string _state;
 
     public HWStatusItem(ISensor sensor)
     {
@@ -78,6 +83,8 @@ public partial class HWStatusItem : ObservableObject
                 _format = "{0:F0} dBA";
                 break;
         }
+
+        State = GetState();
     }
 
     public string GetName()
@@ -87,8 +94,14 @@ public partial class HWStatusItem : ObservableObject
 
     public string GetState()
     {
-        _sensor.Hardware.Update();
+        // _sensor.Hardware.Update();
         return ValueToString();
+    }
+
+    public void Update()
+    {
+        _sensor.Hardware.Update();
+        State = GetState();
     }
 
     private string ValueToString()
