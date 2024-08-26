@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
+using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.DevInsights.Models;
 using DevHome.DevInsights.Properties;
 using Microsoft.UI.Xaml.Controls;
@@ -18,10 +20,10 @@ namespace DevHome.DevInsights.ViewModels;
 
 public partial class ProcessListPageViewModel : ObservableObject
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private string filterProcessText;
+    private string _filterProcessText;
 
     partial void OnFilterProcessTextChanged(string value)
     {
@@ -29,17 +31,17 @@ public partial class ProcessListPageViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private ObservableCollection<Process> processes;
+    private ObservableCollection<Process> _processes;
 
     [ObservableProperty]
-    private ObservableCollection<Process> filteredProcesses;
+    private AdvancedCollectionView _processesView;
 
     public ProcessListPageViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        processes = new();
-        filteredProcesses = new();
-        filterProcessText = string.Empty;
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _processes = new();
+        _filterProcessText = string.Empty;
+        _processesView = new AdvancedCollectionView(_processes, true);
         GetFilteredProcessList();
 
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
@@ -70,7 +72,7 @@ public partial class ProcessListPageViewModel : ObservableObject
 
     private void UpdateFilteredProcessList(Process[] currentProcesses)
     {
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             Processes.Clear();
             var sortedProcesses = currentProcesses.OrderBy(process => process.ProcessName).ToArray();
@@ -162,6 +164,36 @@ public partial class ProcessListPageViewModel : ObservableObject
         }
     }
 
+    public void SortProcesses(object sender, DataGridColumnEventArgs e)
+    {
+        var propertyName = string.Empty;
+        if (e.Column.DisplayIndex == 0)
+        {
+            propertyName = nameof(Process.Id);
+        }
+        else if (e.Column.DisplayIndex == 1)
+        {
+            propertyName = nameof(Process.ProcessName);
+        }
+
+        if (!string.IsNullOrEmpty(propertyName))
+        {
+            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            {
+                // Clear pervious sorting
+                ProcessesView.SortDescriptions.Clear();
+                ProcessesView.SortDescriptions.Add(new SortDescription(propertyName, SortDirection.Ascending));
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+            }
+            else
+            {
+                ProcessesView.SortDescriptions.Clear();
+                ProcessesView.SortDescriptions.Add(new SortDescription(propertyName, SortDirection.Descending));
+                e.Column.SortDirection = DataGridSortDirection.Descending;
+            }
+        }
+    }
+
     public void FilterDropDownClosed()
     {
         Settings.Default.Save();
@@ -170,12 +202,12 @@ public partial class ProcessListPageViewModel : ObservableObject
 
     private void FilterProcessList()
     {
-        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
+        /*FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
             item =>
             {
                 return item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
                 Convert.ToString(item.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
-            }));
+            }));*/
     }
 
     [RelayCommand]
