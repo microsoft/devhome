@@ -593,6 +593,10 @@
     <value>Removed {0}</value>
     <comment>{Locked="{0}"}Text announced when a button for removing an application is invoked. {0} is replaced by the application name.</comment>
   </data>
+  <data name="RemovedAllApplications" xml:space="preserve">
+    <value>Removed all applications</value>
+    <comment>Text announced when a button for removing all applications is invoked.</comment>
+  </data>
   <data name="ResultCountPlural" xml:space="preserve">
     <value>{0} Results found for "{1}"</value>
     <comment>{Locked="{0}", "{1}"} Label for a search result counter. {0} is replaced by the number of result items. {1} is replaced with the search term.</comment>
@@ -624,6 +628,10 @@
   <data name="PackageInstalledTooltip" xml:space="preserve">
     <value>Already installed</value>
     <comment>Label for a package/application that already exists on the user's machine.</comment>
+  </data>
+  <data name="PackageInstalledAnnouncement" xml:space="preserve">
+    <value>{0}. Already installed</value>
+    <comment>{Locked="{0}","."}Text announced for a package/application that already exists on the user's machine. {0} is replaced by the package name. A period (.) is used to add a pause for the narrator.</comment>
   </data>
   <data name="PackageNameTooltip" xml:space="preserve">
     <value>Name: {0}</value>
@@ -2006,14 +2014,6 @@
   <data name="QuickstartPlaygroundGenerationFailedDetails" xml:space="preserve">
     <value>Error: {0}</value>
     <comment>Locked={"{0}"} Error message with additional details in {0} shown when we failed to generate the project.</comment>
-  </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
-  </data>
-  <data name="VersionComboBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Version</value>
-    <comment>Name for the version combo box</comment>
   </data>
   <data name="SummaryPage_InstallationNotes.Text" xml:space="preserve">
     <value>Installation Notes</value>

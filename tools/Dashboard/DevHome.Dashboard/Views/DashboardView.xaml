@@ -60,7 +60,7 @@
                     x:Uid="AddWidget"
                     HorizontalAlignment="Right"
                     Command="{x:Bind AddWidgetClickCommand}"
-                    IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
+                    IsEnabled="{x:Bind ViewModel.HasWidgetServiceInitialized, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 

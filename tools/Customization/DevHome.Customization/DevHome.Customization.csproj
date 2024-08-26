@@ -6,7 +6,6 @@
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,6 +38,7 @@
     <None Remove="Views\GeneralSystemView.xaml" />
     <None Remove="Views\MainPage.xaml" />
     <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\VersionControlIntegrationSettingsView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,17 +66,14 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+    <Page Update="Views\VersionControlIntegrationSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
-    <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
-  </PropertyGroup>
 
   <ItemGroup>
     <Resource Remove="Views\AddRepositoriesView.xaml" />
   </ItemGroup>
+
 </Project>

@@ -233,7 +233,9 @@ extends:
 
                   $(Build.SourcesDirectory)\**\bin\**\*.dll
 
-                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
+                  $(Build.SourcesDirectory)\**\obj\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\obj\**\devhome.r2r.dll
 
             - template: ./build/templates/EsrpSigning-Steps.yml@self
               parameters:

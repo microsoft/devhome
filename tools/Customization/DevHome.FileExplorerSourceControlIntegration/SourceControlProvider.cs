@@ -50,7 +50,6 @@ public class SourceControlProvider :
 
     internal ILocalRepositoryProvider GetLocalProvider(string rootPath)
     {
-        // TODO: Iterate extensions to find the correct one for this rootPath.
         ILocalRepositoryProvider? provider = null;
         var providerPtr = IntPtr.Zero;
         try
@@ -96,13 +95,36 @@ public class SourceControlProvider :
 
 internal sealed class RootFolderPropertyProvider : Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootPropertyProvider
 {
+    private readonly FileExplorerIntegrationUserSettings _fileExplorerIntegrationUserSettings;
+    private readonly string _repositoryStatusPropertyString = "System.VersionControl.CurrentFolderStatus";
+
     public RootFolderPropertyProvider(ILocalRepository repository)
     {
         _repository = repository;
+        _fileExplorerIntegrationUserSettings = new FileExplorerIntegrationUserSettings();
     }
 
     public IPropertySet GetProperties(string[] properties, string relativePath)
     {
+        var isFileExplorerVersionControlEnabled = _fileExplorerIntegrationUserSettings.IsFileExplorerVersionControlEnabled();
+        var showFileExplorerVersionControlColumnData = _fileExplorerIntegrationUserSettings.ShowFileExplorerVersionControlColumnData();
+        var showRepositoryStatus = _fileExplorerIntegrationUserSettings.ShowRepositoryStatus();
+
+        if (!isFileExplorerVersionControlEnabled || (!showFileExplorerVersionControlColumnData && !showRepositoryStatus))
+        {
+            return new PropertySet();
+        }
+
+        if (showFileExplorerVersionControlColumnData && !showRepositoryStatus)
+        {
+            var filteredPropertyStrings = properties.Where(s => s != _repositoryStatusPropertyString).ToArray();
+            properties = filteredPropertyStrings;
+        }
+        else if (!showFileExplorerVersionControlColumnData && showRepositoryStatus)
+        {
+            properties = new string[] { _repositoryStatusPropertyString };
+        }
+
         return _repository.GetProperties(properties, relativePath);
     }
 

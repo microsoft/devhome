@@ -70,12 +70,14 @@ public static class StringResourceKey
     public static readonly string PackageDescriptionTwoParts = nameof(PackageDescriptionTwoParts);
     public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
     public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
+    public static readonly string PackageInstalledAnnouncement = nameof(PackageInstalledAnnouncement);
     public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);
     public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
     public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);
     public static readonly string PathWithColon = nameof(PathWithColon);
     public static readonly string RemoveApplication = nameof(RemoveApplication);
     public static readonly string RemovedApplication = nameof(RemovedApplication);
+    public static readonly string RemovedAllApplications = nameof(RemovedAllApplications);
     public static readonly string ResultCountPlural = nameof(ResultCountPlural);
     public static readonly string ResultCountSingular = nameof(ResultCountSingular);
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);

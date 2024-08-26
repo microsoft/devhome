@@ -364,19 +364,19 @@
         
       </Extensions>
     </Application>
-    <Application Id="Devhome.PI" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:PIDisplayName" Description="ms-resource:PIAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
+    <Application Id="Devhome.DevInsights" Executable="DevHome.DevInsights.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:DIDisplayName" Description="ms-resource:DIAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
         <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
         <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
-          <uap5:StartupTask TaskId="DevHome.PI.Hotkey" Enabled="true" DisplayName="ms-resource:PIStartupTaskDisplayName" />
+          <uap5:StartupTask TaskId="DevHome.DevInsights.Hotkey" Enabled="true" DisplayName="ms-resource:DIStartupTaskDisplayName" />
         </uap5:Extension>
-        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.PI.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.DevInsights.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
           <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="devhome.pi.exe" />
+            <desktop:ExecutionAlias Alias="devhome.devinsights.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
       </Extensions>

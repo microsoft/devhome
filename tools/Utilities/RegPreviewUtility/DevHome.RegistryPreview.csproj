@@ -13,7 +13,6 @@
     <EnableMsixTooling>false</EnableMsixTooling>
     <ProjectPriFileName>DevHome.RegistryPreview.pri</ProjectPriFileName>
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
