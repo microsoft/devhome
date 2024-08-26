@@ -11,16 +11,25 @@
     xmlns:models="using:DevHome.DevInsights.Models"
     mc:Ignorable="d"
     NavigationCacheMode="Enabled">
+    <Page.Resources>
+        <helpers:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <TextBlock x:Uid="InsightsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <TextBlock 
+            x:Uid="InsightsPlaceholderTextBlock" 
+            Grid.Row="1" 
+            Margin="0,0,0,8" 
+            Visibility="{x:Bind ViewModel.InsightsService.InsightsList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"/>
 
-        <ItemsControl ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="1">
+        <ItemsControl x:Name="InsightsItemsControl" ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="2">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
                     <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6">
@@ -39,7 +48,6 @@
                                     Style="{StaticResource SuccessIconInfoBadgeStyle}">
                                 </controls:InfoBadge>
                             </Grid>
-
                         </Expander.Header>
                         <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left">
                             <Paragraph>

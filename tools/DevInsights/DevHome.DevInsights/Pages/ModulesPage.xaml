@@ -23,12 +23,14 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Uid="ModulesHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}"/>
+        
         <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}">
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <SymbolIcon Symbol="Admin"/>
                 <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
             </StackPanel>
         </Button>
+        
         <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>

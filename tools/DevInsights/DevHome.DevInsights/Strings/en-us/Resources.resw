@@ -165,7 +165,7 @@
     <value>Failed to launch: {0}</value>
     <comment>{Locked="{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
   </data>
-  <data name="AppDetailsTextBlock.Text" xml:space="preserve">
+  <data name="AppDetailsHeaderTextBlock.Text" xml:space="preserve">
     <value>App details</value>
     <comment>The contents of a text block referring to details about an application.</comment>
   </data>
@@ -278,7 +278,7 @@
     <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
   </data>
   <data name="WERHeaderTextBlock.Text" xml:space="preserve">
-    <value>WER Reports</value>
+    <value>Crash reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
   <data name="WERTimeGeneratedColumn.Header" xml:space="preserve">
@@ -311,7 +311,7 @@
   </data>
   <data name="WERCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to WER report logs are shown in the log view output.</comment>
+    <comment>Tooltip for whether the WER report logs are shown in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
@@ -558,7 +558,7 @@
     <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
   <data name="WERStartErrorMessage" xml:space="preserve">
-    <value>Could not start WER Monitoring</value>
+    <value>Could not start WER crash dump monitoring</value>
     <comment>Refers to being unable to start monitoring the WER error logs.</comment>
   </data>
   <data name="PreferencesTabName" xml:space="preserve">
@@ -1034,7 +1034,7 @@
     <comment>Filter string to specify that the file dialog should include PowerShell files</comment>
   </data>
   <data name="LocalDumpCollectionLabel.Text" xml:space="preserve">
-    <value>Local WER collection for app</value>
+    <value>Local WER crash dump collection for app</value>
     <comment>Label for Windows Error reporting toggle switch</comment>
   </data>
   <data name="LocalDumpCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
@@ -1050,7 +1050,7 @@
     <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
   </data>
   <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Dev Insights needs to run as Admin in order to modify WER collection for an app.</value>
+    <value>Dev Insights needs to run as Admin in order to modify WER crash dump collection for an app.</value>
     <comment>Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
   </data>
   <data name="RunElevatedButton.Text" xml:space="preserve">
@@ -1178,11 +1178,11 @@
     <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
   </data>
   <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
-    <value>WER Dump Analyzer</value>
+    <value>WER crash dump analyzer</value>
     <comment>Describes type of tool used to analyze WER dumps</comment>
   </data>
   <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <value>Tool that will be used to analyze WER crash dumps generated on the system</value>
     <comment>Tooltip that describes what a WER Dump analyzer does</comment>
   </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
@@ -1199,15 +1199,47 @@ Dump File creation time: {1}</value>
     <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
   </data>
   <data name="BucketUsingThisToolString" xml:space="preserve">
-    <value>Use this tool for WER bucketing</value>
+    <value>Use this tool for WER crash dump bucketing</value>
     <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
   </data>
   <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
-    <value>Use this tool for WER bucketing</value>
+    <value>Use this tool for WER crash dump bucketing</value>
     <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
   </data>
   <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
-    <value>Regular Expression for WER bucket</value>
+    <value>Regular Expression for WER crash dump bucket</value>
     <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
+  </data>
+  <data name="ProcessListHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A list of all running processes. You can select an item from the list to target. You can also type a name in the search box to find that process. The drop-down contains a list of all items that are filtered out by default - you can select any of these to include them in the main list. Another way to select your target process is to bring its window to the foreground and then use the hotkey Windows+F12.</value>
+    <comment>{Locked="Windows+F12"} Description of the Process list page.</comment>
+  </data>
+  <data name="WERHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Recent crash reports available on this machine. By default, this is filtered to your target app (if any). You can select any dump file in the list to open it in a dump analyzer tool of your choice. If you want to change your choice of dump analyzer tool, go to Windows Settings &gt; Apps &gt; Default apps &gt; Set default for ".dmp" file type.</value>
+    <comment>{Locked=".dmp"} Description of the Crash reports page.</comment>
+  </data>
+  <data name="InsightsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>As Dev Insights gathers context data for your target app, it can analyze the data, and in some cases it can provide insights into the nature of the problem. If Dev Insights does identify insights, they will be listed here. (Note that this is a work in progress, and initially there are very few cases where Dev Insights can provide definitive analysis.)</value>
+    <comment>Description of the Insights page.</comment>
+  </data>
+  <data name="ResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A list of a wide range of resource usage and sensor items for both your target app (if any), and for the system as a whole.</value>
+    <comment>Description of the Resource usage page.</comment>
+  </data>
+  <data name="ModulesHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>All the modules (DLLs, etc) that have been loaded by your target process.</value>
+    <comment>Description of the Loaded modules page.</comment>
+  </data>
+  <data name="WinLogsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>As you exercise the features of your target app, this will generate log outputs in various forms. By default, this page tracks Event Tracing for Windows (ETW) logs, the system Event log, and Windows Error Reporting (WER) logs. You can also enable Debug Output tracking, althought this can produce a large amount of output, depending on the app. Dev Insights analyzes log output and in some cases can generate insights.</value>
+    <comment>Description of the Windows logs page.</comment>
+  </data>
+  <data name="AppDetailsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Information about the current target app.</value>
+    <comment>Description of the App details page.</comment>
+  </data>
+  <data name="InsightsPlaceholderTextBlock.Text" xml:space="preserve">
+    <value>(No insights found)</value>
+    <comment>Placeholder text on the Insights page when the insights list is empty.</comment>
   </data>
 </root>
