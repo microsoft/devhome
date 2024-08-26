@@ -37,9 +37,10 @@ public sealed class GitLocalRepository : ILocalRepository
             // Rather than open the repo from scratch as validation, try to retrieve it from the cache
             OpenRepository();
         }
-        catch
+        catch (Exception ex)
         {
-            throw new ArgumentException("Invalid repository path");
+            _log.Error(ex, "Exception thrown in OpenRepository");
+            throw;
         }
     }
 
