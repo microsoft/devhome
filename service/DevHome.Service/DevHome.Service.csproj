@@ -3,9 +3,10 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <Platforms>x86;x64;ARM64</Platforms>
     <PlatformTarget>$(Platform)</PlatformTarget>
+    <EnableMsixTooling>false</EnableMsixTooling>
   </PropertyGroup>
 
   <ItemGroup>
