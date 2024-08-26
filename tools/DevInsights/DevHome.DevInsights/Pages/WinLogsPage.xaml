@@ -79,7 +79,6 @@
         <toolkit:DataGrid
             x:Name="WinLogsDataGrid" Grid.Row="4" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
-            HorizontalScrollBarVisibility="Visible"
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
