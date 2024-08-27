@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Runtime.InteropServices.WindowsRuntime;
 using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
@@ -18,7 +19,7 @@ public delegate VMGalleryVMCreationOperation VmGalleryCreationOperationFactory(V
 /// <summary>
 /// Class that represents the VM gallery VM creation operation.
 /// </summary>
-public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation, IDisposable
+public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
 
@@ -38,17 +39,13 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 
     private readonly VMGalleryCreationUserInput _userInputParameters;
 
-    private readonly ManualResetEvent _waitForDownloadCompletion = new(false);
-
     private const uint MaximumCreationAttempts = 2;
 
-    public CancellationTokenSource CancellationTokenSource { get; private set; } = new();
+    public CancellationToken CancellationToken { get; private set; }
 
     private readonly object _lock = new();
 
     private IOperationReport? _lastDownloadReport;
-
-    private bool _disposed;
 
     public bool IsOperationInProgress { get; private set; }
 
@@ -93,16 +90,17 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     /// <returns>A result that contains information on whether the operation succeeded or failed</returns>
     public IAsyncOperation<CreateComputeSystemResult> StartAsync()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run(async (cancellationToken) =>
         {
             // We attempt to retry creating the VM at least once before completely failing and returning
             // an error back to Dev Home.
             var creationAttempt = 1U;
-
+            CancellationToken = cancellationToken;
             while (creationAttempt <= MaximumCreationAttempts)
             {
                 try
                 {
+                    CancellationToken.ThrowIfCancellationRequested();
                     if (creationAttempt < MaximumCreationAttempts)
                     {
                         UpdateProgress(_stringResource.GetLocalized("CreationStarting", $"({_userInputParameters.NewEnvironmentName})"));
@@ -128,7 +126,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                     var archiveProvider = _archiveProviderFactory.CreateArchiveProvider(ArchivedFile!.FileType);
 
                     UpdateProgress(_stringResource.GetLocalized("ExtractionStarting", $"({Image.Name})"));
-                    await archiveProvider.ExtractArchiveAsync(this, ArchivedFile!, absoluteFilePathForVhd, CancellationTokenSource.Token);
+                    await archiveProvider.ExtractArchiveAsync(this, ArchivedFile!, absoluteFilePathForVhd, CancellationToken);
                     var virtualMachineName = MakeFileNameValid(_userInputParameters.NewEnvironmentName);
 
                     // Use the Hyper-V manager to create the VM.
@@ -144,6 +142,12 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                 }
                 catch (Exception ex)
                 {
+                    if (ex is OperationCanceledException || ex is TaskCanceledException)
+                    {
+                        _log.Error(ex, "The creation operation was cancelled");
+                        return new CreateComputeSystemResult(ex, ex.Message, ex.Message);
+                    }
+
                     if (creationAttempt == MaximumCreationAttempts)
                     {
                         _log.Error(ex, "Operation to create compute system failed on the last attempt");
@@ -168,7 +172,7 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
                 Logging.LogFolderRoot);
 
             return new CreateComputeSystemResult(exception, errorDisplayText, exception.Message);
-        }).AsAsyncOperation();
+        });
     }
 
     private void UpdateProgress(IOperationReport report, string localizedKey, string fileName)
@@ -188,12 +192,6 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         if (report.ReportKind == ReportKind.Download)
         {
             _lastDownloadReport = report;
-            var progressObject = _lastDownloadReport.ProgressObject;
-
-            if (progressObject.Succeeded || progressObject.Failed)
-            {
-                _waitForDownloadCompletion.Set();
-            }
         }
     }
 
@@ -237,18 +235,13 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
         }
 
         UpdateProgress(_stringResource.GetLocalized("DownloadStarting", $"({image.Name})"));
-        await _downloaderService.StartDownloadAsync(this, downloadUri, archivedFileAbsolutePath, CancellationTokenSource.Token);
+        await _downloaderService.StartDownloadAsync(this, downloadUri, archivedFileAbsolutePath, CancellationToken);
+        var lastReceivedProgress = _lastDownloadReport!.ProgressObject;
 
-        if (!HasDownloadCompleted())
-        {
-            // Wait for the last download to complete before moving on.
-            _waitForDownloadCompletion.WaitOne();
-        }
-
-        if (_lastDownloadReport!.ProgressObject.Failed)
+        if (lastReceivedProgress.Failed)
         {
             throw new DownloadOperationFailedException(
-                $"Failed to download file due to error: {_lastDownloadReport!.ProgressObject.ErrorMessage}");
+                $"Failed to download file for '{Image.Name}' due to error: {lastReceivedProgress.ErrorMessage}");
         }
 
         // Create the file to save the downloaded archive image to.
@@ -304,37 +297,5 @@ public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
     {
         // We'll use half the number of processors for the processor count of the VM just like VM gallery in Windows.
         return Math.Max(1, Environment.ProcessorCount / 2);
-    }
-
-    private bool HasDownloadCompleted()
-    {
-        var lastProgressReceived = _lastDownloadReport?.ProgressObject;
-
-        if (lastProgressReceived == null)
-        {
-            return false;
-        }
-
-        return lastProgressReceived.Succeeded || lastProgressReceived.Failed;
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            _log.Debug("Disposing VMGalleryVMCreationOperation");
-            if (disposing)
-            {
-                _waitForDownloadCompletion.Dispose();
-            }
-        }
-
-        _disposed = true;
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

@@ -11,27 +11,33 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// download. As new progress comes in the FileDownloadMonitor publishes this progress to
 /// its subscribers.
 /// </summary>
-internal sealed class FileDownloadMonitor
+public sealed class FileDownloadMonitor : IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(FileDownloadMonitor));
 
     private readonly object _lock = new();
 
-    private readonly List<IProgress<IOperationReport>> _subscriberList = new();
+    private readonly List<IDownloadSubscriber> _subscriberList = new();
 
     private readonly Progress<ByteTransferProgress> _progressReporter;
 
+    private readonly SemaphoreSlim _downloadCompletionSemaphore = new(0);
+
+    private CancellationTokenSource _cancellationTokenSource = new();
+
     private bool _downloadInProgress;
+
+    private bool _disposed;
 
     private DownloadOperationReport _lastSentReport = new(new ByteTransferProgress());
 
-    public FileDownloadMonitor(IProgress<IOperationReport> progressSubscriber)
+    public FileDownloadMonitor(IDownloadSubscriber subscriber)
     {
-        AddSubscriber(progressSubscriber);
+        AddSubscriber(subscriber);
         _progressReporter = new(PublishProgress);
     }
 
-    public void AddSubscriber(IProgress<IOperationReport> progressSubscriber)
+    public void AddSubscriber(IDownloadSubscriber subscriber)
     {
         lock (_lock)
         {
@@ -39,49 +45,117 @@ internal sealed class FileDownloadMonitor
             {
                 // Subscriber addition requested so we'll submit the last recorded
                 // progress we received before adding it to the subscriber list
-                progressSubscriber.Report(_lastSentReport);
+                subscriber.Report(_lastSentReport);
             }
 
-            _subscriberList.Add(progressSubscriber);
+            _subscriberList.Add(subscriber);
         }
     }
 
-    private void PublishProgress(ByteTransferProgress transferProgress)
+    private void PublishProgress(ByteTransferProgress progress)
     {
+        var subscriberCount = 0;
+
         lock (_lock)
         {
-            _lastSentReport = new DownloadOperationReport(transferProgress);
+            // if there are no subscribers at this point that means the user
+            // cancelled all the operations to download the file.
+            subscriberCount = _subscriberList.Count;
+            if (_subscriberList.Count == 0)
+            {
+                _cancellationTokenSource.Cancel();
+            }
+
+            _lastSentReport = new DownloadOperationReport(progress);
             _subscriberList.ForEach(subscriber => subscriber.Report(_lastSentReport));
         }
+
+        if (progress.Ended && subscriberCount > 0)
+        {
+            // Release the waiting threads now that the download has ended.
+            _downloadCompletionSemaphore.Release(subscriberCount);
+        }
     }
 
-    public async Task StartAsync(
-        Stream source,
-        Stream destination,
-        int bufferSize,
-        long totalBytesToExtract,
-        CancellationToken cancellationToken)
+    private int GetSubscriberCount()
     {
         lock (_lock)
         {
-            if (_downloadInProgress)
+            return _subscriberList.Count;
+        }
+    }
+
+    /// <summary>
+    /// Allows subscribers who subscribe to the download after it has started to wait
+    /// for it to complete.
+    /// </summary>
+    public async Task WaitForDownloadCompletionAsync(CancellationToken cancellationToken)
+    {
+        while (!IsDownloadComplete())
+        {
+            await _downloadCompletionSemaphore.WaitAsync(TimeSpan.FromMinutes(1), cancellationToken);
+        }
+    }
+
+    public bool IsDownloadComplete()
+    {
+        lock (_lock)
+        {
+            return _lastSentReport.ProgressObject.Ended;
+        }
+    }
+
+    public void Start(
+        HttpClient client,
+        Uri sourceWebUri,
+        string destinationFilePath,
+        int bufferSize,
+        long totalBytesToReceive)
+    {
+        lock (_lock)
+        {
+            if (_downloadInProgress || _lastSentReport.ProgressObject.Ended)
             {
-                // Download already started, no need to attempt
-                // to start it again.
+                // Download already in started or already ended.
                 return;
             }
 
             _downloadInProgress = true;
+            _cancellationTokenSource = new();
         }
 
-        await source.CopyToAsync(
-            destination,
-            _progressReporter,
-            bufferSize,
-            totalBytesToExtract,
-            cancellationToken);
+        // Start download
+        _ = Task.Run(
+            async () =>
+            {
+                try
+                {
+                    using var webFileStream =
+                        await client.GetStreamAsync(sourceWebUri, _cancellationTokenSource.Token);
+                    using var outputFileStream = File.OpenWrite(destinationFilePath);
+                    outputFileStream.SetLength(totalBytesToReceive);
 
-        StopMonitor();
+                    await webFileStream.CopyToAsync(
+                        outputFileStream,
+                        _progressReporter,
+                        bufferSize,
+                        totalBytesToReceive,
+                        _cancellationTokenSource.Token);
+
+                    StopMonitor();
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Download of file '{destinationFilePath}' failed");
+                    StopMonitor(ex.Message);
+
+                    if (File.Exists(destinationFilePath))
+                    {
+                        // Delete unfinished download file.
+                        File.Delete(destinationFilePath);
+                    }
+                }
+            });
     }
 
     public void StopMonitor(string? errorMessage = null)
@@ -103,13 +177,28 @@ internal sealed class FileDownloadMonitor
 
         lock (_lock)
         {
-            // Download already stopped.
-            if (!_downloadInProgress)
-            {
-                return;
-            }
-
             _downloadInProgress = false;
         }
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            _log.Debug("Disposing FileDownloadMonitor");
+            if (disposing)
+            {
+                _cancellationTokenSource.Dispose();
+                _downloadCompletionSemaphore.Dispose();
+            }
+        }
+
+        _disposed = true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

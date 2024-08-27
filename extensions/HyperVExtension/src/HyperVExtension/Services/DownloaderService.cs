@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using HyperVExtension.Extensions;
 using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 using Serilog;
-using Windows.Storage;
 
 namespace HyperVExtension.Services;
 
@@ -23,7 +21,7 @@ public class DownloaderService : IDownloaderService
 
     private readonly IHttpClientFactory _httpClientFactory;
 
-    private readonly Dictionary<string, FileDownloadMonitor> _destinationFileDownloadMap = new();
+    private readonly Dictionary<string, Dictionary<FileDownloadMonitor, uint>> _destinationFileDownloadMap = new();
 
     private readonly object _lock = new();
 
@@ -34,33 +32,74 @@ public class DownloaderService : IDownloaderService
 
     /// <inheritdoc cref="IDownloaderService.StartDownloadAsync"/>
     public async Task StartDownloadAsync(
-        IProgress<IOperationReport> progressSubscriber,
+        IDownloadSubscriber subscriber,
         Uri sourceWebUri,
         string destinationFilePath,
         CancellationToken cancellationToken)
     {
-        var downloadMonitor = new FileDownloadMonitor(progressSubscriber);
+        var downloadMonitor = new FileDownloadMonitor(subscriber);
+        var shouldStartDownload = true;
         lock (_lock)
         {
-            // If the destination file is being downloaded already subscribe the progress subscriber
-            // to the monitor and return. No extra work is needed by us.
-            if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var monitor))
+            // If the destination file is being downloaded already subscribe to the download
+            // and increase the count of monitors waiting for the download to complete.
+            if (_destinationFileDownloadMap.TryGetValue(destinationFilePath, out var monitorMap))
             {
-                monitor.AddSubscriber(progressSubscriber);
-                return;
+                var monitorKeyVal = monitorMap.First();
+                downloadMonitor = monitorKeyVal.Key;
+                monitorMap[downloadMonitor] = monitorKeyVal.Value + 1;
+                shouldStartDownload = false;
+                downloadMonitor.AddSubscriber(subscriber);
             }
-
-            // If the destination file isn't being downloaded and it exists already throw an exception
-            // since we're not overwriting it with a new download.
-            if (File.Exists(destinationFilePath))
+            else if (File.Exists(destinationFilePath))
             {
+                // If the destination file isn't being downloaded and it exists already throw an exception
+                // since we're not overwriting it with a new download.
                 throw new InvalidOperationException(
                     "Destination file already exists and is not currently being downloaded");
             }
-
-            _destinationFileDownloadMap.Add(destinationFilePath, downloadMonitor);
+            else
+            {
+                _destinationFileDownloadMap.Add(destinationFilePath, new() { { downloadMonitor, 1 } });
+            }
         }
 
+        try
+        {
+            if (shouldStartDownload)
+            {
+                await StartDownloadMonitorAsync(downloadMonitor, sourceWebUri, destinationFilePath, cancellationToken);
+            }
+
+            await downloadMonitor.WaitForDownloadCompletionAsync(cancellationToken);
+        }
+        finally
+        {
+            lock (_lock)
+            {
+                var monitorMap = _destinationFileDownloadMap.GetValueOrDefault(destinationFilePath);
+
+                // Remove destination file from download list once all waiters have exited.
+                if (monitorMap != null && monitorMap.TryGetValue(downloadMonitor, out var waiters))
+                {
+                    monitorMap[downloadMonitor] = waiters - 1;
+
+                    // No more threads waiting for download to complete so we can remove this file from the monitor map.
+                    if (monitorMap[downloadMonitor] == 0)
+                    {
+                        _destinationFileDownloadMap.Remove(destinationFilePath);
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task StartDownloadMonitorAsync(
+        FileDownloadMonitor downloadMonitor,
+        Uri sourceWebUri,
+        string destinationFilePath,
+        CancellationToken cancellationToken)
+    {
         try
         {
             var httpClient = _httpClientFactory.CreateClient();
@@ -71,31 +110,17 @@ public class DownloaderService : IDownloaderService
             using var outputFileStream = File.OpenWrite(destinationFilePath);
             outputFileStream.SetLength(totalBytesToReceive);
 
-            await downloadMonitor.StartAsync(
-                    webFileStream,
-                    outputFileStream,
-                    TransferBufferSize,
-                    totalBytesToReceive,
-                    cancellationToken);
-
-            downloadMonitor.StopMonitor();
+            downloadMonitor.Start(httpClient, sourceWebUri, destinationFilePath, TransferBufferSize, totalBytesToReceive);
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"Unable to complete download of file {destinationFilePath}");
 
             // Handle case where we added new subscribers to the monitor, but we threw an exception
-            // before we started the download or during the download.
+            // before we started the download.
             downloadMonitor.StopMonitor(ex.Message);
+
             throw;
-        }
-        finally
-        {
-            lock (_lock)
-            {
-                // Remove destination file from the map now that we've completed the download
-                _destinationFileDownloadMap.Remove(destinationFilePath);
-            }
         }
     }
 

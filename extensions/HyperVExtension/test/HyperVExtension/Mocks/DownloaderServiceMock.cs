@@ -23,14 +23,14 @@ public class DownloaderServiceMock : IDownloaderService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task StartDownloadAsync(IProgress<IOperationReport> progressSubscriber, Uri sourceWebUri, string destinationFilePath, CancellationToken cancellationToken)
+    public async Task StartDownloadAsync(IDownloadSubscriber subscriber, Uri sourceWebUri, string destinationFilePath, CancellationToken cancellationToken)
     {
         var bytesReceivedSoFar = 0L;
         for (var i = 0; i < _totalIterations; i++)
         {
             await Task.Delay(100, cancellationToken);
             bytesReceivedSoFar += _bytesReceivedEachIteration;
-            progressSubscriber.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
+            subscriber.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
         }
 
         var zipFile = await GetTestZipFileInPackage();

@@ -50,4 +50,6 @@ public class ByteTransferProgress
     public bool Succeeded => _transferStatus == TransferStatus.Succeeded;
 
     public bool Failed => _transferStatus == TransferStatus.Failed;
+
+    public bool Ended => Succeeded || Failed;
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
 
 namespace HyperVExtension.Services;
@@ -13,12 +14,12 @@ public interface IDownloaderService
     /// <summary>
     /// Starts file a download operation asynchronously from the web.
     /// </summary>
-    /// <param name="progressSubscriber">The provider who progress should be reported back to</param>
+    /// <param name="subscriber">The subscriber who progress should be reported back to</param>
     /// <param name="sourceWebUri">The web uri that points to the location of the file</param>
     /// <param name="destinationFilePath">The file path that the downloaded file should be downloaded into</param>
     /// <param name="cancellationToken">A token that can allow the operation to be cancelled while it is running</param>
     /// <returns>A Task to start the download operation <returns>
-    public Task StartDownloadAsync(IProgress<IOperationReport> progressSubscriber, Uri sourceWebUri, string destinationFilePath, CancellationToken cancellationToken);
+    public Task StartDownloadAsync(IDownloadSubscriber subscriber, Uri sourceWebUri, string destinationFilePath, CancellationToken cancellationToken);
 
     /// <summary>
     /// Downloads a string from the web asynchronously.
