@@ -1,7 +1,10 @@
+CoImpersonateClient
+CoRevertToSelf
 CoInitializeEx
 CoInitializeSecurity
 CoRegisterClassObject
 CoResumeClassObjects
+GetPackageFullNameFromToken
 CLASS_E_NOAGGREGATION
 E_NOINTERFACE
 GLOBALOPT_EH_VALUES
