@@ -6,7 +6,8 @@
     <RootNamespace>DevHome.Service</RootNamespace>
     <Nullable>enable</Nullable>
     <OutputType>WinExe</OutputType>
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfileFullPath>
   </PropertyGroup>
 
   <ItemGroup>
