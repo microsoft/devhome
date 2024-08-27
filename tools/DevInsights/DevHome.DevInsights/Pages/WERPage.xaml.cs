@@ -132,48 +132,6 @@ public sealed partial class WERPage : Page
         }
     }
 
-    private void WERDataGrid_Sorting(object sender, DataGridColumnEventArgs e)
-    {
-        if (e.Column.Tag is not null)
-        {
-            bool sortAscending = e.Column.SortDirection == DataGridSortDirection.Ascending;
-
-            // Flip the sort direction
-            sortAscending = !sortAscending;
-
-            string? tag = e.Column.Tag.ToString();
-            Debug.Assert(tag is not null, "Why is the tag null?");
-
-            if (tag == "DateTime")
-            {
-                ViewModel.SortByDateTime(sortAscending);
-            }
-            else if (tag == "FaultingExecutable")
-            {
-                ViewModel.SortByFaultingExecutable(sortAscending);
-            }
-            else if (tag == "WERBucket")
-            {
-                ViewModel.SortByWERBucket(sortAscending);
-            }
-            else if (tag == "CrashDumpPath")
-            {
-                ViewModel.SortByCrashDumpPath(sortAscending);
-            }
-
-            e.Column.SortDirection = sortAscending ? DataGridSortDirection.Ascending : DataGridSortDirection.Descending;
-
-            // Clear the sort direction for the other columns
-            foreach (DataGridColumn column in WERDataGrid.Columns)
-            {
-                if (column != e.Column)
-                {
-                    column.SortDirection = null;
-                }
-            }
-        }
-    }
-
     private void LocalDumpCollection_Toggled(object sender, RoutedEventArgs e)
     {
         ViewModel.ChangeLocalCollectionForApp(LocalDumpCollectionToggle.IsOn);

@@ -64,8 +64,8 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             SelectionChanged="WERDataGrid_SelectionChanged"
-            Sorting="WERDataGrid_Sorting"
-            ItemsSource="{x:Bind ViewModel.DisplayedReports, Mode=OneWay}">
+            Sorting="{x:Bind ViewModel.SortReports}"
+            ItemsSource="{x:Bind ViewModel.ReportsView, Mode=OneWay}">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Tag="DateTime" x:Uid="WERTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180" IsReadOnly="True"/>
                 <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WERFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180" IsReadOnly="True"/>
