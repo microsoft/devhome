@@ -319,7 +319,7 @@
     <comment>{Locked="Windows", "Linux"} Extension Description</comment>
   </data>
   <data name="AppDisplayNameGitExt" xml:space="preserve">
-    <value>Git (Stable)</value>
+    <value>Git</value>
     <comment>Stable Git Extension Display Name</comment>
   </data>
   <data name="AppDisplayNameDevGitExt" xml:space="preserve">

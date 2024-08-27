@@ -43,8 +43,7 @@ public sealed partial class AddRepositoriesView : UserControl
 
     private void SourceControlProviderMenuFlyout_Opening(object sender, object e)
     {
-        var menuFlyout = sender as MenuFlyout;
-        if (menuFlyout != null)
+        if (sender is MenuFlyout menuFlyout)
         {
             menuFlyout.Items.Clear();
 
