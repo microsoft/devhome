@@ -55,7 +55,9 @@ public sealed partial class AddRepositoriesView : UserControl
                     Tag = extension,
                 };
                 menuItem.Click += AssignSourceControlProviderButton_Click;
-                ToolTipService.SetToolTip(menuItem, extension.PackageDisplayName);
+
+                var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+                ToolTipService.SetToolTip(menuItem, string.Concat(stringResource.GetLocalized("PrefixForDevHomeVersion"), extension.PackageDisplayName));
                 menuFlyout.Items.Add(menuItem);
             }
         }

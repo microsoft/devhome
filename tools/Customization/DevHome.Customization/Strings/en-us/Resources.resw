@@ -461,4 +461,8 @@
     <value>Show the repository status</value>
     <comment>The header for the settings card that allows user to enable or disable display of repository status inside File Explorer</comment>
   </data>
+  <data name="PrefixForDevHomeVersion" xml:space="preserve">
+    <value>Provided by </value>
+    <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
+  </data>
 </root>
