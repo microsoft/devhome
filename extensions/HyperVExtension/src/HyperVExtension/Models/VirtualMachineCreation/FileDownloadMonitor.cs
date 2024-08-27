@@ -86,7 +86,14 @@ public sealed class FileDownloadMonitor : IDisposable
     {
         while (!IsDownloadComplete())
         {
-            await _downloadCompletionSemaphore.WaitAsync(TimeSpan.FromMinutes(1), cancellationToken);
+            try
+            {
+                await _downloadCompletionSemaphore.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            }
+            finally
+            {
+                _downloadCompletionSemaphore.Release();
+            }
         }
     }
 
