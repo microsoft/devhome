@@ -40,10 +40,10 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Uid="WinLogsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}" AutomationProperties.AutomationId="WinLogsHeaderTextBlock"/>
-        <Button Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunAsAdminButton">
+        <Button x:Uid="RunElevatedButton"  Grid.Row="1" Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunElevatedButton">
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <SymbolIcon Symbol="Admin"/>
-                <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
+                <TextBlock x:Uid="RunElevatedButtonTextBlock" Margin="0"/>
             </StackPanel>
         </Button>
         <StackPanel x:Name="WinLogsOptions" Grid.Row="2" Orientation="Horizontal" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
@@ -69,7 +69,7 @@
                 <TextBlock Text="&#xE74D;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
             </Button>
         </StackPanel>
-        <TextBox Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="FilterMessageTextBox">
+        <TextBox x:Uid="FilterMessageText"  Grid.Row="3" Text="{x:Bind ViewModel.FilterMessageText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.AutomationId="FilterMessageTextBox">
             <i:Interaction.Behaviors>
                 <ic:EventTriggerBehavior EventName="TextChanged">
                     <ic:InvokeCommandAction Command="{x:Bind ViewModel.UpdateWinLogsCommand}" />

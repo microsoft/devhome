@@ -1053,11 +1053,11 @@
     <value>Dev Insights needs to run as Admin in order to modify WER crash dump collection for an app.</value>
     <comment>Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
   </data>
-  <data name="RunElevatedButton.Text" xml:space="preserve">
+  <data name="RunElevatedButtonTextBlock.Text" xml:space="preserve">
     <value>Get Information</value>
     <comment>The contents of a button to allow the user to trigger elevation to get more information</comment>
   </data>
-  <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="RunElevatedButtonTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dev Insights needs to run as Admin in order to get more data for an app.</value>
     <comment>Tooltip for a button that relaunches Dev Insights as admin to get more data</comment>
   </data>
@@ -1260,7 +1260,19 @@ Dump File creation time: {1}</value>
   </data>
   <data name="RunElevatedButtonForWERButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Run as administrator</value>
-    <comment>Description of the control to change the size of the navigation pane</comment>
+    <comment>Description of the button to run Dev Insights as administrator</comment>
+  </data>
+  <data name="RunElevatedButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the control button to run Dev Insights as administrator</comment>
+  </data>
+  <data name="ClearWinLogsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Clear the list</value>
+    <comment>Description of the button to clear the log output of the WinLogs page</comment>
+  </data>
+  <data name="FilterMessageText.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Filter the list</value>
+    <comment>Description of the button to filter the log output list</comment>
   </data>
   <data name="ProcessListHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>A list of all running processes. You can select an item from the list to target. You can also type a name in the search box to find that process. The drop-down contains a list of all items that are filtered out by default - you can select any of these to include them in the main list. Another way to select your target process is to bring its window to the foreground and then use the hotkey Windows+F12.</value>
