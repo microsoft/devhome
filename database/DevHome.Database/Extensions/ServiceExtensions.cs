@@ -11,7 +11,7 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddDatabaseContext(this IServiceCollection services, HostBuilderContext context)
     {
-        services.AddSingleton<DatabaseContextFactory>();
+        services.AddSingleton<DevHomeDatabaseContextFactory>();
 
         return services;
     }

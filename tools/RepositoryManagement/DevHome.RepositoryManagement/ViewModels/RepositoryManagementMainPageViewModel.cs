@@ -21,7 +21,7 @@ public partial class RepositoryManagementMainPageViewModel
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    public ObservableCollection<RepositoryManagementItemViewModel> Items => new(ConvertToLineItems(_dataAccessService.GetRepositories()));
+    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; private set; }
 
     [RelayCommand]
     public void AddExistingRepository()
@@ -29,14 +29,24 @@ public partial class RepositoryManagementMainPageViewModel
         throw new NotImplementedException();
     }
 
+    [RelayCommand]
+    public void LoadRepositories()
+    {
+        Items.Clear();
+        var repositoriesFromTheDatabase = _dataAccessService.GetRepositories();
+        ConvertToLineItems(repositoriesFromTheDatabase).ForEach(x => Items.Add(x));
+    }
+
     public RepositoryManagementMainPageViewModel(IHost host, RepositoryManagementDataAccessService dataAccessService)
     {
         _dataAccessService = dataAccessService;
         _host = host;
+        Items = [];
     }
 
     private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
     {
+        _log.Information("Converting repositories from the database into view models for display");
         List<RepositoryManagementItemViewModel> items = new();
 
         foreach (var repo in repositories)

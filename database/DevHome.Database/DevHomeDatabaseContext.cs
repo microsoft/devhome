@@ -1,13 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
+using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Windows.Storage;
 
 namespace DevHome.Database;
 
+/// <summary>
+/// Please surround calls to .SaveChanges() with try/catch
+/// </summary>
 public class DevHomeDatabaseContext : DbContext
 {
+    private const string DatabaseFileName = "DevHome.db";
+
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevHomeDatabaseContext));
+
     public DbSet<Repository> Repositories { get; set; }
 
     public DbSet<RepositoryMetadata> RepositoryMetadatas { get; set; }
@@ -16,38 +27,50 @@ public class DevHomeDatabaseContext : DbContext
 
     public DevHomeDatabaseContext()
     {
-        // Not the final path.  It will change before going into main.
-        // Needs a configurable location for testing.
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        DbPath = Path.Join(path, "DevHome.db");
+        DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // If I have time, this should be split like service extensions.
+        // This should be split like service extensions.
         // As more entities are added, the longer this method will get.
-        var repositoryEntity = modelBuilder.Entity<Repository>();
-        if (repositoryEntity != null)
+        try
         {
-            repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
-            repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
-            repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
-            repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-            repositoryEntity.ToTable("Repository");
-        }
+            // According to learn.microsoft the below methods do not throw.
+            // Catch and log an exception in case.
+            var repositoryEntity = modelBuilder.Entity<Repository>();
+            if (repositoryEntity != null)
+            {
+                repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
+                repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
+                repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
+                repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                repositoryEntity.ToTable("Repository");
+            }
 
-        var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();
-        if (repositoryMetadataEntity != null)
-        {
-            repositoryMetadataEntity.Property(x => x.IsHiddenFromPage).HasDefaultValue(false).IsRequired(true);
-            repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc)).IsRequired(true);
-            repositoryMetadataEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
-            repositoryMetadataEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
-            repositoryMetadataEntity.ToTable("RepositoryMetadata");
+            var repositoryMetadataEntity = modelBuilder.Entity<RepositoryMetadata>();
+            if (repositoryMetadataEntity != null)
+            {
+                repositoryMetadataEntity.Property(x => x.IsHiddenFromPage).HasDefaultValue(false).IsRequired(true);
+                repositoryMetadataEntity.Property(x => x.UtcDateHidden).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc)).IsRequired(true);
+                repositoryMetadataEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
+                repositoryMetadataEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                repositoryMetadataEntity.ToTable("RepositoryMetadata");
+            }
         }
+        catch (Exception ex)
+        {
+            // Show a dialog box then close DevHome.
+            _log.Error(ex, "Can not build the database model");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_DatabaseContext_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseContextEvent("CreatingModel", ex));
+                }
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+    {
+        optionsBuilder.UseSqlite($"Data Source={DbPath}");
+    }
 }

@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Factories;
+using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -14,16 +17,10 @@ public class RepositoryManagementDataAccessService
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementDataAccessService));
 
-    private readonly DatabaseContextFactory _databaseContextFactory;
+    private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
 
-    public RepositoryManagementDataAccessService(DatabaseContextFactory databaseContextFactory)
+    public RepositoryManagementDataAccessService(DevHomeDatabaseContextFactory databaseContextFactory)
     {
-        // Store the host to make dbContext and RepositoryManagementItemViewModel
-        // dbContext can not be passed in because RepositoryManagementDataAccessService is singleton
-        // and dbContext needs to be scoped.
-        // RepositoryManagementItemViewModel can not be passed in because multiple are made.
-        // The best solution is to make factories for DevHomeContext and RepositoryManagementItemViewModel.
-        // Might be in a future change.
         _databaseContextFactory = databaseContextFactory;
     }
 
@@ -42,20 +39,40 @@ public class RepositoryManagementDataAccessService
 
         newRepo.RepositoryMetadata = newMetadata;
 
-        var dbContext = _databaseContextFactory.GetNewDatabaseContext();
+        var dbContext = _databaseContextFactory.GetNewContext();
         dbContext.Add(newRepo);
         dbContext.Add(newMetadata);
-        dbContext.SaveChanges();
+        try
+        {
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when saving a new repository");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent("AddOneRepository", ex));
+        }
     }
 
     public List<Repository> GetRepositories()
     {
-        return QueryDatabaseForRepositories();
-    }
+        _log.Information("Getting repositories");
+        var dbContext = _databaseContextFactory.GetNewContext();
 
-    private List<Repository> QueryDatabaseForRepositories()
-    {
-        var dbContext = _databaseContextFactory.GetNewDatabaseContext();
-        return dbContext.Repositories.Include(x => x.RepositoryMetadata).ToList();
+        List<Repository> repositories = [];
+
+        try
+        {
+            repositories = dbContext.Repositories.Include(x => x.RepositoryMetadata).ToList();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, ex.ToString());
+            TelemetryFactory.Get<ITelemetry>().LogException(nameof(GetRepositories), ex);
+        }
+
+        return repositories;
     }
 }

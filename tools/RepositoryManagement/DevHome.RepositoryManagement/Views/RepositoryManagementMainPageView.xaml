@@ -34,6 +34,11 @@
             </Style>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadRepositoriesCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
     <Grid Margin="10,0,20,0" RowSpacing="25">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
