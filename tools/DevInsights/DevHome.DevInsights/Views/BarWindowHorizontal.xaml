@@ -10,7 +10,7 @@
     xmlns:local="using:DevHome.DevInsights.Controls"
     xmlns:helpers="using:DevHome.DevInsights.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="90" MinWidth="700" Height="90" Width="700"
+    MinHeight="90" MinWidth="700" Height="90" Width="700"
     TaskBarIcon="Images/di.ico"
     Activated="Window_Activated"
     WindowStateChanged="WindowEx_WindowStateChanged"

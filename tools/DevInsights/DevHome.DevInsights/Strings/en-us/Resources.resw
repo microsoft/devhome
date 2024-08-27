@@ -1250,21 +1250,17 @@ Dump File creation time: {1}</value>
     <value>Process list filter</value>
     <comment>Narrator description for the combobox that filters the process list</comment>
   </data>
-  <data name="PackageFullNameTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Package Full Name</value>
-    <comment>Narrator description for the Package Full Name label</comment>
+  <data name="ModulesListView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Modules</value>
+    <comment>Narrator description for the Modules List ListView</comment>
   </data>
-  <data name="PackageVersionTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Package Versiion</value>
-    <comment>Narrator description for the Package Version label</comment>
+  <data name="ModulesListViewSplitter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Resize modules pane</value>
+    <comment>Description of the control to change the size of the navigation pane</comment>
   </data>
-  <data name="PackageInstalledDateTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Package Versiion</value>
-    <comment>Narrator description for the Package Install Date label</comment>
-  </data>
-  <data name="PackageInstalledDateTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Package Versiion</value>
-    <comment>Narrator description for the Package Install Date label</comment>
+  <data name="RunElevatedButtonForWERButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the control to change the size of the navigation pane</comment>
   </data>
   <data name="ProcessListHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>A list of all running processes. You can select an item from the list to target. You can also type a name in the search box to find that process. The drop-down contains a list of all items that are filtered out by default - you can select any of these to include them in the main list. Another way to select your target process is to bring its window to the foreground and then use the hotkey Windows+F12.</value>

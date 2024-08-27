@@ -37,11 +37,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ListView x:Name="ModulesListView" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.ModuleList, Mode=OneWay}"
+            <ListView x:Name="ModulesListView" x:Uid="ModulesListView" SelectionMode="Single" ItemsSource="{x:Bind ViewModel.ModuleList, Mode=OneWay}"
                       SelectedIndex="{x:Bind ViewModel.SelectedModuleIndex, Mode=TwoWay}" AutomationProperties.AutomationId="ModulesListView">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:ProcessModuleInfo">
-                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                        <StackPanel Orientation="Vertical" Margin="0,0,0,10"  AutomationProperties.Name="{x:Bind ModuleName}">
                             <TextBlock Text="{x:Bind ModuleName}" FontWeight="Bold" AutomationProperties.AutomationId="ModuleNameTextBlock"/>
                             <TextBlock Text="{x:Bind FileVersion}" Margin="0"/>
                         </StackPanel>
@@ -49,8 +49,8 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <controls:GridSplitter
-                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed" AutomationProperties.AutomationId="GridSplitter"/>
+            <controls:GridSplitter x:Uid="ModulesListViewSplitter"
+                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed" AutomationProperties.AutomationId="ModulesListViewSplitter"/>
 
             <ScrollViewer Grid.Column="2" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="ModuleDetailsPanel" Margin="8,0,0,0">
@@ -59,16 +59,16 @@
                                    FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="Bold" AutomationProperties.AutomationId="SelectedModuleNameTextBlock"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBlock x:Uid="FileVersionInfoTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" AutomationProperties.AutomationId="FileVersionInfoTextBlock"/>
+                        <TextBlock x:Uid="FileVersionInfoTextBlock"  x:Name="FileVersionInfoTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" AutomationProperties.AutomationId="FileVersionInfoTextBlock"/>
                         <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).FileVersionInfo, Mode=OneWay}"
-                                 FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True"/>
+                                 FontFamily="Consolas" TextWrapping="Wrap" IsReadOnly="True" AutomationProperties.LabeledBy="{Binding ElementName=FileVersionInfoTextBlock}"/>
 
-                        <TextBlock x:Uid="BaseAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="BaseAddressTextBlock"/>
-                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True"/>
-                        <TextBlock x:Uid="EntrypointAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="EntrypointAddressTextBlock"/>
-                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True"/>
-                        <TextBlock x:Uid="MemorySizeTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="MemorySizeTextBlock"/>
-                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True"/>
+                        <TextBlock x:Uid="BaseAddressTextBlock" x:Name="BaseAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="BaseAddressTextBlock"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).BaseAddress, Mode=OneWay}" IsReadOnly="True" AutomationProperties.LabeledBy="{Binding ElementName=BaseAddressTextBlock}"/>
+                        <TextBlock x:Uid="EntrypointAddressTextBlock" x:Name="EntrypointAddressTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="EntrypointAddressTextBlock"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).EntryPointAddress, Mode=OneWay}" IsReadOnly="True" AutomationProperties.LabeledBy="{Binding ElementName=EntrypointAddressTextBlock}"/>
+                        <TextBlock x:Uid="MemorySizeTextBlock" x:Name="MemorySizeTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" Margin="0,6,0,0" AutomationProperties.AutomationId="MemorySizeTextBlock"/>
+                        <TextBox Text="{x:Bind ((models:ProcessModuleInfo)ModulesListView.SelectedItem).ModuleMemorySize, Mode=OneWay}" IsReadOnly="True" AutomationProperties.LabeledBy="{Binding ElementName=MemorySizeTextBlock}"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

@@ -114,7 +114,7 @@ public sealed partial class WERPage : Page
         int currentSelectedIndex = InfoSelector.Items.IndexOf(selectedItem);
         WERAnalysisReport info = (WERAnalysisReport)WERDataGrid.SelectedItem;
 
-        if (selectedItem.Tag is Tool tool)
+        if (selectedItem is not null && selectedItem.Tag is Tool tool)
         {
             if (info.ToolAnalyses.TryGetValue(tool, out var analysis))
             {

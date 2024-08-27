@@ -35,12 +35,19 @@
                 <TextBlock x:Uid="WERHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" Grid.ColumnSpan="2" AutomationProperties.AutomationId="WERHeaderTextBlock"/>
 
                 <StackPanel x:Name="AppLocalDumpCollection" Visibility="{x:Bind ViewModel.AttachedToApp, Mode=OneWay}" Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="AppLocalDumpCollection">
-                    <TextBlock x:Uid="LocalDumpCollectionLabel" VerticalAlignment="Center" Margin="0 0 10 0" AutomationProperties.AutomationId="LocalDumpCollectionLabel"/>
-                    <ToggleSwitch x:Uid="LocalDumpCollectionToggle" x:Name="LocalDumpCollectionToggle" IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.RunningAsAdmin}" Toggled="LocalDumpCollection_Toggled" MinWidth="0" AutomationProperties.AutomationId="LocalDumpCollectionToggle"/>
-                    <Button Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunAsAdminButton">
+                    <TextBlock x:Uid="LocalDumpCollectionLabel" x:Name="LocalDumpCollectionLabel" VerticalAlignment="Center" Margin="0 0 10 0" AutomationProperties.AutomationId="LocalDumpCollectionLabel"/>
+                    <ToggleSwitch
+                        x:Uid="LocalDumpCollectionToggle"
+                        x:Name="LocalDumpCollectionToggle"
+                        IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}"
+                        IsEnabled="{x:Bind ViewModel.RunningAsAdmin}"
+                        Toggled="LocalDumpCollection_Toggled" MinWidth="0"
+                        AutomationProperties.AutomationId="LocalDumpCollectionToggle"
+                        AutomationProperties.LabeledBy="{Binding ElementName=LocalDumpCollectionLabel}"/>
+                    <Button x:Uid="RunElevatedButtonForWERButton" Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunElevatedButtonForWERButton">
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <SymbolIcon Symbol="Admin"/>
-                            <TextBlock x:Uid="RunElevatedButtonForWER" Margin="0" AutomationProperties.AutomationId="RunElevatedButtonForWER"/>
+                            <TextBlock x:Uid="RunElevatedButtonForWER" x:Name="RunElevatedButtonForWER" Margin="0" AutomationProperties.AutomationId="RunElevatedButtonForWER"/>
                         </StackPanel>
                     </Button>
                     <HyperlinkButton x:Uid="LocalDumpMoreInfo" NavigateUri="https://go.microsoft.com/fwlink/?linkid=2279804" AutomationProperties.AutomationId="LocalDumpMoreInfo"/>
