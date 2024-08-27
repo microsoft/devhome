@@ -177,7 +177,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RepositoryManagement", "Rep
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.RepositoryManagement", "tools\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj", "{B4B2F5EA-BCD3-4F3E-856C-F6C32433BA41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.Database", "database\DevHome.Database\DevHome.Database.csproj", "{CC4E406E-920A-408C-8CF8-098F680B1E29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Database", "database\DevHome.Database\DevHome.Database.csproj", "{CC4E406E-920A-408C-8CF8-098F680B1E29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
