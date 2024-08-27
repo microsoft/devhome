@@ -29,29 +29,6 @@ public sealed partial class AddRepositoriesView : UserControl
     {
         ViewModel = Application.Current.GetService<FileExplorerViewModel>();
         this.InitializeComponent();
-        ItemsRepeaterForAllRepoPaths.ElementPrepared += PrepareItemForDisplay;
-    }
-
-    private void PrepareItemForDisplay(ItemsRepeater repeater, ItemsRepeaterElementPreparedEventArgs args)
-    {
-        var providerButton = (args.Element as SettingsCard)?.FindChild("SelectProviderButton") as DropDownButton;
-        if (providerButton != null)
-        {
-            var flyout = new MenuFlyout();
-            foreach (var extension in ViewModel.ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result)
-            {
-                var menuItem = new MenuFlyoutItem
-                {
-                    Text = extension.ExtensionDisplayName,
-                    Tag = extension,
-                };
-                menuItem.Click += AssignSourceControlProviderButton_Click;
-                ToolTipService.SetToolTip(menuItem, extension.PackageDisplayName);
-                flyout.Items.Add(menuItem);
-            }
-
-            providerButton.Flyout = flyout;
-        }
     }
 
     public void RemoveFolderButton_Click(object sender, RoutedEventArgs e)
@@ -61,6 +38,27 @@ public sealed partial class AddRepositoriesView : UserControl
         if (menuItem.DataContext is RepositoryInformation repoInfo)
         {
             ViewModel.RemoveTrackedRepositoryFromDevHome(repoInfo.RepositoryRootPath);
+        }
+    }
+
+    private void SourceControlProviderMenuFlyout_Opening(object sender, object e)
+    {
+        var menuFlyout = sender as MenuFlyout;
+        if (menuFlyout != null)
+        {
+            menuFlyout.Items.Clear();
+
+            foreach (var extension in ViewModel.ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result)
+            {
+                var menuItem = new MenuFlyoutItem
+                {
+                    Text = extension.ExtensionDisplayName,
+                    Tag = extension,
+                };
+                menuItem.Click += AssignSourceControlProviderButton_Click;
+                ToolTipService.SetToolTip(menuItem, extension.PackageDisplayName);
+                menuFlyout.Items.Add(menuItem);
+            }
         }
     }
 

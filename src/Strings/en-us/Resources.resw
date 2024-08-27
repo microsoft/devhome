@@ -319,8 +319,16 @@
     <comment>{Locked="Windows", "Linux"} Extension Description</comment>
   </data>
   <data name="AppDisplayNameGitExt" xml:space="preserve">
-    <value>Git</value>
-    <comment>Git Extension Display Name</comment>
+    <value>Git (Stable)</value>
+    <comment>Stable Git Extension Display Name</comment>
+  </data>
+  <data name="AppDisplayNameDevGitExt" xml:space="preserve">
+    <value>Git (Dev)</value>
+    <comment>Dev Git Extension Display Name</comment>
+  </data>
+  <data name="AppDisplayNameCanaryGitExt" xml:space="preserve">
+    <value>Git (Canary)</value>
+    <comment>Canary Git Extension Display Name</comment>
   </data>
   <data name="AppDescriptionGitExt" xml:space="preserve">
     <value>Allows integration of Git with File Explorer</value>
