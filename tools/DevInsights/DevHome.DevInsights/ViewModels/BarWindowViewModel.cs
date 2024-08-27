@@ -301,6 +301,7 @@ public partial class BarWindowViewModel : ObservableObject
                 // Conversely, the result chooser is only visible if we're not attached to a result
                 IsProcessChooserVisible = process is null;
                 UnreadInsightsCount = 0;
+                InsightsBadgeOpacity = 0;
             });
         }
         else if (e.PropertyName == nameof(TargetAppData.Icon))

@@ -48,7 +48,6 @@
             </Grid>
         </StackPanel>
 
-
         <controls:DataGrid
             x:Name="WERDataGrid" Grid.Row="1" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"

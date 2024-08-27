@@ -22,7 +22,7 @@
 
             <ctControls:SettingsExpander Grid.Row="1" x:Uid="SettingsAboutAppInfoCard" IsExpanded="True" AutomationProperties.AutomationId="SettingsExpander">
                 <ctControls:SettingsExpander.HeaderIcon>
-                    <BitmapIcon ShowAsMonochrome="False" UriSource="/Images/PI.ico"/>
+                    <BitmapIcon ShowAsMonochrome="False" UriSource="/Images/DI.ico"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <TextBlock
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"

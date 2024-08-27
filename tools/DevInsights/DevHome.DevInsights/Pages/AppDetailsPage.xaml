@@ -33,7 +33,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Uid="AppDetailsTextBlock" x:Name="AppDetailsTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" AutomationProperties.AutomationId="AppDetailsTextBlock"/>
+            <TextBlock x:Uid="AppDetailsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" AutomationProperties.AutomationId="AppDetailsHeaderTextBlock"/>
             <Button
                 Grid.Column="1"
                 x:Uid="DetachAppButton"

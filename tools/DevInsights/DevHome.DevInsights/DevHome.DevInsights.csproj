@@ -20,8 +20,8 @@
 
   <PropertyGroup>
     <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
-    <PackageIcon>PI.ico</PackageIcon>
-    <ApplicationIcon>PI.ico</ApplicationIcon>
+    <PackageIcon>DI.ico</PackageIcon>
+    <ApplicationIcon>DI.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,7 +30,7 @@
     <None Remove="Controls\ExpandedViewControl.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
     <None Remove="errors.db" />
-    <None Remove="Images\PI.ico" />
+    <None Remove="Images\DI.ico" />
     <None Remove="Pages\AboutPage.xaml" />
     <None Remove="Pages\AdditionalToolsPage.xaml" />
     <None Remove="Pages\AdvancedSettingsPage.xaml" />
@@ -70,10 +70,10 @@
     <Content Include="errors.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\PI.ico">
+    <Content Include="Images\DI.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="PI.ico" />
+    <Content Include="DI.ico" />
   </ItemGroup>
 
   <ItemGroup>

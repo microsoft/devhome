@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
+using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.DevInsights.Models;
 using DevHome.DevInsights.Properties;
 using Microsoft.UI.Xaml.Controls;
@@ -18,28 +20,30 @@ namespace DevHome.DevInsights.ViewModels;
 
 public partial class ProcessListPageViewModel : ObservableObject
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue dispatcher;
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private string filterProcessText;
+    private string _filterProcessText;
 
     partial void OnFilterProcessTextChanged(string value)
     {
-        FilterProcessList();
+        ProcessesView.Refresh();
     }
 
     [ObservableProperty]
-    private ObservableCollection<Process> processes;
+    private ObservableCollection<Process> _processes;
 
     [ObservableProperty]
-    private ObservableCollection<Process> filteredProcesses;
+    private AdvancedCollectionView _processesView;
 
     public ProcessListPageViewModel()
     {
-        dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        processes = new();
-        filteredProcesses = new();
-        filterProcessText = string.Empty;
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _processes = new();
+        _filterProcessText = string.Empty;
+        _processesView = new AdvancedCollectionView(_processes, true);
+        _processesView.SortDescriptions.Add(new SortDescription(nameof(Process.ProcessName), SortDirection.Ascending));
+        _processesView.Filter = entry => FilterProcess((Process)entry);
         GetFilteredProcessList();
 
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
@@ -70,85 +74,67 @@ public partial class ProcessListPageViewModel : ObservableObject
 
     private void UpdateFilteredProcessList(Process[] currentProcesses)
     {
-        dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(() =>
         {
             Processes.Clear();
-            var sortedProcesses = currentProcesses.OrderBy(process => process.ProcessName).ToArray();
-            foreach (var proc in sortedProcesses)
+            foreach (var proc in currentProcesses)
             {
-                var settings = Settings.Default;
-                if (string.Equals(proc.ProcessName, "backgroundtaskhost", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeBgTaskHost)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "conhost", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeConHost)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "dllhost", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeDllHost)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "svchost", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeSvcHost)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "msedgewebview2", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeWebview)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "runtimebroker", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeRtb)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "wmiprvse", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeWmi)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else if (string.Equals(proc.ProcessName, "wudfhost", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (settings.IsProcessFilterIncludeWudf)
-                    {
-                        Processes.Add(proc);
-                    }
-                }
-                else
-                {
-                    Processes.Add(proc);
-                }
+                Processes.Add(proc);
             }
 
-            foreach (var currentProcess in currentProcesses)
-            {
-                if (!Processes.Contains(currentProcess))
-                {
-                    currentProcess.Dispose();
-                }
-            }
-
-            FilterProcessList();
+            ProcessesView.Refresh();
         });
+    }
+
+    private bool FilterProcess(Process process)
+    {
+        bool showProcess;
+        var settings = Settings.Default;
+
+        if (string.Equals(process.ProcessName, "backgroundtaskhost", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeBgTaskHost;
+        }
+        else if (string.Equals(process.ProcessName, "conhost", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeConHost;
+        }
+        else if (string.Equals(process.ProcessName, "dllhost", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeDllHost;
+        }
+        else if (string.Equals(process.ProcessName, "svchost", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeSvcHost;
+        }
+        else if (string.Equals(process.ProcessName, "msedgewebview2", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeWebview;
+        }
+        else if (string.Equals(process.ProcessName, "runtimebroker", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeRtb;
+        }
+        else if (string.Equals(process.ProcessName, "wmiprvse", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeWmi;
+        }
+        else if (string.Equals(process.ProcessName, "wudfhost", StringComparison.OrdinalIgnoreCase))
+        {
+            showProcess = settings.IsProcessFilterIncludeWudf;
+        }
+        else
+        {
+            showProcess = true;
+        }
+
+        if (showProcess)
+        {
+            return process.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
+                Convert.ToString(process.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        return showProcess;
     }
 
     public void ProcessDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -162,20 +148,40 @@ public partial class ProcessListPageViewModel : ObservableObject
         }
     }
 
+    public void SortProcesses(object sender, DataGridColumnEventArgs e)
+    {
+        var propertyName = string.Empty;
+        if (e.Column.DisplayIndex == 0)
+        {
+            propertyName = nameof(Process.Id);
+        }
+        else if (e.Column.DisplayIndex == 1)
+        {
+            propertyName = nameof(Process.ProcessName);
+        }
+
+        if (!string.IsNullOrEmpty(propertyName))
+        {
+            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            {
+                // Clear pervious sorting
+                ProcessesView.SortDescriptions.Clear();
+                ProcessesView.SortDescriptions.Add(new SortDescription(propertyName, SortDirection.Ascending));
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+            }
+            else
+            {
+                ProcessesView.SortDescriptions.Clear();
+                ProcessesView.SortDescriptions.Add(new SortDescription(propertyName, SortDirection.Descending));
+                e.Column.SortDirection = DataGridSortDirection.Descending;
+            }
+        }
+    }
+
     public void FilterDropDownClosed()
     {
         Settings.Default.Save();
         GetFilteredProcessList();
-    }
-
-    private void FilterProcessList()
-    {
-        FilteredProcesses = new ObservableCollection<Process>(Processes.Where(
-            item =>
-            {
-                return item.ProcessName.Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase) ||
-                Convert.ToString(item.Id, CultureInfo.CurrentCulture).Contains(FilterProcessText, StringComparison.CurrentCultureIgnoreCase);
-            }));
     }
 
     [RelayCommand]

@@ -1,13 +1,14 @@
 <ContentDialog
-    x:Class="DevHome.Customization.Views.ModifyFeaturesDialog"
+    x:Class="DevHome.Customization.Views.RestartDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    x:Uid="ms-resource:///DevHome.Customization/Resources/ModifyFeaturesDialog"
+    x:Uid="ms-resource:///DevHome.Customization/Resources/RestartDialog"
     Style="{ThemeResource DefaultContentDialogStyle}"
     DefaultButton="Primary"
     PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
-    IsPrimaryButtonEnabled="False"
-    SecondaryButtonClick="OnCancelClick">
+    IsPrimaryButtonEnabled="True"
+    IsSecondaryButtonEnabled="True"
+    PrimaryButtonClick="OnRestartClick">
     <!-- Give the StackPanel content a min width and height to make the dialog have a consistent
          size whether the ProgressBar is visible or not. -->
     <StackPanel
@@ -16,10 +17,7 @@
         MinHeight="40"
         Spacing="20">
         <TextBlock
-            x:Uid="ModifyFeaturesDialogMessage"
+            x:Uid="RestartRequiredDialogMessage"
             TextWrapping="WrapWholeWords"/>
-        <ProgressBar
-            IsIndeterminate="True"
-            Height="4"/>
     </StackPanel>
 </ContentDialog>

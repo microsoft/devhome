@@ -69,14 +69,14 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
-        _appDetailsNavLink = new PageNavLink("AppDetails", "\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
-        _resourceUsageNavLink = new PageNavLink("ResourceUsage", "\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
-        _modulesNavLink = new PageNavLink("Modules", "\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
-        _werNavLink = new PageNavLink("WERReports", "\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));
-        _winLogsNavLink = new PageNavLink("WinLogs", "\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
-        _processListNavLink = new PageNavLink("ProcessList", "\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
-        _insightsNavLink = new PageNavLink("Insights", "\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
-        _settingsNavLink = new PageNavLink("Settiings", "\uE713", CommonHelper.GetLocalizedString("SettingsToolHeaderTextBlock/Text"), typeof(SettingsPageViewModel));
+        _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsHeaderTextBlock/Text"), typeof(AppDetailsPageViewModel));
+        _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
+        _modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
+        _werNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));
+        _winLogsNavLink = new PageNavLink("\uE7C4", CommonHelper.GetLocalizedString("WinLogsHeaderTextBlock/Text"), typeof(WinLogsPageViewModel));
+        _processListNavLink = new PageNavLink("\uE8FD", CommonHelper.GetLocalizedString("ProcessListHeaderTextBlock/Text"), typeof(ProcessListPageViewModel));
+        _insightsNavLink = new PageNavLink("\uE946", CommonHelper.GetLocalizedString("InsightsHeaderTextBlock/Text"), typeof(InsightsPageViewModel));
+        _settingsNavLink = new PageNavLink("\uE713", CommonHelper.GetLocalizedString("SettingsToolHeaderTextBlock/Text"), typeof(SettingsPageViewModel));
 
         _links = [];
 

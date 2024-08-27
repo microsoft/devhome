@@ -63,15 +63,16 @@
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
-            CanUserSortColumns="False"
+            CanUserSortColumns="True"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             ColumnHeaderHeight="32"
             FrozenColumnCount="0"
             GridLinesVisibility="None"
             HeadersVisibility="Column"
+            Sorting ="{x:Bind ViewModel.SortProcesses}"
             SelectionChanged="{x:Bind ViewModel.ProcessDataGrid_SelectionChanged}"
-            ItemsSource="{x:Bind ViewModel.FilteredProcesses, Mode=OneWay}"
+            ItemsSource="{x:Bind ViewModel.ProcessesView, Mode=OneWay}"
             AutomationProperties.AutomationId="ProcessDataGrid">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="PidColumn" Binding="{Binding Id}" Width="120" AutomationProperties.AutomationId="PidColumn"/>

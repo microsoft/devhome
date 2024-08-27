@@ -29,6 +29,7 @@
                 <TextBlock x:Uid="RunElevatedButton" Margin="0"/>
             </StackPanel>
         </Button>
+
         <Grid Grid.Row="2" Visibility="{x:Bind ViewModel.GridVisibility, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="220"/>
