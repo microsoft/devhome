@@ -1210,4 +1210,36 @@ Dump File creation time: {1}</value>
     <value>Regular Expression for WER bucket</value>
     <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
   </data>
+  <data name="ProcessChooserButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Process list</value>
+    <comment>Name of the button that brings up the process list page</comment>
+  </data>
+  <data name="InsightsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Insights</value>
+    <comment>Name of the button that brings up the Insights page</comment>
+  </data>
+  <data name="ExpandCollapseLayoutButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Expand or Collapse</value>
+    <comment>Name of the button expands or collapses the UI.</comment>
+  </data>
+  <data name="RotateLayoutButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Rotate Layout</value>
+    <comment>Name of the button expands or collapses the UI.</comment>
+  </data>
+  <data name="NavLinksList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Page Navigation</value>
+    <comment>Name of the nav list.</comment>
+  </data>
+  <data name="DetachAppButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Detach from currently targetted process</value>
+    <comment>Description of the detach app button for narrator to read.</comment>
+  </data>
+  <data name="RunAsAdminButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the button to run as administrator.</comment>
+  </data>
+  <data name="NavigationPaneSplitter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>View splitter for navigation pane</value>
+    <comment>Description of the control to change the size of the navigation pane</comment>
+  </data>
 </root>
