@@ -1239,7 +1239,31 @@ Dump File creation time: {1}</value>
     <comment>Description of the button to run as administrator.</comment>
   </data>
   <data name="NavigationPaneSplitter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>View splitter for navigation pane</value>
+    <value>Resize navigation pane</value>
     <comment>Description of the control to change the size of the navigation pane</comment>
+  </data>
+  <data name="RefreshButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Refresh the process list</value>
+    <comment>Narrator description for the button that refreshes the process list</comment>
+  </data>
+  <data name="FilterDropDown.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Process list filter</value>
+    <comment>Narrator description for the combobox that filters the process list</comment>
+  </data>
+  <data name="PackageFullNameTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Package Full Name</value>
+    <comment>Narrator description for the Package Full Name label</comment>
+  </data>
+  <data name="PackageVersionTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Package Versiion</value>
+    <comment>Narrator description for the Package Version label</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Package Versiion</value>
+    <comment>Narrator description for the Package Install Date label</comment>
+  </data>
+  <data name="PackageInstalledDateTextBlock.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Package Versiion</value>
+    <comment>Narrator description for the Package Install Date label</comment>
   </data>
 </root>
