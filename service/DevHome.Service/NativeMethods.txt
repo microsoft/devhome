@@ -2,9 +2,11 @@ CoImpersonateClient
 CoRevertToSelf
 CoInitializeEx
 CoInitializeSecurity
+CoGetCallContext
 CoRegisterClassObject
 CoResumeClassObjects
 GetPackageFullNameFromToken
+I_RpcBindingInqLocalClientPID
 CLASS_E_NOAGGREGATION
 E_NOINTERFACE
 GLOBALOPT_EH_VALUES

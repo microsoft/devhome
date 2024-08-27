@@ -11,7 +11,7 @@ public class DevHomeService : IDevHomeService
 
     public int GetNumber()
     {
-        ComHelpers.VerifyCallerIsFromTheSamePackage();
+        ComHelpers.VerifyCaller();
         return 42;
     }
 }
