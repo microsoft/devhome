@@ -43,7 +43,7 @@ Our goal is to be better together.  Top clients lack basic functionality like th
 | 0 | Users can manage which version control protocols integrate with File Explorer | 0 |
 | 1 | Users can visually understand that a directory (or sub-directory) is a version control repository (or a directory within a repository) | 0 |
 | 2 | Users can open any version-controlled-repository in the local version control client or IDE of their choice directly from File Explorer | 1 |
-| 3 | Users can quickly access all (or select) of their repositories within File Explorer with minimal navigation & clicks needed | 1 |
+| 3 | Users can quickly access (or select) all of their repositories within File Explorer with minimal navigation & clicks needed | 1 |
 | 4 | Users can understand the status of files at a glance (e.g. for Git: modified, staged for commit, untracked, committed, etc.) | 0 |
 | 5 | Users can understand the current branch and origin at a glance | 0 |
 | 6 | Users can quickly access settings to customize their own File Explorer version control integration experience | 0 |
@@ -70,14 +70,11 @@ Integrating version control protocols into File Explorer allows developers to in
 | 0.5 | The Git Extension for this integration will be 1st party-developed and installed in Dev Home by default | P0 |
 | 0.6 | 3rd parties will be able to implement support for additional version control protocols (i.e. SVN, Perforce) using the Dev Home Extensions SDK | P0 |
 | 1.1 | Enhanced version-controlled repository folders can be visually distinguishable from normal folders via icons (these folder icons are extensible; asset is provided by the managing version control extension – defaults to the regular folder icon if not provided) | P2 |
-| 2.1 | File Explorer can open the root folder or a sub-folder directly into IDEs/clients that can handle “Open Folder” functions (e.g. VS Code) via the context menu and/or the toolbar | P1 |
-| 2.2 | Dev Home houses settings for developers to customize the default target application to “Open” for enhanced repositories | P1 |
-| 2.3 | Dev Home houses settings for developers to turn on an “Always open root folder” when using the “Open With” tool even if in a sub-directory of a repository | P2 |
-| 3.1 | All enhanced repositories can be quickly accessed from one location | P2 |
-| 4.1 | File Explorer provides an extensible version control “Version control status” column (i.e. for Git: unchanged, modified, staged for commit, untracked, committed) in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
-| 4.2 | File Explorer provides an extensible “Last commit date” column in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
-| 4.3 | File Explorer provides an extensible “Last commit message” column in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
-| 4.5 | To summarize, the default (**checked column items**) column view for enhanced repositories will be: | P0 |
+| 2.1 | All enhanced repositories can be quickly accessed from one location (more on this in coming "Repository Management" work) | P2 |
+| 3.1 | File Explorer provides an extensible version control “Version control status” column (i.e. for Git: unchanged, modified, staged for commit, untracked, committed) in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
+| 3.2 | File Explorer provides an extensible “Last commit date” column in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
+| 3.3 | File Explorer provides an extensible “Last commit message” column in the default view for enhanced repositories (version control extensions will populate the data for this column for each line item in an enhanced repository) | P0 |
+| 3.5 | To summarize, the default (**checked column items**) column view for enhanced repositories will be: | P0 |
 |     | - Name | |
 |     | - Size | |
 |     | - Version control status | |
@@ -93,8 +90,8 @@ Integrating version control protocols into File Explorer allows developers to in
 |     | - Last commit author | |
 |     | - Last commit author email | |
 |     | - Last commit ID | |
-| 4.6 | For all extensions-populated data columns in File Explorer, columns can have data even when a user’s device is offline (up to the extension, for Git, data will exist in columns when offline) – otherwise columns will have blank data | P0 |
-| 5.1 | Useful repository status (provided by the extension) can be shown in the status bar (for Git, this will be used to show the current head/branch & remote) | P1 |
+| 3.6 | For all extensions-populated data columns in File Explorer, columns can have data even when a user’s device is offline (up to the extension, for Git, data will exist in columns when offline) – otherwise columns will have blank data | P0 |
+| 4.1 | Useful repository status (provided by the extension) can be shown in the status bar (for Git, this will be used to show the current head/branch & remote) | P1 |
 
 
 #### Settings Functional Requirements
@@ -102,9 +99,7 @@ The File Explorer Version Control integration feature ships with Dev Home so rel
 | No. | Requirement | Priority |
 |-----|-------------|----------|
 | 6.1 | Enable (Turn On or Off) File Explorer version control integration | 0 |
-| 6.2 | Enable (Turn On or Off) Icon differentiation for enhanced repositories on a per version control extension basis | 2 |
-| 6.3 | Enable (Turn On or Off) version control column view for enhanced repositories | 0 |
-| 6.4 | Add/remove specific repositories (paths) for inclusion in File Explorer version control integration enhancement | 0 |
-| 6.5 | Assign version control extension (i.e. Git) to specific repositories in list of repositories included in file explorer version control integration enhancement (default to “Choose a version control protocol”) | 0 |
-| 6.6 | Enable automatically add all detected version-controlled repositories to be included in file explorer integration enhancement (this would turn all known repositories into enhanced repositories) | 2 |
-| 6.7 | Set default “Open” target app | 1 |
+| 6.2 | Enable (Turn On or Off) version control column view for enhanced repositories | 0 |
+| 6.3 | Add/remove specific repositories (paths) for inclusion in File Explorer version control integration enhancement | 0 |
+| 6.4 | Assign version control extension (i.e. Git) to specific repositories in list of repositories included in file explorer version control integration enhancement (default to “Choose a version control protocol”) | 0 |
+| 6.5 | Enable automatically add all detected version-controlled repositories to be included in file explorer integration enhancement (this would turn all known repositories into enhanced repositories) | 1 |
