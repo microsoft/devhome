@@ -69,7 +69,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
         PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
-        _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsTextBlock/Text"), typeof(AppDetailsPageViewModel));
+        _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsHeaderTextBlock/Text"), typeof(AppDetailsPageViewModel));
         _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
         _modulesNavLink = new PageNavLink("\uE74C", CommonHelper.GetLocalizedString("ModulesHeaderTextBlock/Text"), typeof(ModulesPageViewModel));
         _werNavLink = new PageNavLink("\uE7BA", CommonHelper.GetLocalizedString("WERHeaderTextBlock/Text"), typeof(WERPageViewModel));

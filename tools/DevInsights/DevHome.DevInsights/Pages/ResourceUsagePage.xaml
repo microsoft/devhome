@@ -20,6 +20,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Uid="ResourceUsageHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
         <Grid x:Name="ResourceUsagePanel" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
