@@ -58,16 +58,9 @@ public sealed class FileDownloadMonitor : IDisposable
 
         lock (_lock)
         {
-            // if there are no subscribers at this point that means the user
-            // cancelled all the operations to download the file.
-            subscriberCount = _subscriberList.Count;
-            if (_subscriberList.Count == 0)
-            {
-                _cancellationTokenSource.Cancel();
-            }
-
             _lastSentReport = new DownloadOperationReport(progress);
             _subscriberList.ForEach(subscriber => subscriber.Report(_lastSentReport));
+            subscriberCount = _subscriberList.Count;
         }
 
         if (progress.Ended && subscriberCount > 0)
@@ -103,6 +96,11 @@ public sealed class FileDownloadMonitor : IDisposable
         {
             return _lastSentReport.ProgressObject.Ended;
         }
+    }
+
+    public void CancelDownload()
+    {
+        _cancellationTokenSource.Cancel();
     }
 
     public void Start(

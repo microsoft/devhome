@@ -83,11 +83,18 @@ public class DownloaderService : IDownloaderService
                 if (monitorMap != null && monitorMap.TryGetValue(downloadMonitor, out var waiters))
                 {
                     monitorMap[downloadMonitor] = waiters - 1;
+                    var noMoreDownloadsRemaining = monitorMap[downloadMonitor] == 0;
 
                     // No more threads waiting for download to complete so we can remove this file from the monitor map.
-                    if (monitorMap[downloadMonitor] == 0)
+                    if (noMoreDownloadsRemaining)
                     {
                         _destinationFileDownloadMap.Remove(destinationFilePath);
+                    }
+
+                    // Cancel the download if its still running.
+                    if (noMoreDownloadsRemaining && !downloadMonitor.IsDownloadComplete())
+                    {
+                        downloadMonitor.CancelDownload();
                     }
                 }
             }
