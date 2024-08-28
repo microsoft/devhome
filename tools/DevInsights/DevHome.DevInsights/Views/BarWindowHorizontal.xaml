@@ -10,7 +10,7 @@
     xmlns:local="using:DevHome.DevInsights.Controls"
     xmlns:helpers="using:DevHome.DevInsights.Helpers"
     mc:Ignorable="d"
-    Title="" MinHeight="90" MinWidth="700" Height="90" Width="700"
+    MinHeight="90" MinWidth="700" Height="90" Width="700"
     TaskBarIcon="Images/di.ico"
     Activated="Window_Activated"
     WindowStateChanged="WindowEx_WindowStateChanged"
@@ -37,7 +37,7 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
                 <Image Source="/Images/di.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="Title" Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBlock x:Uid="Title" Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" AutomationProperties.AutomationId="TitleTextBlock"/>
             </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
@@ -48,7 +48,8 @@
                     Command="{x:Bind _viewModel.ToggleSnapCommand}"
                     HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
+                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}"
+                    AutomationProperties.AutomationId="SnapButton">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
@@ -56,7 +57,8 @@
                      Style="{StaticResource ChromeButton}"
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      Command="{x:Bind _viewModel.RotateLayoutCommand}"
-                     HorizontalAlignment="Left">
+                     HorizontalAlignment="Left"
+                     AutomationProperties.AutomationId="RotateLayoutButton">
                     <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
                 </Button>
                 <Button
@@ -65,7 +67,8 @@
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}"
                      HorizontalAlignment="Left"
-                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
+                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}"
+                     AutomationProperties.AutomationId="ExpandCollapseLayoutButton">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
                 </Button>
             </StackPanel>
@@ -101,30 +104,30 @@
 
                 <!-- Process Chooser area -->
                 <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
-                    <local:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center">
+                    <local:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center" AutomationProperties.AutomationId="ProcessChooserButton">
                         <TextBlock Text="&#xe179;"/>
                     </local:ProcessSelectionButton>
-                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="ProcessesLabel"/>
                 </StackPanel>
 
                 <!-- Per App controls -->
                 <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10,0,0,0">
                     <StackPanel.ContextFlyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
+                            <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}" AutomationProperties.AutomationId="DetachMenuItem">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                         </MenuFlyout>
                     </StackPanel.ContextFlyout>
-                    <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Height="20" Width="20" />
-                    <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
-                    <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" />
+                    <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Height="20" Width="20" AutomationProperties.AutomationId="AppIcon"/>
+                    <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="AppName"/>
+                    <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="AppCPUUsage"/>
                 </StackPanel>
 
                 <!-- Insights button -->
-                <Button x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" Margin="10,0,0,0">
+                <Button x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" Margin="10,0,0,0" AutomationProperties.AutomationId="InsightsButton">
                     <Grid>
                         <TextBlock Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
                         <controls:InfoBadge
@@ -152,9 +155,9 @@
             </CommandBar>
 
             <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="3" Spacing="10" Margin="0 0 10 0">
-                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemCPUUsage"/>
+                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemMemUsage"/>
+                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemDiskUsage"/>
             </StackPanel>
 
         </Grid>

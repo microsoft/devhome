@@ -49,6 +49,7 @@ public partial class BarWindowVertical : WindowEx
     {
         _viewModel = model;
         _externalTools = Application.Current.GetService<ExternalToolsHelper>();
+        Title = CommonHelper.GetLocalizedString("DIDisplayName");
 
         // The main constructor is used in all cases, including when there's no target window.
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
