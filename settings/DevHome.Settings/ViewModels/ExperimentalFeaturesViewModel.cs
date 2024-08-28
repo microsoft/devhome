@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.QuietBackgroundProcesses;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -48,6 +49,11 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
             {
                 return false;
             }
+        }
+
+        if (string.Equals(experimentalFeature.Id, "FileExplorerSourceControlIntegration", StringComparison.OrdinalIgnoreCase))
+        {
+            return ExtraFolderPropertiesWrapper.IsSupported();
         }
 
         throw new NotImplementedException();

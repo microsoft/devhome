@@ -74,6 +74,7 @@
     {
       "identity": "FileExplorerSourceControlIntegration",
       "enabledByDefault": false,
+      "needsFeaturePresenceCheck": true,
       "buildTypeOverrides": [
         {
           "buildType": "dev",
