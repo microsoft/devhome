@@ -199,7 +199,7 @@ public partial class DashboardView : ToolPage, IDisposable
             RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
             return false;
         }
-        else if (!ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
+        else if (!ViewModel.WidgetServiceService.CheckForWidgetService())
         {
             var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
             if (widgetServiceState == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||

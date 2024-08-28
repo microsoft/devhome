@@ -38,7 +38,7 @@ public class WidgetServiceService : IWidgetServiceService
     }
 
     /// <inheritdoc/>
-    public bool CheckForWidgetServiceAsync()
+    public bool CheckForWidgetService()
     {
         // If we're on Windows 11, check if we have a valid version of the WidgetService.
         if (RuntimeHelper.IsOnWindows11)
