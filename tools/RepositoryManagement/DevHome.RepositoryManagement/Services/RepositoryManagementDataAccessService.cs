@@ -8,6 +8,7 @@ using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Factories;
 using DevHome.Telemetry;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -15,6 +16,8 @@ namespace DevHome.RepositoryManagement.Services;
 
 public class RepositoryManagementDataAccessService
 {
+    private const string EventName = "DevHome_RepositoryData_Event";
+
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementDataAccessService));
 
     private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
@@ -26,8 +29,6 @@ public class RepositoryManagementDataAccessService
 
     public void AddRepository(string repositoryName, string cloneLocation)
     {
-        // Check if repositoryName and cloneLocation is null or empty and
-        // return a correct value indicating such.
         Repository newRepo = new();
         newRepo.RepositoryName = repositoryName;
         newRepo.RepositoryClonePath = cloneLocation;
@@ -46,13 +47,32 @@ public class RepositoryManagementDataAccessService
         {
             dbContext.SaveChanges();
         }
+        catch (DbUpdateException ex)
+        {
+            if (ex.InnerException is SqliteException sqle && sqle.SqliteErrorCode == 19)
+            {
+                _log.Error(sqle, $"A repository with the name {repositoryName} and clone location {cloneLocation} already exists in the database");
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    EventName,
+                    LogLevel.Critical,
+                    new DevHomeDatabaseEvent(nameof(AddRepository), ex));
+            }
+            else
+            {
+                _log.Error(ex, "Exception when saving a new repository");
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    EventName,
+                    LogLevel.Critical,
+                    new DevHomeDatabaseEvent(nameof(AddRepository), ex));
+            }
+        }
         catch (Exception ex)
         {
             _log.Error(ex, "Exception when saving a new repository");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent("AddOneRepository", ex));
+                new DevHomeDatabaseEvent(nameof(AddRepository), ex));
         }
     }
 

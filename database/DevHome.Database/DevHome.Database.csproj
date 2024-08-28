@@ -7,6 +7,8 @@
         <Nullable>enable</Nullable>
         <UseWinUI>true</UseWinUI>
         <Configurations>Debug;Release;Debug_FailFast</Configurations>
+        <!-- CopyLocalLockFileAssemblies = true needed for EF tools to work.-->
+        <!-- This tells the build to copy dependent libraries to the output directory.-->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
     <ItemGroup>

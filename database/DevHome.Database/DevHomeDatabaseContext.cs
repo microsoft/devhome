@@ -29,7 +29,10 @@ public class DevHomeDatabaseContext : DbContext
 
     public DevHomeDatabaseContext()
     {
-        DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
+        // Add-Migration and update-Migration fails when this is in the appx path.
+        // Need to think of something better besides local app data.
+        // Because dotnet.exe does not have access to the package/user location.
+        DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

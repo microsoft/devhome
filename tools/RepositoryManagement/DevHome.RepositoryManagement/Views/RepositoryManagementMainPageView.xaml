@@ -165,7 +165,7 @@
 
                                     <!-- Needs localization -->
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Open in File Explorer" />
+                                        <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
                                         <MenuFlyoutItem Text="Open in Command Line" />
                                         <MenuFlyoutItem Text="Move Repository" />
                                         <MenuFlyoutItem Text="Add to Config file" />
