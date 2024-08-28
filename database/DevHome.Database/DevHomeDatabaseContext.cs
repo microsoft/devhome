@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.IO;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
