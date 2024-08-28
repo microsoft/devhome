@@ -54,7 +54,7 @@ public class InitializationViewModel : ObservableObject
         // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
-            if (_widgetServiceService.CheckForWidgetServiceAsync())
+            if (_widgetServiceService.CheckForWidgetService())
             {
                 _log.Information("Skipping installing WidgetService, already installed.");
             }
