@@ -40,6 +40,7 @@ public sealed partial class ExtensionSettingsPage : DevHomePage
         if (ViewModel.IsWebView2Enabled)
         {
             await webView2.EnsureCoreWebView2Async();
+            UpdateTheme(webView2);
         }
     }
 
