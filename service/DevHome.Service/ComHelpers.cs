@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Security.Principal;
 using Windows.ApplicationModel;
 using Windows.Win32;
@@ -15,15 +16,26 @@ namespace DevHome.Service;
 
 internal sealed class ComHelpers
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Well-known constant")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1310:Field names should not contain underscore", Justification = "Well-known constant")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:Field names should begin with lower-case letter", Justification = "Well-known constant")]
+    private static readonly Guid CLSID_GlobalOptions = new("0000034B-0000-0000-C000-000000000046");
+    
     public static void EnableFastCOMRundown()
     {
-        CGlobalOptions options = new CGlobalOptions();
+        // We need to be careful creating the GlobalOptions object. We can't use the baked in CLR marshaller, as it calls CoInitializeSecurity under
+        // the covers... and we need to be able to set these options *before* we call CoInitializeSecurity.
+        HRESULT hr = CoCreateInstanceNoMarshal(CLSID_GlobalOptions, IntPtr.Zero, CLSCTX.CLSCTX_INPROC_SERVER | CLSCTX.CLSCTX_INPROC_HANDLER, typeof(IGlobalOptions).GUID, out IntPtr ptr);
+        hr.ThrowOnFailure();
 
-        if (options is IGlobalOptions globalOptions)
-        {
-            globalOptions.SetItem(GLOBALOPT_PROPERTIES.COMGLB_RO_SETTINGS, (uint)GLOBALOPT_RO_FLAGS.COMGLB_FAST_RUNDOWN);
-            globalOptions.SetItem(GLOBALOPT_PROPERTIES.COMGLB_EXCEPTION_HANDLING, (uint)GLOBALOPT_EH_VALUES.COMGLB_EXCEPTION_DONOT_HANDLE_ANY);
-        }
+        ComWrappers cw = new StrategyBasedComWrappers();
+        IGlobalOptions option2 = (IGlobalOptions)cw.GetOrCreateObjectForComInstance(ptr, CreateObjectFlags.None);
+
+        // Enable fast COM rundown
+        option2.SetItem((uint)GLOBALOPT_PROPERTIES.COMGLB_RO_SETTINGS, (uint)GLOBALOPT_RO_FLAGS.COMGLB_FAST_RUNDOWN);
+
+        // Don't allow exceptions to be handled by COM. Crash the service instead
+        option2.SetItem((uint)GLOBALOPT_PROPERTIES.COMGLB_EXCEPTION_HANDLING, (uint)GLOBALOPT_EH_VALUES.COMGLB_EXCEPTION_DONOT_HANDLE_ANY);
     }
 
     public static void InitializeSecurity()
@@ -101,17 +113,20 @@ internal sealed class ComHelpers
         }
     }
 
-    [ComImport]
-    [Guid("0000034B-0000-0000-C000-000000000046")]
-    private class CGlobalOptions;
+    [DllImport("ole32.dll", EntryPoint = "CoCreateInstance")]
+    public static extern HRESULT CoCreateInstanceNoMarshal(
+        [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
+        IntPtr pUnkOuter,
+        CLSCTX dwClsContext,
+        [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
+        out IntPtr ppv);
+}
 
-    [ComImport]
-    [Guid("0000015B-0000-0000-C000-000000000046")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    private interface IGlobalOptions
-    {
-        void SetItem(GLOBALOPT_PROPERTIES dwProperty, uint dwValue);
+[Guid("0000015B-0000-0000-C000-000000000046")]
+[GeneratedComInterface]
+internal partial interface IGlobalOptions
+{
+    void SetItem(uint dwProperty, uint dwValue);
 
-        void Query(GLOBALOPT_PROPERTIES dwProperty, out uint pdwValue);
-    }
+    void Query(uint dwProperty, out uint pdwValue);
 }

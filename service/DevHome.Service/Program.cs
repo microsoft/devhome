@@ -4,7 +4,7 @@
 using DevHome.Service;
 using DevHome.Service.Runtime;
 
-// ComHelpers.EnableFastCOMRundown();
+ComHelpers.EnableFastCOMRundown();
 ComHelpers.InitializeSecurity();
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
