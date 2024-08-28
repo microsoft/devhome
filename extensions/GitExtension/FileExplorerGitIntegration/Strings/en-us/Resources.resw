@@ -121,4 +121,44 @@
     <value>Unable to get repository at the given root path</value>
     <comment>Error text for when the git extension is unable to obtain the repository given its root path</comment>
   </data>
+  <data name="FolderStatusBranch" xml:space="preserve">
+    <value>Branch: {0}</value>
+    <comment>Display the current Git branch</comment>
+  </data>
+  <data name="FolderStatusDetached" xml:space="preserve">
+    <value>Detached: {0}</value>
+    <comment>Display the commit id when the Git repo is in a detached state</comment>
+  </data>
+  <data name="FileStatusMergeConflict" xml:space="preserve">
+    <value>Merge conflict</value>
+    <comment>File status to display when its Git status is merge conflict</comment>
+  </data>
+  <data name="FileStatusUntracked" xml:space="preserve">
+    <value>Untracked</value>
+    <comment>File status to display when its Git status is untracked aka "new in the working dir"</comment>
+  </data>
+  <data name="FileStatusStaged" xml:space="preserve">
+    <value>Staged</value>
+    <comment>File status to display when its Git status has staged changes</comment>
+  </data>
+  <data name="FileStatusStagedRenamed" xml:space="preserve">
+    <value>Staged, Renamed</value>
+    <comment>File status to display when its Git status is renamed with staged changes</comment>
+  </data>
+  <data name="FileStatusStagedModified" xml:space="preserve">
+    <value>Staged, Modified</value>
+    <comment>File status to display when its Git status has staged changes and unstaged changes</comment>
+  </data>
+  <data name="FileStatusStagedRenamedModified" xml:space="preserve">
+    <value>Staged, Renamed, Modified</value>
+    <comment>File status to display when its Git status is renamed, and has both staged and unstaged changes</comment>
+  </data>
+  <data name="FileStatusModified" xml:space="preserve">
+    <value>Modified</value>
+    <comment>File status to display when its Git status has unstaged changes</comment>
+  </data>
+  <data name="FileStatusRenamedModified" xml:space="preserve">
+    <value>Renamed, Modified</value>
+    <comment>File status to display when its Git status is renamed with unstanged changes</comment>
+  </data>
 </root>

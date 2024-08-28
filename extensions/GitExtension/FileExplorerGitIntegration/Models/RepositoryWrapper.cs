@@ -2,7 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Collections.Concurrent;
+using System.Data;
+using System.Globalization;
 using System.Management.Automation;
+using DevHome.Common.Services;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -18,6 +21,18 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private readonly StatusCache _statusCache;
 
+    private readonly StringResource _stringResource = new("FileExplorerGitIntegration.pri", "Resources");
+    private readonly string _folderStatusBranch;
+    private readonly string _folderStatusDetached;
+    private readonly string _fileStatusMergeConflict;
+    private readonly string _fileStatusUntracked;
+    private readonly string _fileStatusStaged;
+    private readonly string _fileStatusStagedRenamed;
+    private readonly string _fileStatusStagedModified;
+    private readonly string _fileStatusStagedRenamedModified;
+    private readonly string _fileStatusModified;
+    private readonly string _fileStatusRenamedModified;
+
     private Commit? _head;
     private CommitLogCache? _commits;
 
@@ -28,6 +43,17 @@ internal sealed class RepositoryWrapper : IDisposable
         _repo = new Repository(rootFolder);
         _workingDirectory = _repo.Info.WorkingDirectory;
         _statusCache = new StatusCache(rootFolder);
+
+        _folderStatusBranch = _stringResource.GetLocalized("FolderStatusBranch");
+        _folderStatusDetached = _stringResource.GetLocalized("FolderStatusDetached");
+        _fileStatusMergeConflict = _stringResource.GetLocalized("FileStatusMergeConflict");
+        _fileStatusUntracked = _stringResource.GetLocalized("FileStatusUntracked");
+        _fileStatusStaged = _stringResource.GetLocalized("FileStatusStaged");
+        _fileStatusStagedRenamed = _stringResource.GetLocalized("FileStatusStagedRenamed");
+        _fileStatusStagedModified = _stringResource.GetLocalized("FileStatusStagedModified");
+        _fileStatusStagedRenamedModified = _stringResource.GetLocalized("FileStatusStagedRenamedModified");
+        _fileStatusModified = _stringResource.GetLocalized("FileStatusModified");
+        _fileStatusRenamedModified = _stringResource.GetLocalized("FileStatusRenamedModified");
     }
 
     public CommitWrapper? FindLastCommit(string relativePath)
@@ -86,8 +112,8 @@ internal sealed class RepositoryWrapper : IDisposable
         {
             _repoLock.EnterWriteLock();
             branchName = _repo.Info.IsHeadDetached ?
-                "Detached: " + _repo.Head.Tip.Sha[..7] :
-                "Branch: " + _repo.Head.FriendlyName;
+                string.Format(CultureInfo.CurrentCulture, _folderStatusDetached, _repo.Head.Tip.Sha[..7]) :
+                string.Format(CultureInfo.CurrentCulture, _folderStatusBranch, _repo.Head.FriendlyName);
             if (_repo.Head.IsTracking)
             {
                 var behind = _repo.Head.TrackingDetails.BehindBy;
@@ -140,32 +166,46 @@ internal sealed class RepositoryWrapper : IDisposable
         }
         else if (status.Status.HasFlag(FileStatus.Conflicted))
         {
-            return "Merge conflict";
+            return _fileStatusMergeConflict;
         }
         else if (status.Status.HasFlag(FileStatus.NewInWorkdir))
         {
-            return "Untracked";
+            return _fileStatusUntracked;
         }
 
         var statusString = string.Empty;
-        if (status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex))
-        {
-            statusString = "Staged";
-            if (status.Status.HasFlag(FileStatus.RenamedInIndex))
-            {
-                statusString += " rename";
-            }
-        }
+        bool staged = status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex);
+        bool modified = status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir);
+        bool renamed = status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir);
 
-        if (status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.RenamedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir))
+        if (staged)
         {
-            if (string.IsNullOrEmpty(statusString))
+            if (renamed && modified)
             {
-                statusString = "Modified";
+                statusString = _fileStatusStagedRenamedModified;
+            }
+            else if (renamed)
+            {
+                statusString = _fileStatusStagedRenamed;
+            }
+            else if (modified)
+            {
+                statusString = _fileStatusStagedModified;
             }
             else
             {
-                statusString += ", Modified";
+                statusString = _fileStatusStaged;
+            }
+        }
+        else if (modified)
+        {
+            if (renamed)
+            {
+                statusString = _fileStatusRenamedModified;
+            }
+            else
+            {
+                statusString = _fileStatusModified;
             }
         }
 
