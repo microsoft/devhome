@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <UseWinUI>true</UseWinUI>
         <Configurations>Debug;Release;Debug_FailFast</Configurations>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
