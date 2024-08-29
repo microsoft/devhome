@@ -40,7 +40,14 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
     {
         if (string.Equals(experimentalFeature.Id, "QuietBackgroundProcessesExperiment", StringComparison.OrdinalIgnoreCase))
         {
-            return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            try
+            {
+                return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
         }
 
         throw new NotImplementedException();
