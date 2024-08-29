@@ -45,7 +45,7 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
             {
                 return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 return false;
             }
@@ -53,7 +53,14 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
 
         if (string.Equals(experimentalFeature.Id, "FileExplorerSourceControlIntegration", StringComparison.OrdinalIgnoreCase))
         {
-            return ExtraFolderPropertiesWrapper.IsSupported();
+            try
+            {
+                return ExtraFolderPropertiesWrapper.IsSupported();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         throw new NotImplementedException();
