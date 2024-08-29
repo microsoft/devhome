@@ -37,16 +37,30 @@ public sealed partial class ExtensionSettingsPage : DevHomePage
 
     private async Task OnSettingsContentLoadedAsync()
     {
-        if (ViewModel.IsWebView2Enabled)
+        if (ViewModel.IsWebView2Visible)
         {
-            await webView2.EnsureCoreWebView2Async();
-            UpdateTheme(webView2);
+            await InitializeWebViewAsync();
+        }
+    }
+
+    private async Task InitializeWebViewAsync()
+    {
+        await webView2.EnsureCoreWebView2Async();
+        webView2.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;
+        UpdateTheme(webView2);
+    }
+
+    private void CoreWebView2_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
+    {
+        string message = e.TryGetWebMessageAsString();
+        if (message == "buttonClicked")
+        {
+            ViewModel.RenderAdaptiveCard();
         }
     }
 
     public void UpdateTheme(WebView2 webView2)
     {
-        Console.WriteLine($"Actual theme is: " + _themeSelectorService.GetActualTheme() + "\n");
         try
         {
             webView2.CoreWebView2.Profile.PreferredColorScheme = (_themeSelectorService.GetActualTheme() == ElementTheme.Dark) ? CoreWebView2PreferredColorScheme.Dark : CoreWebView2PreferredColorScheme.Light;

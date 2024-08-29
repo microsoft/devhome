@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -12,10 +13,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Contracts.Services;
-using DevHome.ExtensionLibrary.Views;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.Web.WebView2.Core;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -38,10 +35,16 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     private Uri? _webViewUrl;
 
     [ObservableProperty]
-    private bool _isAdaptiveCardEnabled;
+    private bool _isAdaptiveCardVisible;
 
     [ObservableProperty]
-    private bool _isWebView2Enabled;
+    private bool _isWebView2Visible;
+
+    [ObservableProperty]
+    private ISettingsProvider? _extensionSettingsProvider;
+
+    [ObservableProperty]
+    private ExtensionAdaptiveCardPanel? _settingsExtensionAdaptiveCardPanel;
 
     public event Action? SettingsContentLoaded;
 
@@ -56,12 +59,16 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         _adaptiveCardRenderingService = adaptiveCardRenderingService;
         _webMessageReceived = string.Empty;
         _webViewUrl = null;
+        _isWebView2Visible = false;
+        _extensionSettingsProvider = null;
+        _settingsExtensionAdaptiveCardPanel = null;
         Breadcrumbs = new ObservableCollection<Breadcrumb>();
     }
 
     [RelayCommand]
     private async Task OnSettingsContentLoadedAsync(ExtensionAdaptiveCardPanel extensionAdaptiveCardPanel)
     {
+        SettingsExtensionAdaptiveCardPanel = extensionAdaptiveCardPanel;
         var extensionWrappers = await _extensionService.GetInstalledExtensionsAsync(true);
 
         foreach (var extensionWrapper in extensionWrappers)
@@ -72,39 +79,16 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
                 var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
+                ExtensionSettingsProvider = settingsProvider;
                 if (settingsProvider != null)
                 {
                     if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
-                        IsAdaptiveCardEnabled = false;
-                        IsWebView2Enabled = true;
-                        var webViewResult = settingsProvider2.GetSettingsWebView();
-                        try
-                        {
-                            WebViewUrl = new Uri(webViewResult.Url);
-                        }
-                        catch (Exception e)
-                        {
-                            _log.Error(e, "Error loading WebView2");
-                        }
+                        RenderWebView2(settingsProvider2);
                     }
                     else
                     {
-                        IsAdaptiveCardEnabled = true;
-                        IsWebView2Enabled = false;
-                        var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
-                        if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
-                        {
-                            _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
-                                $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
-                            await Task.CompletedTask;
-                        }
-
-                        var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
-                        var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
-                        renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
-
-                        extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
+                        RenderAdaptiveCard(settingsProvider, extensionAdaptiveCardPanel);
                     }
                 }
             }
@@ -119,5 +103,57 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
+    }
+
+    internal void RenderWebView2(ISettingsProvider2 settingsProvider2)
+    {
+        ShowWebView2Grid();
+        var webViewResult = settingsProvider2.GetSettingsWebView();
+        try
+        {
+            WebViewUrl = new Uri(webViewResult.Url);
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, "Error loading WebView2");
+        }
+    }
+
+    // Only called if the WebView2 receives a message from the web page
+    public void RenderAdaptiveCard()
+    {
+        if (ExtensionSettingsProvider != null && SettingsExtensionAdaptiveCardPanel != null)
+        {
+            RenderAdaptiveCard(ExtensionSettingsProvider, SettingsExtensionAdaptiveCardPanel);
+        }
+    }
+
+    internal async void RenderAdaptiveCard(ISettingsProvider settingsProvider, ExtensionAdaptiveCardPanel extensionAdaptiveCardPanel)
+    {
+        ShowAdaptiveCardPanel();
+        var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
+        if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            _log.Error($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
+                $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
+            await Task.CompletedTask;
+        }
+
+        var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
+        var renderer = await _adaptiveCardRenderingService.GetRendererAsync();
+        renderer.HostConfig.Actions.ActionAlignment = ActionAlignment.Left;
+        extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
+    }
+
+    private void ShowWebView2Grid()
+    {
+        IsAdaptiveCardVisible = false;
+        IsWebView2Visible = true;
+    }
+
+    private void ShowAdaptiveCardPanel()
+    {
+        IsWebView2Visible = false;
+        IsAdaptiveCardVisible = true;
     }
 }

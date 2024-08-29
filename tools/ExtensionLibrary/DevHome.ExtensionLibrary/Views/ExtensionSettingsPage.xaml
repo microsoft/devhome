@@ -20,14 +20,14 @@
     <Grid>
         <ScrollViewer VerticalAlignment="Stretch" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid>
-                <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent" Visibility="{x:Bind ViewModel.IsAdaptiveCardEnabled, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
+                <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent" Visibility="{x:Bind ViewModel.IsAdaptiveCardVisible, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="Loaded">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SettingsContentLoadedCommand}" CommandParameter="{x:Bind SettingsContent}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </commonviews:ExtensionAdaptiveCardPanel>
-                <Grid Visibility="{x:Bind ViewModel.IsWebView2Enabled, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
+                <Grid Visibility="{x:Bind ViewModel.IsWebView2Visible, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
