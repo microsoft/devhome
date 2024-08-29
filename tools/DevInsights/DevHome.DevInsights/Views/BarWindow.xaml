@@ -37,7 +37,13 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
                 <Image Source="/Images/di.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="Title" Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" AutomationProperties.AutomationId="TitleTextBlock"/>
+                <TextBlock 
+                    x:Uid="Title" 
+                    Style="{StaticResource CaptionTextBlockStyle}" 
+                    Margin="6,0,0,0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="TitleTextBlock"/>
             </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
@@ -48,96 +54,158 @@
                      HorizontalAlignment="Left"
                      ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}"
                      AutomationProperties.AutomationId="ExpandCollapseLayoutButton">
-                    <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
+                    <TextBlock x:Name="ExpandCollapseLayoutButtonText"/>
                 </Button>
             </StackPanel>
         </Grid>
 
         <Grid Grid.Row="1">
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                    <Setter Property="Margin" Value="8,12,8,0"/>
+                </Style>
+                <Style TargetType="AppBarButton">
+                    <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
+                </Style>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition x:Name="ToolColumn" Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel x:Name="AllControls" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" Background="Transparent" >
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
-                        <Setter Property="FontSize" Value="{StaticResource SubtitleTextBlockFontSize}"/>
-                    </Style>
-                    <Style TargetType="Button">
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                    </Style>
-                    <Style TargetType="local:ExternalToolsManagementButton">
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                    </Style>
-                    <Style TargetType="local:ProcessSelectionButton">
-                        <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                    </Style>
-                </StackPanel.Resources>
-
-                <!-- Process Chooser area -->
-                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}" Margin="0,0,0,0" >
-                    <local:ProcessSelectionButton x:Uid="ProcessChooserButton" Command="{x:Bind _viewModel.ProcessChooserCommand}" VerticalAlignment="Center" AutomationProperties.AutomationId="ProcessChooserButton">
-                        <TextBlock Text="&#xe179;"/>
-                    </local:ProcessSelectionButton>
-                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="ProcessesLabel"/>
-                </StackPanel>
-
-                <!-- Per App controls -->
-                <StackPanel Orientation="Horizontal" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}" Spacing="10" Margin="10,0,0,0">
-                    <StackPanel.ContextFlyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}" AutomationProperties.AutomationId="DetachMenuItem">
-                                <MenuFlyoutItem.Icon>
-                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
-                                </MenuFlyoutItem.Icon>
-                            </MenuFlyoutItem>
-                        </MenuFlyout>
-                    </StackPanel.ContextFlyout>
-                    <Image x:Name="AppIcon" HorizontalAlignment="Center" Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Height="20" Width="20" AutomationProperties.AutomationId="AppIcon"/>
-                    <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="AppName"/>
-                    <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="AppCPUUsage"/>
-                </StackPanel>
-
-                <!-- Insights button -->
-                <Button x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" Margin="10,0,0,0" AutomationProperties.AutomationId="InsightsButton">
-                    <Grid>
-                        <TextBlock Text="&#xE946;" FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-                        <controls:InfoBadge
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Margin="16,0,0,0"
-                            MinWidth="16"
-                            MinHeight="16"
-                            Value="{x:Bind _viewModel.UnreadInsightsCount, Mode=OneWay}"
-                            Opacity="{x:Bind _viewModel.InsightsBadgeOpacity, Mode=OneWay}"
-                            Style="{StaticResource SuccessValueInfoBadgeStyle}">
-                        </controls:InfoBadge>
-                    </Grid>
-                </Button>
-
-                <CommandBar>
-                    <AppBarSeparator/>
-                </CommandBar>
-            </StackPanel>
-
-            <CommandBar x:Name="MyCommandBar" Style="{StaticResource CustomCommandBar}" HorizontalAlignment="Left" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Collapsed" Grid.Column="1" />
-
-            <CommandBar Grid.Column="2" >
-                <AppBarSeparator/>
+            <!-- Process Chooser area -->
+            <CommandBar Visibility="{x:Bind _viewModel.IsProcessChooserVisible, Mode=OneWay}">
+                <local:ProcessSelectionButton 
+                    x:Uid="ProcessChooserButton" 
+                    Command="{x:Bind _viewModel.ProcessChooserCommand}"
+                    Content="&#xe179;" 
+                    FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                    FontSize="{StaticResource SubtitleTextBlockFontSize}"
+                    Margin="0,-4,0,0"
+                    AutomationProperties.AutomationId="ProcessChooserButton">
+                </local:ProcessSelectionButton>
+                <AppBarElementContainer>
+                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" Margin="0,6,0,0" AutomationProperties.AutomationId="ProcessLabel"/>
+                </AppBarElementContainer>
             </CommandBar>
 
-            <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="3" Spacing="10" Margin="0 0 10 0">
-                <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemCPUUsage"/>
-                <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}" FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemMemUsage"/>
-                <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"  FontFamily="Segoe UI" FontSize="{StaticResource CaptionTextBlockFontSize}" VerticalAlignment="Center" AutomationProperties.AutomationId="SystemDiskUsage"/>
-            </StackPanel>
+            <CommandBar Grid.Column="1" OverflowButtonVisibility="Collapsed">
+                <!-- Per App controls -->
+                <AppBarElementContainer Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem 
+                                    x:Uid="DetachMenuItem" 
+                                    Command="{x:Bind _viewModel.DetachFromProcessCommand}"
+                                    AutomationProperties.AutomationId="DetachMenuItem">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
+                        <Image 
+                            x:Name="AppIcon" 
+                            Margin="8,8,0,0"
+                            Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" 
+                            ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" 
+                            Height="20" 
+                            Width="20"
+                            AutomationProperties.AutomationId="AppIcon"/>
+                        <TextBlock 
+                            x:Uid="AppName" 
+                            Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" 
+                            Margin="8,8,8,0"
+                            AutomationProperties.AutomationId="AppName"/>
+                    </StackPanel>
+                </AppBarElementContainer>
+
+                <!-- Insights button -->
+                <AppBarButton x:Uid="InsightsButton" x:Name="InsightsButton" Command="{x:Bind _viewModel.ShowInsightsPageCommand}" MinWidth="68">
+                    <Grid Padding="0">
+                        <TextBlock 
+                            Text="&#xE946;" 
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            FontSize="{StaticResource TitleLargeTextBlockFontSize}"
+                            Margin="0,-10,0,0"
+                            Padding="0"
+                            AutomationProperties.AutomationId="InsightsButton"/>
+                        <controls:InfoBadge
+                            VerticalAlignment="Bottom"
+                            HorizontalAlignment="Right"
+                            Margin="22,8,0,0"
+                            MinWidth="36"
+                            MinHeight="36"
+                            Padding="0"
+                            Style="{StaticResource SuccessValueInfoBadgeStyle}"
+                            FontFamily="Segoe UI"
+                            Value="{x:Bind _viewModel.UnreadInsightsCount, Mode=OneWay}"
+                            Opacity="{x:Bind _viewModel.InsightsBadgeOpacity, Mode=OneWay}"/>
+                    </Grid>
+                </AppBarButton>
+            </CommandBar>
+
+            <!-- Tools -->
+            <CommandBar 
+                x:Name="ToolsCommandBar"
+                Grid.Column="2"
+                Style="{StaticResource CustomCommandBar}" 
+                HorizontalAlignment="Left" 
+                IsDynamicOverflowEnabled="False" 
+                DefaultLabelPosition="Collapsed"/>
+
+            <!-- App resource usage-->
+            <CommandBar Grid.Column="3" Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}">
+                <AppBarSeparator/>
+                <AppBarElementContainer>
+                    <StackPanel x:Name="AppResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,0,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Segoe UI"/>
+                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                                <Setter Property="Margin" Value="8,0,8,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock 
+                            x:Uid="AppCPUUsage" 
+                            Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" 
+                            AutomationProperties.AutomationId="AppCPUUsage"/>
+                    </StackPanel>
+                </AppBarElementContainer>
+            </CommandBar>
+
+            <!-- System resource usage-->
+            <CommandBar Grid.Column="4">
+                <AppBarSeparator/>
+                <AppBarElementContainer>
+                    <StackPanel x:Name="SystemResourceStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,0,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="Segoe UI"/>
+                                <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                                <Setter Property="Margin" Value="8,0,8,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock 
+                            x:Uid="SystemCPUUsage" 
+                            Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemCPUUsage"/>
+                        <TextBlock 
+                            x:Uid="SystemMemUsage" 
+                            Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemMemUsage"/>
+                        <TextBlock 
+                            x:Uid="SystemDiskUsage" 
+                            Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemDiskUsage"/>
+                    </StackPanel>
+                </AppBarElementContainer>
+            </CommandBar>
 
         </Grid>
 

@@ -14,7 +14,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.DevInsights.Controls;
 
-internal sealed class ExternalToolsManagementButton : Button
+internal sealed class ExternalToolsManagementButton : AppBarButton
 {
     private const string UnregisterButtonGlyph = "\uECC9";
 

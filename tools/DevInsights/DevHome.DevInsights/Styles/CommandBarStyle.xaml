@@ -5,7 +5,7 @@
     xmlns:local="using:DevHome.DevInsights.Styles">
 
     <!-- This is a copy/paste of the stock Command Bar template found in generic.xaml, with a small change to the "More Items" button to change the icon from an ellipse to a tools icon.
-         You can search for CHANGES HERE FOR Dev Insights for the change -->
+         You can search for CHANGES HERE FOR Dev Insights for the change, #767 -->
     <Style x:Key="CustomCommandBar" TargetType="CommandBar" BasedOn="{StaticResource CommandBarRevealStyle}">
         <Setter Property="Template">
             <Setter.Value>
@@ -764,11 +764,12 @@
                                         Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CommandBarTemplateSettings.EffectiveOverflowButtonVisibility}">
 
                                 <!-- CHANGES HERE FOR Dev Insights -->
-                                <FontIcon x:Name="EllipsisIcon"
-                                            FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                            FontSize="{StaticResource SubtitleTextBlockFontSize}"
-                                            Glyph="&#xEC7A;"
-                                            Margin="0 -7 0 0"/>
+                                <FontIcon 
+                                    x:Name="EllipsisIcon"
+                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                    FontSize="16"
+                                    Glyph="&#xEC7A;"
+                                    Margin="0 -7 0 0"/>
 
                             </Button>
                             <Rectangle x:Name="HighContrastBorder"
