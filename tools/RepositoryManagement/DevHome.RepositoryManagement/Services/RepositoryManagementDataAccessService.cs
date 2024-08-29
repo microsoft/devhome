@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
@@ -40,39 +41,54 @@ public class RepositoryManagementDataAccessService
 
         newRepo.RepositoryMetadata = newMetadata;
 
-        var dbContext = _databaseContextFactory.GetNewContext();
+        using var dbContext = _databaseContextFactory.GetNewContext();
         dbContext.Add(newRepo);
         dbContext.Add(newMetadata);
+    }
+
+    public Repository GetRepository(string repositoryName, string cloneLocation)
+    {
+        _log.Information("Getting a repository");
         try
         {
-            dbContext.SaveChanges();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (ex.InnerException is SqliteException sqle && sqle.SqliteErrorCode == 19)
-            {
-                _log.Error(sqle, $"A repository with the name {repositoryName} and clone location {cloneLocation} already exists in the database");
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    EventName,
-                    LogLevel.Critical,
-                    new DevHomeDatabaseEvent(nameof(AddRepository), ex));
-            }
-            else
-            {
-                _log.Error(ex, "Exception when saving a new repository");
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    EventName,
-                    LogLevel.Critical,
-                    new DevHomeDatabaseEvent(nameof(AddRepository), ex));
-            }
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName.Equals(repositoryName, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(Path.GetFullPath(x.RepositoryClonePath), Path.GetFullPath(cloneLocation), StringComparison.OrdinalIgnoreCase));
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Exception when saving a new repository");
+            _log.Error(ex, ex.ToString());
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(GetRepository), ex));
+        }
+
+        return null;
+    }
+
+    public bool UpdateCloneLocation(Repository repository, string newLocation)
+    {
+        repository.RepositoryClonePath = newLocation;
+        return true;
+    }
+
+    public bool Save()
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            dbContext.SaveChanges();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when saving.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
                 new DevHomeDatabaseEvent(nameof(AddRepository), ex));
+            return false;
         }
     }
 
@@ -90,7 +106,10 @@ public class RepositoryManagementDataAccessService
         catch (Exception ex)
         {
             _log.Error(ex, ex.ToString());
-            TelemetryFactory.Get<ITelemetry>().LogException(nameof(GetRepositories), ex);
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(GetRepositories), ex));
         }
 
         return repositories;

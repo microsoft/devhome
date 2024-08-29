@@ -9,7 +9,6 @@ using DevHome.Common.Extensions;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.RepositoryManagement.Services;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
