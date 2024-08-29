@@ -34,28 +34,28 @@
                 <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Uid="IsRespondingTextblock"/>
-            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Responding, Mode=OneWay}" FontWeight="Bold"/>
-            <TextBlock x:Uid="CpuUsageTextBlock" Grid.Row="1"/>
+            <TextBlock x:Uid="IsRespondingTextblock" AutomationProperties.AutomationId="IsRespondingTextblock"/>
+            <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.Responding, Mode=OneWay}" FontWeight="Bold" AutomationProperties.AutomationId="RespondingValueTextblock"/>
+            <TextBlock x:Uid="CpuUsageTextBlock" Grid.Row="1" AutomationProperties.AutomationId="CpuUsageTextblock"/>
             <TextBlock
                 x:Uid="CpuUsageValueTextBlock"
                 Grid.Row="1" Grid.Column="1" FontWeight="Bold"
-                Text="{x:Bind ViewModel.CpuUsage, Mode=OneWay}"/>
+                Text="{x:Bind ViewModel.CpuUsage, Mode=OneWay}" AutomationProperties.AutomationId="CpuUsageValueTextblock"/>
             <TextBlock
-                x:Uid="GpuUsageTextBlock" Grid.Row="2"/>
+                x:Uid="GpuUsageTextBlock" Grid.Row="2" AutomationProperties.AutomationId="GpuUsageTextblock"/>
             <TextBlock
                 x:Uid="GpuUsageValueTextBlock" Grid.Row="2" Grid.Column="1" FontWeight="Bold"
-                Text="{x:Bind ViewModel.GpuUsage, Mode=OneWay}"/>
+                Text="{x:Bind ViewModel.GpuUsage, Mode=OneWay}" AutomationProperties.AutomationId="GpuUsageValueTextblock"/>
             <TextBlock
-                x:Uid="MemoryUsageTextBlock" Grid.Row="3"/>
+                x:Uid="MemoryUsageTextBlock" Grid.Row="3" AutomationProperties.AutomationId="MemoryUsageTextblock"/>
             <TextBlock
                 x:Uid="MemoryUsageValueTextBlock" Grid.Row="3" Grid.Column="1" FontWeight="Bold"
-                Text="{x:Bind ViewModel.RamUsage, Mode=OneWay}"/>
+                Text="{x:Bind ViewModel.RamUsage, Mode=OneWay}" AutomationProperties.AutomationId="MemoryUsageValueTextblock"/>
             <TextBlock
-                x:Uid="DiskUsageTextBlock" Grid.Row="4"/>
+                x:Uid="DiskUsageTextBlock" Grid.Row="4" AutomationProperties.AutomationId="DiskUsageTextblock"/>
             <TextBlock
                 x:Uid="DiskUsageValueTextBlock" Grid.Row="4" Grid.Column="1" FontWeight="Bold"
-                Text="{x:Bind ViewModel.DiskUsage, Mode=OneWay}"/>
+                Text="{x:Bind ViewModel.DiskUsage, Mode=OneWay}" AutomationProperties.AutomationId="DiskUsageValueTextblock"/>
         </Grid>
     </Grid>
 </Page>

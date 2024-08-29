@@ -16,7 +16,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <controls:DataGrid
             x:Name="ToolsDataGrid"
             VerticalScrollBarVisibility="Visible"
@@ -33,7 +33,8 @@
             GridLinesVisibility="None"
             HeadersVisibility="Column"
             ItemsSource="{x:Bind _externalTools.AllExternalTools}"
-            SelectionChanged="ToolsDataGrid_SelectionChanged">
+            SelectionChanged="ToolsDataGrid_SelectionChanged"
+            AutomationProperties.AutomationId="ToolsDataGrid">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Name}" MinWidth="150"/>
                 <controls:DataGridTextColumn x:Uid="EditToolsNameColumn" Binding="{Binding Executable}" Width="*"/>
@@ -41,13 +42,14 @@
         </controls:DataGrid>
 
         <StackPanel x:Name="GridButtonPanel" Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,0,8">
-            <Button 
-                x:Uid="UnregisterToolButton" 
-                x:Name="UnregisterToolButton" 
-                Width="120" 
-                Height="36" 
-                Margin="4,0,0,0" 
-                Click="UnregisterToolButton_Click"/>
+            <Button
+                x:Uid="UnregisterToolButton"
+                x:Name="UnregisterToolButton"
+                Width="120"
+                Height="36"
+                Margin="4,0,0,0"
+                Click="UnregisterToolButton_Click"
+                AutomationProperties.AutomationId="UnregisterToolButton"/>
         </StackPanel>
     </Grid>
 </UserControl>
