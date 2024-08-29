@@ -217,11 +217,11 @@ public partial class BarWindowHorizontal : WindowEx
         // If a tool is pinned, we'll add it to the primary commands list.
         if (tool.IsPinned)
         {
-            MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
+            ToolsCommandBar.PrimaryCommands.Add(primaryCommandButton);
         }
 
         // We'll always add all tools to the secondary commands list.
-        MyCommandBar.SecondaryCommands.Add(secondaryCommandButton);
+        ToolsCommandBar.SecondaryCommands.Add(secondaryCommandButton);
 
         tool.PropertyChanged += (sender, args) =>
         {
@@ -238,11 +238,11 @@ public partial class BarWindowHorizontal : WindowEx
 
                 if (tool.IsPinned)
                 {
-                    MyCommandBar.PrimaryCommands.Add(primaryCommandButton);
+                    ToolsCommandBar.PrimaryCommands.Add(primaryCommandButton);
                 }
                 else
                 {
-                    MyCommandBar.PrimaryCommands.Remove(primaryCommandButton);
+                    ToolsCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
             }
         };
@@ -259,8 +259,8 @@ public partial class BarWindowHorizontal : WindowEx
         };
 
         // This should be at the top of the secondary command list
-        MyCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
-        MyCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
+        ToolsCommandBar.SecondaryCommands.Insert(0, manageToolsButton);
+        ToolsCommandBar.SecondaryCommands.Insert(1, new AppBarSeparator());
     }
 
     private MenuFlyoutItem CreatePinMenuItem(Tool tool, PinOption pinOption)
@@ -312,10 +312,10 @@ public partial class BarWindowHorizontal : WindowEx
                     if (oldItem.IsPinned)
                     {
                         // Find this item in the command bar
-                        AppBarButton? pinnedButton = MyCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                        AppBarButton? pinnedButton = ToolsCommandBar.PrimaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
                         if (pinnedButton is not null)
                         {
-                            MyCommandBar.PrimaryCommands.Remove(pinnedButton);
+                            ToolsCommandBar.PrimaryCommands.Remove(pinnedButton);
                         }
                         else
                         {
@@ -323,10 +323,10 @@ public partial class BarWindowHorizontal : WindowEx
                         }
                     }
 
-                    AppBarButton? button = MyCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
+                    AppBarButton? button = ToolsCommandBar.SecondaryCommands.OfType<AppBarButton>().FirstOrDefault(b => b.Tag == oldItem);
                     if (button is not null)
                     {
-                        MyCommandBar.SecondaryCommands.Remove(button);
+                        ToolsCommandBar.SecondaryCommands.Remove(button);
                     }
                     else
                     {
