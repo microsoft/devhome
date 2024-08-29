@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
@@ -21,6 +22,8 @@ public class ChooseFileAction : IAdaptiveActionElement
     public string FilePath { get; set; } = string.Empty;
 
     public string Verb { get; set; } = string.Empty;
+
+    public string FileTypeFilter { get; set; } = "*";
 
     public bool UseIcon { get; set; }
 
@@ -60,6 +63,7 @@ public class ChooseFileAction : IAdaptiveActionElement
             ["type"] = JsonValue.CreateStringValue(ActionTypeString),
             ["filePath"] = JsonValue.CreateStringValue(FilePath),
             ["verb"] = JsonValue.CreateStringValue(Verb),
+            ["fileTypeFilter"] = JsonValue.CreateStringValue(FileTypeFilter),
         };
 
         if (AdditionalProperties != null)
@@ -77,8 +81,13 @@ public class ChooseFileAction : IAdaptiveActionElement
     /// <returns>true if a file was selected, false otherwise.</returns>
     public bool LaunchFilePicker()
     {
+        var fileTypes = ParseFileTypeFilter(FileTypeFilter);
+
         var filePicker = new FileOpenPicker();
-        filePicker.FileTypeFilter.Add("*");
+        foreach (var fileType in fileTypes)
+        {
+            filePicker.FileTypeFilter.Add(fileType);
+        }
 
         var mainWindow = Application.Current.GetService<Window>();
         if (mainWindow != null)
@@ -95,6 +104,38 @@ public class ChooseFileAction : IAdaptiveActionElement
         }
 
         return false;
+    }
+
+    private List<string> ParseFileTypeFilter(string rawFileTypeFilter)
+    {
+        // If the length is 1, either it's a * or it's an invalid string, so we should default to "*" anyway.
+        if (rawFileTypeFilter.Length == 0 || rawFileTypeFilter.Length == 1)
+        {
+            return ["*"];
+        }
+
+        List<string> fileTypes = [];
+
+        // Create a regex for valid file extensions.
+        var pattern = @"^\.[a-zA-Z0-9]+$";
+        var regex = new Regex(pattern);
+
+        var tokens = rawFileTypeFilter.Split(',');
+
+        foreach (var token in tokens)
+        {
+            if (regex.IsMatch(token))
+            {
+                fileTypes.Add(token);
+            }
+            else
+            {
+                // If anything is not a valid file extension, throw away everything and use the extension wildcard.
+                return ["*"];
+            }
+        }
+
+        return fileTypes;
     }
 }
 
@@ -117,6 +158,7 @@ public class ChooseFileParser : IAdaptiveActionParser
             // The Verb ChooseFile is not meant to be localized.
             Verb = inputJson.GetNamedString("verb", "ChooseFile"),
             UseIcon = inputJson.GetNamedBoolean("useIcon", false),
+            FileTypeFilter = inputJson.GetNamedString("fileTypeFilter", "*"),
         };
 
         return chooseFileAction;
