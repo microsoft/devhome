@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <winex:WindowEx
-    x:Class="DevHome.DevInsights.BarWindowHorizontal"
+    x:Class="DevHome.DevInsights.BarWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:winex="using:WinUIEx"
@@ -46,27 +46,6 @@
                     AutomationProperties.AutomationId="TitleTextBlock"/>
             </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
-                <Button
-                    x:Uid="SnapButton"
-                    Visibility="{x:Bind _viewModel.IsAppBarVisible, Mode=OneWay}"
-                    x:Name="SnapButton" Style="{StaticResource ChromeButton}"
-                    FontSize="{StaticResource CaptionTextBlockFontSize}"
-                    Command="{x:Bind _viewModel.ToggleSnapCommand}"
-                    HorizontalAlignment="Left"
-                    IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}"
-                    AutomationProperties.AutomationId="SnapButton">
-                    <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
-                </Button>
-                <Button
-                     x:Uid="RotateLayoutButton"
-                     Style="{StaticResource ChromeButton}"
-                     FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     Command="{x:Bind _viewModel.RotateLayoutCommand}"
-                     HorizontalAlignment="Left"
-                     AutomationProperties.AutomationId="RotateLayoutButton">
-                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;"/>
-                </Button>
                 <Button
                      x:Uid="ExpandCollapseLayoutButton"
                      Style="{StaticResource ChromeButton}"

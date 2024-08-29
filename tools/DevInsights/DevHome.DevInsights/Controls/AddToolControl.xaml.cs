@@ -125,7 +125,7 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
                     lpstrFilter = pFilter,
                     nFilterIndex = 1,
                     nMaxFile = 255,
-                    hwndOwner = barWindow?.CurrentHwnd ?? Windows.Win32.Foundation.HWND.Null,
+                    hwndOwner = barWindow?.ThisHwnd ?? Windows.Win32.Foundation.HWND.Null,
                 };
 
                 if (PInvoke.GetOpenFileName(ref openfile))
