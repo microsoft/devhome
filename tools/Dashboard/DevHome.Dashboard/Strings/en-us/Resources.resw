@@ -197,6 +197,14 @@
     <value>We're having trouble displaying widgets. Restarting Dev Home may help.</value>
     <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>
   </data>
+  <data name="UpdatingWidgetServiceMessage.Text" xml:space="preserve">
+    <value>The Widget Service is updating. Please try again when the update is complete.</value>
+    <comment>Message shown when the widget service package is updating and the user should try again later.</comment>
+  </data>
+  <data name="NotOKWidgetServiceMessage.Text" xml:space="preserve">
+    <value>The installed Widget Service package is not available for use.</value>
+    <comment>Message shown when the widget service package has a problem and cannot be used.</comment>
+  </data>
   <data name="UpdateWidgetsMessage.Text" xml:space="preserve">
     <value>You do not have the required dependency installed to display widgets. Please install or update the package from the Store and then restart Dev Home.</value>
     <comment>Message shown when no widgets have been added to the Dashboard</comment>

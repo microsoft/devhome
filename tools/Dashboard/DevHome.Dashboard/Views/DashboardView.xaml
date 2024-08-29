@@ -145,6 +145,12 @@
                     <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
                         <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
                     </StackPanel>
+                    <StackPanel x:Name="UpdatingWidgetServiceMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="UpdatingWidgetServiceMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel x:Name="NotOKServiceMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                        <TextBlock x:Uid="NotOKWidgetServiceMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    </StackPanel>
                     <StackPanel x:Name="UpdateWidgetsMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
                         <TextBlock x:Uid="UpdateWidgetsMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
                         <HyperlinkButton x:Name="UpdateWidgetsMessageLink"

@@ -3,6 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.Services;
 using DevHome.Services.Core.Contracts;
@@ -54,13 +55,14 @@ public class InitializationViewModel : ObservableObject
         // Install the widget service if we're on Windows 10 and it's not already installed.
         try
         {
-            if (_widgetServiceService.CheckForWidgetService())
+            var widgetStatus = _widgetServiceService.GetWidgetServiceState();
+            if (widgetStatus != WidgetServiceService.WidgetServiceStates.NotAtMinVersion)
             {
                 _log.Information("Skipping installing WidgetService, already installed.");
             }
             else
             {
-                if (_widgetServiceService.GetWidgetServiceState() == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+                if (!RuntimeHelper.IsOnWindows11)
                 {
                     // We're on Windows 10 and don't have the widget service, try to install it.
                     await _widgetServiceService.TryInstallingWidgetService();
@@ -101,6 +103,8 @@ public class InitializationViewModel : ObservableObject
     private bool HasDevHomeGitHubExtensionInstalled()
     {
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(GitHubExtensionPackageFamilyName);
+
+        // Don't check here if the package is ok, we'll do that later on the Dashboard.
         return packages.Any();
     }
 }
