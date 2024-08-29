@@ -21,25 +21,25 @@
                     <behaviors:BreadcrumbNavigationBehavior />
                 </i:Interaction.Behaviors>
             </BreadcrumbBar>
-            
+
             <ctControls:SettingsCard x:Uid="SettingsThemeCard">
                 <ctControls:SettingsCard.HeaderIcon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE790;" />
                 </ctControls:SettingsCard.HeaderIcon>
-                <ComboBox x:Name="ThemeSelectionComboBox">
+                <ComboBox x:Name="ThemeSelectionComboBox" AutomationProperties.AutomationId="ThemeSelectionComboBox">
                     <ComboBoxItem x:Uid="SettingsThemeDefault" Tag="{x:Bind xaml:ElementTheme.Default}" AutomationProperties.AutomationId="SettingsThemeDefault" />
                     <ComboBoxItem x:Uid="SettingsThemeLight" Tag="{x:Bind xaml:ElementTheme.Light}" AutomationProperties.AutomationId="SettingsThemeLight" />
                     <ComboBoxItem x:Uid="SettingsThemeDark" Tag="{x:Bind xaml:ElementTheme.Dark}" AutomationProperties.AutomationId="SettingsThemeDark" />
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
-                            <ic:InvokeCommandAction 
-                                Command="{x:Bind ViewModel.SwitchThemeCommand}" 
+                            <ic:InvokeCommandAction
+                                Command="{x:Bind ViewModel.SwitchThemeCommand}"
                                 CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ComboBox>
             </ctControls:SettingsCard>
-            
+
         </StackPanel>
     </ScrollViewer>
 </Page>

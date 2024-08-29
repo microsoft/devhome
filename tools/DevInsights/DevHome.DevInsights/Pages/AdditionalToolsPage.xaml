@@ -13,30 +13,30 @@
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
         <StackPanel>
 
-            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20">
+            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20" AutomationProperties.AutomationId="BreadcrumbBar">
                 <i:Interaction.Behaviors>
                     <behaviors:BreadcrumbNavigationBehavior />
                 </i:Interaction.Behaviors>
             </BreadcrumbBar>
 
-            <ctControls:SettingsExpander x:Name="SettingsAddToolCard" x:Uid="SettingsAddToolCard" IsExpanded="False" Expanded="SettingsAddToolCard_Expanded">
+            <ctControls:SettingsExpander x:Name="SettingsAddToolCard" x:Uid="SettingsAddToolCard" IsExpanded="False" Expanded="SettingsAddToolCard_Expanded" AutomationProperties.AutomationId="SettingsAddToolCard">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xED0E;"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <ctControls:SettingsExpander.Items>
                     <ctControls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Left">
-                        <controls:AddToolControl x:Name="AddToolPanel"/>
+                        <controls:AddToolControl x:Name="AddToolPanel" AutomationProperties.AutomationId="AddToolPanel"/>
                     </ctControls:SettingsCard>
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
 
-            <ctControls:SettingsExpander x:Uid="SettingsEditToolCard" IsExpanded="False">
+            <ctControls:SettingsExpander x:Uid="SettingsEditToolCard" IsExpanded="False" AutomationProperties.AutomationId="SettingsEditToolCard">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE70F;"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <ctControls:SettingsExpander.Items>
                     <ctControls:SettingsCard HorizontalContentAlignment="Stretch" ContentAlignment="Left">
-                        <controls:EditToolsControl x:Name="EditToolsPanel"/>
+                        <controls:EditToolsControl x:Name="EditToolsPanel" AutomationProperties.AutomationId="EditToolsPanel"/>
                     </ctControls:SettingsCard>
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>

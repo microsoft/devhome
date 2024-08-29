@@ -15,7 +15,8 @@
             RadiusY="{ThemeResource AppBarSeparatorCornerRadius}"
             Width="{ThemeResource AppBarSeparatorWidth}"
             Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
-            Margin="4" />
+            Margin="4"
+            AutomationProperties.AutomationId="SeparatorRectangleVertical" />
         <Rectangle
             x:Name="SeparatorRectangleHorizontal"
             Visibility="Collapsed"
@@ -24,6 +25,7 @@
             Height="{ThemeResource AppBarSeparatorWidth}"
             Width="22"
             Fill="{ThemeResource AppBarSeparatorForegroundThemeBrush}"
-            Margin="4" />
+            Margin="4"
+            AutomationProperties.AutomationId="SeparatorRectangleHorizontal" />
     </Grid>
 </UserControl>

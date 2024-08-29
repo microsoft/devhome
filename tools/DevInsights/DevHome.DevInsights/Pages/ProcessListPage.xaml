@@ -36,18 +36,19 @@
                     x:Name="FilterDropDown" HorizontalAlignment="Stretch"
                     MinHeight="36" IsEditable="True"
                     Text="{x:Bind ViewModel.FilterProcessText, Mode=TwoWay}"
-                    DropDownClosed="{x:Bind ViewModel.FilterDropDownClosed}">
-                    <CheckBox x:Uid="BgTaskHostCheckBox" x:Name="BgTaskHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeBgTaskHost, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="ConHostCheckBox" x:Name="ConHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeConHost, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="DllHostCheckBox" x:Name="DllHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeDllHost, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="SvcHostCheckBox" x:Name="SvcHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeSvcHost, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="WebViewCheckBox" x:Name="WebViewCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWebview, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="RtbCheckBox" x:Name="RtbCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeRtb, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="WmiCheckBox" x:Name="WmiCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWmi, Mode=TwoWay}"/>
-                    <CheckBox x:Uid="WudfCheckBox" x:Name="WudfCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWudf, Mode=TwoWay}"/>
+                    DropDownClosed="{x:Bind ViewModel.FilterDropDownClosed}"
+                    AutomationProperties.AutomationId="FilterDropDown">
+                    <CheckBox x:Uid="BgTaskHostCheckBox" x:Name="BgTaskHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeBgTaskHost, Mode=TwoWay}" AutomationProperties.AutomationId="BgTaskHostCheckBox"/>
+                    <CheckBox x:Uid="ConHostCheckBox" x:Name="ConHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeConHost, Mode=TwoWay}" AutomationProperties.AutomationId="ConHostCheckBox"/>
+                    <CheckBox x:Uid="DllHostCheckBox" x:Name="DllHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeDllHost, Mode=TwoWay}" AutomationProperties.AutomationId="DllHostCheckBox"/>
+                    <CheckBox x:Uid="SvcHostCheckBox" x:Name="SvcHostCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeSvcHost, Mode=TwoWay}" AutomationProperties.AutomationId="SvcHostCheckBox"/>
+                    <CheckBox x:Uid="WebViewCheckBox" x:Name="WebViewCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWebview, Mode=TwoWay}" AutomationProperties.AutomationId="WebViewCheckBox"/>
+                    <CheckBox x:Uid="RtbCheckBox" x:Name="RtbCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeRtb, Mode=TwoWay}" AutomationProperties.AutomationId="RtbCheckBox"/>
+                    <CheckBox x:Uid="WmiCheckBox" x:Name="WmiCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWmi, Mode=TwoWay}" AutomationProperties.AutomationId="WmiCheckBox"/>
+                    <CheckBox x:Uid="WudfCheckBox" x:Name="WudfCheckBox" IsChecked="{x:Bind settings:Settings.Default.IsProcessFilterIncludeWudf, Mode=TwoWay}" AutomationProperties.AutomationId="WudfCheckBox"/>
                 </ComboBox>
                 <Button x:Uid="RefreshButton" x:Name="RefreshButton" BorderThickness="0" Margin="8,0,0,0" Grid.Column="1"
-                    Command="{x:Bind ViewModel.RefreshFilteredProcessListCommand}">
+                    Command="{x:Bind ViewModel.RefreshFilteredProcessListCommand}" AutomationProperties.AutomationId="RefreshButton">
                     <TextBlock Text="&#xE72C;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
                 </Button>
             </Grid>
@@ -71,10 +72,11 @@
             HeadersVisibility="Column"
             Sorting ="{x:Bind ViewModel.SortProcesses}"
             SelectionChanged="{x:Bind ViewModel.ProcessDataGrid_SelectionChanged}"
-            ItemsSource="{x:Bind ViewModel.ProcessesView, Mode=OneWay}">
+            ItemsSource="{x:Bind ViewModel.ProcessesView, Mode=OneWay}"
+            AutomationProperties.AutomationId="ProcessDataGrid">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn x:Uid="PidColumn" Binding="{Binding Id}" Width="120"/>
-                <controls:DataGridTextColumn x:Uid="ExecutableColumn" Binding="{Binding ProcessName}" Width="450"/>
+                <controls:DataGridTextColumn x:Uid="PidColumn" Binding="{Binding Id}" Width="120" AutomationProperties.AutomationId="PidColumn"/>
+                <controls:DataGridTextColumn x:Uid="ExecutableColumn" Binding="{Binding ProcessName}" Width="450" AutomationProperties.AutomationId="ExecutableColumn"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
