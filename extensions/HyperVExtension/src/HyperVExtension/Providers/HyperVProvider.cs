@@ -128,8 +128,8 @@ public class HyperVProvider : IComputeSystemProvider
             _hyperVManager.StartVirtualMachineManagementService();
             var imageList = _vmGalleryService.GetGalleryImagesAsync().GetAwaiter().GetResult();
             var virtualMachineHost = _hyperVManager.GetVirtualMachineHost();
-
-            return new ComputeSystemAdaptiveCardResult(new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource, virtualMachineHost));
+            var adaptiveCardSession = new VMGalleryCreationAdaptiveCardSession(imageList, _stringResource, virtualMachineHost);
+            return new ComputeSystemAdaptiveCardResult(adaptiveCardSession);
         }
         catch (VirtualMachineManagementServiceException serviceException)
         {

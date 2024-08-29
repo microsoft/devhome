@@ -382,7 +382,7 @@
     <comment>{Locked="{0}", "{1}", "{2}"} Error text for when the users default Hyper-V virtual disk location doesn't exist</comment>
   </data>
   <data name="UnableToGetSizeOfDefaultVirtualDiskPathDrive" xml:space="preserve">
-    <value>We couldn't verify the size of your default Hyper-V virtual disk location: '{0}'. The location must exist and contain at least {1} of free space. This is required to create a {2} virtual machine. You can update this location in the Hyper-V Manager app settings.</value>
+    <value>Couldn't verify the size of your default Hyper-V virtual disk location: '{0}'. The location must exist and contain at least {1} of free space. This is required to create a {2} virtual machine. You can update this location in the Hyper-V Manager app settings.</value>
     <comment>{Locked="{0}", "{1}", "{2}"} Error text for when we are unable to get the size of the users default Hyper-V virtual disk location</comment>
   </data>
 </root>

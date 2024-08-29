@@ -305,7 +305,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             // if OnAction's state is initialCreationForm, then the user has selected a VM gallery image and is ready to review the form.
             // we'll also keep the original user input so we can pass it back to Dev Home once the session ends.
             OriginalUserInputJson = inputs;
-            operationResult = await GetForReviewFormAdaptiveCardAsync(GetAndValidateInput(OriginalUserInputJson));
+            var userInput = GetAndValidateInput(OriginalUserInputJson);
+            operationResult = await GetForReviewFormAdaptiveCardAsync(userInput);
         }
         else
         {
@@ -326,7 +327,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             // if OnAction's state is reviewForm, then the user has reviewed the form and Dev Home has started the creation process.
             // we'll show the same form to the user in Dev Homes summary page.
             shouldEndSession = true;
-            operationResult = await GetForReviewFormAdaptiveCardAsync(GetAndValidateInput(OriginalUserInputJson));
+            var userInput = GetAndValidateInput(OriginalUserInputJson);
+            operationResult = await GetForReviewFormAdaptiveCardAsync(userInput);
         }
         else
         {

@@ -240,6 +240,11 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             _renderedAdaptiveCard.Action += OnRenderedAdaptiveCardAction;
             _userInputsFromAdaptiveCard = _renderedAdaptiveCard.UserInputs;
 
+            // Only send the adaptive card to the creation options view when the user moves
+            // from the extension selection page to the environment creation options page.
+            // All other times after that will happen when the user clicks the "Previous"
+            // button in the setup flow, in which case sending the adaptive card to the creation
+            // options view will be done in the OnRenderedAdaptiveCardAction method below.
             if (_isFirstTimeLoadingNewFlow)
             {
                 SendAdaptiveCardToCurrentView();

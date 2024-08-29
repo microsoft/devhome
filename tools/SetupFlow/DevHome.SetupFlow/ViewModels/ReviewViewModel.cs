@@ -246,13 +246,17 @@ public partial class ReviewViewModel : SetupPageViewModelBase, IRecipient<NewAda
     /// </summary>
     public async void Receive(NewAdaptiveCardAvailableMessage message)
     {
-        InfoBarErrorMessage = null;
-
         // Only process the message if the view model is the ReviewViewModel
         if (message.Value.CurrentSetupFlowViewModel is not ReviewViewModel)
         {
             return;
         }
+
+        // Make the infobar message null so the empty object converter collapses in the
+        // UI incase the user previously clicks the x in the infobar, we want to make
+        // sure it becomes visible again if the InfoBarErrorMessage and message.Value.ErrorMessage
+        // values are still the same after the user clicks the "Next" button.
+        InfoBarErrorMessage = null;
 
         InfoBarErrorMessage = message.Value.ErrorMessage;
         if (!string.IsNullOrEmpty(InfoBarErrorMessage))
