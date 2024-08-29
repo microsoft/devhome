@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DevHome.Service.Runtime;
 
+[ComVisible(true)]
 public class DevHomeService : IDevHomeService
 {
     public DevHomeService()
