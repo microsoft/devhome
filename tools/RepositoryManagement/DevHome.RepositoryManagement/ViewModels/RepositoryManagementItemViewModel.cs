@@ -67,9 +67,29 @@ public partial class RepositoryManagementItemViewModel
     }
 
     [RelayCommand]
-    public void OpenInCMD()
+    public async Task OpenInCMD()
     {
-        throw new NotImplementedException();
+        var localRepositoryName = RepositoryName;
+        if (string.IsNullOrEmpty(RepositoryName))
+        {
+            _log.Warning("RepositoryName is either null or empty.");
+            localRepositoryName = string.Empty;
+        }
+
+        var localClonePath = ClonePath;
+        if (string.IsNullOrEmpty(ClonePath))
+        {
+            _log.Warning("ClonePath is either null or empty");
+            localClonePath = string.Empty;
+        }
+
+        // Ask the user if they can point DevHome to the correct location
+        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
+        {
+            await CloneLocationNotFoundNotifyUser(localRepositoryName, ClonePath);
+        }
+
+        OpenRepositoryinCMD(localRepositoryName, localClonePath, nameof(OpenInCMD));
     }
 
     [RelayCommand]
@@ -114,7 +134,7 @@ public partial class RepositoryManagementItemViewModel
         TelemetryFactory.Get<ITelemetry>().Log(
             EventName,
             LogLevel.Critical,
-            new RepositoryLineItemEvent(nameof(OpenInFileExplorer), repositoryName));
+            new RepositoryLineItemEvent(action, repositoryName));
 
         var processStartInfo = new ProcessStartInfo();
         processStartInfo.UseShellExecute = true;
@@ -122,6 +142,25 @@ public partial class RepositoryManagementItemViewModel
         // Not catching PathTooLongException.  If the file was in a location that had a too long path,
         // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
         processStartInfo.FileName = Path.GetFullPath(cloneLocation);
+
+        StartProcess(processStartInfo, action);
+    }
+
+    private void OpenRepositoryinCMD(string repositoryName, string cloneLocation, string action)
+    {
+        _log.Information($"Showing {repositoryName} in CMD at location {cloneLocation}");
+        TelemetryFactory.Get<ITelemetry>().Log(
+            EventName,
+            LogLevel.Critical,
+            new RepositoryLineItemEvent(action, repositoryName));
+
+        var processStartInfo = new ProcessStartInfo();
+        processStartInfo.UseShellExecute = true;
+
+        // Not catching PathTooLongException.  If the file was in a location that had a too long path,
+        // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
+        processStartInfo.FileName = "CMD";
+        processStartInfo.WorkingDirectory = Path.GetFullPath(cloneLocation);
 
         StartProcess(processStartInfo, action);
     }
@@ -196,6 +235,8 @@ public partial class RepositoryManagementItemViewModel
 
         // User will show DevHome where the repository is.
         // Open the folder picker.
+        // Maybe don't close the dialog until the user is done
+        // with the folder picker.
         if (dialogResult == ContentDialogResult.Primary)
         {
             var newLocation = await PickNewLocationForRepositoryAsync();
