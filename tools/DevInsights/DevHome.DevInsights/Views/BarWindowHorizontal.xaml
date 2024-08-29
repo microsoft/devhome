@@ -37,7 +37,13 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
                 <Image Source="/Images/di.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="Title" Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBlock 
+                    x:Uid="Title" 
+                    Style="{StaticResource CaptionTextBlockStyle}" 
+                    Margin="6,0,0,0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="TitleTextBlock"/>
             </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
@@ -48,7 +54,8 @@
                     Command="{x:Bind _viewModel.ToggleSnapCommand}"
                     HorizontalAlignment="Left"
                     IsEnabled="{x:Bind _viewModel.IsSnappingEnabled, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}">
+                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentSnapToolTip, Mode=OneWay}"
+                    AutomationProperties.AutomationId="SnapButton">
                     <TextBlock x:Name="SnapButtonText" Text="{x:Bind _viewModel.CurrentSnapButtonText, Mode=OneWay}"/>
                 </Button>
                 <Button
@@ -56,8 +63,9 @@
                      Style="{StaticResource ChromeButton}"
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      Command="{x:Bind _viewModel.RotateLayoutCommand}"
-                     HorizontalAlignment="Left">
-                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;" />
+                     HorizontalAlignment="Left"
+                    AutomationProperties.AutomationId="RotateLayoutButton">
+                    <TextBlock x:Name="RotateLayoutButtonText" Text="&#xe8b4;"/>
                 </Button>
                 <Button
                      x:Uid="ExpandCollapseLayoutButton"
@@ -65,8 +73,9 @@
                      FontSize="{StaticResource CaptionTextBlockFontSize}"
                      Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}"
                      HorizontalAlignment="Left"
-                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}">
-                    <TextBlock x:Name="ExpandCollapseLayoutButtonText" />
+                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}"
+                    AutomationProperties.AutomationId="ExpandCollapseLayoutButton">
+                    <TextBlock x:Name="ExpandCollapseLayoutButtonText"/>
                 </Button>
             </StackPanel>
         </Grid>
@@ -97,10 +106,11 @@
                     Content="&#xe179;" 
                     FontFamily="{StaticResource SymbolThemeFontFamily}" 
                     FontSize="{StaticResource SubtitleTextBlockFontSize}"
-                    Margin="0,-4,0,0">
+                    Margin="0,-4,0,0"
+                    AutomationProperties.AutomationId="ProcessChooserButton">
                 </local:ProcessSelectionButton>
                 <AppBarElementContainer>
-                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" Margin="0,6,0,0"/>
+                    <TextBlock x:Uid="ProcessesLabel" x:Name="ProcessesLabel" Margin="0,6,0,0" AutomationProperties.AutomationId="ProcessLabel"/>
                 </AppBarElementContainer>
             </CommandBar>
 
@@ -110,7 +120,10 @@
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem x:Uid="DetachMenuItem" Command="{x:Bind _viewModel.DetachFromProcessCommand}">
+                                <MenuFlyoutItem 
+                                    x:Uid="DetachMenuItem" 
+                                    Command="{x:Bind _viewModel.DetachFromProcessCommand}"
+                                    AutomationProperties.AutomationId="DetachMenuItem">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
                                     </MenuFlyoutItem.Icon>
@@ -123,8 +136,13 @@
                             Source="{x:Bind _viewModel.ApplicationIcon, Mode=OneWay}" 
                             ToolTipService.ToolTip="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" 
                             Height="20" 
-                            Width="20"/>
-                        <TextBlock x:Uid="AppName" Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" Margin="8,8,8,0"/>
+                            Width="20"
+                            AutomationProperties.AutomationId="AppIcon"/>
+                        <TextBlock 
+                            x:Uid="AppName" 
+                            Text="{x:Bind _viewModel.ApplicationName, Mode=OneWay}" 
+                            Margin="8,8,8,0"
+                            AutomationProperties.AutomationId="AppName"/>
                     </StackPanel>
                 </AppBarElementContainer>
 
@@ -136,7 +154,8 @@
                             FontFamily="{StaticResource SymbolThemeFontFamily}"
                             FontSize="{StaticResource TitleLargeTextBlockFontSize}"
                             Margin="0,-10,0,0"
-                            Padding="0"/>
+                            Padding="0"
+                            AutomationProperties.AutomationId="InsightsButton"/>
                         <controls:InfoBadge
                             VerticalAlignment="Bottom"
                             HorizontalAlignment="Right"
@@ -173,7 +192,10 @@
                                 <Setter Property="Margin" Value="8,0,8,0"/>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock x:Uid="AppCPUUsage" Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}"/>
+                        <TextBlock 
+                            x:Uid="AppCPUUsage" 
+                            Text="{x:Bind _viewModel.AppCpuUsage, Mode=OneWay}" 
+                            AutomationProperties.AutomationId="AppCPUUsage"/>
                     </StackPanel>
                 </AppBarElementContainer>
             </CommandBar>
@@ -190,9 +212,18 @@
                                 <Setter Property="Margin" Value="8,0,8,0"/>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock x:Uid="SystemCPUUsage" Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}"/>
-                        <TextBlock x:Uid="SystemMemUsage" Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}"/>
-                        <TextBlock x:Uid="SystemDiskUsage" Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"/>
+                        <TextBlock 
+                            x:Uid="SystemCPUUsage" 
+                            Text="{x:Bind _viewModel.SystemCpuUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemCPUUsage"/>
+                        <TextBlock 
+                            x:Uid="SystemMemUsage" 
+                            Text="{x:Bind _viewModel.SystemRamUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemMemUsage"/>
+                        <TextBlock 
+                            x:Uid="SystemDiskUsage" 
+                            Text="{x:Bind _viewModel.SystemDiskUsage, Mode=OneWay}"
+                            AutomationProperties.AutomationId="SystemDiskUsage"/>
                     </StackPanel>
                 </AppBarElementContainer>
             </CommandBar>
