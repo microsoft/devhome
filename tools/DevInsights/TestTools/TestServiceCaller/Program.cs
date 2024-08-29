@@ -13,13 +13,14 @@ internal sealed class Program
     {
         try
         {
+            Console.WriteLine(typeof(IDevHomeService).GUID.ToString());
             var devHomeService = GetDevHomeService();
             var number = devHomeService.GetNumber();
             Console.WriteLine("Number = " + number);
         }
         catch (Exception e)
         {
-            System.Console.WriteLine($"Error: {e.Message}");
+            System.Console.WriteLine(e.ToString());
         }
     }
 

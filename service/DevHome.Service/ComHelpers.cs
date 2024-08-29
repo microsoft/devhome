@@ -20,7 +20,7 @@ internal sealed class ComHelpers
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1310:Field names should not contain underscore", Justification = "Well-known constant")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1306:Field names should begin with lower-case letter", Justification = "Well-known constant")]
     private static readonly Guid CLSID_GlobalOptions = new("0000034B-0000-0000-C000-000000000046");
-    
+
     public static void EnableFastCOMRundown()
     {
         // We need to be careful creating the GlobalOptions object. We can't use the baked in CLR marshaller, as it calls CoInitializeSecurity under
