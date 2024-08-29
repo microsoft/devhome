@@ -197,16 +197,16 @@ public partial class FileExplorerViewModel : ObservableObject
         RefreshTrackedRepositories();
     }
 
-    public async void AssignSourceControlProviderToRepository(IExtensionWrapper? extension, string rootPath)
+    public async Task<SourceControlValidationResult> AssignSourceControlProviderToRepository(IExtensionWrapper? extension, string rootPath)
     {
-        await Task.Run(() =>
+        var result = await Task.Run(() =>
         {
             var extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
             var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
             if (result.Result == ResultType.Failure)
             {
                 _log.Error("Failed to validate source control extension");
-                return validationResult;
+                return new SourceControlValidationResult(ResultType.Failure, result.Error, result.Exception, result.DisplayMessage, result.DiagnosticText);
             }
 
             try
@@ -215,7 +215,7 @@ public partial class FileExplorerViewModel : ObservableObject
                 if (!wrapperResult.Succeeded)
                 {
                     _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                    return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, null, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"));
+                    return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, wrapperResult.ExtendedError, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"));
                 }
             }
             catch (Exception ex)

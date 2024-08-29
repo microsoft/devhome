@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.Helpers;
@@ -63,13 +61,13 @@ public sealed partial class AddRepositoriesView : UserControl
         }
     }
 
-    public void AssignSourceControlProviderButton_Click(object sender, RoutedEventArgs e)
+    public async void AssignSourceControlProviderButton_Click(object sender, RoutedEventArgs e)
     {
         // Extract relevant data from view and give to view model for assign
         MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
         if (menuItem.DataContext is RepositoryInformation repoInfo)
         {
-            var taskResult = await ViewModel.AssignSourceControlProviderToRepository(menuItem.Text, repoInfo.RepositoryRootPath);
+            var taskResult = await ViewModel.AssignSourceControlProviderToRepository(menuItem.Tag as IExtensionWrapper, repoInfo.RepositoryRootPath);
             if (taskResult?.Result != Helpers.ResultType.Success)
             {
                 _log.Error("Error occurred while assigning source control provider: ", taskResult?.Error, taskResult?.Exception, taskResult?.DiagnosticText, taskResult?.DisplayMessage);
@@ -81,21 +79,10 @@ public sealed partial class AddRepositoriesView : UserControl
     public async void ShowErrorContentDialog(SourceControlValidationResult result, XamlRoot xamlRoot)
     {
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
-        string diagnosticText = result.DiagnosticText ?? string.Empty;
-        string content;
-        if (diagnosticText.Contains("Invalid repository path"))
-        {
-            content = stringResource.GetLocalized("AssignSourceControlErrorDialogInvalidRepositoryPathContent");
-        }
-        else
-        {
-            content = string.Concat(stringResource.GetLocalized("AssignSourceControlErrorDialogDefaultContent"), diagnosticText);
-        }
-
         var errorDialog = new ContentDialog
         {
             Title = stringResource.GetLocalized("AssignSourceControlErrorDialog_Title"),
-            Content = content,
+            Content = result.DisplayMessage,
             CloseButtonText = stringResource.GetLocalized("CloseButtonText"),
             XamlRoot = xamlRoot,
             RequestedTheme = ActualTheme,

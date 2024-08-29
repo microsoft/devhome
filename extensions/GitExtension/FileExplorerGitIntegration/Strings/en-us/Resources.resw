@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GetRepositoryError" xml:space="preserve">
-    <value>Unable to get repository at the given root path</value>
+  <data name="OpenRepositoryError" xml:space="preserve">
+    <value>Unable to open repository at the given root path</value>
     <comment>Error text for when the git extension is unable to obtain the repository given its root path</comment>
   </data>
   <data name="FolderStatusBranch" xml:space="preserve">
@@ -160,5 +160,13 @@
   <data name="FileStatusRenamedModified" xml:space="preserve">
     <value>Renamed, Modified</value>
     <comment>File status to display when its Git status is renamed with unstaged changes</comment>
+  </data>
+  <data name="RepositoryNotFound" xml:space="preserve">
+    <value>Please choose a path to the working directory. For example, the path with the .git subfolder.</value>
+    <comment>Display message when the repository path is invalid</comment>
+  </data>
+  <data name="RepositoryNotOwnedByCurrentUser" xml:space="preserve">
+    <value>The repository path is not owned by the current user and has dubious ownership</value>
+    <comment>Display message when the path has dubious ownership</comment>
   </data>
 </root>

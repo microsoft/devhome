@@ -466,16 +466,8 @@
     <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
   </data>
   <data name="AssignSourceControlErrorDialog_Title" xml:space="preserve">
-    <value>Assign Source Control Provider Error</value>
+    <value>Error assigning source control provider</value>
     <comment>Title for the Assign Source Control Provider Error dialog</comment>
-  </data>
-  <data name="AssignSourceControlErrorDialogInvalidRepositoryPathContent" xml:space="preserve">
-    <value>Please choose a path to the working directory for instance the path with the .git subfolder.</value>
-    <comment>Content for the Assign Source Control Provider Error dialog when the repository path is invalid</comment>
-  </data>
-  <data name="AssignSourceControlErrorDialogDefaultContent" xml:space="preserve">
-    <value>An error occurred while opening the repository with: </value>
-    <comment>Content for the Assign Source Control Provider Error dialog when an error occurs</comment>
   </data>
   <data name="ValidateSourceControlErrorOnRepositoryProviderInstanceCreation" xml:space="preserve">
     <value>Failed to create an instance of the local repository provider.</value>

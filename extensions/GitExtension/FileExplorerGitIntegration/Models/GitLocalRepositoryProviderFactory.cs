@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
+using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -24,7 +25,7 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
     public string DisplayName => "GitLocalRepositoryProviderFactory";
 
     private readonly StringResource _stringResource = new("FileExplorerGitIntegration.pri", "Resources");
-    private readonly string _errorResourceKey = "GetRepositoryError";
+    private readonly string _errorResourceKey = "OpenRepositoryError";
 
     GetLocalRepositoryResult ILocalRepositoryProvider.GetRepository(string rootPath)
     {
@@ -34,8 +35,16 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
         }
         catch (Exception ex)
         {
-            var log = Log.ForContext("SourceContext", nameof(GitLocalRepositoryProviderFactory));
-            log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
+            if (ex is LibGit2Sharp.RepositoryNotFoundException)
+            {
+                return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
+            }
+
+            if (ex.Message.Contains("not owned by current user") || ex.Message.Contains("detected dubious ownership in repository"))
+            {
+                return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotOwnedByCurrentUser"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
+            }
+
             return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized(_errorResourceKey), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
         }
     }
