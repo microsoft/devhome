@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.DevInsights.Controls;
 using DevHome.DevInsights.Helpers;
 using DevHome.DevInsights.Models;
@@ -89,6 +90,7 @@ public partial class BarWindowHorizontal : WindowEx
         _externalTools = Application.Current.GetService<ExternalToolsHelper>();
         _internalTools = Application.Current.GetService<InternalToolsHelper>();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        Title = CommonHelper.GetLocalizedString("DIDisplayName");
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;

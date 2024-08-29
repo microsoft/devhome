@@ -43,7 +43,7 @@ internal sealed class CommonHelper
         var startInfo = new ProcessStartInfo();
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-        var aliasSubDirectoryPath = $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}\\devhome.pi.exe";
+        var aliasSubDirectoryPath = $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}\\devhome.devinsights.exe";
         var aliasPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), aliasSubDirectoryPath);
         startInfo.FileName = aliasPath;
 
@@ -67,7 +67,7 @@ internal sealed class CommonHelper
         }
         catch (Win32Exception ex)
         {
-            _log.Error(ex, "Could not run PI as admin");
+            _log.Error(ex, "Could not run Dev Insights as admin");
             if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANT_ACCESS_FILE)
             {
                 var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
@@ -75,7 +75,7 @@ internal sealed class CommonHelper
             }
             else if (ex.NativeErrorCode == (int)WIN32_ERROR.ERROR_CANCELLED)
             {
-                _log.Error(ex, "UAC to run PI as admin was denied");
+                _log.Error(ex, "UAC to run Dev Insights as admin was denied");
             }
         }
     }

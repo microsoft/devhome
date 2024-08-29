@@ -25,31 +25,41 @@
             </Grid.ColumnDefinitions>
 
             <!-- Navigation panel -->
-            <ListView 
-                x:Name="NavLinksList" 
-                SelectionMode="Single" 
-                VerticalAlignment="Stretch" 
+            <ListView
+                x:Name="NavLinksList"
+                SelectionMode="Single"
+                VerticalAlignment="Stretch"
                 ItemsSource="{x:Bind _viewModel.Links}"
-                SelectedIndex="{x:Bind _viewModel.SelectedNavLinkIndex, Mode=TwoWay}" 
-                SelectionChanged="{x:Bind _viewModel.Navigate}">
+                SelectedIndex="{x:Bind _viewModel.SelectedNavLinkIndex, Mode=TwoWay}"
+                SelectionChanged="{x:Bind _viewModel.Navigate}"
+                AutomationProperties.AutomationId="NavLinksList">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <TextBlock 
-                                Text="{Binding IconText}" 
+                        <StackPanel Orientation="Horizontal" Spacing="12" AutomationProperties.Name="{Binding ContentText}">
+                            <TextBlock
+                                Text="{Binding IconText}"
                                 Style="{x:Null}"
-                                FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
                                 FontSize="{StaticResource CaptionTextBlockFontSize}"
-                                HorizontalAlignment="Left" 
+                                HorizontalAlignment="Left"
                                 VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding ContentText}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock
+                                Text="{Binding ContentText}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
-            <toolkit:GridSplitter 
-                Grid.Column="1" ResizeBehavior="BasedOnAlignment" ResizeDirection="Auto" PointerPressed="GridSplitter_PointerPressed"/>
+            <toolkit:GridSplitter
+                x:Name="NavigationPaneSplitter"
+                x:Uid="NavigationPaneSplitter"
+                Grid.Column="1"
+                ResizeBehavior="BasedOnAlignment"
+                ResizeDirection="Auto"
+                PointerPressed="GridSplitter_PointerPressed"
+                AutomationProperties.AutomationId="NavigationPaneSplitter"/>
 
             <Frame x:Name="PageFrame" Grid.Column="2" Margin="16,0,0,0"/>
         </Grid>
@@ -71,15 +81,15 @@
                 </Style>
             </Grid.Resources>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="10" Visibility="{x:Bind _viewModel.PerfMarkersVisibility, Mode=OneWay}">
-                <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox"  Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppCpuPerf" Text="{x:Bind _viewModel.CpuUsage, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Text="{x:Bind _viewModel.RamUsage, Mode=OneWay}"/>
-                <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind _viewModel.DiskUsage, Mode=OneWay}"/>
+                <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox"  Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" AutomationProperties.AutomationId="TargetAppPidTextBox"/>
+                <TextBlock x:Uid="ExpandedViewAppCpuPerf" Text="{x:Bind _viewModel.CpuUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppCpuPerf"/>
+                <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Text="{x:Bind _viewModel.RamUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppMemoryPerf"/>
+                <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind _viewModel.DiskUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppDiskPerf"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="10" >
-                <TextBlock x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
-                <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind _viewModel.ApplyAppFiltering, Mode=TwoWay}" MinWidth="0">
+                <TextBlock x:Name="FilterDataToTargetAppToggleLabel" x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
+                <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind _viewModel.ApplyAppFiltering, Mode=TwoWay}" MinWidth="0" AutomationProperties.AutomationId="AppFilteringToggleSwitch"  AutomationProperties.LabeledBy="{Binding ElementName=FilterDataToTargetAppToggleLabel}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="Toggled">
                             <ic:InvokeCommandAction Command="{x:Bind _viewModel.ApplyAppFilteringToDataCommand}" />

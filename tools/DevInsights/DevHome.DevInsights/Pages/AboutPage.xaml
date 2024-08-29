@@ -5,8 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors">
 
     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
@@ -16,32 +14,33 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20">
+            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20" AutomationProperties.AutomationId="BreadcrumbBar">
                 <i:Interaction.Behaviors>
                     <behaviors:BreadcrumbNavigationBehavior />
                 </i:Interaction.Behaviors>
             </BreadcrumbBar>
-            
-            <ctControls:SettingsExpander Grid.Row="1" x:Uid="SettingsAboutAppInfoCard" IsExpanded="True">
+
+            <ctControls:SettingsExpander Grid.Row="1" x:Uid="SettingsAboutAppInfoCard" IsExpanded="True" AutomationProperties.AutomationId="SettingsExpander">
                 <ctControls:SettingsExpander.HeaderIcon>
-                    <BitmapIcon ShowAsMonochrome="False" UriSource="/Images/PI.ico"/>
+                    <BitmapIcon ShowAsMonochrome="False" UriSource="/Images/DI.ico"/>
                 </ctControls:SettingsExpander.HeaderIcon>
                 <TextBlock
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     IsTextSelectionEnabled="True"
-                    Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}"/>
+                    Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}"
+                    AutomationProperties.AutomationId="VersionDescriptionTextBlock"/>
                 <ctControls:SettingsExpander.Items>
                     <ctControls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock x:Uid="SettingsAboutRelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}"/>
-                            <HyperlinkButton x:Uid="SettingsSourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}"/>
-                            <HyperlinkButton x:Uid="SettingsDocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}"/>
-                            <HyperlinkButton x:Uid="SettingsPrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}"/>
+                            <TextBlock x:Uid="SettingsAboutRelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" AutomationProperties.AutomationId="RelatedLinksTextBlock"/>
+                            <HyperlinkButton x:Uid="SettingsSourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" AutomationProperties.AutomationId="SourceCodeLinkHyperlinkButton"/>
+                            <HyperlinkButton x:Uid="SettingsDocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" AutomationProperties.AutomationId="DocumentationLinkHyperlinkButton"/>
+                            <HyperlinkButton x:Uid="SettingsPrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" AutomationProperties.AutomationId="PrivacyPolicyLinkHyperlinkButton"/>
                         </StackPanel>
                     </ctControls:SettingsCard>
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
-            
+
         </Grid>
     </ScrollViewer>
 

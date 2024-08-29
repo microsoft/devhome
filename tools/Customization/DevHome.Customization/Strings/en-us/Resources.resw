@@ -317,11 +317,11 @@
     <value>Apply</value>
     <comment>Apply changes to feature state.</comment>
   </data>
-  <data name="CommittingChangesTitle" xml:space="preserve">
+  <data name="ModifyFeaturesDialog.Title" xml:space="preserve">
     <value>Committing changes</value>
     <comment>Title displayed during the process of applying changes</comment>
   </data>
-  <data name="CommittingChangesMessage" xml:space="preserve">
+  <data name="ModifyFeaturesDialogMessage.Text" xml:space="preserve">
     <value>Please wait for the changes to take effect.</value>
     <comment>Message indicating the user should wait for the changes to be applied</comment>
   </data>
@@ -329,11 +329,15 @@
     <value>Restart now</value>
     <comment>Button text to restart the system immediately</comment>
   </data>
-  <data name="CancelButtonText" xml:space="preserve">
+  <data name="ModifyFeaturesDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="ModifyFeaturesDialog.SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
     <comment>Button text to cancel the current operation</comment>
   </data>
-  <data name="RestartRequiredTitle" xml:space="preserve">
+  <data name="RestartDialog.Title" xml:space="preserve">
     <value>Restart required</value>
     <comment>Title displayed when a restart is required to apply changes</comment>
   </data>
@@ -341,7 +345,15 @@
     <value>Please restart your machine for your applied changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
-  <data name="DontRestartNowButtonText" xml:space="preserve">
+  <data name="RestartRequiredDialogMessage.Text" xml:space="preserve">
+    <value>Please restart your machine for your applied changes to take effect.</value>
+    <comment>Message instructing the user to restart their machine to apply changes</comment>
+  </data>
+  <data name="RestartDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="RestartDialog.SecondaryButtonText" xml:space="preserve">
     <value>Don't restart now</value>
     <comment>Button text to postpone system restart</comment>
   </data>
@@ -448,5 +460,9 @@
   <data name="ShowRepositoryStatusCard.Header" xml:space="preserve">
     <value>Show the repository status</value>
     <comment>The header for the settings card that allows user to enable or disable display of repository status inside File Explorer</comment>
+  </data>
+  <data name="PrefixForDevHomeVersion" xml:space="preserve">
+    <value>Provided by {0}</value>
+    <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
   </data>
 </root>

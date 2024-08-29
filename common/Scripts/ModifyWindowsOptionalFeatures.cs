@@ -13,32 +13,37 @@ using Serilog;
 
 namespace DevHome.Common.Scripts;
 
-public static class ModifyWindowsOptionalFeatures
+public class ModifyWindowsOptionalFeatures : IDisposable
 {
-    public static async Task<ExitCode> ModifyFeaturesAsync(
+    private readonly Process _process;
+    private readonly ILogger? _log;
+    private readonly CancellationToken _cancellationToken;
+    private readonly string _featuresString;
+    private Stopwatch _stopwatch = new();
+    private bool _disposed;
+
+    public ModifyWindowsOptionalFeatures(
         IEnumerable<WindowsOptionalFeatureState> features,
-        ILogger? log = null,
-        CancellationToken cancellationToken = default)
+        ILogger? log,
+        CancellationToken cancellationToken)
     {
-        if (!features.Any(f => f.HasChanged))
-        {
-            return ExitCode.Success;
-        }
+        _log = log;
+        _cancellationToken = cancellationToken;
 
         // Format the argument for the PowerShell script using `n as a newline character since the list
         // will be parsed with ConvertFrom-StringData.
         // The format is FeatureName1=True|False`nFeatureName2=True|False`n...
-        var featuresString = string.Empty;
+        _featuresString = string.Empty;
         foreach (var featureState in features)
         {
             if (featureState.HasChanged)
             {
-                featuresString += $"{featureState.Feature.FeatureName}={featureState.IsEnabled}`n";
+                _featuresString += $"{featureState.Feature.FeatureName}={featureState.IsEnabled}`n";
             }
         }
 
-        var scriptString = Script.Replace("FEATURE_STRING_INPUT", featuresString);
-        var process = new Process
+        var scriptString = Script.Replace("FEATURE_STRING_INPUT", _featuresString);
+        _process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
@@ -49,11 +54,11 @@ public static class ModifyWindowsOptionalFeatures
                 Verb = "runas",
             },
         };
+    }
 
-        var exitCode = ExitCode.Failure;
-
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
+    public async Task<ExitCode> Execute()
+    {
+        var exitCode = ExitCode.Success;
         await Task.Run(
             () =>
         {
@@ -62,56 +67,67 @@ public static class ModifyWindowsOptionalFeatures
             // which is handled as a failure.
             try
             {
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationToken.IsCancellationRequested)
                 {
-                    log?.Information("Operation was cancelled.");
+                    _log?.Information("Operation was cancelled.");
                     exitCode = ExitCode.Cancelled;
-                    return;
                 }
 
-                process.Start();
-                while (!process.WaitForExit(1000))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        // Attempt to kill the process if cancellation is requested
-                        exitCode = ExitCode.Cancelled;
-                        process.Kill();
-                        log?.Information("Operation was cancelled.");
-                        return;
-                    }
-                }
-
-                exitCode = FromExitCode(process.ExitCode);
+                _process.Start();
             }
             catch (Exception ex)
             {
                 // This is most likely a case where the user cancelled the UAC prompt.
-                if (ex is System.ComponentModel.Win32Exception win32Exception)
-                {
-                    if (win32Exception.NativeErrorCode == 1223)
-                    {
-                        log?.Information(ex, "UAC was cancelled by the user.");
-                        exitCode = ExitCode.Cancelled;
-                    }
-                }
-                else
-                {
-                    log?.Error(ex, "Script failed");
-                    exitCode = ExitCode.Failure;
-                }
+                exitCode = HandleProcessExecutionException(ex, _log);
             }
         },
-            cancellationToken);
+            _cancellationToken);
 
-        stopwatch.Stop();
-
-        ModifyWindowsOptionalFeaturesEvent.Log(
-            featuresString,
-            exitCode,
-            stopwatch.ElapsedMilliseconds);
+        if (exitCode == ExitCode.Success)
+        {
+            _stopwatch = Stopwatch.StartNew();
+        }
 
         return exitCode;
+    }
+
+    public async Task<ExitCode> WaitForCompleted()
+    {
+        var exitCode = ExitCode.Success;
+        await Task.Run(
+            () =>
+        {
+            try
+            {
+                while (!_process.WaitForExit(1000))
+                {
+                    if (_cancellationToken.IsCancellationRequested)
+                    {
+                        // Attempt to kill the process if cancellation is requested
+                        exitCode = ExitCode.Cancelled;
+                        _process.Kill();
+                        _log?.Information("Operation was cancelled.");
+                        return;
+                    }
+                }
+
+                exitCode = FromExitCode(_process.ExitCode);
+            }
+            catch (Exception ex)
+            {
+                exitCode = HandleProcessExecutionException(ex, _log);
+            }
+        },
+            _cancellationToken);
+
+        _stopwatch.Stop();
+
+        ModifyWindowsOptionalFeaturesEvent.Log(
+            _featuresString,
+            exitCode,
+            _stopwatch.ElapsedMilliseconds);
+
+        return ExitCode.Success;
     }
 
     public enum ExitCode
@@ -131,6 +147,24 @@ public static class ModifyWindowsOptionalFeatures
         };
     }
 
+    private static ExitCode HandleProcessExecutionException(Exception ex, ILogger? log = null)
+    {
+        if (ex is System.ComponentModel.Win32Exception win32Exception)
+        {
+            if (win32Exception.NativeErrorCode == 1223)
+            {
+                log?.Information(ex, "UAC was cancelled by the user.");
+                return ExitCode.Cancelled;
+            }
+        }
+        else
+        {
+            log?.Error(ex, "Script failed");
+        }
+
+        return ExitCode.Failure;
+    }
+
     public static string GetExitCodeDescription(ExitCode exitCode)
     {
         return exitCode switch
@@ -139,6 +173,25 @@ public static class ModifyWindowsOptionalFeatures
             ExitCode.Failure => "Failure",
             _ => "Cancelled",
         };
+    }
+
+    protected void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _process.Dispose();
+            }
+
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>

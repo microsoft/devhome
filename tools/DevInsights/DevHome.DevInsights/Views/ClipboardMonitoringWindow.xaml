@@ -13,7 +13,7 @@
     MaxHeight="80"
     MinHeight="80"
     IsMaximizable="False"
-    TaskBarIcon="Images/pi.ico">
+    TaskBarIcon="Images/di.ico">
 
     <Grid>
         <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" />

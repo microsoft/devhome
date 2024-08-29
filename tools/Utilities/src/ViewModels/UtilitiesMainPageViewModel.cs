@@ -55,7 +55,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 Title = stringResource.GetLocalized("DevInsightsTitle"),
                 Description = stringResource.GetLocalized("DevInsightsDesc"),
                 NavigateUri = "https://go.microsoft.com/fwlink/?linkid=2275140",
-                ImageSource = Path.Combine(AppContext.BaseDirectory, "PI.ico"),
+                ImageSource = Path.Combine(AppContext.BaseDirectory, "DI.ico"),
                 UtilityAutomationId = "DevHome.DevInsights",
             },
         };
