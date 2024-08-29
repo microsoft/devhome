@@ -68,6 +68,9 @@ internal sealed class ExperimentalFeatures
 
     [JsonPropertyName("buildTypeOverrides")]
     public BuildTypeOverrides[] BuildTypeOverrides { get; set; }
+
+    [JsonPropertyName("openPage")]
+    public OpenPage OpenPage { get; set; }
 }
 
 internal sealed class BuildTypeOverrides
@@ -80,6 +83,15 @@ internal sealed class BuildTypeOverrides
 
     [JsonPropertyName("visible")]
     public bool Visible { get; set; }
+}
+
+internal sealed class OpenPage
+{
+    [JsonPropertyName("key")]
+    public string Key { get; set; }
+
+    [JsonPropertyName("parameter")]
+    public string Parameter { get; set; }
 }
 
 // Uses .NET's JSON source generator support for serializing / deserializing NavConfig to get some perf gains at startup.

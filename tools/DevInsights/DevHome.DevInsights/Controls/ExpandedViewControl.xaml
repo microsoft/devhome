@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.DevInsights.Controls.ExpandedViewControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:controls="using:DevHome.DevInsights.Controls"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation panel -->
+            <ListView
+                x:Name="NavLinksList"
+                SelectionMode="Single"
+                VerticalAlignment="Stretch"
+                ItemsSource="{x:Bind _viewModel.Links}"
+                SelectedIndex="{x:Bind _viewModel.SelectedNavLinkIndex, Mode=TwoWay}"
+                SelectionChanged="{x:Bind _viewModel.Navigate}"
+                AutomationProperties.AutomationId="NavLinksList">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="12" AutomationProperties.Name="{Binding ContentText}">
+                            <TextBlock
+                                Text="{Binding IconText}"
+                                Style="{x:Null}"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                FontSize="{StaticResource CaptionTextBlockFontSize}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"/>
+                            <TextBlock
+                                Text="{Binding ContentText}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <toolkit:GridSplitter
+                x:Name="NavigationPaneSplitter"
+                x:Uid="NavigationPaneSplitter"
+                Grid.Column="1"
+                ResizeBehavior="BasedOnAlignment"
+                ResizeDirection="Auto"
+                PointerPressed="GridSplitter_PointerPressed"
+                AutomationProperties.AutomationId="NavigationPaneSplitter"/>
+
+            <Frame x:Name="PageFrame" Grid.Column="2" Margin="16,0,0,0"/>
+        </Grid>
+
+        <!-- Status bar -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="{StaticResource CaptionTextBlockFontSize}"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="Button">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </Grid.Resources>
+            <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="10" Visibility="{x:Bind _viewModel.PerfMarkersVisibility, Mode=OneWay}">
+                <TextBlock x:Uid="ExpandedViewTargetAppPidTextBox"  Text="{x:Bind _viewModel.ApplicationPid, Mode=OneWay}" AutomationProperties.AutomationId="TargetAppPidTextBox"/>
+                <TextBlock x:Uid="ExpandedViewAppCpuPerf" Text="{x:Bind _viewModel.CpuUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppCpuPerf"/>
+                <TextBlock x:Uid="ExpandedViewAppMemoryPerf" Text="{x:Bind _viewModel.RamUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppMemoryPerf"/>
+                <TextBlock x:Uid="ExpandedViewAppDiskPerf" Text="{x:Bind _viewModel.DiskUsage, Mode=OneWay}" AutomationProperties.AutomationId="AppDiskPerf"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="10" >
+                <TextBlock x:Name="FilterDataToTargetAppToggleLabel" x:Uid="FilterDataToTargetAppToggleLabel" VerticalAlignment="Center"/>
+                <ToggleSwitch x:Name="ApplyAppFilteringToData" IsOn="{x:Bind _viewModel.ApplyAppFiltering, Mode=TwoWay}" MinWidth="0" AutomationProperties.AutomationId="AppFilteringToggleSwitch"  AutomationProperties.LabeledBy="{Binding ElementName=FilterDataToTargetAppToggleLabel}">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="Toggled">
+                            <ic:InvokeCommandAction Command="{x:Bind _viewModel.ApplyAppFilteringToDataCommand}" />
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ToggleSwitch>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

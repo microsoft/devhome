@@ -26,4 +26,6 @@ internal sealed class Constants
     public const string ExtensionIconInternal = "ms-appx:///HyperVExtension/Assets/hyper-v-provider-icon.png";
 
     public const string HyperVTemplatesSubPath = @"HyperVExtension\Templates";
+
+    public static string SystemRootPath { get; } = Path.GetPathRoot(Environment.SystemDirectory)!;
 }

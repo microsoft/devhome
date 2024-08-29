@@ -10,6 +10,9 @@ List of common controls that are generic, customizable and reusable from all pag
 - [CloseButton](./CloseButton.md)
 - [ExperimentControl](./ExperimentControl.md)
 
+## Behaviors
+- [RenderWebHyperlinksBehavior](./RenderWebHyperlinksBehavior.md)
+
 ## File dialog
 > [!NOTE]
 > File picker fails when running the application as admin.

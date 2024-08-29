@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.DevInsights.Pages.PreferencesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    Loaded="Page_Loaded">
+    <i:Interaction.Behaviors >
+        <behaviors:AutoFocusBehavior />
+    </i:Interaction.Behaviors>
+
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20">
+                <i:Interaction.Behaviors>
+                    <behaviors:BreadcrumbNavigationBehavior />
+                </i:Interaction.Behaviors>
+            </BreadcrumbBar>
+
+            <ctControls:SettingsCard x:Uid="SettingsThemeCard">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE790;" />
+                </ctControls:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="ThemeSelectionComboBox" AutomationProperties.AutomationId="ThemeSelectionComboBox">
+                    <ComboBoxItem x:Uid="SettingsThemeDefault" Tag="{x:Bind xaml:ElementTheme.Default}" AutomationProperties.AutomationId="SettingsThemeDefault" />
+                    <ComboBoxItem x:Uid="SettingsThemeLight" Tag="{x:Bind xaml:ElementTheme.Light}" AutomationProperties.AutomationId="SettingsThemeLight" />
+                    <ComboBoxItem x:Uid="SettingsThemeDark" Tag="{x:Bind xaml:ElementTheme.Dark}" AutomationProperties.AutomationId="SettingsThemeDark" />
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction
+                                Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                                CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ComboBox>
+            </ctControls:SettingsCard>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -24,6 +24,6 @@ public sealed partial class LandingPage : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.LoadModelAsync(false);
+        await ViewModel.LoadModelAsync();
     }
 }

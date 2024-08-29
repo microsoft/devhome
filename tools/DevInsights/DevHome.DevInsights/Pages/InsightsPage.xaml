@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.DevInsights.Pages.InsightsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:helpers="using:DevHome.DevInsights.Helpers"
+    xmlns:models="using:DevHome.DevInsights.Models"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
+    <Page.Resources>
+        <helpers:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Uid="InsightsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" AutomationProperties.AutomationId="InsightsHeaderTextBlock"/>
+        <TextBlock
+            x:Uid="InsightsPlaceholderTextBlock"
+            Grid.Row="1"
+            Margin="0,0,0,8"
+            Visibility="{x:Bind ViewModel.InsightsService.InsightsList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}" AutomationProperties.AutomationId="InsightsPlaceholderTextBlock"/>
+
+        <ItemsControl x:Name="InsightsItemsControl" ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="2">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:Insight">
+                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" AutomationProperties.AutomationId="Expander">
+                        <interactivity:Interaction.Behaviors>
+                            <helpers:ExpanderBehavior />
+                        </interactivity:Interaction.Behaviors>
+                        <Expander.Header>
+                            <Grid AutomationProperties.AutomationId="ExpanderHeader">
+                                <TextBlock Text="{x:Bind Title}" AutomationProperties.AutomationId="TitleTextBlock"/>
+                                <controls:InfoBadge
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Right"
+                                    MinWidth="16"
+                                    MinHeight="16"
+                                    Opacity="{x:Bind BadgeOpacity, Mode=OneWay}"
+                                    Style="{StaticResource SuccessIconInfoBadgeStyle}"
+                                    AutomationProperties.AutomationId="InfoBadge">
+                                </controls:InfoBadge>
+                            </Grid>
+                        </Expander.Header>
+                        <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left" AutomationProperties.AutomationId="RichTextBlock">
+                            <Paragraph>
+                                <Run Text="{x:Bind Description}"/>
+                            </Paragraph>
+                        </RichTextBlock>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</Page>

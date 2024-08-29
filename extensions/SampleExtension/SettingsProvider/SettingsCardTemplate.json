@@ -1,0 +1,24 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "%Settings_ViewLogs%",
+              "verb": "OpenLogs",
+              "tooltip": "%Settings_ViewLogs%"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "minHeight": "200px"
+}
