@@ -48,10 +48,10 @@ public sealed partial class PrimaryWindow : WindowEx
         }
         else
         {
-            PInvoke.ShowWindow(DBarWindow.CurrentHwnd, SHOW_WINDOW_CMD.SW_RESTORE);
+            PInvoke.ShowWindow(DBarWindow.ThisHwnd, SHOW_WINDOW_CMD.SW_RESTORE);
 
             // Activate is unreliable so use SetForegroundWindow
-            PInvoke.SetForegroundWindow(DBarWindow.CurrentHwnd);
+            PInvoke.SetForegroundWindow(DBarWindow.ThisHwnd);
         }
     }
 
