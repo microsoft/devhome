@@ -389,4 +389,28 @@
     <value>{0} Logo</value>
     <comment>Locked="{0}" The alt text for the Microsoft logo on the review tab. {0} is the name of the image.</comment>
   </data>
+  <data name="SpaceErrorSystemDrive" xml:space="preserve">
+    <value>Please free at least {0} of space to download the {1} image from the gallery onto your system drive ({2}).</value>
+    <comment>{Locked="{0}", "{1}", "{2}"} Error text for when there is insufficient space on the users system drive to create a VM on a drive.</comment>
+  </data>
+  <data name="SpaceErrorDefaultHyperVDrive" xml:space="preserve">
+    <value>Please free at least {0} of space in your default Hyper-V virtual disk location to create a new virtual disk for the {1} virtual machine. Your default virtual disk location is '{2}'. You can update this location in the Hyper-V Manager app settings.</value>
+    <comment>{Locked="{0}", "{1}", "{2}"} Error text for when there is insufficient space on the users default virtual disk path to create a VM on a drive.</comment>
+  </data>
+  <data name="SpaceErrorForSystemAndDefaultHyperVDifferentLocations" xml:space="preserve">
+    <value>Please free at least {0} of space on your system drive ({1}) to download the {2} image from the gallery, and at least {3} of space in the default Hyper-V virtual disk location. Your default virtual disk location is '{4}'. You can update this location in the Hyper-V Manager app settings.</value>
+    <comment>{Locked="{0}", "{1}", "{2}", "{3}", "{4}"} Error text for when there is insufficient space to create a VM using the system drive and the users default virtual machine drive location.</comment>
+  </data>
+  <data name="SpaceErrorForSystemAndDefaultHyperVSameLocation" xml:space="preserve">
+    <value>Please free at least {0} of space on your system drive ({1}) to download the {2} image from the gallery, and to create a new virtual disk in your default Hyper-V virtual disk location.</value>
+    <comment>{Locked="{0}", "{1}", "{2}"} Error text for when there is insufficient space to create a VM using the system drive and the users default virtual machine drive location.</comment>
+  </data>
+  <data name="DefaultVirtualDiskPathDoesNotExist" xml:space="preserve">
+    <value>Your default Hyper-V virtual disk location '{0}' must exist and contain at least {1} of free space. This is required to create a {2} virtual machine. You can update this location in the Hyper-V Manager app settings.</value>
+    <comment>{Locked="{0}", "{1}", "{2}"} Error text for when the users default Hyper-V virtual disk location doesn't exist</comment>
+  </data>
+  <data name="UnableToGetSizeOfDefaultVirtualDiskPathDrive" xml:space="preserve">
+    <value>Couldn't verify the size of your default Hyper-V virtual disk location: '{0}'. The location must exist and contain at least {1} of free space. This is required to create a {2} virtual machine. You can update this location in the Hyper-V Manager app settings.</value>
+    <comment>{Locked="{0}", "{1}", "{2}"} Error text for when we are unable to get the size of the users default Hyper-V virtual disk location</comment>
+  </data>
 </root>
