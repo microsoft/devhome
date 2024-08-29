@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
+using DevHome.Service;
 using Windows.Win32.Foundation;
 using WinRT;
 
@@ -11,11 +12,8 @@ namespace COMRegistration;
 public class BasicClassWinRTFactory<T> : IClassFactory
 where T : new()
 {
-    private readonly T _classInstance;
-
-    public BasicClassWinRTFactory(T classInstance)
+    public BasicClassWinRTFactory()
     {
-        _classInstance = classInstance;
     }
 
     public int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject)
@@ -29,8 +27,22 @@ where T : new()
 
         if (riid == typeof(T).GUID || riid == Guid.Parse(Guids.IUnknown))
         {
-            // Create the instance of the WinRT object
-            ppvObject = MarshalInspectable<T>.FromManaged(_classInstance);
+            try
+            {
+                // Create the instance of the WinRT object
+                ppvObject = MarshalInspectable<T>.FromManaged(new T());
+            }
+            catch (Exception)
+            {
+                // We failed creating an object (possibly due to access denied). If we were just spun up
+                // to handle this (failed) activation, shut down our service.
+                if (ServiceLifetimeController.CanUnload())
+                {
+                    WindowsBackgroundService.Stop();
+                }
+
+                throw;
+            }
         }
         else
         {
