@@ -853,10 +853,6 @@
     <value>Dev Insights</value>
     <comment>{Locked} The product name</comment>
   </data>
-  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Close</value>
-    <comment>Describes a button that will close Dev Insights's window</comment>
-  </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
     <comment>{Locked="{0}", "{1}"} Message text when the process is the specified CPU architecture running on the specified CPU machine. {0} is the process architecture, {1} is the machine architecture.</comment>
