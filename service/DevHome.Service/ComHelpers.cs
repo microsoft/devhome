@@ -25,8 +25,7 @@ internal sealed class ComHelpers
     {
         // We need to be careful creating the GlobalOptions object. We can't use the baked in CLR marshaller, as it calls CoInitializeSecurity under
         // the covers... and we need to be able to set these options *before* we call CoInitializeSecurity.
-        HRESULT hr = CoCreateInstanceNoMarshal(CLSID_GlobalOptions, IntPtr.Zero, CLSCTX.CLSCTX_INPROC_SERVER | CLSCTX.CLSCTX_INPROC_HANDLER, typeof(IGlobalOptions).GUID, out IntPtr ptr);
-        hr.ThrowOnFailure();
+        CoCreateInstanceNoMarshal(CLSID_GlobalOptions, IntPtr.Zero, CLSCTX.CLSCTX_INPROC_SERVER | CLSCTX.CLSCTX_INPROC_HANDLER, typeof(IGlobalOptions).GUID, out IntPtr ptr).ThrowOnFailure();
 
         ComWrappers cw = new StrategyBasedComWrappers();
         IGlobalOptions option2 = (IGlobalOptions)cw.GetOrCreateObjectForComInstance(ptr, CreateObjectFlags.None);
@@ -94,7 +93,8 @@ internal sealed class ComHelpers
         unsafe
         {
             string devHomeServicePackage = Package.Current.Id.FullName;
-            HRESULT hr = PInvoke.CoImpersonateClient();
+            PInvoke.CoImpersonateClient().ThrowOnFailure();
+
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
 
             Span<char> outputBuffer = new char[10000];

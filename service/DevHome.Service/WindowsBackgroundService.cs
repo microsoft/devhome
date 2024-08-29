@@ -63,12 +63,8 @@ public sealed class WindowsBackgroundService() : BackgroundService
     {
         uint cookie;
 
-        HRESULT hr = PInvoke.CoRegisterClassObject(clsid, new BasicClassWinRTFactory<T>(), CLSCTX.CLSCTX_LOCAL_SERVER, REGCLS.REGCLS_MULTIPLEUSE | REGCLS.REGCLS_SUSPENDED, out cookie);
-        Marshal.ThrowExceptionForHR(hr);
-
+        PInvoke.CoRegisterClassObject(clsid, new BasicClassWinRTFactory<T>(), CLSCTX.CLSCTX_LOCAL_SERVER, REGCLS.REGCLS_MULTIPLEUSE | REGCLS.REGCLS_SUSPENDED, out cookie).ThrowOnFailure();
         _registrationCookies.Add(cookie);
-
-        hr = PInvoke.CoResumeClassObjects();
-        Marshal.ThrowExceptionForHR(hr);
+        PInvoke.CoResumeClassObjects().ThrowOnFailure();
     }
 }
