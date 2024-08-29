@@ -136,9 +136,11 @@ public partial class DashboardView : ToolPage, IDisposable
     private async Task OnLoadedAsync()
     {
         ViewModel.IsLoading = true;
+        ViewModel.HasWidgetServiceInitialized = false;
 
         if (await ValidateDashboardState())
         {
+            ViewModel.HasWidgetServiceInitialized = true;
             await InitializeDashboard();
         }
 
@@ -193,30 +195,43 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task<bool> ValidateDashboardState()
     {
+        // Ensure we're not running as admin. Display an error and don't allow using the Dashboard if we are.
         if (ViewModel.IsRunningAsAdmin())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
             return false;
         }
-        else if (!ViewModel.WidgetServiceService.CheckForWidgetService())
+
+        // Ensure the WidgetService is installed and up to date.
+        var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
+        switch (widgetServiceState)
         {
-            var widgetServiceState = ViewModel.WidgetServiceService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetServiceService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
-                widgetServiceState == WidgetServiceService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
-            {
-                // Show error message that updating may help
+            case WidgetServiceService.WidgetServiceStates.MeetsMinVersion:
+                _log.Information($"WidgetServiceState meets min version");
+                break;
+            case WidgetServiceService.WidgetServiceStates.NotAtMinVersion:
+                _log.Warning($"Initialization failed, WidgetServiceState not at min version");
                 UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
-            }
-            else
-            {
+                return false;
+            case WidgetServiceService.WidgetServiceStates.NotOK:
+                _log.Warning($"Initialization failed, WidgetServiceState not OK");
+                NotOKServiceMessageStackPanel.Visibility = Visibility.Visible;
+                return false;
+            case WidgetServiceService.WidgetServiceStates.Updating:
+                _log.Warning($"Initialization failed, WidgetServiceState updating");
+                UpdatingWidgetServiceMessageStackPanel.Visibility = Visibility.Visible;
+                return false;
+            case WidgetServiceService.WidgetServiceStates.Unknown:
                 _log.Error($"Initialization failed, WidgetServiceState unknown");
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
-            }
-
-            return false;
+                return false;
+            default:
+                break;
         }
-        else if (!await SubscribeToWidgetCatalogEventsAsync())
+
+        // Ensure we can access the WidgetService and subscribe to WidgetCatalog events.
+        if (!await SubscribeToWidgetCatalogEventsAsync())
         {
             _log.Error($"Catalog event subscriptions failed, show error");
             RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
@@ -228,8 +243,6 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task InitializeDashboard()
     {
-        ViewModel.HasWidgetServiceInitialized = true;
-
         var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
         _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
         if (isFirstDashboardRun)
@@ -547,7 +560,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else
         {
-            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetPlatformRuntimePackageId}"));
         }
     }
 
