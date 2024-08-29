@@ -159,6 +159,7 @@
   </data>
   <data name="FileStatusRenamedModified" xml:space="preserve">
     <value>Renamed, Modified</value>
-    <comment>File status to display when its Git status is renamed with unstanged changes</comment>
+    <comment>File status to display when its Git status is renamed with unstaged changes</comment>
+
   </data>
 </root>
