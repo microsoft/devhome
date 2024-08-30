@@ -122,9 +122,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevSetupAgent.Test", "exten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyperVExtension.HostGuestCommunication", "extensions\HyperVExtension\src\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj", "{D759CD66-494C-4A00-8075-8B65A9891349}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.DevInsights", "tools\DevInsights\DevHome.DevInsights\DevHome.DevInsights.csproj", "{CAAC0CDF-9AB8-4F43-A3EB-38D785AF5725}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.DevDiagnostics", "tools\DevDiagnostics\DevHome.DevDiagnostics\DevHome.DevDiagnostics.csproj", "{CAAC0CDF-9AB8-4F43-A3EB-38D785AF5725}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevInsights", "DevInsights", "{DB3D0F2C-1A7F-44B4-B408-B21A56212985}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevDiagnostics", "DevDiagnostics", "{DB3D0F2C-1A7F-44B4-B408-B21A56212985}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Customization", "Customization", "{623998FD-B0A6-4980-95D5-A5072301CA10}"
 EndProject
@@ -181,9 +181,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Devhome.Service.IDL", "serv
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestTools", "TestTools", "{7857275B-7970-4C26-B092-FF62EA890B1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDumpAnalyzer", "tools\DevInsights\TestTools\TestDumpAnalyzer\TestDumpAnalyzer.csproj", "{29963C5C-4CB6-4406-850A-99503CB87081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDumpAnalyzer", "tools\DevDiagnostics\TestTools\TestDumpAnalyzer\TestDumpAnalyzer.csproj", "{29963C5C-4CB6-4406-850A-99503CB87081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServiceCaller", "tools\DevInsights\TestTools\TestServiceCaller\TestServiceCaller.csproj", "{024CB70C-3449-4204-9171-A25C6C25783D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestServiceCaller", "tools\DevDiagnostics\TestTools\TestServiceCaller\TestServiceCaller.csproj", "{024CB70C-3449-4204-9171-A25C6C25783D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
