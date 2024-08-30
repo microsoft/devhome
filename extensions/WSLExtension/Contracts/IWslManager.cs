@@ -34,14 +34,14 @@ public interface IWslManager
     void UnregisterDistribution(string distributionName);
 
     /// <summary> Launches a new WSL distribution.
-    /// This is a wrapper for <see cref="IWslServicesMediator.LaunchDistribution"/>
+    /// This is a wrapper for <see cref="IWslServicesMediator.LaunchDistributionAsync"/>
     /// </summary>
-    void LaunchDistribution(string distributionName, string? windowsTerminalProfile);
+    public Task LaunchDistributionAsync(string distributionName, string? windowsTerminalProfile);
 
     /// <summary> Installs a new WSL distribution.
-    /// This is a wrapper for <see cref="IWslServicesMediator.InstallDistribution(string)"/>
+    /// This is a wrapper for <see cref="IWslServicesMediator.InstallDistributionAsync(string)"/>
     /// </summary>
-    void InstallDistribution(string distributionName);
+    public Task InstallDistributionAsync(string distributionName);
 
     /// <summary> Terminates all sessions for a new WSL distribution.
     /// This is a wrapper for <see cref="IWslServicesMediator.TerminateDistribution(string)"/>

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -94,6 +95,7 @@ public sealed class Program
                 // Services
                 services.AddHttpClient();
                 services.AddWslExtensionServices();
+                services.AddCore();
             }).
             Build();
     }

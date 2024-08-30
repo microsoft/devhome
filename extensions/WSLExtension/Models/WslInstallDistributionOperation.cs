@@ -59,13 +59,13 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                 var startTime = DateTime.UtcNow;
                 _log.Information($"Starting installation for {_definition.Name}");
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_preparingToInstall, 0));
-                _wslManager.InstallDistribution(_definition.Name);
 
                 // Cancel waiting for install if the distribution hasn't been installed after 10 minutes.
                 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(10));
                 WslRegisteredDistribution? registeredDistribution = null;
                 var distributionInstalledSuccessfully = false;
+                await _wslManager.InstallDistributionAsync(_definition.Name);
 
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_waitingToComplete, 0));
                 while (!cancellationTokenSource.IsCancellationRequested)
