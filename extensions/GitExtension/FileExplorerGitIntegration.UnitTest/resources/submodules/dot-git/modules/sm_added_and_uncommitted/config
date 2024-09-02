@@ -1,0 +1,14 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+	worktree = ../../../sm_added_and_uncommitted
+[remote "origin"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
