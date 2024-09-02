@@ -32,7 +32,7 @@ public class WslProcessData
 
     public bool ExitedSuccessfully()
     {
-        return ExitCode == WslExeExitSuccess && string.IsNullOrEmpty(StdError);
+        return ExitCode == WslExeExitSuccess;
     }
 
     public override string ToString()
