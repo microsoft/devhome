@@ -126,28 +126,92 @@
     <value>Unable to launch a session into the distribution due to error: {0}</value>
     <comment>{Locked="{0}"} Error text for when we couldn't launch into the distribution. {0} is the error message</comment>
   </data>
-  <data name="WSLPrepareInstall" xml:space="preserve">
-    <value>Preparing to install and register {0}</value>
-    <comment>{Locked="{0}"} Text message for when an installation of a wsl distribution start. {0} is the name of the distribution</comment>
+  <data name="WSLCreationProcessStart" xml:space="preserve">
+    <value>Starting the creation process for {0}</value>
+    <comment>{Locked="{0}"} Text for when a user starts the creation process for a specific wsl distribution. {0} is the name of the distribution</comment>
   </data>
   <data name="WSLWaitingToCompleteInstallation" xml:space="preserve">
     <value>Waiting for {0}'s installation to complete</value>
     <comment>{Locked="{0}"} Text message to display when a wsl distribution is installing. {0} is the name of the distribution</comment>
   </data>
+  <data name="WSLWaitingToCompleteRegistration" xml:space="preserve">
+    <value>Waiting for the Windows Subsystem for Linux service to register {0}. This may take a few minutes.</value>
+    <comment>{Locked="Windows", "Linux", "{0}"} Text to display when a specific wsl distribution is being registered. {0} is the name of the distribution</comment>
+  </data>
   <data name="WSLInstallationFailedWithException" xml:space="preserve">
     <value>Unable to install and register {0} due to error: {1}. Try using wsl.exe to install it manually. See aka.ms/wslinstall</value>
-    <comment>{Locked="{0}", "{1}", "{wsl.exe}", {aka.ms/wslinstall}} Text message to display when we failed to install a wsl distribution. {0} is the name of the distribution and {1} is the error message.</comment>
+    <comment>{Locked="{0}", "{1}", "wsl.exe", "aka.ms/wslinstall"} Text message to display when we failed to install a wsl distribution. {0} is the name of the distribution and {1} is the error message.</comment>
   </data>
-  <data name="WSLInstallationFailedTimeOut" xml:space="preserve">
+ <data name="WSLInstallationFailedTimeOut" xml:space="preserve">
     <value>Installation timed out, unable to install and register {0}. Try using wsl.exe to install manually. See aka.ms/wslinstall</value>
     <comment>{Locked="{0}", "{wsl.exe}", "{aka.ms/wslinstall}"} Text message to display when we failed to install a wsl distribution. {0} is the name of the distribution</comment>
   </data>
+  <data name="InstallingWslKernelPackage" xml:space="preserve">
+    <value>The Windows Subsystem for Linux kernel package is not installed. Starting installation.</value>
+    <comment>{Locked="Windows", "Linux"}</comment>
+  </data>
+  <data name="WslKernelPackageInstallationCheck" xml:space="preserve">
+    <value>Checking if the Windows Subsystem for Linux kernel package is installed</value>
+    <comment>{Locked="Windows", "Linux"}</comment>
+  </data>
   <data name="WSLInstallationCompletedSuccessfully" xml:space="preserve">
-    <value>Successfully installed and registered {0}</value>
-    <comment>{Locked="{0}"} Text message to display when we successfully installed a wsl distribution. {0} is the name of the distribution</comment>
+    <value>Successfully installed {0}</value>
+    <comment>{Locked="{0}"} Text to display when we have successfully installed a specific wsl distribution package onto a users machine. {0} is the name of the distribution</comment>
   </data>
   <data name="VirtualMachinePlatformNotInstalled" xml:space="preserve">
     <value>The Virtual Machine Platform feature is needed for the WSL extension to function properly. The feature can be enabled in Dev Home's Windows customization page, under the virtualization feature management option. Enabling the feature will require a reboot. For more information on WSL requirements visit aka.ms/wslinstall</value>
-    <comment>{Locked="{Windows}", "{WSL}", "{aka.ms/wslinstall}", "{Dev Home}"} Text message to display when the virtual machine platform Windows optional component is not enabled.</comment>
+    <comment>{Locked="Windows", "WSL", "aka.ms/wslinstall", "Dev Home"} Text message to display when the virtual machine platform Windows optional component is not enabled.</comment>
+  </data>
+  <data name="AppInstallPending" xml:space="preserve">
+    <value>Installation of the {0} package is pending</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is pending. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallStarting" xml:space="preserve">
+    <value>Installation of the {0} package is now starting</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is starting. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallDownloading" xml:space="preserve">
+    <value>Downloading the {0} package {1}</value>
+    <comment>{Locked="{0}", "{1}"} Text to display when an app is downloading. {0} is the name of the package and {1} is the progress of the download e.g "10MB / 200MB"</comment>
+  </data>
+  <data name="AppInstalling" xml:space="preserve">
+    <value>Installing the {0} package</value>
+    <comment>{Locked="{0}"} Text to display when an app is installing.</comment>
+  </data>
+  <data name="AppInstallComplete" xml:space="preserve">
+    <value>Installation of the {0} package completed successfully</value>
+    <comment>{Locked="{0}"} Text to display when an app installation has completed. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallPaused" xml:space="preserve">
+    <value>Installation of the {0} package is paused</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is paused without a reason. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallPausedLowBattery" xml:space="preserve">
+    <value>Installation of the {0} package is paused due to low battery</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is paused due to low battery. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallPausedWiFi" xml:space="preserve">
+    <value>Installation of the {0} package is paused. Please connect to a wifi network.</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is paused due to the user needing to connect their PC to wifi. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallCancelled" xml:space="preserve">
+    <value>Installation of the {0} package was Canceled</value>
+    <comment>{Locked="{0}"} Text to display when an app installation is Canceled. {0} is the name of the package</comment>
+  </data>
+  <data name="AppInstallError" xml:space="preserve">
+    <value>Installation of the {0} package failed. '{1}'</value>
+    <comment>{Locked="{0}", "{1}"} Text to display when an app installation failed. {0} is the name of the package and {1} is the error message</comment>
+  </data>
+  <data name="AppInstallReadyToDownload" xml:space="preserve">
+    <value>The {0} package is now ready to download</value>
+    <comment>{Locked="{0}"} Text to display when an app is ready to download. {0} is the name of the package</comment>
+  </data>
+  <data name="WslKernelPackageName" xml:space="preserve">
+    <value>Windows Subsystem for Linux</value>
+    <comment>{Locked="Windows", "Linux"} Name of the WSL package name</comment>
+  </data>
+  <data name="WslKernelPackageInstalled" xml:space="preserve">
+    <value>The Windows Subsystem for Linux kernel package is installed</value>
+    <comment>{Locked="Windows", "Linux"} Text to display when the wsl package is installed.</comment>
   </data>
 </root>
