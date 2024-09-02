@@ -17,12 +17,7 @@ internal sealed class SandboxHelper
 
     public SandboxHelper()
     {
-        var parentDir = Directory.GetParent(typeof(SandboxHelper).Assembly.Location);
-        if (parentDir is null)
-        {
-            throw new InvalidOperationException("Could not obtain resources directory for sandbox repos");
-        }
-
+        var parentDir = Directory.GetParent(typeof(SandboxHelper).Assembly.Location) ?? throw new InvalidOperationException("Could not obtain resources directory for sandbox repos");
         ResourcesDirectory = new DirectoryInfo(Path.Combine(parentDir.FullName, "resources"));
         DeployedDirectory = Directory.CreateTempSubdirectory("SandboxHelper.");
     }
@@ -43,12 +38,12 @@ internal sealed class SandboxHelper
 
     private void CopyRecursive(DirectoryInfo source, DirectoryInfo target)
     {
-        foreach (DirectoryInfo dir in source.GetDirectories())
+        foreach (var dir in source.GetDirectories())
         {
             CopyRecursive(dir, target.CreateSubdirectory(FixName(dir.Name)));
         }
 
-        foreach (FileInfo file in source.GetFiles())
+        foreach (var file in source.GetFiles())
         {
             file.CopyTo(Path.Combine(target.FullName, FixName(file.Name)));
         }
