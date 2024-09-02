@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using DevHome.Services.Core.Models;
-using Windows.ApplicationModel;
 
 namespace DevHome.Services.Core.Contracts;
 
@@ -26,8 +25,8 @@ public interface ITerminalService
     public Task<ITerminalHost> GetDefaultTerminalAsync();
 
     /// <summary>
-    /// Gets the highest installed version of the Windows Terminal package (Release).
+    /// Gets the installed version of the Windows Terminal package (Release).
     /// </summary>
-    /// <returns>The terminal package if it is installed. Null otherwise.</returns>
+    /// <returns>The terminal package if it is installed if it exist</returns>
     public WindowsTerminal GetTerminalPackageIfInstalled();
 }

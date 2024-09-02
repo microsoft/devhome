@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using DevHome.Services.Core.Contracts;
 using DevHome.Services.Core.Models;
 using Microsoft.Extensions.Logging;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
 using static Microsoft.Win32.Registry;
@@ -65,13 +64,14 @@ public class TerminalService : ITerminalService
 
         // The user has never updated their terminal settings or launched terminal so it is set to
         // "Let Windows decide". By default its either Windows terminal or regular console host.
-        // There are no direct APIs to tell what the default is.
+        // depending on the build. There are no direct APIs to tell what the default is in this case
+        // so we return the windows console.
         if (consoleStartupKey == null)
         {
             return new WindowsConsole();
         }
 
-        // Console startup registry location exists but there are no entries for their terminal
+        // Console startup registry location exists but there are no entries for the terminal
         // delegation or the console delegation. So treat this the same as letting Windows choose
         // by default.
         if (consoleStartupKey.GetValue(TerminalDelegationName) is not string terminalDelegationId ||
@@ -82,7 +82,7 @@ public class TerminalService : ITerminalService
 
         // There are cases where in the startup console location both delegations have their clsid's
         // set to "{00000000-0000-0000-0000-000000000000}". This means the same thing as
-        // "Let Windows decide" so we return null here.
+        // "Let Windows decide" so we return the windows console.
         if (terminalDelegationId.Equals(DefaultDelegationClsid, StringComparison.OrdinalIgnoreCase) ||
             consoleDelegationId.Equals(DefaultDelegationClsid, StringComparison.OrdinalIgnoreCase))
         {
@@ -126,8 +126,9 @@ public class TerminalService : ITerminalService
         }
 
         // All the cases should be covered above. If we get here then it could be that the terminal
-        // and conhost app extensions changed where the Clsid properties are located which is unlikely.
-        // See terminal code here where this is based off of.
+        // and conhost app extensions changed where the Clsid properties are located in the manifest.
+        // This is unlikely as the app extensions location for terminals Clsids in the manifest is well
+        // established.
         _log.LogError("Couldn't find default Terminal host based on registry information");
         return new WindowsConsole();
     }
