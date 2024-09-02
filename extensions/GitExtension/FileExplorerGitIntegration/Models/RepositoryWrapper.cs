@@ -154,12 +154,20 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetFileStatus(string relativePath)
     {
-        GitStatusEntry? status;
-        if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
+        if (_statusCache.Status.SubmoduleEntries.TryGetValue(relativePath, out var subStatus))
         {
-            return string.Empty;
+            return ToString(subStatus);
+        }
+        else if (_statusCache.Status.FileEntries.TryGetValue(relativePath, out var status))
+        {
+            return ToString(status);
         }
 
+        return string.Empty;
+    }
+
+    private string ToString(GitStatusEntry status)
+    {
         if (status.Status == FileStatus.Unaltered || status.Status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
         {
             return string.Empty;
@@ -210,6 +218,32 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         return statusString;
+    }
+
+    private string ToString(SubmoduleStatus status)
+    {
+        if (status.HasFlag(SubmoduleStatus.WorkDirAdded))
+        {
+            return "Untracked";
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexAdded))
+        {
+            return "Staged";
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexModified))
+        {
+            return "Submodule staged";
+        }
+        else if (status.HasFlag(SubmoduleStatus.WorkDirFilesModified) || status.HasFlag(SubmoduleStatus.WorkDirFilesUntracked) || status.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty))
+        {
+            return "Submodule dirty";
+        }
+        else if (status.HasFlag(SubmoduleStatus.WorkDirModified))
+        {
+            return "Submodule changed";
+        }
+
+        return string.Empty;
     }
 
     // Detect uncommitted renames and return the original path.

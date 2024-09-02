@@ -36,13 +36,18 @@ public class GitSubmoduleUnitTests
     }
 
     [TestMethod]
-    [DataRow("", FolderStatusProp, "Branch: main | +0 ~0 -0 | +0 ~0 -0")]
-    [DataRow(".gitmodules", StatusProp, "")]
+    [DataRow("", FolderStatusProp, "Branch: main | +1 ~1 -0 | +0 ~7 -0")]
+    [DataRow(".gitmodules", StatusProp, "Staged, Modified")]
     [DataRow("README.txt", StatusProp, "")]
-    [DataRow("sm_unchanged", FolderStatusProp, "Branch: main | +0 ~0 -0 | +0 ~0 -0")]
+    [DataRow("sm_added_and_uncommitted", StatusProp, "Staged")]
+    [DataRow("sm_changed_file", StatusProp, "Submodule dirty")]
+    [DataRow("sm_changed_head", StatusProp, "Submodule changed")]
+    [DataRow("sm_changed_index", StatusProp, "Submodule dirty")]
+    [DataRow("sm_changed_untracked_file", StatusProp, "Submodule dirty")]
+    [DataRow("sm_missing_commits", StatusProp, "Submodule changed")]
+    [DataRow("sm_missing_commits_detached", StatusProp, "Submodule changed")]
     [DataRow("sm_unchanged", StatusProp, "")]
-    [DataRow("sm_unchanged_detached", FolderStatusProp, "Branch: main | +0 ~0 -0 | +0 ~0 -0")]
-    [DataRow("sm_unchanged", StatusProp, "")]
+    [DataRow("sm_unchanged_detached", StatusProp, "")]
     public void BaseRepoProperties(string path, string property, string value)
     {
         Assert.IsNotNull(_repo);

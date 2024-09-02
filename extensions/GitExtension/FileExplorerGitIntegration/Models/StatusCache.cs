@@ -421,16 +421,7 @@ internal sealed class StatusCache : IDisposable
                 }
             }
 
-            repoStatus.Add(filePath, submoduleStatus);
-
-            // The submodule is dirty, so fetch the nested file status
-            if (submoduleStatus.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty) ||
-                submoduleStatus.HasFlag(SubmoduleStatus.WorkDirFilesModified) ||
-                submoduleStatus.HasFlag(SubmoduleStatus.WorkDirFilesUntracked))
-            {
-                var submodulePath = Path.Combine(_workingDirectory, filePath);
-                ParseStatus(RetrieveStatusFromDirectory(submodulePath), repoStatus, filePath);
-            }
+            repoStatus.TryAdd(filePath, submoduleStatus);
         }
     }
 
