@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -91,9 +92,13 @@ public sealed class Program
             }).
             ConfigureServices((context, services) =>
             {
+                // Add Serilog logging for ILogger.
+                services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
                 // Services
                 services.AddHttpClient();
                 services.AddWslExtensionServices();
+                services.AddCore();
             }).
             Build();
     }
