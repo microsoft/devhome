@@ -72,10 +72,14 @@ public class WslProvider : IComputeSystemProvider
                 deserializedObject as WslInstallationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 
             var definitions = _wslManager.GetAllDistributionsAvailableToInstallAsync().GetAwaiter().GetResult();
-            return new WslInstallDistributionOperation(
-                definitions[wslInstallationUserInput.SelectedDistributionIndex],
-                _stringResource,
-                _wslManager);
+            var definition = definitions.SingleOrDefault(definition => definition.IsDistribution(wslInstallationUserInput.NewEnvironmentName));
+
+            if (definition == null)
+            {
+                throw new InvalidOperationException($"Couldn't find selected distribution with input {inputJson}");
+            }
+
+            return new WslInstallDistributionOperation(definition, _stringResource, _wslManager);
         }
         catch (Exception ex)
         {

@@ -33,7 +33,11 @@ public class WslManager : IWslManager, IDisposable
 
     private readonly IStringResource _stringResource;
 
+    private readonly object _distributionInstallLock = new();
+
     private readonly SemaphoreSlim _wslKernelPackageInstallLock = new(1, 1);
+
+    private readonly HashSet<string> _distributionsBeingInstalled = new();
 
     public event EventHandler<HashSet<string>>? DistributionStateSyncEventHandler;
 
@@ -90,15 +94,25 @@ public class WslManager : IWslManager, IDisposable
         var registeredDistributionsMap = await GetInformationOnAllRegisteredDistributionsAsync();
         var distributionsToListOnCreationPage = new List<DistributionDefinition>();
         _distributionDefinitionsMap ??= await _definitionHelper.GetDistributionDefinitionsAsync();
-        foreach (var distributionDefinition in _distributionDefinitionsMap.Values)
-        {
-            // filter out distribution definitions already registered on machine.
-            if (registeredDistributionsMap.TryGetValue(distributionDefinition.Name, out var _))
-            {
-                continue;
-            }
 
-            distributionsToListOnCreationPage.Add(distributionDefinition);
+        lock (_distributionInstallLock)
+        {
+            foreach (var distributionDefinition in _distributionDefinitionsMap.Values)
+            {
+                // filter out distribution definitions already registered on machine.
+                if (registeredDistributionsMap.TryGetValue(distributionDefinition.Name, out var _))
+                {
+                    continue;
+                }
+
+                // filter out distributions that are currently being installed/registered.
+                if (_distributionsBeingInstalled.Contains(distributionDefinition.Name))
+                {
+                    continue;
+                }
+
+                distributionsToListOnCreationPage.Add(distributionDefinition);
+            }
         }
 
         // Sort the list by distribution name in ascending order before sending it.
@@ -138,10 +152,58 @@ public class WslManager : IWslManager, IDisposable
         _wslServicesMediator.LaunchDistribution(distributionName, windowsTerminalProfile);
     }
 
-    /// <inheritdoc cref="IWslManager.InstallDistribution"/>
-    public void InstallDistribution(string distributionName)
+    /// <inheritdoc cref="IWslManager.InstallDistributionPackageAsync"/>
+    public async Task InstallDistributionPackageAsync(
+        DistributionDefinition definition,
+        Action<string>? statusUpdateCallback,
+        CancellationToken cancellationToken)
     {
-        _wslServicesMediator.InstallDistribution(distributionName);
+        lock (_distributionInstallLock)
+        {
+            if (_distributionsBeingInstalled.Contains(definition.Name))
+            {
+                throw new InvalidOperationException("Distribution already being installed");
+            }
+
+            _distributionsBeingInstalled.Add(definition.Name);
+        }
+
+        try
+        {
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("DistributionPackageInstallationCheck", definition.FriendlyName));
+            if (!_packageHelper.IsPackageInstalled(definition.PackageFamilyName))
+            {
+                // Install it from the store.
+                statusUpdateCallback?.Invoke(_stringResource.GetLocalized("DistributionPackageInstallationStart", definition.FriendlyName));
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!await _microsoftStoreService.TryInstallPackageAsync(definition.StoreAppId))
+                {
+                    throw new InvalidDataException($"Failed to install the {definition.Name} package");
+                }
+            }
+            else
+            {
+                statusUpdateCallback?.Invoke(_stringResource.GetLocalized("DistributionPackageAlreadyInstalled", definition.FriendlyName));
+            }
+
+            var package = _packageHelper.GetPackageFromPackageFamilyName(definition.PackageFamilyName);
+            if (package == null)
+            {
+                throw new InvalidDataException($"Couldn't find the {definition.Name} package");
+            }
+
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("WSLWaitingToCompleteRegistration", definition.FriendlyName));
+            cancellationToken.ThrowIfCancellationRequested();
+            _wslServicesMediator.InstallAndRegisterDistributionWithWithWslService(package);
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("WSLRegistrationCompletedSuccessfully", definition.FriendlyName));
+        }
+        finally
+        {
+            lock (_distributionInstallLock)
+            {
+                _distributionsBeingInstalled.Remove(definition.Name);
+            }
+        }
     }
 
     /// <inheritdoc cref="IWslManager.TerminateDistribution"/>
@@ -149,6 +211,27 @@ public class WslManager : IWslManager, IDisposable
     {
         _wslServicesMediator.TerminateDistribution(distributionName);
     }
+
+    /// <inheritdoc cref="IWslManager.InstallWslKernelPackageAsync"/>
+    public async Task InstallWslKernelPackageAsync(Action<string>? statusUpdateCallback, CancellationToken cancellationToken)
+    {
+        // Regardless of how many WSL distributions are being installed. Only one thread should be allowed to install the
+        // WSL kernel package if it isn't already installed.
+        await _wslKernelPackageInstallLock.WaitAsync(cancellationToken);
+        try
+        {
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("WslKernelPackageInstallationCheck"));
+            if (!_packageHelper.IsPackageInstalled(WSLPackageFamilyName))
+            {
+                // If not installed, we'll install it from the store.
+                statusUpdateCallback?.Invoke(_stringResource.GetLocalized("InstallingWslKernelPackage"));
+
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!await _microsoftStoreService.TryInstallPackageAsync(WslKernelPackageStoreId))
+                {
+                    throw new InvalidDataException("Failed to install the Wsl kernel package");
+                }
+            }
 
     /// <inheritdoc cref="IWslManager.InstallWslKernelPackageAsync"/>
     public async Task InstallWslKernelPackageAsync(Action<string>? statusUpdateCallback, CancellationToken cancellationToken)
@@ -230,6 +313,19 @@ public class WslManager : IWslManager, IDisposable
         var installItem = args.Item;
         var installationStatus = installItem.GetCurrentStatus();
         var itemInstallState = installationStatus.InstallState;
+
+        lock (_distributionInstallLock)
+        {
+            if (_distributionsBeingInstalled.Contains(installItem.ProductId))
+            {
+                if (itemInstallState == AppInstallState.Completed ||
+                    itemInstallState == AppInstallState.Canceled ||
+                    itemInstallState == AppInstallState.Error)
+                {
+                    _distributionsBeingInstalled.Remove(installItem.ProductId);
+                }
+            }
+        }
 
         WslInstallationEventHandler?.Invoke(this, installItem);
     }
