@@ -19,4 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
