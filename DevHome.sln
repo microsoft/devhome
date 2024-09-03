@@ -177,7 +177,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Service", "service\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Service.Projection", "service\DevHome.Service.Projection\DevHome.Service.Projection.csproj", "{13F1F098-262B-432D-977C-F710E6826C5C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Devhome.Service.IDL", "service\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj", "{17E96025-8251-4D62-BFFB-C571F728B66B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DevHome.Service.IDL", "service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj", "{17E96025-8251-4D62-BFFB-C571F728B66B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestTools", "TestTools", "{7857275B-7970-4C26-B092-FF62EA890B1E}"
 EndProject

@@ -418,7 +418,7 @@ internal sealed class WERHelper : IDisposable
         Faulting module path: C:\WINDOWS\System32\KERNELBASE.dll
         Report Id: 7a4cd0a8-f65b-4f27-b250-cc5bd57e39d6
         Faulting package full name: Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
-        Faulting package-relative application ID: Devhome.Diagnostics
+        Faulting package-relative application ID: DevHome.Diagnostics
 
         Let's create a placeholder failure bucket based on the module name, offset, and exception code. In the above example,
         we'll generate a bucket "KERNELBASE.dll+0x000000000005f20c 0xe0434352"

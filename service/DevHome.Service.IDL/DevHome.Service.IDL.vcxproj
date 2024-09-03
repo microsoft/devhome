@@ -25,7 +25,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{17e96025-8251-4d62-bffb-c571f728b66b}</ProjectGuid>
-    <RootNamespace>DevhomeServiceIDL</RootNamespace>
+    <RootNamespace>DevHomeServiceIDL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
