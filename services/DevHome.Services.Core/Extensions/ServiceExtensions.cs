@@ -14,7 +14,6 @@ public static class ServiceExtensions
     {
         services.TryAddSingleton<IMicrosoftStoreService, MicrosoftStoreService>();
         services.TryAddSingleton<IPackageDeploymentService, PackageDeploymentService>();
-        services.TryAddSingleton<ITerminalService, TerminalService>();
         return services;
     }
 }

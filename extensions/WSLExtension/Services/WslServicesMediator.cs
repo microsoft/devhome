@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
-using DevHome.Services.Core.Contracts;
-using DevHome.Services.Core.Models;
 using Microsoft.Win32;
 using Serilog;
 using WSLExtension.ClassExtensions;
@@ -30,14 +28,9 @@ public class WslServicesMediator : IWslServicesMediator
 
     private readonly IProcessCreator _processCreator;
 
-    private readonly ITerminalService _terminalService;
-
-    public WslServicesMediator(
-        IProcessCreator creator,
-        ITerminalService terminalService)
+    public WslServicesMediator(IProcessCreator creator)
     {
         _processCreator = creator;
-        _terminalService = terminalService;
     }
 
     /// <inheritdoc cref="IWslServicesMediator.GetAllNamesOfRunningDistributions"/>
@@ -157,39 +150,13 @@ public class WslServicesMediator : IWslServicesMediator
         }
     }
 
-    /// <inheritdoc cref="IWslServicesMediator.LaunchDistributionAsync"/>
-    public async Task LaunchDistributionAsync(string distributionName, string? windowsTerminalProfile)
+    /// <inheritdoc cref="IWslServicesMediator.LaunchDistribution"/>
+    public void LaunchDistribution(string distributionName)
     {
-        var defaultTerminal = await GetFileNameForProcessLaunchAsync();
-
-        // Only launch with terminal if its installed
-        if (defaultTerminal.TerminalHostKind == TerminalHostKind.Terminal)
-        {
-            LaunchDistributionUsingTerminal(distributionName, defaultTerminal, windowsTerminalProfile);
-            return;
-        }
-
-        // Default to starting the wsl process directly and passing in its command line args
+        // Start the wsl process directly and passing in its command line args
         _processCreator.CreateProcessWithWindow(
             WslExe,
-            LaunchDistributionWithoutTerminal.FormatArgs(distributionName));
-    }
-
-    private void LaunchDistributionUsingTerminal(string distributionName, ITerminalHost terminal, string? windowsTerminalProfile)
-    {
-        var terminalArgs = LaunchDistributionInTerminalWithNoProfile.FormatArgs(distributionName);
-
-        if (!string.IsNullOrEmpty(windowsTerminalProfile))
-        {
-            // Launch into terminal with the specified profile and run wsl.exe in the console window
-            terminalArgs = LaunchDistributionInTerminalWithProfile.FormatArgs(windowsTerminalProfile, distributionName);
-            _processCreator.CreateProcessWithWindow(terminal.AbsolutePathOfExecutable, terminalArgs);
-        }
-        else
-        {
-            // Launch into terminal and run wsl.exe in the console window without a profile
-            _processCreator.CreateProcessWithWindow(terminal.AbsolutePathOfExecutable, terminalArgs);
-        }
+            LaunchDistributionArgs.FormatArgs(distributionName));
     }
 
     /// <inheritdoc cref="IWslServicesMediator.TerminateDistribution"/>
@@ -203,54 +170,11 @@ public class WslServicesMediator : IWslServicesMediator
         }
     }
 
-    /// <inheritdoc cref="IWslServicesMediator.InstallDistributionAsync"/>
-    public async Task InstallDistributionAsync(string distributionName)
+    /// <inheritdoc cref="IWslServicesMediator.InstallDistribution"/>
+    public void InstallDistribution(string distributionName)
     {
-        var defaultTerminal = await GetFileNameForProcessLaunchAsync();
-
-        // Launch into terminal if its installed and run wsl.exe in the console window
-        if (defaultTerminal.TerminalHostKind == TerminalHostKind.Terminal)
-        {
-            _processCreator.CreateProcessWithWindow(
-                defaultTerminal.AbsolutePathOfExecutable,
-                InstallDistributionWithTerminal.FormatArgs(distributionName));
-            return;
-        }
-
-        // Default to starting the wsl process directly and passing in its command line args
         _processCreator.CreateProcessWithWindow(
             WslExe,
-            InstallDistributionWithoutTerminal.FormatArgs(distributionName));
-    }
-
-    private async Task<ITerminalHost> GetFileNameForProcessLaunchAsync()
-    {
-        try
-        {
-            var defaultTerminal = await _terminalService.GetDefaultTerminalAsync();
-
-            if (defaultTerminal.TerminalHostKind == TerminalHostKind.Console)
-            {
-                // Windows maybe in "Let windows decide" state or console host may be the users default.
-                // So we'll check if Terminal is installed because we want to launch WSL using terminal
-                // when possible.
-                var terminalReleaseVersion = _terminalService.GetTerminalPackageIfInstalled();
-
-                if (terminalReleaseVersion.CanBeExecuted())
-                {
-                    return terminalReleaseVersion;
-                }
-            }
-
-            // Use default terminal
-            return defaultTerminal;
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Unable to get default terminal version");
-        }
-
-        // Default to using Windows Console.
-        return new WindowsConsole();
+            InstallDistributionArgs.FormatArgs(distributionName));
     }
 }

@@ -65,7 +65,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                 cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(10));
                 WslRegisteredDistribution? registeredDistribution = null;
                 var distributionInstalledSuccessfully = false;
-                await _wslManager.InstallDistributionAsync(_definition.Name);
+                _wslManager.InstallDistribution(_definition.Name);
 
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_waitingToComplete, 0));
                 while (!cancellationTokenSource.IsCancellationRequested)

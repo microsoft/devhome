@@ -116,16 +116,16 @@ public class WslManager : IWslManager
         _wslServicesMediator.UnregisterDistribution(distributionName);
     }
 
-    /// <inheritdoc cref="IWslManager.LaunchDistributionAsync"/>
-    public async Task LaunchDistributionAsync(string distributionName, string? windowsTerminalProfile = null)
+    /// <inheritdoc cref="IWslManager.LaunchDistribution"/>
+    public void LaunchDistribution(string distributionName)
     {
-        await _wslServicesMediator.LaunchDistributionAsync(distributionName, windowsTerminalProfile);
+        _wslServicesMediator.LaunchDistribution(distributionName);
     }
 
-    /// <inheritdoc cref="IWslManager.InstallDistributionAsync"/>
-    public async Task InstallDistributionAsync(string distributionName)
+    /// <inheritdoc cref="IWslManager.InstallDistribution"/>
+    public void InstallDistribution(string distributionName)
     {
-        await _wslServicesMediator.InstallDistributionAsync(distributionName);
+        _wslServicesMediator.InstallDistribution(distributionName);
     }
 
     /// <inheritdoc cref="IWslManager.TerminateDistribution"/>

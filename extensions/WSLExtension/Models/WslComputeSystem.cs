@@ -281,12 +281,12 @@ public class WslComputeSystem : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options)
     {
-        return Task.Run(async () =>
+        return Task.Run(() =>
         {
             try
             {
                 UpdateState(ComputeSystemState.Starting);
-                await _wslManager.LaunchDistributionAsync(Id, _distribution.AssociatedTerminalProfileGuid);
+                _wslManager.LaunchDistribution(Id);
                 UpdateState(ComputeSystemState.Running);
                 return new ComputeSystemOperationResult();
             }
