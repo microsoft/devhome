@@ -161,6 +161,18 @@
     <value>Renamed, Modified</value>
     <comment>File status to display when its Git status is renamed with unstaged changes</comment>
   </data>
+  <data name="SubmoduleStatusStaged" xml:space="preserve">
+    <value>Submodule staged</value>
+    <comment>Submodule status to display when a submodule is added and staged</comment>
+  </data>
+  <data name="SubmoduleStatusDirty" xml:space="preserve">
+    <value>Submodule dirty</value>
+    <comment>Submodule status to display when the Git submodule has local modifications</comment>
+  </data>
+  <data name="SubmoduleStatusChanged" xml:space="preserve">
+    <value>Submodule changed</value>
+    <comment>Submodule status to display when the Git submodule refers to a different commit.</comment>
+  </data>
   <data name="RepositoryNotFound" xml:space="preserve">
     <value>Please choose a path to the working directory. For example, the path with the .git subfolder.</value>
     <comment>Display message when the repository path is invalid</comment>

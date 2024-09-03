@@ -32,6 +32,9 @@ internal sealed class RepositoryWrapper : IDisposable
     private readonly string _fileStatusStagedRenamedModified;
     private readonly string _fileStatusModified;
     private readonly string _fileStatusRenamedModified;
+    private readonly string _submoduleStatusChanged;
+    private readonly string _submoduleStatusDirty;
+    private readonly string _submoduleStatusStaged;
 
     private Commit? _head;
     private CommitLogCache? _commits;
@@ -54,6 +57,9 @@ internal sealed class RepositoryWrapper : IDisposable
         _fileStatusStagedRenamedModified = _stringResource.GetLocalized("FileStatusStagedRenamedModified");
         _fileStatusModified = _stringResource.GetLocalized("FileStatusModified");
         _fileStatusRenamedModified = _stringResource.GetLocalized("FileStatusRenamedModified");
+        _submoduleStatusChanged = _stringResource.GetLocalized("SubmoduleStatusChanged");
+        _submoduleStatusDirty = _stringResource.GetLocalized("SubmoduleStatusDirty");
+        _submoduleStatusStaged = _stringResource.GetLocalized("SubmoduleStatusStaged");
     }
 
     public CommitWrapper? FindLastCommit(string relativePath)
@@ -224,23 +230,23 @@ internal sealed class RepositoryWrapper : IDisposable
     {
         if (status.HasFlag(SubmoduleStatus.WorkDirAdded))
         {
-            return "Untracked";
+            return _fileStatusUntracked;
         }
         else if (status.HasFlag(SubmoduleStatus.IndexAdded))
         {
-            return "Staged";
+            return _fileStatusStaged;
         }
         else if (status.HasFlag(SubmoduleStatus.IndexModified))
         {
-            return "Submodule staged";
+            return _submoduleStatusStaged;
         }
         else if (status.HasFlag(SubmoduleStatus.WorkDirFilesModified) || status.HasFlag(SubmoduleStatus.WorkDirFilesUntracked) || status.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty))
         {
-            return "Submodule dirty";
+            return _submoduleStatusDirty;
         }
         else if (status.HasFlag(SubmoduleStatus.WorkDirModified))
         {
-            return "Submodule changed";
+            return _submoduleStatusChanged;
         }
 
         return string.Empty;
