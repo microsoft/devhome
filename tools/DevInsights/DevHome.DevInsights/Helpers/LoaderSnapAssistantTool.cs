@@ -15,6 +15,7 @@ using DevHome.DD.Controls;
 using DevHome.DD.Services;
 using DevHome.DevInsights.Models;
 using DevHome.DevInsights.Services;
+using DevHome.Service;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
@@ -30,12 +31,14 @@ public class LoaderSnapAssistantTool
     private const string WindowsImageETWProvider = "2cb15d1d-5fc1-11d2-abe1-00a0c911f518"; /*EP_Microsoft-Windows-ImageLoad*/
     private const uint LoaderSnapsFlag = 0x80; /* ETW_UMGL_LDR_SNAPS_FLAG */
     private readonly DDInsightsService _insightsService;
+    private readonly IDevHomeService _devHomeService;
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     public LoaderSnapAssistantTool()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         _insightsService = Application.Current.GetService<DDInsightsService>();
+        _devHomeService = Application.Current.GetService<IDevHomeService>();
         Init();
     }
 
@@ -47,43 +50,29 @@ public class LoaderSnapAssistantTool
         });
         crashDumpAnalyzerThread.Name = "LoaderSnapAssistantThread";
         crashDumpAnalyzerThread.Start();
+
+        _devHomeService.MissingFileProcessLaunchFailure += info =>
+        {
+            if (!IsLoaderSnapLoggingEnabledForImage(info.processName))
+            {
+                _dispatcher.TryEnqueue(() =>
+                {
+                    var insight = new InsightPossibleLoaderIssue();
+                    insight.Title = "Process exited due to missing files";
+                    insight.Text = string.Format(CultureInfo.CurrentCulture, "Process {0} (pid: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", info.processName, info.pid, info.exitCode);
+                    insight.ImageFileName = info.processName;
+                    _insightsService.AddInsight(insight);
+                });
+            }
+        };
     }
 
     private void MyETWListener()
     {
         TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
 
-        if (RuntimeHelper.IsCurrentProcessRunningAsAdmin())
-        {
-            // First enable the kernel provider to look for processes exiting with non-zero exit codes
-            session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
-        }
-
-        // Enablthe loader snaps provider
+        // Enable the loader snaps provider
         session.EnableProvider(WindowsImageETWProvider, TraceEventLevel.Error, LoaderSnapsFlag);
-
-        session.Source.Kernel.ProcessStop += data =>
-        {
-            if (data.ExitStatus == NTSTATUS.STATUS_DLL_NOT_FOUND || data.ExitStatus == (int)WIN32_ERROR.ERROR_MOD_NOT_FOUND)
-            {
-                if (!IsLoaderSnapLoggingEnabledForImage(data.ImageFileName))
-                {
-                    string processName = data.ImageFileName;
-                    int pid = data.ProcessID;
-                    int exitCode = data.ExitStatus;
-                    _dispatcher.TryEnqueue(() =>
-                    {
-                        var insight = new InsightPossibleLoaderIssue();
-                        insight.Title = "Process exited due to missing files";
-                        insight.Text = string.Format(CultureInfo.CurrentCulture, "Process {0} (DDD: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited", processName, pid, exitCode);
-                        insight.ImageFileName = processName;
-                        _insightsService.AddInsight(insight);
-                    });
-                }
-
-                // else, loader snap logging is enabled, we'll get the error message from the loader snap logs
-            }
-        };
 
         // We don't care about a lot of the ETW data that is coming in, so we just hook up the All event and ignore it
         session.Source.Dynamic.All += data => { };

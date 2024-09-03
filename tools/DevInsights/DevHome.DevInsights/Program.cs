@@ -3,19 +3,15 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
-using DevHome.DevInsights.Helpers;
 using DevHome.DevInsights.Models;
-using DevHome.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -42,9 +38,6 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var service = CommonHelper.GetDevHomeService();
-        int num = service.GetNumber();
-
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevInsights"));
         var configuration = new ConfigurationBuilder()
@@ -252,20 +245,5 @@ public static class Program
                 }
             }
         });
-    }
-
-    private sealed class Ole32
-    {
-        // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-        public const int _CLSCTX_LOCAL_SERVER = 0x4;
-
-        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
-        [DllImport(nameof(Ole32))]
-        public static extern int CoCreateInstance(
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
-            IntPtr pUnkOuter,
-            uint dwClsContext,
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-            [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
     }
 }

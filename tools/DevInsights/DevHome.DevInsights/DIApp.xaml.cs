@@ -13,6 +13,7 @@ using DevHome.DevInsights.Services;
 using DevHome.DevInsights.Telemetry;
 using DevHome.DevInsights.TelemetryEvents;
 using DevHome.DevInsights.ViewModels;
+using DevHome.Service;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -54,6 +55,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
                 services.AddSingleton<InternalToolsHelper>();
+                services.AddSingleton<IDevHomeService>(CommonHelper.GetDevHomeService());
                 services.AddSingleton<LoaderSnapAssistantTool>();
 
                 // Window
