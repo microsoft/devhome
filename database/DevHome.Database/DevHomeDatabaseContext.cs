@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +19,8 @@ public class DevHomeDatabaseContext : DbContext
 
     public DevHomeDatabaseContext()
     {
-        // Not the final path.  It will change before going into main.
-        // Needs a configurable location for testing.
+        // TODO: make the default path Application data if an MSIX.
+        // Otherwise use a temp location.  Location to be determined later.
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
         DbPath = Path.Join(path, "DevHome.db");
@@ -26,8 +28,10 @@ public class DevHomeDatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // If I have time, this should be split like service extensions.
-        // As more entities are added, the longer this method will get.
+        // TODO: Use ServiceExtensions as an example to set up individual
+        // models using fluent API.  Currently, not needed, but will as this method
+        // will expand as more entities are added.
+        // If that is too much work these definitions can be placed inside the C# class.
         var repositoryEntity = modelBuilder.Entity<Repository>();
         if (repositoryEntity != null)
         {
