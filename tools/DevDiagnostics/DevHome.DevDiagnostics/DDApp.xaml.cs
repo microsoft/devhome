@@ -75,7 +75,7 @@ public partial class App : Application, IApp
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsPageViewModel>();
 
-                // Settings sub-_pages and viewmodels.
+                // Settings sub-pages and viewmodels.
                 services.AddTransient<PreferencesViewModel>();
                 services.AddTransient<PreferencesPage>();
                 services.AddTransient<AdditionalToolsViewModel>();

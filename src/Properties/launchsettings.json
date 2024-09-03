@@ -2,7 +2,7 @@
   "profiles": {
     "DevHome (Package)": {
       "commandName": "MsixPackage",
-      "doNotLaunchApp": false,
+      "doNotLaunchApp": true,
       "nativeDebugging": false
     },
     "DevHome (Unpackaged)": {
