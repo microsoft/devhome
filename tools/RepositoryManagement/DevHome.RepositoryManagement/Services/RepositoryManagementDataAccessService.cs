@@ -1,13 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
+using DevHome.Database.Factories;
 using DevHome.RepositoryManagement.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Hosting;
@@ -17,25 +21,19 @@ namespace DevHome.RepositoryManagement.Services;
 
 public class RepositoryManagementDataAccessService
 {
+    private const string EventName = "DevHome_RepositoryData_Event";
+
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementDataAccessService));
 
-    private readonly IHost _host;
+    private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
 
-    public RepositoryManagementDataAccessService(IHost host)
+    public RepositoryManagementDataAccessService(DevHomeDatabaseContextFactory databaseContextFactory)
     {
-        // Store the host to make dbContext and RepositoryManagementItemViewModel
-        // dbContext can not be passed in because RepositoryManagementDataAccessService is singleton
-        // and dbContext needs to be scoped.
-        // RepositoryManagementItemViewModel can not be passed in because multiple are made.
-        // The best solution is to make factories for DevHomeContext and RepositoryManagementItemViewModel.
-        // Might be in a future change.
-        _host = host;
+        _databaseContextFactory = databaseContextFactory;
     }
 
     public void AddRepository(string repositoryName, string cloneLocation)
     {
-        // TODO: Check if repositoryName and cloneLocation is null or empty and
-        // return a correct value indicating such.
         Repository newRepo = new();
         newRepo.RepositoryName = repositoryName;
         newRepo.RepositoryClonePath = cloneLocation;
@@ -47,63 +45,77 @@ public class RepositoryManagementDataAccessService
 
         newRepo.RepositoryMetadata = newMetadata;
 
-        var dbContext = _host.GetService<DevHomeDatabaseContext>();
+        using var dbContext = _databaseContextFactory.GetNewContext();
         dbContext.Add(newRepo);
         dbContext.Add(newMetadata);
-        dbContext.SaveChanges();
     }
 
-    public List<RepositoryManagementItemViewModel> GetRepositories(bool removeRepositoriesNotInTheirSavedLocation)
+    public List<Repository> GetRepositories()
     {
-        // This class should not know about RepositoryManagementItemViewModel.
-        // This should be moved to RepositoryManagementMainpageViewModel instead.
-        // Do that in the next PR.
-        var repos = QueryDatabaseForRepositories(removeRepositoriesNotInTheirSavedLocation);
-        return ConvertToLineItems(repos);
-    }
+        _log.Information("Getting repositories");
+        var dbContext = _databaseContextFactory.GetNewContext();
 
-    private IIncludableQueryable<Repository, RepositoryMetadata> QueryDatabaseForRepositories(bool removeRepositoriesNotInTheirSavedLocation)
-    {
-        var dbContext = _host.GetService<DevHomeDatabaseContext>();
-        var repositoriesFromDatabase = dbContext.Repositories.Include(x => x.RepositoryMetadata);
+        List<Repository> repositories = [];
 
-        if (!removeRepositoriesNotInTheirSavedLocation)
+        try
         {
-            return repositoriesFromDatabase;
+            repositories = dbContext.Repositories.Include(x => x.RepositoryMetadata).ToList();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, ex.ToString());
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(GetRepositories), ex));
         }
 
-        // The database can get out of sync.  Take this as an example.
-        // DevHome writes a repository.
-        // The user moves or deletes the repository.
-        // Now the database record has the correct name, but the incorrect location.
-        // Remove records where the directory does not exist.
-        repositoriesFromDatabase
-            .ToList() // EF does not understand Directory.Exists.  Fetch the data first.
-            .Where(x => !Directory.Exists(x.RepositoryClonePath))
-            .ToList()
-            .ForEach(x => dbContext.Repositories.Remove(x));
-
-        dbContext.SaveChanges();
-
-        return dbContext.Repositories.Include(x => x.RepositoryMetadata);
+        return repositories;
     }
 
-    private List<RepositoryManagementItemViewModel> ConvertToLineItems(IIncludableQueryable<Repository, RepositoryMetadata> repositories)
+    public Repository GetRepository(string repositoryName, string cloneLocation)
     {
-        List<RepositoryManagementItemViewModel> items = new();
-
-        foreach (var repo in repositories)
+        _log.Information("Getting a repository");
+        try
         {
-            var lineItem = _host.GetService<RepositoryManagementItemViewModel>();
-            lineItem.ClonePath = repo.RepositoryClonePath;
-            lineItem.Branch = "main"; // Test value.  Will change in the future.
-            lineItem.RepositoryName = repo.RepositoryName;
-            lineItem.LatestCommit = "No commits found"; // Test value.  Will change in the future.
-
-            lineItem.IsHiddenFromPage = repo.RepositoryMetadata.IsHiddenFromPage;
-            items.Add(lineItem);
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName.Equals(repositoryName, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(Path.GetFullPath(x.RepositoryClonePath), Path.GetFullPath(cloneLocation), StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, ex.ToString());
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(GetRepository), ex));
         }
 
-        return items;
+        return null;
+    }
+
+    public bool UpdateCloneLocation(Repository repository, string newLocation)
+    {
+        repository.RepositoryClonePath = newLocation;
+        return true;
+    }
+
+    public bool Save()
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            dbContext.SaveChanges();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when saving.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(AddRepository), ex));
+            return false;
+        }
     }
 }
