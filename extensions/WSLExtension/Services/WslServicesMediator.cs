@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using Microsoft.Win32;
-using Serilog;
 using WSLExtension.ClassExtensions;
 using WSLExtension.Contracts;
 using WSLExtension.Exceptions;
@@ -20,8 +18,6 @@ namespace WSLExtension.Services;
 /// </summary>
 public class WslServicesMediator : IWslServicesMediator
 {
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslServicesMediator));
-
     private const int FirstIndex = 0;
 
     private readonly PackageHelper _packageHelper = new();
