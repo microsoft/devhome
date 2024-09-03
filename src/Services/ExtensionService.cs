@@ -12,6 +12,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
+using Windows.Foundation;
 using Windows.Foundation.Collections;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
@@ -22,6 +23,8 @@ public class ExtensionService : IExtensionService, IDisposable
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionService));
 
     public event EventHandler OnExtensionsChanged = (_, _) => { };
+
+    public event TypedEventHandler<IExtensionService, IExtensionWrapper> ExtensionToggled = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new();
@@ -369,14 +372,16 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public void EnableExtension(string extensionUniqueId)
     {
-        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
-        _enabledExtensions.Add(extension.First());
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal)).First();
+        ExtensionToggled.Invoke(this, extension);
+        _enabledExtensions.Add(extension);
     }
 
     public void DisableExtension(string extensionUniqueId)
     {
-        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
-        _enabledExtensions.Remove(extension.First());
+        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal)).First();
+        ExtensionToggled.Invoke(this, extension);
+        _enabledExtensions.Remove(extension);
     }
 
     /// <inheritdoc cref="IExtensionService.DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper)"/>

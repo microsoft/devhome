@@ -66,11 +66,15 @@
           "enabledByDefault": false,
           "visible": true
         }
-      ]
+      ],
+      "openPage": {
+        "key": "DevHome.Customization.ViewModels.MainPageViewModel"
+      }
     },
     {
       "identity": "FileExplorerSourceControlIntegration",
       "enabledByDefault": false,
+      "needsFeaturePresenceCheck": true,
       "buildTypeOverrides": [
         {
           "buildType": "dev",
@@ -87,7 +91,11 @@
           "enabledByDefault": false,
           "visible": false
         }
-      ]
+      ],
+     "openPage": {
+        "key": "DevHome.Customization.ViewModels.MainPageViewModel",
+        "parameter": "ShowFileExplorer"
+      }
     },
     {
       "identity": "QuickstartPlayground",
@@ -108,10 +116,14 @@
           "enabledByDefault": false,
           "visible": true
         }
-      ]
+      ],
+      "openPage": {
+        "key": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
+        "parameter": "StartQuickstartPlayground"
+      }
     },
     {
-      "identity": "ProjectIronsidesExperiment",
+      "identity": "DevInsightsExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {
@@ -129,7 +141,10 @@
           "enabledByDefault": false,
           "visible": true
         }
-      ]
+      ],
+      "openPage": {
+        "key": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel"
+      }
     }
   ]
 }

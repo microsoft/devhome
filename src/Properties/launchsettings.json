@@ -2,16 +2,16 @@
   "profiles": {
     "DevHome (Package)": {
       "commandName": "MsixPackage",
-      "doNotLaunchApp": true
+      "doNotLaunchApp": true,
+      "nativeDebugging": false
     },
     "DevHome (Unpackaged)": {
       "commandName": "Project"
     },
-    "PI (Package)": {
+    "DevInsights (Package)": {
       "commandName": "MsixPackage",
-      "commandLineArgs": "--utilitylaunch DevHome.PI.Exe ",
-      "nativeDebugging": false,
-      "doNotLaunchApp": true
+      "commandLineArgs": "--utilitylaunch DevHome.DevInsights.Exe ",
+      "nativeDebugging": true
     }
   }
 }

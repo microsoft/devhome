@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <!-- Debug builds produce a console app; otherwise a Windows app -->
+  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
     <OutputType>Exe</OutputType>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
-    <OutputType>Exe</OutputType>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
@@ -38,8 +34,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
 </Project>

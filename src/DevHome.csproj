@@ -22,7 +22,6 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
 
   <!-- To build with the correct logo assets, only include the ones for the current build ring.
@@ -71,9 +70,9 @@
 
   <ItemGroup>
     <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
-    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.0-beta" GeneratePathProperty="true" />
-    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.1.0-beta" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240805-x2200" />
+    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.1-beta" GeneratePathProperty="true" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.2.1-beta" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240820-x2042" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
@@ -81,19 +80,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\DevHome.Service.Proxy\DevHome.Service.Proxy.vcxproj" />
-    <ProjectReference Include="..\DevHome.Service\DevHome.Service.csproj" />
+    <ProjectReference Include="..\service\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+    <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
+    <ProjectReference Include="..\service\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
@@ -101,8 +95,7 @@
     <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\PI\DevHome.PI\DevHome.PI.csproj" />
-    <ProjectReference Include="..\tools\PI\PI Utilities\EnableLoaderSnaps\EnableLoaderSnaps.csproj" />
+    <ProjectReference Include="..\tools\DevInsights\DevHome.DevInsights\DevHome.DevInsights.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj" />
@@ -174,18 +167,7 @@
     <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="F:\DevHome\x64\Debug\DevHome.Service.Proxy.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_FailFast'">
-    <DefineConstants>$(DefineConstants);DEBUG;DEBUG_FAILFAST</DefineConstants>
-  </PropertyGroup>
 
   <!-- Third party notice file -->
   <ItemGroup>
@@ -199,6 +181,11 @@
   <ItemGroup>
     <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\service\Devhome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">

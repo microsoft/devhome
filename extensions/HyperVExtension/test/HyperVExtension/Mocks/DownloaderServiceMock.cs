@@ -23,18 +23,18 @@ public class DownloaderServiceMock : IDownloaderService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task StartDownloadAsync(IProgress<IOperationReport> progressProvider, Uri sourceWebUri, string destinationFile, CancellationToken cancellationToken)
+    public async Task StartDownloadAsync(IDownloadSubscriber subscriber, Uri sourceWebUri, string destinationFilePath, CancellationToken cancellationToken)
     {
         var bytesReceivedSoFar = 0L;
         for (var i = 0; i < _totalIterations; i++)
         {
             await Task.Delay(100, cancellationToken);
             bytesReceivedSoFar += _bytesReceivedEachIteration;
-            progressProvider.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
+            subscriber.Report(new DownloadOperationReport(new ByteTransferProgress(bytesReceivedSoFar, _totalBytesToReceive)));
         }
 
         var zipFile = await GetTestZipFileInPackage();
-        var destinationFolder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(destinationFile));
+        var destinationFolder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(destinationFilePath));
         var newDownloadedFile = await destinationFolder.CreateFileAsync(zipFile.Name, CreationCollisionOption.ReplaceExisting);
         await zipFile.CopyAndReplaceAsync(newDownloadedFile);
     }
@@ -62,5 +62,10 @@ public class DownloaderServiceMock : IDownloaderService
     {
         await Task.Delay(1, cancellationToken);
         return 100L;
+    }
+
+    public bool IsFileBeingDownloaded(string destinationFilePath)
+    {
+        return true;
     }
 }

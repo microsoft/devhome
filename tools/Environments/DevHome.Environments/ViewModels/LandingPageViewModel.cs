@@ -48,6 +48,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private bool _wasSyncButtonClicked;
 
+    private bool _extensionsToggled;
+
     private string _selectedProvider = string.Empty;
 
     public bool IsLoading { get; set; }
@@ -98,6 +100,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
+        IExtensionService extensionService,
         Window mainWindow)
     {
         _computeSystemManager = manager;
@@ -111,6 +114,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _lastSyncTime = _stringResource.GetLocalized("MomentsAgo");
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
+        extensionService.ExtensionToggled += OnExtensionToggled;
+    }
+
+    private void OnExtensionToggled(IExtensionService sender, IExtensionWrapper extension)
+    {
+        if (extension.HasProviderType(ProviderType.ComputeSystem))
+        {
+            _extensionsToggled = true;
+        }
     }
 
     public void Initialize(StackedNotificationsBehavior notificationQueue)
@@ -216,7 +228,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// <summary>
     /// Main entry point for loading the view model.
     /// </summary>
-    public async Task LoadModelAsync(bool useDebugValues = false)
+    public async Task LoadModelAsync()
     {
         lock (_lock)
         {
@@ -228,8 +240,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
+            // But if the user toggled extensions, we need to reload the page to show refreshed data.
             SetupCreateComputeSystemOperationForUI();
-            if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked)
+            if (HasPageLoadedForTheFirstTime && !_wasSyncButtonClicked && !_extensionsToggled)
             {
                 return;
             }
@@ -269,6 +282,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         {
             IsLoading = false;
             HasPageLoadedForTheFirstTime = true;
+            _extensionsToggled = false;
         }
     }
 

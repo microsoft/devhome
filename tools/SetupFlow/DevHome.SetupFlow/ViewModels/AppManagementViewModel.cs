@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -18,6 +19,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(AppManagementViewModel));
+    private readonly IScreenReaderService _screenReaderService;
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
@@ -45,11 +47,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     public AppManagementViewModel(
         ISetupFlowStringResource stringResource,
+        IScreenReaderService screenReaderService,
         SetupFlowOrchestrator orchestrator,
         IHost host,
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
+        _screenReaderService = screenReaderService;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
@@ -107,6 +111,8 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         {
             package.IsSelected = false;
         }
+
+        _screenReaderService.Announce(StringResource.GetLocalized(StringResourceKey.RemovedAllApplications));
     }
 
     [RelayCommand]

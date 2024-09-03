@@ -317,11 +317,11 @@
     <value>Apply</value>
     <comment>Apply changes to feature state.</comment>
   </data>
-  <data name="CommittingChangesTitle" xml:space="preserve">
+  <data name="ModifyFeaturesDialog.Title" xml:space="preserve">
     <value>Committing changes</value>
     <comment>Title displayed during the process of applying changes</comment>
   </data>
-  <data name="CommittingChangesMessage" xml:space="preserve">
+  <data name="ModifyFeaturesDialogMessage.Text" xml:space="preserve">
     <value>Please wait for the changes to take effect.</value>
     <comment>Message indicating the user should wait for the changes to be applied</comment>
   </data>
@@ -329,11 +329,15 @@
     <value>Restart now</value>
     <comment>Button text to restart the system immediately</comment>
   </data>
-  <data name="CancelButtonText" xml:space="preserve">
+  <data name="ModifyFeaturesDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="ModifyFeaturesDialog.SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
     <comment>Button text to cancel the current operation</comment>
   </data>
-  <data name="RestartRequiredTitle" xml:space="preserve">
+  <data name="RestartDialog.Title" xml:space="preserve">
     <value>Restart required</value>
     <comment>Title displayed when a restart is required to apply changes</comment>
   </data>
@@ -341,7 +345,15 @@
     <value>Please restart your machine for your applied changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
-  <data name="DontRestartNowButtonText" xml:space="preserve">
+  <data name="RestartRequiredDialogMessage.Text" xml:space="preserve">
+    <value>Please restart your machine for your applied changes to take effect.</value>
+    <comment>Message instructing the user to restart their machine to apply changes</comment>
+  </data>
+  <data name="RestartDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Restart now</value>
+    <comment>Button text to restart the system immediately</comment>
+  </data>
+  <data name="RestartDialog.SecondaryButtonText" xml:space="preserve">
     <value>Don't restart now</value>
     <comment>Button text to postpone system restart</comment>
   </data>
@@ -389,7 +401,7 @@
     <value>A restart may be required for long path changes to take effect.</value>
     <comment>Message instructing the user to restart their machine to apply changes</comment>
   </data>
-   <data name="AddRepositoriesTextBlock.Text" xml:space="preserve">
+  <data name="AddRepositoriesTextBlock.Text" xml:space="preserve">
     <value>Add repositories</value>
     <comment>Header for the add repositories user experience for file explorer source control integration</comment>
   </data>
@@ -410,15 +422,47 @@
     <comment>Default value for provider selector</comment>
   </data>
   <data name="RemoveFolder.Text" xml:space="preserve">
-    <value>Remove</value>
+    <value>Remove from list</value>
     <comment>Click to remove a folder path from source control integration</comment>
   </data>
   <data name="MenuFlyoutUnregisteredRepository_Content" xml:space="preserve">
     <value>Unassigned</value>
     <comment>This is the content string displayed when a repository is added in the File Explorer Settings page but no source control provider has been selected. </comment>
   </data>
-  <data name="RemoveRepository.Text" xml:space="preserve">
-    <value>Enter path to remove an enhanced repository</value>
-    <comment>The text for removing a repository from source control integration</comment>
+  <data name="OpenFolderInFileExplorer.Text" xml:space="preserve">
+    <value>Open in File Explorer</value>
+    <comment>Click to open the folder path inside File Explorer </comment>
+  </data>
+  <data name="EnableVersionControlIntegrationCard.Description" xml:space="preserve">
+    <value>Allow Dev Home to enhance your File Explorer view for known repositories</value>
+    <comment>The description for the settings card that allows user to enable or disable File Explorer Version Control Integration</comment>
+  </data>
+  <data name="EnableVersionControlIntegrationCard.Header" xml:space="preserve">
+    <value>Enable File Explorer Version Control Integration</value>
+    <comment>The header for the settings card that allows user to enable or disable File Explorer Version Control Integration</comment>
+  </data>
+  <data name="FileExplorerSettingsTextBlock.Text" xml:space="preserve">
+    <value>File Explorer + Version Control</value>
+    <comment>The text for the File Explorer Settings toggle</comment>
+  </data>
+  <data name="ShowVersionControlInfoCard.Description" xml:space="preserve">
+    <value>See version control columns for enhanced repositories like "Code Status", "Last Change Date", "Last Change Message"</value>
+    <comment>The description for the settings card that allows user to enable or disable display of version control property information inside File Explorer</comment>
+  </data>
+  <data name="ShowVersionControlInfoCard.Header" xml:space="preserve">
+    <value>Show version control information</value>
+    <comment>The header for the settings card that allows user to enable or disable displayment of version control property information inside File Explorer</comment>
+  </data>
+  <data name="ShowRepositoryStatusCard.Description" xml:space="preserve">
+    <value>See useful repository statuses provided by relevant version control extension like current branch and remote origin (if applicable)</value>
+    <comment>The description for the settings card that allows user to enable or disable display of repository status inside File Explorer</comment>
+  </data>
+  <data name="ShowRepositoryStatusCard.Header" xml:space="preserve">
+    <value>Show the repository status</value>
+    <comment>The header for the settings card that allows user to enable or disable display of repository status inside File Explorer</comment>
+  </data>
+  <data name="PrefixForDevHomeVersion" xml:space="preserve">
+    <value>Provided by {0}</value>
+    <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
   </data>
 </root>

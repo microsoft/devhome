@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
@@ -18,14 +19,18 @@ public class RepositoryInformation
 
     public string SourceControlProviderDisplayName { get; set; }
 
+    public string SourceControlProviderPackageDisplayName { get; }
+
     public RepositoryInformation(string rootpath, string classId)
     {
         RepositoryRootPath = rootpath;
         SourceControlProviderCLSID = classId;
-        SourceControlProviderDisplayName = GetExtensionDisplayName(classId);
+        var extension = GetExtension(classId);
+        SourceControlProviderDisplayName = GetExtensionDisplayName(extension);
+        SourceControlProviderPackageDisplayName = GetExtensionPackageDisplayName(extension);
     }
 
-    private string GetExtensionDisplayName(string classId)
+    private IExtensionWrapper? GetExtension(string classId)
     {
         var extensionService = Application.Current.GetService<IExtensionService>();
         var sourceControlExtensions = Task.Run(async () => await extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)).Result.ToList();
@@ -34,12 +39,20 @@ public class RepositoryInformation
         {
             if (extension.ExtensionClassId == classId)
             {
-                return extension.ExtensionDisplayName;
+                return extension;
             }
         }
 
-        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        return null;
+    }
 
-        return stringResource.GetLocalized("MenuFlyoutUnregisteredRepository_Content");
+    private string GetExtensionDisplayName(IExtensionWrapper? extension)
+    {
+        return extension?.ExtensionDisplayName ?? new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources").GetLocalized("MenuFlyoutUnregisteredRepository_Content");
+    }
+
+    private string GetExtensionPackageDisplayName(IExtensionWrapper? extension)
+    {
+        return extension?.PackageDisplayName ?? new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources").GetLocalized("MenuFlyoutUnregisteredRepository_Content");
     }
 }

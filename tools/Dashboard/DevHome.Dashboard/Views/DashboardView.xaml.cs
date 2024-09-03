@@ -52,6 +52,7 @@ public partial class DashboardView : ToolPage, IDisposable
     private static DispatcherQueue _dispatcherQueue;
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IWidgetExtensionService _widgetExtensionService;
+    private readonly CancellationTokenSource _initWidgetsCancellationTokenSource = new();
     private bool _disposedValue;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -85,6 +86,7 @@ public partial class DashboardView : ToolPage, IDisposable
             var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
             if (widgetCatalog == null)
             {
+                _log.Error("Error in in SubscribeToWidgetCatalogEvents, widgetCatalog == null");
                 return false;
             }
 
@@ -143,6 +145,8 @@ public partial class DashboardView : ToolPage, IDisposable
     [RelayCommand]
     private async Task OnUnloadedAsync()
     {
+        _log.Debug($"Unloading Dashboard, cancel any loading.");
+        _initWidgetsCancellationTokenSource?.Cancel();
         ViewModel.PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChangedAsync;
         Bindings.StopTracking();
 
@@ -150,16 +154,17 @@ public partial class DashboardView : ToolPage, IDisposable
 
         _log.Debug($"Leaving Dashboard, deactivating widgets.");
 
+        await _pinnedWidgetsLock.WaitAsync();
         try
         {
             await Task.Run(() => UnsubscribeFromWidgets());
         }
-        catch (Exception ex)
+        finally
         {
-            _log.Error(ex, "Exception in UnsubscribeFromWidgets:");
+            ViewModel.PinnedWidgets.Clear();
+            _pinnedWidgetsLock.Release();
         }
 
-        ViewModel.PinnedWidgets.Clear();
         await UnsubscribeFromWidgetCatalogEventsAsync();
     }
 
@@ -190,9 +195,10 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else if (ViewModel.WidgetServiceService.CheckForWidgetServiceAsync())
         {
-            ViewModel.HasWidgetService = true;
             if (await SubscribeToWidgetCatalogEventsAsync())
             {
+                ViewModel.HasWidgetServiceInitialized = true;
+
                 var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
@@ -200,7 +206,15 @@ public partial class DashboardView : ToolPage, IDisposable
                     await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
                 }
 
-                await InitializePinnedWidgetListAsync(isFirstDashboardRun);
+                try
+                {
+                    await InitializePinnedWidgetListAsync(isFirstDashboardRun, _initWidgetsCancellationTokenSource.Token);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    _log.Information(ex, "InitializePinnedWidgetListAsync operation was cancelled.");
+                    return;
+                }
             }
             else
             {
@@ -229,7 +243,7 @@ public partial class DashboardView : ToolPage, IDisposable
         ViewModel.IsLoading = false;
     }
 
-    private async Task InitializePinnedWidgetListAsync(bool isFirstDashboardRun)
+    private async Task InitializePinnedWidgetListAsync(bool isFirstDashboardRun, CancellationToken cancellationToken)
     {
         var hostWidgets = await GetPreviouslyPinnedWidgets();
         if ((hostWidgets.Length == 0) && isFirstDashboardRun)
@@ -237,11 +251,40 @@ public partial class DashboardView : ToolPage, IDisposable
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
             _log.Information($"Pin default widgets");
-            await PinDefaultWidgetsAsync();
+            await _pinnedWidgetsLock.WaitAsync(CancellationToken.None);
+            try
+            {
+                await PinDefaultWidgetsAsync(cancellationToken);
+            }
+            catch (OperationCanceledException ex)
+            {
+                // If the operation is cancelled, delete any default widgets that were already pinned and reset the IsNotFirstDashboardRun setting.
+                // Next time the user opens the Dashboard, treat it as the first run again.
+                _log.Information(ex, "PinDefaultWidgetsAsync operation was cancelled, delete any widgets already pinned");
+                foreach (var widget in ViewModel.PinnedWidgets)
+                {
+                    await widget.Widget.DeleteAsync();
+                }
+
+                await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, false);
+            }
+            finally
+            {
+                _pinnedWidgetsLock.Release();
+            }
         }
         else
         {
-            await RestorePinnedWidgetsAsync(hostWidgets);
+            await _pinnedWidgetsLock.WaitAsync(CancellationToken.None);
+            try
+            {
+                await RestorePinnedWidgetsAsync(hostWidgets, cancellationToken);
+            }
+            finally
+            {
+                // No cleanup to do if the operation is cancelled.
+                _pinnedWidgetsLock.Release();
+            }
         }
     }
 
@@ -274,7 +317,7 @@ public partial class DashboardView : ToolPage, IDisposable
         return [.. comSafeHostWidgets];
     }
 
-    private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets)
+    private async Task RestorePinnedWidgetsAsync(ComSafeWidget[] hostWidgets, CancellationToken cancellationToken)
     {
         var restoredWidgetsWithPosition = new SortedDictionary<int, ComSafeWidget>();
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, ComSafeWidget>();
@@ -289,6 +332,8 @@ public partial class DashboardView : ToolPage, IDisposable
         // append it at the end. If a position is missing, just show the next widget in order.
         foreach (var widget in hostWidgets)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
                 var stateStr = await widget.GetCustomStateAsync();
@@ -381,7 +426,9 @@ public partial class DashboardView : ToolPage, IDisposable
         {
             var comSafeWidget = orderedWidget.Value;
             var size = await comSafeWidget.GetSizeAsync();
-            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, finalPlace++);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, finalPlace++, cancellationToken);
         }
 
         // Go through the newly created list of pinned widgets and update any positions that may have changed.
@@ -390,6 +437,8 @@ public partial class DashboardView : ToolPage, IDisposable
         var updatedPlace = 0;
         foreach (var widget in ViewModel.PinnedWidgets)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
 
@@ -410,21 +459,23 @@ public partial class DashboardView : ToolPage, IDisposable
         _log.Information($"After delete, {length} widgets for this host");
     }
 
-    private async Task PinDefaultWidgetsAsync()
+    private async Task PinDefaultWidgetsAsync(CancellationToken cancellationToken)
     {
         var comSafeWidgetDefinitions = await ComSafeHelpers.GetAllOrderedComSafeWidgetDefinitions(ViewModel.WidgetHostingService);
         foreach (var comSafeWidgetDefinition in comSafeWidgetDefinitions)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var id = comSafeWidgetDefinition.Id;
             if (WidgetHelpers.DefaultWidgetDefinitionIds.Contains(id))
             {
                 _log.Information($"Found default widget {id}");
-                await PinDefaultWidgetAsync(comSafeWidgetDefinition);
+                await PinDefaultWidgetAsync(comSafeWidgetDefinition, cancellationToken);
             }
         }
     }
 
-    private async Task PinDefaultWidgetAsync(ComSafeWidgetDefinition defaultWidgetDefinition)
+    private async Task PinDefaultWidgetAsync(ComSafeWidgetDefinition defaultWidgetDefinition, CancellationToken cancellationToken)
     {
         try
         {
@@ -467,8 +518,12 @@ public partial class DashboardView : ToolPage, IDisposable
             await comSafeWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position);
+            await InsertWidgetInPinnedWidgetsAsync(comSafeWidget, size, position, cancellationToken);
             _log.Information($"Inserted default widget {unsafeWidgetId} at position {position}");
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -580,9 +635,10 @@ public partial class DashboardView : ToolPage, IDisposable
             buttonText: stringResource.GetLocalized("CloseButtonText"));
     }
 
-    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, int index)
+    private async Task InsertWidgetInPinnedWidgetsAsync(ComSafeWidget widget, WidgetSize size, int index, CancellationToken cancellationToken = default)
     {
-        await Task.Run(async () =>
+        await Task.Run(
+            async () =>
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
@@ -613,6 +669,8 @@ public partial class DashboardView : ToolPage, IDisposable
                     new ReportPinnedWidgetEvent(comSafeWidgetDefinition.ProviderDefinitionId, widgetDefinitionId));
 
                 var wvm = _widgetViewModelFactory(widget, size, comSafeWidgetDefinition);
+                cancellationToken.ThrowIfCancellationRequested();
+
                 _dispatcherQueue.TryEnqueue(() =>
                 {
                     try
@@ -631,7 +689,8 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 await DeleteWidgetWithNoDefinition(widget, widgetDefinitionId);
             }
-        });
+        },
+            cancellationToken);
     }
 
     private async Task DeleteWidgetWithNoDefinition(ComSafeWidget widget, string widgetDefinitionId)

@@ -8,8 +8,8 @@
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:devEnvModels="using:DevHome.SetupFlow.Models.Environments"
     xmlns:devViewModels="using:DevHome.SetupFlow.ViewModels.Environments"
-    xmlns:devEnvCustomControls="using:DevHome.Common.Environments.CustomControls" 
-    xmlns:devCommonModels="using:DevHome.Common.Environments.Models" 
+    xmlns:devEnvCustomControls="using:DevHome.Common.Environments.CustomControls"
+    xmlns:devCommonModels="using:DevHome.Common.Environments.Models"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -56,6 +56,7 @@
                             <devEnvCustomControls:CardBody
                                     Grid.Row="1"
                                     ComputeSystemTitle="{x:Bind ComputeSystemTitle, Mode=OneWay}"
+                                    ComputeSystemAlternativeTitle="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"
                                     ComputeSystemImage="{x:Bind ComputeSystemImage, Mode=OneWay}"
                                     StateColor="{x:Bind StateColor, Mode=OneWay}"
                                     CardState="{x:Bind CardState, Mode=OneWay}"
@@ -142,12 +143,12 @@
                         AutomationProperties.Name="{x:Bind AccessibilityName, Mode=OneWay}"
                         Grid.Row="0"
                         VerticalAlignment="Center">
-                        <TextBlock 
+                        <TextBlock
                             Text="{x:Bind DisplayName, Mode=OneWay}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             Margin=" 0 0 0 0"
                             IsTextSelectionEnabled="True"/>
-                        <TextBlock 
+                        <TextBlock
                             Margin="7 0 0 0"
                             Text="{x:Bind FormattedDeveloperId, Mode=OneWay}"
                             Foreground="{ThemeResource TextFillColorTertiaryBrush}"
@@ -196,10 +197,10 @@
     </UserControl.Resources>
 
         <!--- Show the "Setup a Target header on the page. -->
-    <setupControls:SetupShell 
+    <setupControls:SetupShell
         x:Uid="SetupShell_SetupTarget"
         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-        Foreground="{ThemeResource TextFillColorSecondary}" 
+        Foreground="{ThemeResource TextFillColorSecondary}"
         SetupShellNotificationVisibility="Visible">
         <Grid
             RowSpacing="40">
@@ -221,7 +222,7 @@
                     Text="{x:Bind ViewModel.ComputeSystemFilterText, Mode=TwoWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
-                            <ic:InvokeCommandAction 
+                            <ic:InvokeCommandAction
                                 Command="{x:Bind ViewModel.FilterTextChangedCommand, Mode=OneWay}"
                                 CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
                         </ic:EventTriggerBehavior>
@@ -240,7 +241,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <!--- Target Provider text. -->
-                    <TextBlock 
+                    <TextBlock
                         x:Uid="SetupTarget_TargetProvider"
                         Grid.Column="0"
                         VerticalAlignment="Center"/>
@@ -254,14 +255,14 @@
                         SelectedValue="{x:Bind ViewModel.SelectedComputeSystemProviderComboBoxName, Mode=TwoWay}">
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction  
-                                    Command="{Binding FilterComboBoxChangedCommand, Mode=OneWay}"  
+                                <ic:InvokeCommandAction
+                                    Command="{Binding FilterComboBoxChangedCommand, Mode=OneWay}"
                                     CommandParameter="{Binding SelectedValue, ElementName=ComputeSystemProviderComboBox, Mode=OneWay}"/>
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
                     </ComboBox>
                     <!--- Sort text label -->
-                    <TextBlock 
+                    <TextBlock
                         x:Uid="SetupTargetSortLabel"
                         Grid.Column="2"
                         VerticalAlignment="Center"/>
@@ -277,8 +278,8 @@
                         SelectedIndex="{x:Bind ViewModel.SelectedComputeSystemSortComboBoxIndex, Mode=TwoWay}">
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction  
-                                    Command="{Binding SortComboBoxChangedCommand, Mode=OneWay}"  
+                                <ic:InvokeCommandAction
+                                    Command="{Binding SortComboBoxChangedCommand, Mode=OneWay}"
                                     CommandParameter="{Binding SelectedIndex, ElementName=ComputeSystemsSortComboBox, Mode=OneWay}"/>
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
@@ -295,12 +296,12 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <FontIcon 
+                            <FontIcon
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Grid.Column="0"
-                                Glyph="&#xE72C;" 
-                                FontSize="14" 
+                                Glyph="&#xE72C;"
+                                FontSize="14"
                                 Margin="0 0 10 0"/>
                             <TextBlock
                                 HorizontalAlignment="Center"
@@ -318,15 +319,15 @@
             <StackPanel
                 Grid.Row="1"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay}">
-                <ListView 
+                <ListView
                     ItemsSource="{x:Bind ViewModel.ComputeSystemsCollectionView, Mode=OneWay}"
                     ItemTemplate="{StaticResource ComputeSystemLoadedTemplate}"
                     SelectionMode="None"
                     Margin="-10">
-                    <!-- 
+                    <!--
                         Prevent ListView from caching and recycling elements in the list by updating the Itemspanel.
                         This is needed because the listview is used to show multiple lists of ComputesSystemCardViewModels.
-                        If we don't do this, the listview will recycle the ComputeSystemCardViewModels in the view 
+                        If we don't do this, the listview will recycle the ComputeSystemCardViewModels in the view
                         which sometimes leads to weird UI artifacts, like the first item in the list being shown for every
                         item in the list after refreshing the list.
                     -->
@@ -354,7 +355,7 @@
                 Grid.Row="1"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
                 <!--- Show shimmers when list not loaded -->
-                <StackPanel 
+                <StackPanel
                     Visibility="{x:Bind ViewModel.ComputeSystemLoadingCompleted, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
                     <ContentControl
                         Content="{Binding}"
@@ -365,17 +366,17 @@
                         ContentTemplate="{StaticResource ComputeSystemLoadingTemplate}"/>
                 </StackPanel>
                 <!--- Show the info message when no ComputeSystemsListViewModel objects were found. -->
-                <StackPanel 
+                <StackPanel
                     Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Margin="0 200 0 0">
-                    <TextBlock 
+                    <TextBlock
                         Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
-                        HorizontalAlignment="Center" 
-                        TextWrapping="WrapWholeWords" 
+                        HorizontalAlignment="Center"
+                        TextWrapping="WrapWholeWords"
                         HorizontalTextAlignment="Center" />
-                    <HyperlinkButton 
+                    <HyperlinkButton
                         HorizontalAlignment="Center"
                         Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
                         Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
