@@ -8,6 +8,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:commonBehaviors="using:DevHome.Common.Behaviors"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     Unloaded="ViewUnloaded"
     Loaded="ViewLoaded">
     <UserControl.Resources>
@@ -18,6 +19,17 @@
     <i:Interaction.Behaviors >
         <commonBehaviors:AutoFocusBehavior />
     </i:Interaction.Behaviors>
+    
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.GoToNextPageCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="6,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
 
     <!--- Show the Choose environment header on the page. -->
     <Grid>
@@ -40,7 +52,12 @@
             Margin="{ThemeResource ContentPageMargin}"
             Grid.Row="1">
             <Grid>
+                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
                 <Grid
+                    Grid.Row="0"
                     HorizontalAlignment="Stretch"
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
                     <InfoBar
@@ -54,6 +71,7 @@
                 <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
                 <!-- Set focus to this grid because it is the first container with selectable elements.-->
                 <Grid
+                    Grid.Row="1"
                     Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
                     x:Name="AdaptiveCardGrid" 
                     Padding="-15">
@@ -63,6 +81,7 @@
                 </Grid>
 
                 <Grid
+                    Grid.Row="1"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     ColumnSpacing="10"

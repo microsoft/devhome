@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Input;
 
 namespace DevHome.DevInsights.Controls;
 
-public class ProcessSelectionButton : Button
+public class ProcessSelectionButton : AppBarButton
 {
     public ProcessSelectionButton()
     {

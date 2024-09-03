@@ -37,20 +37,9 @@ public static class HyperVSetupScript
             $adminGroupResult = [OperationStatus]::OperationNotRun
             $hyperVGroupSid = 'S-1-5-32-578'
 
-            # Check the security token the user logged on with contains the Hyper-V Administrators group SID (S-1-5-32-578). This can only be updated,
-            # once the user logs off and on again. Even if we add the user to the group later on in the script.
-            $foundSecurityTokenString = [System.Security.Principal.WindowsIdentity]::GetCurrent().Groups.Value | Where-Object { $_ -eq $hyperVGroupSid }
-            $doesUserSecurityTokenContainHyperAdminGroup = $foundSecurityTokenString -eq $hyperVGroupSid
-
             # Check if the Hyper-V feature is enabled
             $featureState = Get-WindowsOptionalFeature -FeatureName 'Microsoft-Hyper-V' -Online | Select-Object -ExpandProperty State
             $featureEnabled = $featureState -eq 'Enabled'
-
-            if ($doesUserSecurityTokenContainHyperAdminGroup -and $featureEnabled)
-            {
-                # User already in Admin group and feature already enabled
-                exit 6
-            }
 
             # Enable the Hyper-V feature if it is not already enabled
             if (-not $featureEnabled)

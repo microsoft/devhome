@@ -196,12 +196,11 @@ public partial class FileExplorerViewModel : ObservableObject
         RefreshTrackedRepositories();
     }
 
-    public async void AssignSourceControlProviderToRepository(string extensionName, string rootPath)
+    public async void AssignSourceControlProviderToRepository(IExtensionWrapper? extension, string rootPath)
     {
-        await Task.Run(async () =>
+        await Task.Run(() =>
         {
-            var sourceControlExtensions = await ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository);
-            var extensionCLSID = sourceControlExtensions.FirstOrDefault(extension => extension.ExtensionDisplayName == extensionName)?.ExtensionClassId ?? string.Empty;
+            var extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
             var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
             if (result.Result == ResultType.Failure)
             {

@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -133,10 +133,6 @@
     <value>Unregister</value>
     <comment>The label for Unregister menu flyout for an icon in the toolbar. This will cause the program to no longer be registered with the bar.</comment>
   </data>
-  <data name="RotateLayoutButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Switch between horizontal and vertical layout</value>
-    <comment>The tooltip for a button which toggles the orientation of the bar between horizontal and vertical</comment>
-  </data>
   <data name="DissociateButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dissociate so that Dev Insights is not tracking any app</value>
     <comment>The tooltip for a button which causes Dev Insights to no longer track any app</comment>
@@ -144,10 +140,6 @@
   <data name="SwitchToLargeLayoutToolTip" xml:space="preserve">
     <value>Expand the large content panel</value>
     <comment>The tooltip for a button which expands the large content panel.</comment>
-  </data>
-  <data name="ReSnapButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Snap the bar to the current foreground window</value>
-    <comment>The tooltip for a button that causes the bar to snap to the current foreground window.</comment>
   </data>
   <data name="SettingsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Settings</value>
@@ -165,7 +157,7 @@
     <value>Failed to launch: {0}</value>
     <comment>{Locked="{0}"} Text for when there was an error launching an external tool. {0} is the name of an executable(.exe) file.</comment>
   </data>
-  <data name="AppDetailsTextBlock.Text" xml:space="preserve">
+  <data name="AppDetailsHeaderTextBlock.Text" xml:space="preserve">
     <value>App details</value>
     <comment>The contents of a text block referring to details about an application.</comment>
   </data>
@@ -278,7 +270,7 @@
     <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
   </data>
   <data name="WERHeaderTextBlock.Text" xml:space="preserve">
-    <value>WER Reports</value>
+    <value>Crash reports</value>
     <comment>The contents of a WER crash dumps.</comment>
   </data>
   <data name="WERTimeGeneratedColumn.Header" xml:space="preserve">
@@ -311,7 +303,7 @@
   </data>
   <data name="WERCheckbox.ToolTipService.ToolTip" xml:space="preserve">
     <value>Entries from the event log for the target app</value>
-    <comment>Tooltip for whether to WER report logs are shown in the log view output.</comment>
+    <comment>Tooltip for whether the WER report logs are shown in the log view output.</comment>
   </data>
   <data name="ClearWinLogsButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list</value>
@@ -558,7 +550,7 @@
     <comment>{Locked="{0}"} A description to help a user that is dealing with a file locked for exclusive access. {0} is a file name.</comment>
   </data>
   <data name="WERStartErrorMessage" xml:space="preserve">
-    <value>Could not start WER Monitoring</value>
+    <value>Could not start WER crash dump monitoring</value>
     <comment>Refers to being unable to start monitoring the WER error logs.</comment>
   </data>
   <data name="PreferencesTabName" xml:space="preserve">
@@ -857,17 +849,9 @@
     <value>Select a process to investigate</value>
     <comment>Describes using a button in Dev Insights' UX to investigate another process running on the system</comment>
   </data>
-  <data name="SnapToolTip" xml:space="preserve">
-    <value>Attach the diagnostic bar to the target application</value>
-    <comment>The tooltip text for a button that attaches the bar to the target application.</comment>
-  </data>
   <data name="Title.Text" xml:space="preserve">
     <value>Dev Insights</value>
     <comment>{Locked} The product name</comment>
-  </data>
-  <data name="VerticalCloseButton.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Close</value>
-    <comment>Describes a button that will close Dev Insights's window</comment>
   </data>
   <data name="CpuArchitecture_ProcessOnMachine" xml:space="preserve">
     <value>{0} process running on {1} machine</value>
@@ -904,10 +888,6 @@
   <data name="DetachMenuItem.Text" xml:space="preserve">
     <value>Detach</value>
     <comment>Menu Item that allows the user to detach from the current process</comment>
-  </data>
-  <data name="UnsnapToolTip" xml:space="preserve">
-    <value>Detach the diagnostic bar from the target application</value>
-    <comment>The tooltip text for a button that detaches the bar from the target application.</comment>
   </data>
   <data name="WERDumpColumn.Header" xml:space="preserve">
     <value>Dump file</value>
@@ -1034,7 +1014,7 @@
     <comment>Filter string to specify that the file dialog should include PowerShell files</comment>
   </data>
   <data name="LocalDumpCollectionLabel.Text" xml:space="preserve">
-    <value>Local WER collection for app</value>
+    <value>Local WER crash dump collection for app</value>
     <comment>Label for Windows Error reporting toggle switch</comment>
   </data>
   <data name="LocalDumpCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
@@ -1050,14 +1030,14 @@
     <comment>The contents of a button to allow the user to trigger elevation to change WER settings</comment>
   </data>
   <data name="RunElevatedButtonForWER.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Dev Insights needs to run as Admin in order to modify WER collection for an app.</value>
+    <value>Dev Insights needs to run as Admin in order to modify WER crash dump collection for an app.</value>
     <comment>Tooltip for a button that relaunches Dev Insights as admin to change WER settings</comment>
   </data>
-  <data name="RunElevatedButton.Text" xml:space="preserve">
+  <data name="RunElevatedButtonTextBlock.Text" xml:space="preserve">
     <value>Get Information</value>
     <comment>The contents of a button to allow the user to trigger elevation to get more information</comment>
   </data>
-  <data name="RunElevatedButton.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="RunElevatedButtonTextBlock.ToolTipService.ToolTip" xml:space="preserve">
     <value>Dev Insights needs to run as Admin in order to get more data for an app.</value>
     <comment>Tooltip for a button that relaunches Dev Insights as admin to get more data</comment>
   </data>
@@ -1178,11 +1158,11 @@
     <comment>Tooltip for the button text allowing the user to select the type of tool</comment>
   </data>
   <data name="ToolTypeMenuItemDumpAnalyzer.Text" xml:space="preserve">
-    <value>WER Dump Analyzer</value>
+    <value>WER crash dump analyzer</value>
     <comment>Describes type of tool used to analyze WER dumps</comment>
   </data>
   <data name="ToolTypeMenuItemDumpAnalyzer.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Tool that will be used to analyze WER dumps generated on the system</value>
+    <value>Tool that will be used to analyze WER crash dumps generated on the system</value>
     <comment>Tooltip that describes what a WER Dump analyzer does</comment>
   </data>
   <data name="ClipboardMonitorWindowTitle" xml:space="preserve">
@@ -1199,15 +1179,107 @@ Dump File creation time: {1}</value>
     <comment>{Locked="{0}", "{1}"} Created string that contains basic information about a crash dump</comment>
   </data>
   <data name="BucketUsingThisToolString" xml:space="preserve">
-    <value>Use this tool for WER bucketing</value>
+    <value>Use this tool for WER crash dump bucketing</value>
     <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
   </data>
   <data name="BucketUsingThisToolStringDefault.Text" xml:space="preserve">
-    <value>Use this tool for WER bucketing</value>
+    <value>Use this tool for WER crash dump bucketing</value>
     <comment>Context menu button used to select a tool that is using to bucket WER reports</comment>
   </data>
   <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
-    <value>Regular Expression for WER bucket</value>
+    <value>Regular Expression for WER crash dump bucket</value>
     <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
+  </data>
+  <data name="ProcessChooserButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Process list</value>
+    <comment>Name of the button that brings up the process list page</comment>
+  </data>
+  <data name="InsightsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Insights</value>
+    <comment>Name of the button that brings up the Insights page</comment>
+  </data>
+  <data name="ExpandCollapseLayoutButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Expand or Collapse</value>
+    <comment>Name of the button expands or collapses the UI.</comment>
+  </data>
+  <data name="NavLinksList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Page Navigation</value>
+    <comment>Name of the nav list.</comment>
+  </data>
+  <data name="DetachAppButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Detach from currently targetted process</value>
+    <comment>Description of the detach app button for narrator to read.</comment>
+  </data>
+  <data name="RunAsAdminButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the button to run as administrator.</comment>
+  </data>
+  <data name="NavigationPaneSplitter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Resize navigation pane</value>
+    <comment>Description of the control to change the size of the navigation pane</comment>
+  </data>
+  <data name="RefreshButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Refresh the process list</value>
+    <comment>Narrator description for the button that refreshes the process list</comment>
+  </data>
+  <data name="FilterDropDown.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Process list filter</value>
+    <comment>Narrator description for the combobox that filters the process list</comment>
+  </data>
+  <data name="ModulesListView.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Modules</value>
+    <comment>Narrator description for the Modules List ListView</comment>
+  </data>
+  <data name="ModulesListViewSplitter.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Resize modules pane</value>
+    <comment>Description of the control to change the size of the navigation pane</comment>
+  </data>
+  <data name="RunElevatedButtonForWERButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the button to run Dev Insights as administrator</comment>
+  </data>
+  <data name="RunElevatedButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Run as administrator</value>
+    <comment>Description of the control button to run Dev Insights as administrator</comment>
+  </data>
+  <data name="ClearWinLogsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Clear the list</value>
+    <comment>Description of the button to clear the log output of the WinLogs page</comment>
+  </data>
+  <data name="FilterMessageText.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Filter the list</value>
+    <comment>Description of the button to filter the log output list</comment>
+  </data>
+  <data name="ProcessListHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A list of all running processes. You can select an item from the list to target. You can also type a name in the search box to find that process. The drop-down contains a list of all items that are filtered out by default - you can select any of these to include them in the main list. Another way to select your target process is to bring its window to the foreground and then use the hotkey Windows+F12.</value>
+    <comment>{Locked="Windows+F12"} Description of the Process list page.</comment>
+  </data>
+  <data name="WERHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Recent crash reports available on this machine. By default, this is filtered to your target app (if any). You can select any dump file in the list to open it in a dump analyzer tool of your choice. If you want to change your choice of dump analyzer tool, go to Windows Settings &gt; Apps &gt; Default apps &gt; Set default for ".dmp" file type.</value>
+    <comment>{Locked=".dmp"} Description of the Crash reports page.</comment>
+  </data>
+  <data name="InsightsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>As Dev Insights gathers context data for your target app, it can analyze the data, and in some cases it can provide insights into the nature of the problem. If Dev Insights does identify insights, they will be listed here. (Note that this is a work in progress, and initially there are very few cases where Dev Insights can provide definitive analysis.)</value>
+    <comment>Description of the Insights page.</comment>
+  </data>
+  <data name="ResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A list of a wide range of resource usage and sensor items for both your target app (if any), and for the system as a whole.</value>
+    <comment>Description of the Resource usage page.</comment>
+  </data>
+  <data name="ModulesHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>All the modules (DLLs, etc) that have been loaded by your target process.</value>
+    <comment>Description of the Loaded modules page.</comment>
+  </data>
+  <data name="WinLogsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>As you exercise the features of your target app, this will generate log outputs in various forms. By default, this page tracks Event Tracing for Windows (ETW) logs, the system Event log, and Windows Error Reporting (WER) logs. You can also enable Debug Output tracking, althought this can produce a large amount of output, depending on the app. Dev Insights analyzes log output and in some cases can generate insights.</value>
+    <comment>Description of the Windows logs page.</comment>
+  </data>
+  <data name="AppDetailsHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Information about the current target app.</value>
+    <comment>Description of the App details page.</comment>
+  </data>
+  <data name="InsightsPlaceholderTextBlock.Text" xml:space="preserve">
+    <value>(No insights found)</value>
+    <comment>Placeholder text on the Insights page when the insights list is empty.</comment>
   </data>
 </root>

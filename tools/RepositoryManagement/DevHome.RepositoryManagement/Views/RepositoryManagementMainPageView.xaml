@@ -34,11 +34,6 @@
             </Style>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
-    <i:Interaction.Behaviors>
-        <ic:EventTriggerBehavior EventName="Loaded">
-            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadRepositoriesCommand}" />
-        </ic:EventTriggerBehavior>
-    </i:Interaction.Behaviors>
     <Grid Margin="10,0,20,0" RowSpacing="25">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -165,8 +160,8 @@
 
                                     <!-- Needs localization -->
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
-                                        <MenuFlyoutItem Text="Open in Command Line" Command="{x:Bind OpenInCMDCommand}" />
+                                        <MenuFlyoutItem Text="Open in File Explorer" />
+                                        <MenuFlyoutItem Text="Open in Command Line" />
                                         <MenuFlyoutItem Text="Move Repository" />
                                         <MenuFlyoutItem Text="Add to Config file" />
                                         <MenuFlyoutItem Text="Run to config file" />

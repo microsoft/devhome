@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.QuietBackgroundProcesses;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -40,7 +41,26 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
     {
         if (string.Equals(experimentalFeature.Id, "QuietBackgroundProcessesExperiment", StringComparison.OrdinalIgnoreCase))
         {
-            return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            try
+            {
+                return QuietBackgroundProcessesSessionManager.IsFeaturePresent();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        if (string.Equals(experimentalFeature.Id, "FileExplorerSourceControlIntegration", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                return ExtraFolderPropertiesWrapper.IsSupported();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         throw new NotImplementedException();

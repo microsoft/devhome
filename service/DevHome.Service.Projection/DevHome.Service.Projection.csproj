@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
+  <PropertyGroup>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="..\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CsWinRTIncludes>DevHome.Service</CsWinRTIncludes>
+    <CsWinRTGeneratedFilesDir>$(SolutionDir)DevHome.Service.Projection\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>
+  </PropertyGroup>
+
+</Project>

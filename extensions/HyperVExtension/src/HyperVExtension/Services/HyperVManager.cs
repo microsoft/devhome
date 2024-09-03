@@ -40,7 +40,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
     private readonly AutoResetEvent _operationEventForVirtualMachine = new(false);
 
-    private const uint _numberOfOperationsToPeformPerVirtualMachine = 1;
+    private const uint NumberOfOperationsToPerformPerVirtualMachine = 1;
 
     private readonly TimeSpan _serviceTimeoutInSeconds = TimeSpan.FromSeconds(3);
 
@@ -747,8 +747,8 @@ public class HyperVManager : IHyperVManager, IDisposable
     /// Adds the Id of the virtual machine to the _virtualMachinesToOperateOn dictionary. This makes sure
     /// we perform only one operation per virtual machine. We do this by incrementing the value belonging
     /// to the key (vm guid), when a request comes in to perform an operation on the VM. When the number
-    /// of operations queued up for the VM exceeds _numberOfOperationsToPeformPerVirtualMachine the thread
-    /// will wait until it is signalled to proceed.
+    /// of operations queued up for the VM exceeds NumberOfOperationsToPerformPerVirtualMachine the thread
+    /// will wait until it is signaled to proceed.
     /// </summary>
     private void AddVirtualMachineToOperationsMap(Guid vmId)
     {
@@ -760,7 +760,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             // each time we enter the lock.
             _virtualMachinesToOperateOn.TryGetValue(vmId, out var queuedOperationsForThisVm);
             _virtualMachinesToOperateOn[vmId] = queuedOperationsForThisVm + 1;
-            if (_virtualMachinesToOperateOn[vmId] > _numberOfOperationsToPeformPerVirtualMachine)
+            if (_virtualMachinesToOperateOn[vmId] > NumberOfOperationsToPerformPerVirtualMachine)
             {
                 managerCurrentlyDoingOperationOnVM = true;
             }

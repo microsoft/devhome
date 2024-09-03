@@ -8,6 +8,6 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// <summary>
 /// Represents an operation to quickly create a virtual machine using the VM Gallery.
 /// </summary>
-public interface IVMGalleryVMCreationOperation : ICreateComputeSystemOperation, IProgress<IOperationReport>
+public interface IVMGalleryVMCreationOperation : ICreateComputeSystemOperation, IDownloadSubscriber
 {
 }
