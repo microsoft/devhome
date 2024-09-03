@@ -408,17 +408,17 @@ internal sealed class WERHelper : IDisposable
     {
         /* The description can look like this
 
-        Faulting application name: DevHome.PI.exe, version: 1.0.0.0, time stamp: 0x66470000
+        Faulting application name: DevHome.Diagnostics.exe, version: 1.0.0.0, time stamp: 0x66470000
         Faulting module name: KERNELBASE.dll, version: 10.0.22621.3810, time stamp: 0x10210ca8
         Exception code: 0xe0434352
         Fault offset: 0x000000000005f20c
         Faulting process id: 0x0xa078
         Faulting application start time: 0x0x1dad175bd05dea9
-        Faulting application path: E:\devhome\src\bin\x64\Debug\net8.0-windows10.0.22621.0\AppX\DevHome.PI.exe
+        Faulting application path: E:\devhome\src\bin\x64\Debug\net8.0-windows10.0.22621.0\AppX\DevHome.Diagnostics.exe
         Faulting module path: C:\WINDOWS\System32\KERNELBASE.dll
         Report Id: 7a4cd0a8-f65b-4f27-b250-cc5bd57e39d6
         Faulting package full name: Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
-        Faulting package-relative application ID: Devhome.PI
+        Faulting package-relative application ID: Devhome.Diagnostics
 
         Let's create a placeholder failure bucket based on the module name, offset, and exception code. In the above example,
         we'll generate a bucket "KERNELBASE.dll+0x000000000005f20c 0xe0434352"
