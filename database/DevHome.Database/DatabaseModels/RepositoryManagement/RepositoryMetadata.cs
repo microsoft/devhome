@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+
 namespace DevHome.Database.DatabaseModels.RepositoryManagement;
 
 /// <summary>
