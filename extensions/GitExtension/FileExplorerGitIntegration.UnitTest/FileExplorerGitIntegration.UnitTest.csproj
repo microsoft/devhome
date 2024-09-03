@@ -22,4 +22,10 @@
   <ItemGroup>
     <Content Include="resources\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="resources\resources_readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SandboxHelper.cs" />
+  </ItemGroup>
 </Project>
