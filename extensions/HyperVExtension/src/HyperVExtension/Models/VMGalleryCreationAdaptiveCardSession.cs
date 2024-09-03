@@ -16,6 +16,7 @@ using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using static HyperVExtension.Constants;
 
 namespace HyperVExtension.Models;
 
@@ -42,6 +43,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
 
     private readonly IStringResource _stringResource;
 
+    private readonly HyperVVirtualMachineHost _virtualMachineHost;
+
     /// <summary>
     /// Gets the Json string that represents the user input that was passed to the adaptive card session. We'll keep this so we can pass it back to Dev Home
     /// at the end of the session.
@@ -54,10 +57,14 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     {
     }
 
-    public VMGalleryCreationAdaptiveCardSession(VMGalleryImageList galleryImages, IStringResource stringResource)
+    public VMGalleryCreationAdaptiveCardSession(
+        VMGalleryImageList galleryImages,
+        IStringResource stringResource,
+        HyperVVirtualMachineHost virtualMachineHost)
     {
         _vMGalleryImageList = galleryImages;
         _stringResource = stringResource;
+        _virtualMachineHost = virtualMachineHost;
     }
 
     private IExtensionAdaptiveCard? _creationAdaptiveCard;
@@ -75,47 +82,45 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     {
         return Task.Run(async () =>
         {
-            ProviderOperationResult operationResult;
-            var shouldEndSession = false;
-            var adaptiveCardStateNotRecognizedError = _stringResource.GetLocalized("AdaptiveCardStateNotRecognizedError");
-
-            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
-            if (actionPayload == null)
+            try
             {
-                _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
-                var creationFormGenerationError = _stringResource.GetLocalized("AdaptiveCardUnRecognizedAction");
-                var exception = new AdaptiveCardInvalidActionException(creationFormGenerationError);
-                return new ProviderOperationResult(ProviderOperationStatus.Failure, exception, creationFormGenerationError, creationFormGenerationError);
-            }
+                ProviderOperationResult operationResult;
+                var shouldEndSession = false;
+                var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
 
-            switch (_creationAdaptiveCard?.State)
+                if (actionPayload == null)
+                {
+                    throw new AdaptiveCardInvalidActionException($"Invalid adaptive card action payload: {action}");
+                }
+
+                switch (_creationAdaptiveCard?.State)
+                {
+                    case "initialCreationForm":
+                        operationResult = await HandleActionWhenFormInInitialState(actionPayload, inputs);
+                        break;
+                    case "reviewForm":
+                        (operationResult, shouldEndSession) = await HandleActionWhenFormInReviewState(actionPayload);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Adaptive state not recognized. State: {_creationAdaptiveCard?.State}");
+                }
+
+                if (shouldEndSession)
+                {
+                    // The session has now ended. We'll raise the Stopped event to notify anyone in Dev Home who was listening to this event,
+                    // that the session has ended.
+                    Stopped?.Invoke(
+                        this,
+                        new ExtensionAdaptiveCardSessionStoppedEventArgs(operationResult, OriginalUserInputJson));
+                }
+
+                return operationResult;
+            }
+            catch (Exception ex)
             {
-                case "initialCreationForm":
-                    operationResult = await HandleActionWhenFormInInitialState(actionPayload, inputs);
-                    break;
-                case "reviewForm":
-                    (operationResult, shouldEndSession) = await HandleActionWhenFormInReviewState(actionPayload);
-                    break;
-                default:
-                    shouldEndSession = true;
-                    operationResult = new ProviderOperationResult(
-                        ProviderOperationStatus.Failure,
-                        new InvalidOperationException(nameof(action)),
-                        adaptiveCardStateNotRecognizedError,
-                        $"Unexpected state:{_creationAdaptiveCard?.State}");
-                    break;
+                _log.Error(ex, $"Unable to process adaptive card action");
+                return new ProviderOperationResult(ProviderOperationStatus.Failure, ex, ex.Message, ex.Message);
             }
-
-            if (shouldEndSession)
-            {
-                // The session has now ended. We'll raise the Stopped event to notify anyone in Dev Home who was listening to this event,
-                // that the session has ended.
-                Stopped?.Invoke(
-                    this,
-                    new ExtensionAdaptiveCardSessionStoppedEventArgs(operationResult, OriginalUserInputJson));
-            }
-
-            return operationResult;
         }).AsAsyncOperation();
     }
 
@@ -164,7 +169,6 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                     { "SubDescription", image.Publisher },
                     { "Header", image.Name },
                     { "HeaderIcon", image.Symbol.Base64Image },
-                    { "ActionButtonText", "More info" },
                     { "ContentDialogInfo", SetupContentDialogInfo(image) },
                     { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
                     { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
@@ -198,20 +202,11 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     /// setup flow review page.
     /// </summary>
     /// <returns>Result of the operation</returns>
-    private async Task<ProviderOperationResult> GetForReviewFormAdaptiveCardAsync(string inputJson)
+    private async Task<ProviderOperationResult> GetForReviewFormAdaptiveCardAsync(VMGalleryCreationUserInput userInput)
     {
         try
         {
-            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
-            var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
-
-            if (inputForGalleryOperation.SelectedImageListIndex < 0 ||
-                inputForGalleryOperation.SelectedImageListIndex > _vMGalleryImageList.Images.Count)
-            {
-                return new ProviderOperationResult(ProviderOperationStatus.Failure, null, "Failed to get review form", "Selected image index is out of range");
-            }
-
-            var galleryImage = _vMGalleryImageList.Images[inputForGalleryOperation.SelectedImageListIndex];
+            var galleryImage = _vMGalleryImageList.Images[userInput.SelectedImageListIndex];
             var newEnvironmentNameLabel = _stringResource.GetLocalized("NameLabelForNewVirtualMachine", ":");
             var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
             var secondaryButtonForCreationFlowText = _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
@@ -225,10 +220,10 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var reviewFormData = new JsonObject
             {
                 { "ProviderName", HyperVStrings.HyperVProviderDisplayName },
-                { "DiskImageSize", BytesHelper.ConvertBytesToString(galleryImage.Disk.SizeInBytes) },
+                { "DiskImageSize", BytesHelper.ConvertBytesToString(galleryImage.Disk.ArchiveSizeInBytes) },
                 { "VMGalleryImageName", galleryImage.Name },
                 { "Publisher", galleryImage.Publisher },
-                { "NameOfNewVM", inputForGalleryOperation.NewEnvironmentName },
+                { "NameOfNewVM", userInput.NewEnvironmentName },
                 { "NameLabel", newEnvironmentNameLabel },
                 { "Base64ImageForProvider", providerBase64Image },
                 { "DiskImageUrl", galleryImage.Symbol.Uri },
@@ -291,7 +286,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
         adaptiveCardImageFacts.Add(new JsonObject() { { "title", osVersionForContentDialog }, { "value", image.Version } });
         adaptiveCardImageFacts.Add(new JsonObject() { { "title", localeForContentDialog }, { "value", image.Locale } });
         adaptiveCardImageFacts.Add(new JsonObject() { { "title", lastUpdatedForContentDialog }, { "value", image.LastUpdated.ToLongDateString() } });
-        adaptiveCardImageFacts.Add(new JsonObject() { { "title", downloadForContentDialog }, { "value", BytesHelper.ConvertBytesToString(image.Disk.SizeInBytes) } });
+        adaptiveCardImageFacts.Add(new JsonObject() { { "title", downloadForContentDialog }, { "value", BytesHelper.ConvertBytesToString(image.Disk.ArchiveSizeInBytes) } });
 
         return new JsonObject
         {
@@ -310,7 +305,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             // if OnAction's state is initialCreationForm, then the user has selected a VM gallery image and is ready to review the form.
             // we'll also keep the original user input so we can pass it back to Dev Home once the session ends.
             OriginalUserInputJson = inputs;
-            operationResult = await GetForReviewFormAdaptiveCardAsync(inputs);
+            var userInput = GetAndValidateInput(OriginalUserInputJson);
+            operationResult = await GetForReviewFormAdaptiveCardAsync(userInput);
         }
         else
         {
@@ -331,7 +327,8 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             // if OnAction's state is reviewForm, then the user has reviewed the form and Dev Home has started the creation process.
             // we'll show the same form to the user in Dev Homes summary page.
             shouldEndSession = true;
-            operationResult = await GetForReviewFormAdaptiveCardAsync(OriginalUserInputJson);
+            var userInput = GetAndValidateInput(OriginalUserInputJson);
+            operationResult = await GetForReviewFormAdaptiveCardAsync(userInput);
         }
         else
         {
@@ -339,5 +336,23 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
         }
 
         return (operationResult, shouldEndSession);
+    }
+
+    private VMGalleryCreationUserInput GetAndValidateInput(string inputJson)
+    {
+        var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+        var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput
+            ?? throw new InvalidDataException($"Json deserialization failed for input Json: {inputJson}");
+
+        var galleryImage = _vMGalleryImageList.Images[inputForGalleryOperation.SelectedImageListIndex];
+        var imageValidator = new VMImageSelectionValidator(galleryImage, _stringResource, _virtualMachineHost.VirtualHardDiskPath);
+
+        if (!imageValidator.Validate())
+        {
+            _log.Error($"Validation for image {galleryImage.Name} failed.");
+            throw new InvalidDataException(imageValidator.ErrorMessage);
+        }
+
+        return inputForGalleryOperation;
     }
 }

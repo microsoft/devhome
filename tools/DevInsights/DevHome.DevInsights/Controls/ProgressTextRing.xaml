@@ -9,24 +9,26 @@
 
     <Grid>
 
-        <ProgressRing 
-            x:Name="ProgressRingControl" 
+        <ProgressRing
+            x:Name="ProgressRingControl"
             IsIndeterminate="False"
-            IsActive="{x:Bind IsActive, Mode=OneWay}" 
-            Foreground="{x:Bind Foreground, Mode=OneWay}" 
-            Width="{x:Bind Diameter, Mode=OneWay}" 
+            IsActive="{x:Bind IsActive, Mode=OneWay}"
+            Foreground="{x:Bind Foreground, Mode=OneWay}"
+            Width="{x:Bind Diameter, Mode=OneWay}"
             Height="{x:Bind Diameter, Mode=OneWay}"
-            Value="{x:Bind Value, Mode=OneWay}"/>
+            Value="{x:Bind Value, Mode=OneWay}"
+            AutomationProperties.AutomationId="ProgressRingControl"/>
 
-        <TextBlock 
-            x:Name="TextBlockControl" 
-            Visibility="{x:Bind TextBlockVisibility, Mode=OneWay}" 
-            Foreground="{x:Bind Foreground, Mode=OneWay}" 
+        <TextBlock
+            x:Name="TextBlockControl"
+            Visibility="{x:Bind TextBlockVisibility, Mode=OneWay}"
+            Foreground="{x:Bind Foreground, Mode=OneWay}"
             FontSize="{x:Bind TextBlockFontSize, Mode=OneWay}"
             FontFamily="{x:Bind FontFamily, Mode=OneWay}"
             Text="{x:Bind PercentageText, Mode=OneWay}"
-            HorizontalAlignment="Center" 
-            VerticalAlignment="Center"/>
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            AutomationProperties.AutomationId="TextBlockControl"/>
 
     </Grid>
 </UserControl>

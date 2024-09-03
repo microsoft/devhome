@@ -73,11 +73,6 @@ public class WindowHelper
         }
     }
 
-    // TODO The SnapThreshold values don't allow for different DPIs.
-
-    // If the target window is moved to within SnapThreshold px of the edge of the screen, we unsnap.
-    private const int SnapThreshold = 10;
-
     private static unsafe BOOL EnumProc(HWND hWnd, LPARAM data)
     {
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
@@ -578,48 +573,6 @@ public class WindowHelper
         {
             return FindParentControl<T>(parentObject);
         }
-    }
-
-    internal static bool IsWindowSnapped(HWND hwnd)
-    {
-        if (!PInvoke.GetWindowRect(hwnd, out var windowRect))
-        {
-            return false;
-        }
-
-        var workAreaRect = GetWorkAreaRect();
-
-        // If the window is within the top, right or bottom (not left) snap threshold,
-        // consider it snapped to the edge.
-        var snappedToTop = Math.Abs(windowRect.top - workAreaRect.top) <= SnapThreshold;
-        var snappedToRight = Math.Abs(windowRect.right - workAreaRect.right) <= SnapThreshold;
-        var snappedToBottom = Math.Abs(windowRect.bottom - workAreaRect.bottom) <= SnapThreshold;
-        return snappedToTop || snappedToRight || snappedToBottom;
-    }
-
-    internal static bool DoWindowsOverlap(HWND hwnd, HWND hwnd2)
-    {
-        PInvoke.GetWindowRect(hwnd, out var rect);
-        PInvoke.GetWindowRect(hwnd2, out var rect2);
-
-        var overlap = rect.left < rect2.right && rect.right > rect2.left &&
-                      rect.top < rect2.bottom && rect.bottom > rect2.top;
-
-        return overlap;
-    }
-
-    internal static bool DoesWindow1CoverTheRightSideOfWindow2(HWND hwnd1, HWND hwnd2)
-    {
-        PInvoke.GetWindowRect(hwnd1, out var rect);
-        PInvoke.GetWindowRect(hwnd2, out var rect2);
-
-        // We'll consider the right side of the window being the far right quarter of the window. Adjust the window's rect to match what we want
-        rect2.left = rect2.right - ((rect2.right - rect2.left) / 4);
-
-        var overlap = rect.left < rect2.right && rect.right > rect2.left &&
-                      rect.top < rect2.bottom && rect.bottom > rect2.top;
-
-        return overlap;
     }
 
     private static RECT GetWorkAreaRect()

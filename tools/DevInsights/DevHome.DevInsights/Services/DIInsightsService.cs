@@ -39,6 +39,7 @@ public partial class DIInsightsService : ObservableObject
         {
             _targetProcess = process;
             InsightsList.Clear();
+            UnreadCount = 0;
         }
     }
 

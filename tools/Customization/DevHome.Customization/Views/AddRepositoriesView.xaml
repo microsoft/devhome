@@ -39,15 +39,12 @@
                         <StackPanel 
                             Orientation="Horizontal">
                             <DropDownButton 
-                                Content="{Binding SourceControlProviderDisplayName}">
+                                Content="{Binding SourceControlProviderDisplayName}"
+                                ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout 
+                                        Opening="SourceControlProviderMenuFlyout_Opening"
                                         Placement="Bottom">
-                                        <!-- WinUI does not currently allow populating MenuFlyoutItems dynamically within a DataTemplate. -->
-                                        <!-- The items must be statically constructed. -->
-                                        <MenuFlyoutItem
-                                            Text="Git" 
-                                            Click="AssignSourceControlProviderButton_Click"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>

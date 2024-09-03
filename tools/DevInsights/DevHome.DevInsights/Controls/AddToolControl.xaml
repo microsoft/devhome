@@ -39,25 +39,27 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button
-                    x:Name="RefreshAppListButton" 
-                    x:Uid="RefreshAppListButton" 
-                    HorizontalAlignment="Left" 
-                    VerticalAlignment="Top" 
-                    MinWidth="100" 
+                    x:Name="RefreshAppListButton"
+                    x:Uid="RefreshAppListButton"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    MinWidth="100"
                     Click="RefreshAppListButton_Click"
-                    IsEnabled="False"/>
-                <ListView 
-                    x:Name="AppsListView" 
-                    Grid.Column="1" 
-                    SelectionChanged="AppsListView_SelectionChanged" 
+                    IsEnabled="False"
+                    AutomationProperties.AutomationId="RefreshAppListButton"/>
+                <ListView
+                    x:Name="AppsListView"
+                    Grid.Column="1"
+                    SelectionChanged="AppsListView_SelectionChanged"
                     HorizontalAlignment="Stretch"
-                    Height="200" 
-                    ItemsSource="{x:Bind SortedApps, Mode=OneWay}">
+                    Height="200"
+                    ItemsSource="{x:Bind SortedApps, Mode=OneWay}"
+                    AutomationProperties.AutomationId="AppsListView">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:InstalledAppInfo">
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="{x:Bind Icon}" Width="24" Height="24"/>
-                                <TextBlock Text="{x:Bind Name}" Margin="6,0,0,0"/>
+                                <TextBlock Text="{x:Bind Name}" Margin="6,0,0,0" AutomationProperties.AutomationId="{x:Bind Name}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -65,24 +67,36 @@
             </Grid>
 
             <!-- Occupies the same grid row as the apps list. -->
-            <local:ProgressTextRing 
+            <local:ProgressTextRing
                 x:Name="LoadingProgressTextRing"
-                Foreground="BlueViolet" 
-                Diameter="60" 
-                FontSize="16" 
+                Foreground="BlueViolet"
+                Diameter="60"
+                FontSize="16"
                 FontFamily="Segoe UI"
-                IsActive="{x:Bind IsLoading, Mode=OneWay}" 
-                Value="{x:Bind ProgressPercentage, Mode=OneWay}"/>
+                IsActive="{x:Bind IsLoading, Mode=OneWay}"
+                Value="{x:Bind ProgressPercentage, Mode=OneWay}"
+                AutomationProperties.AutomationId="LoadingProgressTextRing"/>
 
             <Grid Grid.Row="1" Margin="0,6,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button 
-                    x:Name="ToolBrowseButton" x:Uid="ToolBrowseButton" HorizontalAlignment="Left" MinWidth="100" Click="ToolBrowseButton_Click"/>
-                <TextBox 
-                    x:Name="ToolPathTextBox" Grid.Column="1" MinWidth="800" Margin="8,0,0,0" HorizontalAlignment="Stretch" KeyDown="ToolPathTextBox_KeyDown"/>
+                <Button
+                    x:Name="ToolBrowseButton"
+                    x:Uid="ToolBrowseButton"
+                    HorizontalAlignment="Left"
+                    MinWidth="100"
+                    Click="ToolBrowseButton_Click"
+                    AutomationProperties.AutomationId="ToolBrowseButton"/>
+                <TextBox
+                    x:Name="ToolPathTextBox"
+                    Grid.Column="1"
+                    MinWidth="800"
+                    Margin="8,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    KeyDown="ToolPathTextBox_KeyDown"
+                    AutomationProperties.AutomationId="ToolPathTextBox"/>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0,6,0,0">
@@ -90,8 +104,17 @@
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Uid="ToolNameHeaderTextBlock" VerticalAlignment="Center" MinWidth="100"/>
-                <TextBox x:Name="ToolNameTextBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,0,0,0" />
+                <TextBlock
+                    x:Uid="ToolNameHeaderTextBlock"
+                    VerticalAlignment="Center"
+                    MinWidth="100"
+                    AutomationProperties.AutomationId="ToolNameHeaderTextBlock"/>
+                <TextBox
+                    x:Name="ToolNameTextBox"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Margin="8,0,0,0"
+                    AutomationProperties.AutomationId="ToolNameTextBox"/>
             </Grid>
         </Grid>
 
@@ -134,7 +157,7 @@
                 </Button.Flyout>
             </Button>
 
-            <ToggleSwitch 
+            <ToggleSwitch
                 x:Uid="IsPinnedToggleSwitch" x:Name="IsPinnedToggleSwitch" HorizontalContentAlignment="Left"
                 HorizontalAlignment="Left" IsOn="True" Margin="0,0,0,0"/>
         </StackPanel>
@@ -149,10 +172,10 @@
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="7" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6">
-            <Button 
+            <Button
                 x:Uid="AddToolsOkButton" x:Name="OkButton" MinWidth="100"
                 Click="OkButton_Click"/>
-            <Button 
+            <Button
                 x:Uid="AddToolsCancelButton" x:Name="CancelButton" MinWidth="100"
                 Click="CancelButton_Click"/>
         </StackPanel>
