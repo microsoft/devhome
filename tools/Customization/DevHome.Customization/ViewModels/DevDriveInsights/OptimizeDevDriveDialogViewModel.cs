@@ -94,7 +94,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         };
 
         folderPicker.FileTypeFilter.Add("*");
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Microsoft.UI.Xaml.Application.Current.GetService<Window>().GetWindowHandle());
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<Window>().GetWindowHandle());
         var folder = await folderPicker.PickSingleFolderAsync();
 
         if (folder != null)
@@ -255,14 +255,15 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
             {
                 Task.Run(() =>
                 {
-                    // Send message to the DevDriveInsightsViewModel to let it display the progress ring for the move
-                    // WeakReferenceMessenger.Default.Send(new DevDriveOptimizingMessage(new DevDriveOptimizingData()));
                     if (MoveDirectory(ExistingCacheLocation, directoryPath))
                     {
                         SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
                         var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
                         Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
-                        TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
+                        TelemetryFactory.Get<ITelemetry>().Log(
+                            "DevDriveInsights_PackageCacheMovedSuccessfully_Event",
+                            LogLevel.Critical,
+                            new ExceptionEvent(0, existingCacheLocationVetted));
 
                         // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
                         WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));

@@ -2,13 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
-using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;

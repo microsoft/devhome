@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -21,7 +20,6 @@ using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Storage;
 
@@ -164,21 +162,21 @@ public partial class FileExplorerViewModel : ObservableObject
             await Task.Run(async () =>
             {
                 using var folderDialog = new WindowOpenFolderDialog();
-                StorageFolder? repoRootfolder = null;
+                StorageFolder? repoRootFolder = null;
 
                 try
                 {
-                    repoRootfolder = await folderDialog.ShowAsync(Application.Current.GetService<Window>());
+                    repoRootFolder = await folderDialog.ShowAsync(Application.Current.GetService<Window>());
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, $"Error occured when selecting a folder for adding a repository.");
+                    _log.Error(ex, $"Error occurred when selecting a folder for adding a repository.");
                 }
 
-                if (repoRootfolder != null && repoRootfolder.Path.Length > 0)
+                if (repoRootFolder != null && repoRootFolder.Path.Length > 0)
                 {
-                    _log.Information($"Selected '{repoRootfolder.Path}' as location to register");
-                    RepoTracker.AddRepositoryPath(_unassigned, repoRootfolder.Path);
+                    _log.Information($"Selected '{repoRootFolder.Path}' as location to register");
+                    RepoTracker.AddRepositoryPath(_unassigned, repoRootFolder.Path);
                 }
                 else
                 {
