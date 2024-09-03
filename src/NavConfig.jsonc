@@ -132,7 +132,7 @@
       }
     },
     {
-      "identity": "DevInsightsExperiment",
+      "identity": "DevDiagnosticsExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [
         {
