@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test CSS stylesheet</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        "use strict";
+
+        function LoadPage() {
+            var contentWrapper = document.getElementById("contentWrapper");
+            var h1 = document.createElement("h1");
+            h1.innerHTML = "The style for this webpage can be found in Extensions\\WebContent\\style.css";
+            contentWrapper.appendChild(h1);
+        }
+
+        function navigateToPage(webPage) {
+            window.location.assign(webPage);
+        }
+    </script>
+</head>
+<body onload="LoadPage()">
+    <div id="contentWrapper"></div>
+    <input id="b1B" type="submit" name="button" onclick="navigateToPage('ExtensionSettingsPage.html')" value="Back to Extension Settings main page" />
+</body>
+</html>
