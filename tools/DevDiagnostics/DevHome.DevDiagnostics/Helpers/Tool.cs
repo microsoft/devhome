@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -71,6 +72,10 @@ public abstract partial class Tool : ObservableObject
         ToolLaunchOptions options = new();
         options.TargetProcessId = TargetAppData.Instance.TargetProcess?.Id;
         options.TargetHWnd = TargetAppData.Instance.HWnd;
+
+        var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+        options.ParentWindow = barWindow;
+
         InvokeTool(options);
     }
 
