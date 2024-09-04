@@ -30,7 +30,7 @@
                     <TreeViewItem AutomationProperties.Name="{x:Bind Name}">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="300"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
@@ -65,7 +65,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBlock x:Uid="SystemCpuUsageTextblock" AutomationProperties.AutomationId="SystemCpuUsageTextblock"/>

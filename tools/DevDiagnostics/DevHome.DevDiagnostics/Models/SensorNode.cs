@@ -105,6 +105,10 @@ public partial class SensorNode : ObservableObject, IHardwareMonitorTreeNode
             {
                 case SensorType.Throughput:
                     {
+                        const int _1GB = 1000000000;
+                        const int _1GiB = 1073741824;
+                        const int _1MiB = 1048576;
+                        const int _1KB = 1024;
                         string result;
                         switch (_sensor.Name)
                         {
@@ -112,28 +116,28 @@ public partial class SensorNode : ObservableObject, IHardwareMonitorTreeNode
                                 {
                                     switch (_sensor.Value)
                                     {
-                                        case 100000000:
+                                        case _1GB / 10:
                                             result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorValue100Mbps");
                                             break;
-                                        case 1000000000:
+                                        case _1GB:
                                             result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorValue1Gbps");
                                             break;
                                         default:
-                                            if (_sensor.Value < 1024)
+                                            if (_sensor.Value < _1KB)
                                             {
                                                 result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatBps", _sensor.Value);
                                             }
-                                            else if (_sensor.Value < 1048576)
+                                            else if (_sensor.Value < _1MiB)
                                             {
-                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatKbps", _sensor.Value / 1024);
+                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatKbps", _sensor.Value / _1KB);
                                             }
-                                            else if (_sensor.Value < 1073741824)
+                                            else if (_sensor.Value < _1GiB)
                                             {
-                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatMbps", _sensor.Value / 1048576);
+                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatMibps", _sensor.Value / _1MiB);
                                             }
                                             else
                                             {
-                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatGbps", _sensor.Value / 1073741824);
+                                                result = CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatGibps", _sensor.Value / _1GiB);
                                             }
 
                                             break;
@@ -144,8 +148,7 @@ public partial class SensorNode : ObservableObject, IHardwareMonitorTreeNode
 
                             default:
                                 {
-                                    const int _1MB = 1048576;
-                                    result = _sensor.Value < _1MB ? CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatKbps", _sensor.Value / 1024) : CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatMbps", _sensor.Value / _1MB);
+                                    result = _sensor.Value < _1MiB ? CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatKbps", _sensor.Value / _1KB) : CommonHelper.GetLocalizedString("ConnectionSpeedSensorFormatMibps", _sensor.Value / _1MiB);
                                     break;
                                 }
                         }

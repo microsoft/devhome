@@ -17,9 +17,9 @@ namespace DevHome.DevDiagnostics.ViewModels;
 
 public partial class SystemResourceUsagePageViewModel : ObservableObject, IDisposable
 {
-    private readonly Timer _hardwareMonitorTimer;
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly PerfCounters _perfCounters;
+    private Timer? _hardwareMonitorTimer;
     [ObservableProperty]
     private HardwareMonitor _hardwareMonitor;
 
@@ -43,8 +43,6 @@ public partial class SystemResourceUsagePageViewModel : ObservableObject, IDispo
         _cpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", _perfCounters.SystemCpuUsage);
         _ramUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabel", _perfCounters.SystemRamUsageInGB);
         _diskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", _perfCounters.SystemDiskUsage);
-
-        _hardwareMonitorTimer = new Timer(HardwareMonitorTimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
     }
 
     private void HardwareMonitorTimerCallback(object? state)
@@ -53,6 +51,18 @@ public partial class SystemResourceUsagePageViewModel : ObservableObject, IDispo
         {
             HardwareMonitor.UpdateHardwares();
         });
+    }
+
+    public void Start()
+    {
+        Stop();
+        _hardwareMonitorTimer = new Timer(HardwareMonitorTimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
+    }
+
+    public void Stop()
+    {
+        _hardwareMonitorTimer?.Dispose();
+        _hardwareMonitorTimer = null;
     }
 
     private void PerfCounterHelper_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -82,7 +92,7 @@ public partial class SystemResourceUsagePageViewModel : ObservableObject, IDispo
 
     public void Dispose()
     {
-        _hardwareMonitorTimer.Dispose();
+        _hardwareMonitorTimer?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

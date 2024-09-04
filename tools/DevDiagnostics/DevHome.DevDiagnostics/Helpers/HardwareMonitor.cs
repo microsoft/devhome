@@ -11,9 +11,8 @@ using LibreHardwareMonitor.Hardware;
 
 namespace DevHome.DevDiagnostics.Helpers;
 
-public partial class HardwareMonitor : ObservableObject, IDisposable
+public partial class HardwareMonitor : ObservableObject
 {
-    private readonly Timer _timer;
     private readonly Computer _computer = new()
     {
         IsCpuEnabled = true,
@@ -38,8 +37,6 @@ public partial class HardwareMonitor : ObservableObject, IDisposable
             _computer.Accept(new UpdateVisitor());
             _initialized = true;
         });
-
-        _timer = new Timer(TimerCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(3));
     }
 
     // Updating Hardware Tree. Should only be called from Dispatcher thread.
@@ -107,24 +104,6 @@ public partial class HardwareMonitor : ObservableObject, IDisposable
         }
 
         return hardwareNode;
-    }
-
-    public void Dispose()
-    {
-        _timer?.Dispose();
-        GC.SuppressFinalize(this);
-    }
-
-    private void TimerCallback(object? state)
-    {
-        if (Hardwares.Count < 0)
-        {
-            UpdateHardwareData();
-            foreach (IHardwareMonitorTreeNode node in Hardwares)
-            {
-                UpdateSensorData(node);
-            }
-        }
     }
 
     public void UpdateHardwareData()

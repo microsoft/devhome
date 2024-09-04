@@ -1371,27 +1371,27 @@ Dump File creation time: {1}</value>
       <comment>Format for noise sensor values in decibels</comment>
   </data>
   <data name="ConnectionSpeedSensorFormatBps" xml:space="preserve">
-      <value>{0:F0} Bps</value>
+      <value>{0:F0} B/s</value>
       <comment>Format for connection speed sensor values in bps</comment>
   </data>
   <data name="ConnectionSpeedSensorFormatKbps" xml:space="preserve">
-      <value>{0:F1} Kbps</value>
+      <value>{0:F1} KB/s</value>
       <comment>Format for connection speed sensor values in Kbps</comment>
   </data>
-  <data name="ConnectionSpeedSensorFormatMbps" xml:space="preserve">
-      <value>{0:F1} Mbps</value>
-      <comment>Format for connection speed sensor values in Mbps</comment>
+  <data name="ConnectionSpeedSensorFormatMibps" xml:space="preserve">
+      <value>{0:F1} MiB/s</value>
+      <comment>Format for connection speed sensor values in Mibps</comment>
   </data>
-  <data name="ConnectionSpeedSensorFormatGbps" xml:space="preserve">
-      <value>{0:F1} Gbps</value>
-      <comment>Format for connection speed sensor values in Gbps</comment>
+  <data name="ConnectionSpeedSensorFormatGibps" xml:space="preserve">
+      <value>{0:F1} GiB/s</value>
+      <comment>Format for connection speed sensor values in Gibps</comment>
   </data>
   <data name="ConnectionSpeedSensorValue100Mbps" xml:space="preserve">
-      <value>100 Mbps</value>
+      <value>100 MB/s</value>
       <comment>Connection speed sensor value of 100 Mbps</comment>
   </data>
   <data name="ConnectionSpeedSensorValue1Gbps" xml:space="preserve">
-      <value>1 Gbps</value>
+      <value>1 GB/s</value>
       <comment>Connection speed sensor value of 1 Gbps</comment>
   </data>
   <data name="SensorTypeVoltage" xml:space="preserve">

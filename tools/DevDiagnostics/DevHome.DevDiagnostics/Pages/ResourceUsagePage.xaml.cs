@@ -3,6 +3,8 @@
 
 using System;
 using DevHome.Common.Extensions;
+using DevHome.DevDiagnostics.Helpers;
+using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Telemetry;
 using DevHome.DevDiagnostics.ViewModels;
 using Microsoft.UI.Xaml;
@@ -25,5 +27,12 @@ public sealed partial class ResourceUsagePage : Page
     {
         base.OnNavigatedTo(e);
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.ResourceUsage);
+        Application.Current.GetService<SystemResourceUsagePageViewModel>().Start();
+    }
+
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e);
+        Application.Current.GetService<SystemResourceUsagePageViewModel>().Stop();
     }
 }
