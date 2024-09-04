@@ -30,7 +30,7 @@ public class DevHomeService : IDevHomeService
 
     private void MyETWListener()
     {
-        TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
+        TraceEventSession session = new TraceEventSession("DevHome.Service.LoaderSnapAssistantSession");
 
         // Enable the kernel provider to look for processes exiting with non-zero exit codes
         session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
