@@ -237,7 +237,7 @@ internal sealed class StatusCache : IDisposable
 
     private void ParseStatus(string? statusString, GitRepositoryStatus repoStatus, string relativeDir = "")
     {
-        if (statusString is null)
+        if (string.IsNullOrEmpty(statusString))
         {
             return;
         }

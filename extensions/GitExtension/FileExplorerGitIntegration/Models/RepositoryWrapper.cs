@@ -26,15 +26,19 @@ internal sealed class RepositoryWrapper : IDisposable
     private readonly string _folderStatusDetached;
     private readonly string _fileStatusMergeConflict;
     private readonly string _fileStatusUntracked;
+    private readonly string _fileStatusAdded;
+    private readonly string _fileStatusAddedModified;
     private readonly string _fileStatusStaged;
     private readonly string _fileStatusStagedRenamed;
     private readonly string _fileStatusStagedModified;
     private readonly string _fileStatusStagedRenamedModified;
     private readonly string _fileStatusModified;
     private readonly string _fileStatusRenamedModified;
+    private readonly string _submoduleStatusAdded;
     private readonly string _submoduleStatusChanged;
     private readonly string _submoduleStatusDirty;
     private readonly string _submoduleStatusStaged;
+    private readonly string _submoduleStatusUntracked;
 
     private Commit? _head;
     private CommitLogCache? _commits;
@@ -51,15 +55,19 @@ internal sealed class RepositoryWrapper : IDisposable
         _folderStatusDetached = _stringResource.GetLocalized("FolderStatusDetached");
         _fileStatusMergeConflict = _stringResource.GetLocalized("FileStatusMergeConflict");
         _fileStatusUntracked = _stringResource.GetLocalized("FileStatusUntracked");
+        _fileStatusAdded = _stringResource.GetLocalized("FileStatusAdded");
+        _fileStatusAddedModified = _stringResource.GetLocalized("FileStatusAddedModified");
         _fileStatusStaged = _stringResource.GetLocalized("FileStatusStaged");
         _fileStatusStagedRenamed = _stringResource.GetLocalized("FileStatusStagedRenamed");
         _fileStatusStagedModified = _stringResource.GetLocalized("FileStatusStagedModified");
         _fileStatusStagedRenamedModified = _stringResource.GetLocalized("FileStatusStagedRenamedModified");
         _fileStatusModified = _stringResource.GetLocalized("FileStatusModified");
         _fileStatusRenamedModified = _stringResource.GetLocalized("FileStatusRenamedModified");
+        _submoduleStatusAdded = _stringResource.GetLocalized("SubmoduleStatusAdded");
         _submoduleStatusChanged = _stringResource.GetLocalized("SubmoduleStatusChanged");
         _submoduleStatusDirty = _stringResource.GetLocalized("SubmoduleStatusDirty");
         _submoduleStatusStaged = _stringResource.GetLocalized("SubmoduleStatusStaged");
+        _submoduleStatusUntracked = _stringResource.GetLocalized("SubmoduleStatusUntracked");
     }
 
     public CommitWrapper? FindLastCommit(string relativePath)
@@ -188,7 +196,8 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         var statusString = string.Empty;
-        var staged = status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex);
+        var added = status.Status.HasFlag(FileStatus.NewInIndex);
+        var staged = status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex);
         var modified = status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir);
         var renamed = status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir);
 
@@ -211,6 +220,17 @@ internal sealed class RepositoryWrapper : IDisposable
                 statusString = _fileStatusStaged;
             }
         }
+        else if (added)
+        {
+            if (modified)
+            {
+                statusString = _fileStatusAddedModified;
+            }
+            else
+            {
+                statusString = _fileStatusAdded;
+            }
+        }
         else if (modified)
         {
             if (renamed)
@@ -228,25 +248,25 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private string ToString(SubmoduleStatus status)
     {
-        if (status.HasFlag(SubmoduleStatus.WorkDirAdded))
-        {
-            return _fileStatusUntracked;
-        }
-        else if (status.HasFlag(SubmoduleStatus.IndexAdded))
-        {
-            return _fileStatusStaged;
-        }
-        else if (status.HasFlag(SubmoduleStatus.IndexModified))
-        {
-            return _submoduleStatusStaged;
-        }
-        else if (status.HasFlag(SubmoduleStatus.WorkDirFilesModified) || status.HasFlag(SubmoduleStatus.WorkDirFilesUntracked) || status.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty))
+        if (status.HasFlag(SubmoduleStatus.WorkDirFilesModified) || status.HasFlag(SubmoduleStatus.WorkDirFilesUntracked) || status.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty))
         {
             return _submoduleStatusDirty;
         }
         else if (status.HasFlag(SubmoduleStatus.WorkDirModified))
         {
             return _submoduleStatusChanged;
+        }
+        else if (status.HasFlag(SubmoduleStatus.WorkDirAdded))
+        {
+            return _submoduleStatusUntracked;
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexAdded))
+        {
+            return _submoduleStatusAdded;
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexModified))
+        {
+            return _submoduleStatusStaged;
         }
 
         return string.Empty;

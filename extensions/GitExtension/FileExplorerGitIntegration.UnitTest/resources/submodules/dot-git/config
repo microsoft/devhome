@@ -30,5 +30,5 @@
 	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
 	active = true
 [submodule "sm_added_and_uncommitted"]
-	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	url = E:/temp/resources/submodules_target
 	active = true

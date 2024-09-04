@@ -6,3 +6,6 @@
 	symlinks = false
 	ignorecase = true
 	worktree = ../../../sm_changed_untracked_file
+[remote "origin"]
+	url = ../../submodules_target
+	fetch = +refs/heads/*:refs/remotes/origin/*
