@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.IO;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,7 +10,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Contracts.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
