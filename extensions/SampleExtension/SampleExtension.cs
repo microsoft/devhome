@@ -28,31 +28,18 @@ public sealed class SampleExtension : IExtension, IDisposable
     private readonly IHost _host;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SampleExtension));
 
-    private readonly WebServer.WebServer _webServer;
     private readonly string _url = string.Empty;
+    private readonly string _webContentPath = Path.Combine(AppContext.BaseDirectory, "WebContent");
+    private WebServer.WebServer? _extensionWebServer;
 
     public SampleExtension(ManualResetEvent extensionDisposedEvent, IHost host)
     {
         _extensionDisposedEvent = extensionDisposedEvent;
         _host = host;
 
-        var webcontentPath = Path.Combine(AppContext.BaseDirectory, "WebContent");
-        Console.WriteLine($"Web content path: {webcontentPath}");
-        _webServer = new WebServer.WebServer(webcontentPath);
-        _webServer.RegisterRouteHandler("/api/test", HandleRequest);
-
-        Console.WriteLine($"GitHubExtension is running on port {_webServer.Port}");
-
-        // using web server:
-        string extensionSettingsWebPage = "ExtensionSettingsPage.html";
-        _url = $"http://localhost:{_webServer.Port}/{extensionSettingsWebPage}";
-        Console.WriteLine($"Navigate to: {_url}");
-
-        // using file path:
-        string filePath = Path.Combine(webcontentPath, "HelloWorld.html");
-        Console.WriteLine($"filePath: {filePath}");
-
-        // _url = filePath;
+        // select a method to get the URL
+        // _url = GetUrlFromFilePath("ExtensionSettingsPage.html");
+        _url = GetUrlFromWebServer("ExtensionSettingsPage.html");
     }
 
     public object? GetProvider(ProviderType providerType)
@@ -75,12 +62,28 @@ public sealed class SampleExtension : IExtension, IDisposable
     public void Dispose()
     {
         _extensionDisposedEvent.Set();
-        _webServer.Dispose();
+        if (_extensionWebServer != null)
+        {
+            _extensionWebServer.Dispose();
+        }
     }
 
     public bool HandleRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
         Console.WriteLine("Received request for /api/test");
         return true;
+    }
+
+    public string GetUrlFromWebServer(string index)
+    {
+        _extensionWebServer = new WebServer.WebServer(_webContentPath);
+        _extensionWebServer.RegisterRouteHandler("/api/test", HandleRequest);
+
+        return $"http://localhost:{_extensionWebServer.Port}/{index}";
+    }
+
+    public string GetUrlFromFilePath(string index)
+    {
+        return Path.Combine(_webContentPath, index);
     }
 }
