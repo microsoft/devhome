@@ -215,13 +215,13 @@ public partial class FileExplorerViewModel : ObservableObject
                 if (!wrapperResult.Succeeded)
                 {
                     _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                    return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, wrapperResult.ExtendedError, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"));
+                    return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, wrapperResult.ExtendedError, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), null);
                 }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "An exception occurred while registering folder for File Explorer source control integration");
-                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, ex, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), _stringResource.GetLocalized("RegistrationErrorWithFileExplorer", ex.Message));
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, ex, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), null);
             }
 
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);

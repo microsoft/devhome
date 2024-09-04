@@ -29,17 +29,19 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
 
     GetLocalRepositoryResult ILocalRepositoryProvider.GetRepository(string rootPath)
     {
+        var log = Log.ForContext("SourceContext", nameof(GitLocalRepositoryProviderFactory));
         try
         {
             return new GetLocalRepositoryResult(new GitLocalRepository(rootPath, _repositoryCache));
         }
+        catch (RepositoryNotFoundException libGitEx)
+        {
+            log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", libGitEx);
+            return new GetLocalRepositoryResult(libGitEx, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {libGitEx.Message} and HRESULT: {libGitEx.HResult}");
+        }
         catch (Exception ex)
         {
-            if (ex is LibGit2Sharp.RepositoryNotFoundException)
-            {
-                return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
-            }
-
+            log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
             if (ex.Message.Contains("not owned by current user") || ex.Message.Contains("detected dubious ownership in repository"))
             {
                 return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotOwnedByCurrentUser"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");

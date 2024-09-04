@@ -29,7 +29,7 @@ public class SourceControlIntegration
             if (hr < 0)
             {
                 _log.Error(hr.ToString(), "Failure occurred while creating instance of repository provider");
-                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RepositoryProviderCreationFailed, null, _stringResource.GetLocalized("ValidateSourceControlErrorOnRepositoryProviderInstanceCreation"), _stringResource.GetLocalized("ValidateSourceControlErrorOnRepositoryProviderInstanceCreation"));
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RepositoryProviderCreationFailed, null, _stringResource.GetLocalized("ValidateSourceControlErrorOnRepositoryProviderInstanceCreation"), null);
             }
 
             ILocalRepositoryProvider provider = MarshalInterface<ILocalRepositoryProvider>.FromAbi(providerPtr);
@@ -49,7 +49,7 @@ public class SourceControlIntegration
         catch (Exception ex)
         {
             _log.Error(ex, "An exception occurred while validating source control extension.");
-            return new SourceControlValidationResult(ResultType.Failure, ErrorType.SourceControlExtensionValidationFailed, ex, _stringResource.GetLocalized("ValidateSourceControlErrorOnGetRepository", ex.Message), _stringResource.GetLocalized("ValidateSourceControlErrorOnGetRepository", ex.Message));
+            return new SourceControlValidationResult(ResultType.Failure, ErrorType.SourceControlExtensionValidationFailed, ex, _stringResource.GetLocalized("ValidateSourceControlErrorOnGetRepository", ex.Message), null);
         }
         finally
         {
