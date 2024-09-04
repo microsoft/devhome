@@ -1279,7 +1279,11 @@ Dump File creation time: {1}</value>
     <comment>Description of the Insights page.</comment>
   </data>
   <data name="ResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
-    <value>A list of a wide range of resource usage and sensor items for both your target app (if any), and for the system as a whole.</value>
+    <value>A list of a wide range of resource usage for both your target app.</value>
+    <comment>Description of the Resource usage page.</comment>
+  </data>
+  <data name="SystemResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
+    <value>A list of a wide range of resource usage and sensor items for the system as a whole. The sensor information is updated every 2 seconds and will only be updated when the page is open. Some sensor item requires running Dev Diagnostics as Administrator.</value>
     <comment>Description of the Resource usage page.</comment>
   </data>
   <data name="ModulesHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
