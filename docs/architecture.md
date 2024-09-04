@@ -19,6 +19,7 @@ graph TD;
     DevHome.Common-->DevHome.Experiments;
     DevHome.Common-->DevHome.ExtensionLibrary;
     DevHome.Common-->DevHome.Settings;
+    DevHome.Common-->DevHome.RepositoryManagement;
     DevHome.Telemetry-->DevHome.SetupFlow.Common;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow;
     DevHome.SetupFlow.Common-->DevHome.SetupFlow.ElevatedComponent;
@@ -33,8 +34,10 @@ graph TD;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
     DevHome.ExtensionLibrary-->DevHome;
+    DevHome.DevInsights-->DevHome.Service;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
+    DevHome.RepositoryManagement-->DevHome
     DevHome.Services.Core-->DevHome.Services.WindowsPackageManager;
     DevHome.Services.Core-->DevHome.Services.DesiredStateConfiguration;
     DevHome.Telemetry-->DevHome.Services.Core;
@@ -67,6 +70,10 @@ Dev Home Common also provides telemetry functionality.
 
 This is a special component that acts similarly to a tool but isn't actually a tool. The Settings component, like other tools, consumes the Common project and is used by Dev Home Core. It manages user preferences across all tools and extensions.
 
+## Service
+
+This is an NT service which runs as local system that provides functionality to various DevHome components. This functionality would typically require elevation and isn't transactional in nature. For items in DevHome that require elevation and are of a transactional nature, helper utilities are launched elevated instead.
+
 ## Tools
 
 The tools are a set of functionalities that are integrated within Dev Home's codebase. They are designed to provide specific capabilities or features to Dev Home. They live as their own component but run in the same process as Dev Home and can communicate with each other and the core component through Dev Home's API.
@@ -82,6 +89,7 @@ Dev Home currently has the following tools:
 - Extensions Library
 - [Windows customization](../tools/Customization/DevHome.Customization/Customization.md)
 - Utilities
+- Repository Management
 
 ## Extensions
 
