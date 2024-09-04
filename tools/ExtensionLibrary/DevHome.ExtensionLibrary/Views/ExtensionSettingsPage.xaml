@@ -1,7 +1,7 @@
 <!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
-<commonviews:ToolPage
+<commonviews:DevHomePage
     x:Class="DevHome.ExtensionLibrary.Views.ExtensionSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,25 +9,42 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:extensions="using:DevHome.ExtensionLibrary.Extensions"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
+    <commonviews:DevHomePage.Resources>
+        <extensions:TrueToVisibleConverter x:Key="TrueToVisibleConverter"/>
+    </commonviews:DevHomePage.Resources>
+
     <Grid>
-        <ScrollViewer VerticalAlignment="Top">
-            <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}"
-                        Margin="{ThemeResource ContentPageMargin}"
-                        Background="{ThemeResource WidgetCardBackground}"
-                        BorderBrush="{ThemeResource WidgetCardBorderBrush}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource ControlCornerRadius}">
-                <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent">
+        <ScrollViewer VerticalAlignment="Stretch" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+            <Grid>
+                <commonviews:ExtensionAdaptiveCardPanel x:Name="SettingsContent" Visibility="{x:Bind ViewModel.IsAdaptiveCardVisible, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="Loaded">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SettingsContentLoadedCommand}" CommandParameter="{x:Bind SettingsContent}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </commonviews:ExtensionAdaptiveCardPanel>
-            </StackPanel>
+                <Grid Visibility="{x:Bind ViewModel.IsWebView2Visible, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <WebView2 x:Name="webView2" Grid.Row="1" Grid.ColumnSpan="2" Source="{x:Bind ViewModel.WebViewUrl, Mode=OneWay}" x:Uid="ExtensionSettingsWebView2" DefaultBackgroundColor="Transparent">
+                        <WebView2.Resources>
+                            <SolidColorBrush x:Name="BrushForThemeBackgroundColor" Color="Transparent" />
+                            <!-- High Contrast color chosen because it is used as a border color in high contrast modes -->
+                            <SolidColorBrush x:Name="BrushForThemeBackgroundColor_HC" Color="#f5c52a" />
+                        </WebView2.Resources>
+                    </WebView2>
+                </Grid>
+            </Grid>
         </ScrollViewer>
     </Grid>
-</commonviews:ToolPage>
+</commonviews:DevHomePage>

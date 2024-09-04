@@ -199,4 +199,7 @@
   <data name="AvailableFromStoreStackPanel.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Available in the Microsoft Store Automation Properties Name</value>
   </data>
+  <data name="ExtensionSettingsWebView2.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Extension Settings WebView2</value>
+  </data>
 </root>
