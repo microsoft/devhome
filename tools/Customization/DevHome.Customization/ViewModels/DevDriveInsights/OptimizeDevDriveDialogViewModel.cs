@@ -253,16 +253,21 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         {
             if (ChosenDirectoryInDevDrive(directoryPath))
             {
-                if (MoveDirectory(ExistingCacheLocation, directoryPath))
+                Task.Run(() =>
                 {
-                    SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
-                    var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
-                    Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
-                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
+                    // Send message to the DevDriveInsightsViewModel to let it display the progress ring for the move
+                    // WeakReferenceMessenger.Default.Send(new DevDriveOptimizingMessage(new DevDriveOptimizingData()));
+                    if (MoveDirectory(ExistingCacheLocation, directoryPath))
+                    {
+                        SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
+                        var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
+                        Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
+                        TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
 
-                    // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
-                    WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
-                }
+                        // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
+                        WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
+                    }
+                });
             }
             else
             {

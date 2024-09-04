@@ -10,9 +10,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
@@ -21,13 +23,15 @@ using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
-public partial class ReviewViewModel : SetupPageViewModelBase
+public partial class ReviewViewModel : SetupPageViewModelBase, IRecipient<NewAdaptiveCardAvailableMessage>
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ReviewViewModel));
 
     private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
     private readonly ConfigurationFileBuilder _configFileBuilder;
     private readonly Window _mainWindow;
+
+    private readonly SetupFlowViewModel _setupFlowViewModel;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -50,6 +54,11 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private string _reviewPageDescription;
+
+    [ObservableProperty]
+    private string _infoBarErrorMessage = null;
+
+    private bool _nextButtonInvoked;
 
     public bool ShouldShowGenerateConfigurationFile => !Orchestrator.IsInCreateEnvironmentFlow;
 
@@ -93,6 +102,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
+        SetupFlowViewModel setupFlow,
         SetupFlowOrchestrator orchestrator,
         ConfigurationFileBuilder configFileBuilder,
         Window mainWindow)
@@ -106,10 +116,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         _setupFlowOrchestrator = orchestrator;
         _configFileBuilder = configFileBuilder;
         _mainWindow = mainWindow;
+        WeakReferenceMessenger.Default.Register<NewAdaptiveCardAvailableMessage>(this);
+        _setupFlowViewModel = setupFlow;
+        _setupFlowViewModel.EndSetupFlow += OnEndSetupFlow;
     }
 
     protected async override Task OnEachNavigateToAsync()
     {
+        _nextButtonInvoked = false;
+
         // Re-compute the list of tabs as it can change depending on the current selections
         ReviewTabs =
             Orchestrator.TaskGroups
@@ -156,6 +171,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         try
         {
+            _nextButtonInvoked = true;
+
             // If we are in the setup target flow, we don't need to initialize the elevated server.
             // as work will be done in a remote machine.
             if (!Orchestrator.IsSettingUpATargetMachine)
@@ -169,6 +186,14 @@ public partial class ReviewViewModel : SetupPageViewModelBase
                 LogLevel.Critical,
                 new ReviewSetUpCommandEvent(Orchestrator.IsSettingUpATargetMachine, flowPages),
                 relatedActivityId: Orchestrator.ActivityId);
+
+            // Invoke adaptive card next button. We'll move on in the flow only if we did not
+            // receive any errors in the adaptive card session in the Receive method below.
+            if (Orchestrator.AdaptiveCardFlowNavigator.IsActionInvokerAvailable())
+            {
+                Orchestrator.AdaptiveCardFlowNavigator.GoToNextPage();
+                return;
+            }
 
             await Orchestrator.GoToNextPage();
         }
@@ -214,5 +239,42 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         var installedPackagesCount = installTasks.Count(task => task.IsInstalled);
         var nonInstalledPackagesCount = installTasks.Count() - installedPackagesCount;
         TelemetryFactory.Get<ITelemetry>().Log("Review_GenerateConfigurationForInstallPackages", LogLevel.Critical, new ReviewGenerateConfigurationForInstallEvent(installedPackagesCount, nonInstalledPackagesCount));
+    }
+
+    /// <summary>
+    /// Receives the adaptive card message and checks if its for the review view model.
+    /// </summary>
+    public async void Receive(NewAdaptiveCardAvailableMessage message)
+    {
+        // Only process the message if the view model is the ReviewViewModel
+        if (message.Value.CurrentSetupFlowViewModel is not ReviewViewModel)
+        {
+            return;
+        }
+
+        // Make the infobar message null so the empty object converter collapses in the
+        // UI incase the user previously clicks the x in the infobar, we want to make
+        // sure it becomes visible again if the InfoBarErrorMessage and message.Value.ErrorMessage
+        // values are still the same after the user clicks the "Next" button.
+        InfoBarErrorMessage = null;
+
+        InfoBarErrorMessage = message.Value.ErrorMessage;
+        if (!string.IsNullOrEmpty(InfoBarErrorMessage))
+        {
+            // Show infobar with error message and don't move to the loading page
+            // if there was an error in the adaptive card session.
+            return;
+        }
+
+        if (_nextButtonInvoked)
+        {
+            await Orchestrator.GoToNextPage();
+        }
+    }
+
+    private void OnEndSetupFlow(object sender, EventArgs e)
+    {
+        WeakReferenceMessenger.Default.UnregisterAll(this);
+        _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
     }
 }

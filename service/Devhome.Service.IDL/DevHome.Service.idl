@@ -1,0 +1,10 @@
+import "inspectable.idl";
+import "windows.foundation.idl";
+
+namespace DevHome.Service
+{
+    interface IDevHomeService
+    {
+        Int32 GetNumber();
+    }
+}

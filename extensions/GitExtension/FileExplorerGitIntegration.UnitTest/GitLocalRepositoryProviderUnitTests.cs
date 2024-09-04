@@ -186,7 +186,7 @@ public class GitLocalRepositoryProviderUnitTests
         Assert.AreEqual(result[statusProperty], string.Empty);
         Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
         result = localRepo.GetProperties(properties, relativeToPath);
-        Assert.AreEqual(result[statusProperty], "Staged rename");
+        Assert.AreEqual(result[statusProperty], "Staged, Renamed");
         Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
 
         // Reset
