@@ -91,26 +91,6 @@ public partial class App : Application, IApp
         Application.Current.GetService<PrimaryWindow>();
     }
 
-    internal static bool IsFeatureEnabled()
-    {
-        var isEnabled = false;
-
-        ApplicationData.Current.LocalSettings.Values.TryGetValue($"ExperimentalFeature_DevDiagnosticsExperiment", out var isEnabledObj);
-        if (isEnabledObj is not null && isEnabledObj is string isEnabledValue)
-        {
-            isEnabled = isEnabledValue == "true";
-        }
-        else
-        {
-#if DEBUG
-            // Override on debug builds to be enabled by default
-            isEnabled = true;
-#endif
-        }
-
-        return isEnabled;
-    }
-
     internal static ITelemetry Logger => TelemetryFactory.Get<ITelemetry>();
 
     internal static void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null) => Logger.LogTimeTaken(eventName, timeTakenMilliseconds, relatedActivityId);
