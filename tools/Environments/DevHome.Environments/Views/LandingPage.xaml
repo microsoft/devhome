@@ -66,7 +66,6 @@
                 <Grid>
                     <Button
                         x:Uid="MoreOptionsButton"
-                        Padding="0"
                         Style="{StaticResource HorizontalThreeDotsStyle}">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}"/>
@@ -80,7 +79,6 @@
                 <Grid>
                     <Button
                         Style="{StaticResource HorizontalThreeDotsStyle}"
-                        Padding="0"
                         x:Uid="MoreOptionsButton">
                         <Button.Flyout>
                             <customControls:CardFlyout ItemsViewModels="{x:Bind DotOperations, Mode=OneWay}" />
