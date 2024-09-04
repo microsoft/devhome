@@ -115,7 +115,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            _log.Error(e, "Error loading WebView2");
+            _log.Error(e, $"Error loading WebView2: {e.Message}");
+            RenderAdaptiveCard();
         }
     }
 
