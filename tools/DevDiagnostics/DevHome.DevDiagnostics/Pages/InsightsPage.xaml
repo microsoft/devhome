@@ -32,7 +32,7 @@
         <ItemsControl x:Name="InsightsItemsControl" ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="2">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
-                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" AutomationProperties.AutomationId="Expander">
+                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalAlignment="Top" Padding="0,6" AutomationProperties.AutomationId="Expander">
                         <interactivity:Interaction.Behaviors>
                             <helpers:ExpanderBehavior />
                         </interactivity:Interaction.Behaviors>
@@ -50,11 +50,7 @@
                                 </controls:InfoBadge>
                             </Grid>
                         </Expander.Header>
-                        <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left" AutomationProperties.AutomationId="RichTextBlock">
-                            <Paragraph>
-                                <Run Text="{x:Bind Description}"/>
-                            </Paragraph>
-                        </RichTextBlock>
+                        <ContentPresenter Margin="40,0,12,0" HorizontalAlignment="Stretch" Content="{x:Bind CustomControl}" />
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

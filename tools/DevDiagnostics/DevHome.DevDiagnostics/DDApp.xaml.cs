@@ -1,17 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.DevDiagnostics.Helpers;
-
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Pages;
 using DevHome.DevDiagnostics.Services;
 using DevHome.DevDiagnostics.Telemetry;
 using DevHome.DevDiagnostics.TelemetryEvents;
 using DevHome.DevDiagnostics.ViewModels;
+using DevHome.Service;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -53,6 +53,8 @@ public partial class App : Application, IApp
                 services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
                 services.AddSingleton<InternalToolsHelper>();
+                services.AddSingleton<IDevHomeService>(CommonHelper.GetDevHomeService());
+                services.AddSingleton<LoaderSnapAssistantTool>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();
@@ -89,6 +91,7 @@ public partial class App : Application, IApp
         // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
         // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
         Application.Current.GetService<PrimaryWindow>();
+        Application.Current.GetService<LoaderSnapAssistantTool>();
     }
 
     internal static bool IsFeatureEnabled()

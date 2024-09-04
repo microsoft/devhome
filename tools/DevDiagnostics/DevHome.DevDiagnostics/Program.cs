@@ -11,9 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
-using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
-using DevHome.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -40,9 +38,6 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var service = CommonHelper.GetDevHomeService();
-        int num = service.GetNumber();
-
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevDiagnostics"));
         var configuration = new ConfigurationBuilder()
