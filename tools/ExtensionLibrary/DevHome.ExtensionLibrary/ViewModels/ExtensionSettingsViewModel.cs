@@ -84,7 +84,15 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 {
                     if (settingsProvider is ISettingsProvider2 settingsProvider2)
                     {
-                        RenderWebView2(settingsProvider2);
+                        try
+                        {
+                            RenderWebView2(settingsProvider2);
+                        }
+                        catch (Exception e)
+                        {
+                            _log.Error(e, $"Error loading WebView2: {e.Message}");
+                            RenderAdaptiveCard(settingsProvider, extensionAdaptiveCardPanel);
+                        }
                     }
                     else
                     {
@@ -109,15 +117,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     {
         ShowWebView2Grid();
         var webViewResult = settingsProvider2.GetSettingsWebView();
-        try
-        {
-            WebViewUrl = new Uri(webViewResult.Url);
-        }
-        catch (Exception e)
-        {
-            _log.Error(e, $"Error loading WebView2: {e.Message}");
-            RenderAdaptiveCard();
-        }
+        WebViewUrl = new Uri(webViewResult.Url);
     }
 
     // Only called if the WebView2 receives a message from the web page
