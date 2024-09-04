@@ -173,15 +173,14 @@ internal sealed class WERHelper : IDisposable
         var appKey = globalKey.CreateSubKey(appname);
         Debug.Assert(appKey is not null, "App key is null");
 
-        // If dumpcount is set to 0, delete it to enable collection
-        if (appKey.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
+        // If dumpcount doesn't exist or is set to 0, set the default value to get cabs
+        if (appKey.GetValue("DumpCount") is not int dumpCount || dumpCount == 0)
         {
-            appKey.DeleteValue("DumpCount");
+            appKey.SetValue("DumpCount", 10);
         }
 
         // Make sure the cabs being collected are useful. Go for the full dumps instead of the mini dumps
         appKey.SetValue("DumpType", 2);
-
         return;
     }
 
