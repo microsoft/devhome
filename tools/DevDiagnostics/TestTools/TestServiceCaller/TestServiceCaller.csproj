@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\service\Devhome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+    <None Include="..\..\..\..\service\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

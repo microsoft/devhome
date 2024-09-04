@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+    <ProjectReference Include="..\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
   </ItemGroup>
 
   <PropertyGroup>
