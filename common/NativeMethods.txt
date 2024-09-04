@@ -18,4 +18,5 @@ GetWindowRect
 GetMonitorInfo
 SetWindowPos
 MonitorFromWindow
+RegNotifyChangeKeyValue
 E_INVALIDARG

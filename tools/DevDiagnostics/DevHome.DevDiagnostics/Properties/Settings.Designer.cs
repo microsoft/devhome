@@ -240,5 +240,17 @@ namespace DevHome.DevDiagnostics.Properties {
                 this["IsClipboardMonitorToolPinned"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsImageOptionsToolPinned {
+            get {
+                return ((bool)(this["IsImageOptionsToolPinned"]));
+            }
+            set {
+                this["IsImageOptionsToolPinned"] = value;
+            }
+        }
     }
 }
