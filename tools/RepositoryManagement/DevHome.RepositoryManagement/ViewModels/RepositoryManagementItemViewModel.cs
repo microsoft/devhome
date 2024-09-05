@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.TelemetryEvents.RepositoryManagement;
 using DevHome.Common.Windows.FileDialog;
@@ -17,7 +19,7 @@ using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
-public partial class RepositoryManagementItemViewModel
+public partial class RepositoryManagementItemViewModel : ObservableObject
 {
     public const string EventName = "DevHome_RepositorySpecific_Event";
 
@@ -41,17 +43,8 @@ public partial class RepositoryManagementItemViewModel
         set => _repositoryName = value ?? string.Empty;
     }
 
+    [ObservableProperty]
     private string _clonePath;
-
-    /// <summary>
-    /// Gets or sets the local path the repository is cloned to.  Nulls are converted to string.empty.
-    /// </summary>
-    public string ClonePath
-    {
-        get => _clonePath ?? string.Empty;
-
-        set => _clonePath = value ?? string.Empty;
-    }
 
     private string _latestCommit;
 
@@ -84,25 +77,29 @@ public partial class RepositoryManagementItemViewModel
     [RelayCommand]
     public async Task OpenInFileExplorer()
     {
+        var localClonePath = ClonePath ?? string.Empty;
+
         // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(ClonePath)))
+        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
         {
             await CloneLocationNotFoundNotifyUser(RepositoryName);
         }
 
-        OpenRepositoryInFileExplorer(RepositoryName, ClonePath, nameof(OpenInFileExplorer));
+        OpenRepositoryInFileExplorer(RepositoryName, localClonePath, nameof(OpenInFileExplorer));
     }
 
     [RelayCommand]
     public async Task OpenInCMD()
     {
+        var localClonePath = ClonePath ?? string.Empty;
+
         // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(ClonePath)))
+        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
         {
             await CloneLocationNotFoundNotifyUser(RepositoryName);
         }
 
-        OpenRepositoryinCMD(RepositoryName, ClonePath, nameof(OpenInCMD));
+        OpenRepositoryinCMD(RepositoryName, localClonePath, nameof(OpenInCMD));
     }
 
     [RelayCommand]
@@ -115,14 +112,15 @@ public partial class RepositoryManagementItemViewModel
             return;
         }
 
-        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
+        var localOldClonePath = ClonePath ?? string.Empty;
+        var repository = _dataAccess.GetRepository(RepositoryName, localOldClonePath);
 
         // The user clicked on this menu from the repository management page.
         // The repository should be in the database.
         // Somehow getting the repository returned null.
         if (repository is null)
         {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
+            _log.Warning($"The repository with name {RepositoryName} and clone location {localOldClonePath} is not in the database when it is expected to be there.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 EventName,
                 LogLevel.Critical,
@@ -132,7 +130,7 @@ public partial class RepositoryManagementItemViewModel
         }
 
         var newDirectoryInfo = new DirectoryInfo(Path.Join(newLocation, RepositoryName));
-        var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(ClonePath));
+        var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(localOldClonePath));
         currentDirectoryInfo.MoveTo(newDirectoryInfo.FullName);
 
         // The repository exists at the location stored in the Database
@@ -143,6 +141,8 @@ public partial class RepositoryManagementItemViewModel
         {
             _log.Warning($"Could not update the database.  Check logs");
         }
+
+        ClonePath = Path.Join(newLocation, RepositoryName);
     }
 
     [RelayCommand]

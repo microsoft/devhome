@@ -11,7 +11,6 @@ using DevHome.Database.Factories;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Windows.Media.Core;
 
 namespace DevHome.RepositoryManagement.Services;
 
@@ -28,6 +27,13 @@ public class RepositoryManagementDataAccessService
         _databaseContextFactory = databaseContextFactory;
     }
 
+    /// <summary>
+    /// Makes a new Repository entity with the provided name and location then saves it
+    /// to the database.
+    /// </summary>
+    /// <param name="repositoryName">The name of the repository to add.</param>
+    /// <param name="cloneLocation">The local location the repository is cloned to.</param>
+    /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
     public Repository MakeRepository(string repositoryName, string cloneLocation)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
@@ -51,6 +57,23 @@ public class RepositoryManagementDataAccessService
         };
 
         newRepo.RepositoryMetadata = newMetadata;
+
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            dbContext.Add(newRepo);
+            dbContext.Add(newMetadata);
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Exception when saving in {nameof(MakeRepository)}");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
+            return null;
+        }
 
         return newRepo;
     }
@@ -84,7 +107,7 @@ public class RepositoryManagementDataAccessService
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
 #pragma warning disable CA1309 // Use ordinal string comparison
-            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName.Equals(repositoryName)
+            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName!.Equals(repositoryName)
             && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation)));
 #pragma warning restore CA1309 // Use ordinal string comparison
         }
@@ -102,27 +125,31 @@ public class RepositoryManagementDataAccessService
 
     public bool UpdateCloneLocation(Repository repository, string newLocation)
     {
-        repository.RepositoryClonePath = newLocation;
-        Save();
-        return true;
-    }
-
-    private bool Save()
-    {
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
+            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
+            if (maybeRepository == null)
+            {
+                _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return false;
+            }
+
+            repository.RepositoryClonePath = newLocation;
+            maybeRepository.RepositoryClonePath = newLocation;
+
             dbContext.SaveChanges();
-            return true;
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Exception when saving.");
+            _log.Error(ex, "Exception when updating the clone location.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(Save), ex));
+                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
             return false;
         }
+
+        return true;
     }
 }

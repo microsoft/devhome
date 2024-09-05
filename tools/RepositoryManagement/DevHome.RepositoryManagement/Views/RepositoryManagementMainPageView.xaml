@@ -147,8 +147,8 @@
                                 ToolTipService.ToolTip="{x:Bind RepositoryName}" />
                             <TextBlock
                                 Grid.Column="1"
-                                Text="{x:Bind ClonePath}"
-                                ToolTipService.ToolTip="{x:Bind ClonePath}" />
+                                Text="{x:Bind ClonePath, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind ClonePath, Mode=OneWay}" />
                             <TextBlock
                                 Grid.Column="2"
                                 Text="{x:Bind LatestCommit}"
