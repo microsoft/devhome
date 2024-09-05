@@ -19,5 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\database\DevHome.Database\DevHome.Database.csproj" />
     <ProjectReference Include="..\src\DevHome.csproj" />
+    <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
   </ItemGroup>
 </Project>
