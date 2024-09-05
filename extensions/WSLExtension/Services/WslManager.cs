@@ -228,8 +228,6 @@ public class WslManager : IWslManager, IDisposable
     private void OnInstallChanged(object sender, AppInstallManagerItemEventArgs args)
     {
         var installItem = args.Item;
-        var installationStatus = installItem.GetCurrentStatus();
-        var itemInstallState = installationStatus.InstallState;
 
         WslInstallationEventHandler?.Invoke(this, installItem);
     }
