@@ -174,7 +174,7 @@ public partial class BarWindow : WindowEx
 
         if (_settings.IsCpuUsageMonitoringEnabled)
         {
-            PerfCounters.Instance.Start();
+            Application.Current.GetService<PerfCounters>().Start();
         }
 
         // Apply the user's chosen theme setting.
@@ -478,7 +478,7 @@ public partial class BarWindow : WindowEx
         }
 
         TargetAppData.Instance.ClearAppData();
-        PerfCounters.Instance.Stop();
+        Application.Current.GetService<PerfCounters>().Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
@@ -504,11 +504,11 @@ public partial class BarWindow : WindowEx
         {
             if (_settings.IsCpuUsageMonitoringEnabled)
             {
-                PerfCounters.Instance.Start();
+                Application.Current.GetService<PerfCounters>().Start();
             }
             else
             {
-                PerfCounters.Instance.Stop();
+                Application.Current.GetService<PerfCounters>().Stop();
             }
         }
     }
