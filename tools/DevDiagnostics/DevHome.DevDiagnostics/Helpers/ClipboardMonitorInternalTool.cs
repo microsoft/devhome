@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
+using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Properties;
 using DevHome.DevDiagnostics.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
-using Windows.Win32.Foundation;
 
 namespace DevHome.DevDiagnostics.Helpers;
 
@@ -38,6 +37,11 @@ public class ClipboardMonitorInternalTool : Tool
         if (_clipboardMonitoringWindow is null || _clipboardMonitoringWindow.AppWindow is null)
         {
             _clipboardMonitoringWindow = new ClipboardMonitoringWindow();
+
+            // Add this window to the list of related windows for the BarWindow,
+            // so that we can ensure that any BarWindow theme changes are also propagated to this window.
+            var barWindow = Application.Current.GetService<PrimaryWindow>().DBarWindow;
+            barWindow?.AddRelatedWindow(_clipboardMonitoringWindow);
         }
 
         if (options.ParentWindow is not null)
