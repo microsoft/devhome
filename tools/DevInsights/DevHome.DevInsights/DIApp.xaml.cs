@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.DevInsights.Helpers;
@@ -117,13 +118,13 @@ public partial class App : Application, IApp
 
     internal static void LogCritical(string eventName, bool isError = false, Guid? relatedActivityId = null) => Logger.LogCritical(eventName, isError, relatedActivityId);
 
-    internal static void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    internal static void Log<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
         Logger.Log<T>(eventName, level, data, relatedActivityId ?? null);
     }
 
-    internal static void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    internal static void LogError<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
         Logger.LogError<T>(eventName, level, data, relatedActivityId);

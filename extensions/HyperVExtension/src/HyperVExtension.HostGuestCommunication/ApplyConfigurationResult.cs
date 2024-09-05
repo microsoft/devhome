@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace HyperVExtension.HostGuestCommunication;
 
 // Helper class to convert from the DevSetupEngine COM types to the .NET types and use them
@@ -192,6 +194,14 @@ public class ApplyConfigurationSetResult
 
     // The overall result from applying the configuration set.
     public int ResultCode { get; set; }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(ConfigurationSetChangeData))]
+[JsonSerializable(typeof(ApplyConfigurationResult))]
+public sealed partial class SourceGenerationContextConfiguration : JsonSerializerContext
+{
 }
 
 #pragma warning restore SA1402 // File may only contain a single type

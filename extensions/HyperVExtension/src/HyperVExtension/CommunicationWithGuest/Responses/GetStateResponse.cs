@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using HyperVExtension.HostGuestCommunication;
 
@@ -14,7 +15,7 @@ internal sealed class GetStateResponse : ResponseBase
     public GetStateResponse(IResponseMessage responseMessage, JsonNode jsonData)
         : base(responseMessage, jsonData)
     {
-        StateData = GetRequiredValue<StateData>(nameof(StateData));
+        StateData = GetRequiredValue(nameof(StateData), StateDataSourceGenerationContext.Default.StateData);
     }
 
     public StateData StateData { get; }

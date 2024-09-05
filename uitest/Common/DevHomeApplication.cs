@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using DevHome.UITest.Configurations;
 using DevHome.UITest.Pages;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,8 @@ public sealed class DevHomeApplication
     /// Initialize the singleton instance
     /// </summary>
     /// <param name="appSettingsMode">Application settings mode (local, canary, etc ...)</param>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(WidgetConfiguration))]
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Nested class has dynamic dependency declared by this function")]
     public void Initialize(string appSettingsMode)
     {
         Configuration = new ConfigurationBuilder()

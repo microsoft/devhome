@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HyperVExtension.DevSetupAgent;
 
@@ -27,6 +28,13 @@ internal sealed class IsUserLoggedInResponse : ResponseBase
         base.GenerateJsonData();
 
         JsonData![nameof(IsUserLoggedIn)] = IsUserLoggedIn;
-        JsonData![nameof(LoggedInUsers)] = JsonSerializer.Serialize(LoggedInUsers);
+        JsonData![nameof(LoggedInUsers)] = JsonSerializer.Serialize(LoggedInUsers, IsUserLoggedInResponseSourceGenerationContext.Default.ListString);
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(List<string>))]
+internal sealed partial class IsUserLoggedInResponseSourceGenerationContext : JsonSerializerContext
+{
 }

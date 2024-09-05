@@ -388,13 +388,12 @@ properties:
         var expectedVMName = "New Windows 11 VM for Integration test";
         var imageList = await vmGalleryService.GetGalleryImagesAsync();
         var smallestImageIndex = await GetIndexOfImageWithSmallestRequiredSpace(imageList);
-        var inputJson = JsonSerializer.Serialize(new VMGalleryCreationUserInput()
+        var vmGalleryCreationUserInput = new VMGalleryCreationUserInput()
         {
             NewEnvironmentName = expectedVMName,
-
-            // Get Image with the smallest size from gallery, we'll use it to create a VM.
-            SelectedImageListIndex = smallestImageIndex,
-        });
+            SelectedImageListIndex = smallestImageIndex, // Get Image with the smallest size from gallery, we'll use it to create a VM.
+        };
+        var inputJson = JsonSerializer.Serialize(vmGalleryCreationUserInput, VMSourceGenerationContext.Default.VMGalleryCreationUserInput);
 
         var createComputeSystemOperation = hyperVProvider.CreateCreateComputeSystemOperation(null, inputJson);
         createComputeSystemOperation!.Progress += OnProgressReceived;

@@ -67,7 +67,7 @@ public class WslProvider : IComputeSystemProvider
     {
         try
         {
-            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(WslInstallationUserInput));
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, WslInstallationUserInputSourceGenerationContext.Default.WslInstallationUserInput);
             var wslInstallationUserInput =
                 deserializedObject as WslInstallationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 

@@ -4,6 +4,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using HyperVExtension.HostGuestCommunication;
+using HyperVExtension.Models.VMGalleryJsonToClasses;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -27,7 +28,7 @@ internal sealed class ConfigureProgressResponse : ResponseBase
             throw new JsonException($"Missing {nameof(ConfigurationSetChangeData)} in JSON data.");
         }
 
-        var configurationSetChangeData = JsonSerializer.Deserialize<ConfigurationSetChangeData>(configurationSetChangeDataNode);
+        var configurationSetChangeData = JsonSerializer.Deserialize<ConfigurationSetChangeData>(configurationSetChangeDataNode, SourceGenerationContextConfiguration.Default.ConfigurationSetChangeData);
         if (configurationSetChangeData == null)
         {
             throw new JsonException($"Failed to deserialize {nameof(ConfigurationSetChangeData)} from JSON data.");

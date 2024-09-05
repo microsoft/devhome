@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -10,7 +11,7 @@ namespace HyperVExtension.Common.Extensions;
 public static class IHostExtensions
 {
     /// <inheritdoc cref="ActivatorUtilities.CreateInstance(IServiceProvider, Type, object[])"/>
-    public static T CreateInstance<T>(this IHost host, params object[] parameters)
+    public static T CreateInstance<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(this IHost host, params object[] parameters)
     {
         return ActivatorUtilities.CreateInstance<T>(host.Services, parameters);
     }

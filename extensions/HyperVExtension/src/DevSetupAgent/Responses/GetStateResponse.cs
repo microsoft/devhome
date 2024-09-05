@@ -25,7 +25,7 @@ internal sealed class GetStateResponse : ResponseBase
     {
         base.GenerateJsonData();
 
-        var stateData = JsonSerializer.Serialize(StateData);
+        var stateData = JsonSerializer.Serialize(StateData, StateDataSourceGenerationContext.Default.StateData);
         JsonData![nameof(StateData)] = stateData;
     }
 }

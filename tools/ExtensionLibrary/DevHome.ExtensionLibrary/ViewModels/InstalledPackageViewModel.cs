@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -39,7 +40,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
                 Task.Run(() =>
                 {
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value);
+                    return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value, InstalledPackageViewModelSourceGenerationContext.Default.Boolean);
                 }).Wait();
 
                 _isExtensionEnabled = value;
@@ -71,7 +72,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(ExtensionUniqueId + "-ExtensionDisabled");
+            return localSettingsService.ReadSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", InstalledPackageViewModelSourceGenerationContext.Default.Boolean);
         }).Result;
         return !isDisabled;
     }
@@ -140,4 +141,9 @@ public partial class InstalledPackageViewModel : ObservableObject
 
         return $"{versionLabel} {versionString} | {publisher} | {lastUpdatedLabel} {installedDate.LocalDateTime}";
     }
+}
+
+[JsonSerializable(typeof(bool))]
+internal sealed partial class InstalledPackageViewModelSourceGenerationContext : JsonSerializerContext
+{
 }

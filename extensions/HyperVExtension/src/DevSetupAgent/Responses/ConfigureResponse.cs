@@ -75,7 +75,7 @@ internal sealed class ConfigureResponse : ResponseBase
     {
         base.GenerateJsonData();
 
-        var result = JsonSerializer.Serialize(_applyConfigurationResult);
+        var result = JsonSerializer.Serialize(_applyConfigurationResult, SourceGenerationContextConfiguration.Default.ApplyConfigurationResult);
         JsonData![nameof(ApplyConfigurationResult)] = result;
     }
 }

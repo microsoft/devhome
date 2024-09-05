@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using Serilog;
@@ -40,7 +41,7 @@ public class FileExplorerIntegrationUserSettings
     {
         if (_localSettingsService != null && _localSettingsService.HasSettingAsync("VersionControlIntegration").Result)
         {
-            return _localSettingsService.ReadSettingAsync<bool>("VersionControlIntegration").Result;
+            return _localSettingsService.ReadSettingAsync("VersionControlIntegration", FileExplorerIntegrationUserSettingsSourceGenerationContext.Default.Boolean).Result;
         }
 
         // If the user has not set the setting, it is disabled by default on page load
@@ -51,7 +52,7 @@ public class FileExplorerIntegrationUserSettings
     {
         if (_localSettingsService != null && _localSettingsService.HasSettingAsync("ShowVersionControlInformation").Result)
         {
-            return _localSettingsService.ReadSettingAsync<bool>("ShowVersionControlInformation").Result;
+            return _localSettingsService.ReadSettingAsync("ShowVersionControlInformation", FileExplorerIntegrationUserSettingsSourceGenerationContext.Default.Boolean).Result;
         }
 
         // If the user has not set the setting, it is disabled by default on page load
@@ -62,10 +63,17 @@ public class FileExplorerIntegrationUserSettings
     {
         if (_localSettingsService != null && _localSettingsService.HasSettingAsync("ShowRepositoryStatus").Result)
         {
-            return _localSettingsService.ReadSettingAsync<bool>("ShowRepositoryStatus").Result;
+            return _localSettingsService.ReadSettingAsync("ShowRepositoryStatus", FileExplorerIntegrationUserSettingsSourceGenerationContext.Default.Boolean).Result;
         }
 
         // If the user has not set the setting, it is disabled by default on page load
         return false;
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(bool))]
+internal sealed partial class FileExplorerIntegrationUserSettingsSourceGenerationContext : JsonSerializerContext
+{
 }

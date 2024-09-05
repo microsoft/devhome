@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 
@@ -26,7 +28,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
             var settingName = "HostsUtilitySettings" + nameof(ShowStartupWarning);
             if (localSettingsService.HasSettingAsync(settingName).Result)
             {
-                _showStartupWarning = localSettingsService.ReadSettingAsync<bool>(settingName).Result;
+                _showStartupWarning = localSettingsService.ReadSettingAsync(settingName, HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Boolean).Result;
             }
             else
             {
@@ -41,7 +43,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
             if (_showStartupWarning != value)
             {
                 _showStartupWarning = value;
-                NotifyPropertyChanged(value);
+                NotifyPropertyChanged(value, HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Boolean);
             }
         }
     }
@@ -50,7 +52,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
     {
         get
         {
-            _additionalLinesPosition = GetPropertyValueFromLocalSettings<int>(nameof(AdditionalLinesPosition));
+            _additionalLinesPosition = GetPropertyValueFromLocalSettings(nameof(AdditionalLinesPosition), HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Int32);
             return _additionalLinesPosition;
         }
 
@@ -59,7 +61,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
             if (_additionalLinesPosition != value)
             {
                 _additionalLinesPosition = value;
-                NotifyPropertyChanged(value);
+                NotifyPropertyChanged(value, HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Int32);
             }
         }
     }
@@ -68,7 +70,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
     {
         get
         {
-            _loopbackDuplicates = GetPropertyValueFromLocalSettings<bool>(nameof(LoopbackDuplicates));
+            _loopbackDuplicates = GetPropertyValueFromLocalSettings(nameof(LoopbackDuplicates), HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Boolean);
             return _loopbackDuplicates;
         }
 
@@ -77,7 +79,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
             if (_loopbackDuplicates != value)
             {
                 _loopbackDuplicates = value;
-                NotifyPropertyChanged(value);
+                NotifyPropertyChanged(value, HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Boolean);
             }
         }
     }
@@ -86,7 +88,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
     {
         get
         {
-            _encoding = GetPropertyValueFromLocalSettings<int>(nameof(Encoding));
+            _encoding = GetPropertyValueFromLocalSettings(nameof(Encoding), HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Int32);
             return _encoding;
         }
 
@@ -95,7 +97,7 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
             if (_encoding != value)
             {
                 _encoding = value;
-                NotifyPropertyChanged(value);
+                NotifyPropertyChanged(value, HostsFileEditorSettignsViewModelSourceGenerationContext.Default.Int32);
             }
         }
     }
@@ -105,20 +107,27 @@ public class HostsFileEditorSettingsViewModel : ObservableObject
         localSettingsService = HostsFileEditorApp.GetService<ILocalSettingsService>();
     }
 
-    public void NotifyPropertyChanged<T>(T value, [CallerMemberName] string propertyName = null)
+    public void NotifyPropertyChanged<T>(T value, JsonTypeInfo<T> jsonTypeInfo, [CallerMemberName] string propertyName = null)
     {
-        localSettingsService.SaveSettingAsync("HostsUtilitySettings" + propertyName, value).Wait();
+        localSettingsService.SaveSettingAsync("HostsUtilitySettings" + propertyName, value, jsonTypeInfo).Wait();
     }
 
-    private T GetPropertyValueFromLocalSettings<T>(string propertyName)
+    private T GetPropertyValueFromLocalSettings<T>(string propertyName, JsonTypeInfo<T> jsonTypeInfo)
     {
         var settingName = "HostsUtilitySettings" + propertyName;
         if (localSettingsService.HasSettingAsync(settingName).Result)
         {
-            var result = localSettingsService.ReadSettingAsync<T>(settingName).Result;
+            var result = localSettingsService.ReadSettingAsync<T>(settingName, jsonTypeInfo).Result;
             return result;
         }
 
         return default;
     }
+}
+
+[JsonSerializable(typeof(bool))]
+[JsonSerializable(typeof(int))]
+[JsonSerializable(typeof(string))]
+internal sealed partial class HostsFileEditorSettignsViewModelSourceGenerationContext : JsonSerializerContext
+{
 }

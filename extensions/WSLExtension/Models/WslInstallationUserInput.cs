@@ -22,3 +22,10 @@ public sealed class WslInstallationUserInput
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int SelectedDistributionIndex { get; set; }
 }
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(WslInstallationUserInput))]
+internal sealed partial class WslInstallationUserInputSourceGenerationContext : JsonSerializerContext
+{
+}

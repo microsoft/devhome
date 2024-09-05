@@ -37,7 +37,7 @@ internal sealed class ProgressResponse : ResponseBase
     protected override void GenerateJsonData()
     {
         base.GenerateJsonData();
-        var progress = JsonSerializer.Serialize(_progressData);
+        var progress = JsonSerializer.Serialize(_progressData, SourceGenerationContextConfiguration.Default.ConfigurationSetChangeData);
         JsonData![nameof(ProgressCounter)] = ProgressCounter;
         JsonData![nameof(ConfigurationSetChangeData)] = progress;
     }

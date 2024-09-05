@@ -25,7 +25,7 @@ internal sealed class ConfigureResponse : ResponseBase
             throw new JsonException($"Missing {nameof(ApplyConfigurationResult)} in JSON data.");
         }
 
-        var applyConfigurationResult = JsonSerializer.Deserialize<ApplyConfigurationResult>(applyConfigurationResultNode);
+        var applyConfigurationResult = JsonSerializer.Deserialize<ApplyConfigurationResult>(applyConfigurationResultNode, SourceGenerationContextConfiguration.Default.ApplyConfigurationResult);
         if (applyConfigurationResult == null)
         {
             throw new JsonException($"Failed to deserialize {nameof(ApplyConfigurationResult)} from JSON data.");

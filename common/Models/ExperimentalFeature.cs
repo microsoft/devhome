@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -51,7 +52,7 @@ public partial class ExperimentalFeature : ObservableObject
     {
         if (LocalSettingsService!.HasSettingAsync($"ExperimentalFeature_{Id}").Result)
         {
-            return LocalSettingsService.ReadSettingAsync<bool>($"ExperimentalFeature_{Id}").Result;
+            return LocalSettingsService.ReadSettingAsync($"ExperimentalFeature_{Id}", ExperimentalFeatureSourceGenerationContext.Default.Boolean).Result;
         }
 
         return _isEnabledByDefault;
@@ -80,9 +81,9 @@ public partial class ExperimentalFeature : ObservableObject
     {
         IsEnabled = !IsEnabled;
 
-        await LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", IsEnabled);
+        await LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", IsEnabled, ExperimentalFeatureSourceGenerationContext.Default.Boolean);
 
-        await LocalSettingsService!.SaveSettingAsync($"IsSeeker", true);
+        await LocalSettingsService!.SaveSettingAsync($"IsSeeker", true, ExperimentalFeatureSourceGenerationContext.Default.Boolean);
 
         TelemetryFactory.Get<ITelemetry>().Log("ExperimentalFeature_Toggled_Event", LogLevel.Critical, new ExperimentalFeatureEvent(Id, IsEnabled));
 
@@ -105,4 +106,11 @@ public partial class ExperimentalFeature : ObservableObject
             Application.Current.GetService<INavigationService>().NavigateTo(OpenPageKey, OpenPageParameter);
         }
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(bool))]
+internal sealed partial class ExperimentalFeatureSourceGenerationContext : JsonSerializerContext
+{
 }

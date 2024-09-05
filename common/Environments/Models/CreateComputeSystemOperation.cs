@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
@@ -94,7 +95,7 @@ public class CreateComputeSystemOperation : IDisposable
         _createComputeSystemOperation.ActionRequired += OnActionRequired;
         _createComputeSystemOperation.Progress += OnProgress;
 
-        _userInputJsonMap = JsonSerializer.Deserialize<Dictionary<string, string>>(userInputJson) ?? new();
+        _userInputJsonMap = JsonSerializer.Deserialize(userInputJson, CreateComputeSystemOperationSourceGenerationContext.Default.DictionaryStringString) ?? new();
 
         // Try to find the environment name in the user input json. This is the Id of the adaptive card element that allowed the user to enter
         // their environment name. If the key is not found, we'll just use the generic name.
@@ -197,4 +198,11 @@ public class CreateComputeSystemOperation : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(Dictionary<string, string>))]
+internal sealed partial class CreateComputeSystemOperationSourceGenerationContext : JsonSerializerContext
+{
 }

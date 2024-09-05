@@ -70,11 +70,12 @@ public class HyperVProviderTests : HyperVExtensionTestsBase
         SetupGalleryHttpContent();
 
         var hyperVProvider = TestHost!.GetService<IComputeSystemProvider>();
-        var inputJson = JsonSerializer.Serialize(new VMGalleryCreationUserInput()
+        var vmGalleryCreationUserInput = new VMGalleryCreationUserInput()
         {
             NewEnvironmentName = _expectedVmName,
             SelectedImageListIndex = 0, // Our test gallery image list Json only has one image
-        });
+        };
+        var inputJson = JsonSerializer.Serialize(vmGalleryCreationUserInput, VMSourceGenerationContext.Default.VMGalleryCreationUserInput);
 
         var createComputeSystemOperation = hyperVProvider.CreateCreateComputeSystemOperation(null, inputJson);
         createComputeSystemOperation!.Progress += OnProgressReceived;

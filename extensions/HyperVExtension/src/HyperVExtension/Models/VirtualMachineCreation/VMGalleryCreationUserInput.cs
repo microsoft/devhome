@@ -15,3 +15,10 @@ public sealed class VMGalleryCreationUserInput
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public int SelectedImageListIndex { get; set; }
 }
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(VMGalleryCreationUserInput))]
+public sealed partial class VMSourceGenerationContext : JsonSerializerContext
+{
+}

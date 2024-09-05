@@ -18,7 +18,6 @@ public class VMGalleryServiceTests : HyperVExtensionTestsBase
     {
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        TypeInfoResolver = JsonSourceGenerationContext.Default,
         AllowTrailingCommas = true,
     };
 
@@ -27,7 +26,8 @@ public class VMGalleryServiceTests : HyperVExtensionTestsBase
     {
         // Arrange
         var vmGalleryService = TestHost!.GetService<IVMGalleryService>();
-        var expectedJsonObj = JsonSerializer.Deserialize(TestGallery, typeof(VMGalleryImageList), _jsonOptions) as VMGalleryImageList;
+        var temp = new JsonSourceGenerationContext(_jsonOptions);
+        var expectedJsonObj = JsonSerializer.Deserialize(TestGallery, temp.VMGalleryImageList) as VMGalleryImageList;
         SetupGalleryHttpContent();
 
         // Act

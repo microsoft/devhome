@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Text;
@@ -200,7 +201,7 @@ internal sealed class Telemetry : ITelemetry
     /// <param name="data">Values to send to the telemetry system.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
-    public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    public void Log<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
         data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
@@ -215,14 +216,14 @@ internal sealed class Telemetry : ITelemetry
     /// <param name="data">Values to send to the telemetry system.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
-    public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    public void LogError<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
         data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
         this.LogInternal(eventName, level, data, relatedActivityId, isError: true);
     }
 
-    private void LogInternal<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId, bool isError)
+    private void LogInternal<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId, bool isError)
     {
         this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, isError, data);
     }
@@ -275,7 +276,8 @@ internal sealed class Telemetry : ITelemetry
     /// <param name="level">Determines whether to upload the data to our servers, and the sample set of host machines.</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
-    private void WriteTelemetryEvent<T>(string eventName, LogLevel level, Guid relatedActivityId, bool isError, T data)
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "We are only serializing primitive types or top level properties")]
+    private void WriteTelemetryEvent<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, Guid relatedActivityId, bool isError, T data)
     {
         EventSourceOptions telemetryOptions;
         if (this.IsTelemetryOn)

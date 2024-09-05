@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
@@ -152,7 +153,7 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
     {
         if (choiceSet.AdditionalProperties.TryGetValue("devHomeChoicesData", out var choices) && (choices.ValueType == JsonValueType.Array))
         {
-            return JsonSerializer.Deserialize<List<DevHomeChoicesData>>(choices.GetArray().ToString()) ?? new List<DevHomeChoicesData>();
+            return JsonSerializer.Deserialize(choices.GetArray().ToString(), DevHomeChoiceSourceGenerationContext.Default.ListDevHomeChoicesData) ?? new List<DevHomeChoicesData>();
         }
 
         return new List<DevHomeChoicesData>();
@@ -175,7 +176,7 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
                 continue;
             }
 
-            var deserializedChoices = JsonSerializer.Deserialize<List<DevHomeChoicesData>>(choicesList.GetArray().ToString());
+            var deserializedChoices = JsonSerializer.Deserialize(choicesList.GetArray().ToString(), DevHomeChoiceSourceGenerationContext.Default.ListDevHomeChoicesData);
             if (deserializedChoices is List<DevHomeChoicesData>)
             {
                 listOfAllChoices.Add(deserializedChoices);
@@ -263,4 +264,11 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         _choiceSetIdToUIElementMap.Clear();
         _childChoiceSetDataForOnParentSelectionChanged.Clear();
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(List<DevHomeChoicesData>))]
+internal sealed partial class DevHomeChoiceSourceGenerationContext : JsonSerializerContext
+{
 }

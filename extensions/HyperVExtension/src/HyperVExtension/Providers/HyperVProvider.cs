@@ -9,6 +9,7 @@ using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Models;
 using HyperVExtension.Models.VirtualMachineCreation;
+using HyperVExtension.Models.VMGalleryJsonToClasses;
 using HyperVExtension.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -154,7 +155,7 @@ public class HyperVProvider : IComputeSystemProvider
     {
         try
         {
-            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, JsonSourceGenerationContext.Default.VMGalleryCreationUserInput);
             var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
             return _vmGalleryCreationOperationFactory(inputForGalleryOperation);
         }

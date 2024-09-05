@@ -57,7 +57,8 @@ public class DistributionDefinitionHelper : IDistributionDefinitionHelper, IDisp
             // same that are used in the command wsl.exe --list --online.
             var client = _httpClientFactory.CreateClient();
             var distributionDefinitionsJson = await client.GetStringAsync(KnownDistributionsWebJsonLocation);
-            var webDefinitions = JsonSerializer.Deserialize<DistributionDefinitions>(distributionDefinitionsJson, _jsonOptions);
+            var temp = new DistributionDefinitionsSourceGenerationContext(_jsonOptions);
+            var webDefinitions = JsonSerializer.Deserialize(distributionDefinitionsJson, temp.DistributionDefinitions);
 
             foreach (var definition in webDefinitions!.Values)
             {

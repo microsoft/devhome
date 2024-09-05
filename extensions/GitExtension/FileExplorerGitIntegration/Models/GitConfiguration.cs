@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using Serilog;
@@ -47,7 +48,7 @@ public class GitConfiguration : IDisposable
     {
         lock (_fileLock)
         {
-            GitExeInstallPath = _fileService.Read<string>(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
+            GitExeInstallPath = _fileService.Read(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName, GitConfigurationSourceGenerationContext.Default.String);
             return GitExeInstallPath;
         }
     }
@@ -64,7 +65,7 @@ public class GitConfiguration : IDisposable
             var configFileFullPath = Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName);
             if (!File.Exists(configFileFullPath))
             {
-                _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName, string.Empty);
+                _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName, string.Empty, GitConfigurationSourceGenerationContext.Default.String);
                 _log.Information("The git configuration file did not exists and has just been created");
             }
         }
@@ -82,7 +83,7 @@ public class GitConfiguration : IDisposable
             _log.Information("Setting Git Exe Install Path");
             GitExeInstallPath = path;
 
-            _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, _tempConfigurationFileName, GitExeInstallPath);
+            _fileService.Save(GitExecutableConfigOptions.GitExecutableConfigFolderPath, _tempConfigurationFileName, GitExeInstallPath, GitConfigurationSourceGenerationContext.Default.String);
             File.Replace(Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, _tempConfigurationFileName), Path.Combine(GitExecutableConfigOptions.GitExecutableConfigFolderPath, GitExecutableConfigOptions.GitExecutableConfigFileName), null);
             _log.Information("Git Exe Install Path stored successfully");
             return true;
@@ -93,4 +94,9 @@ public class GitConfiguration : IDisposable
     {
         GC.SuppressFinalize(this);
     }
+}
+
+[JsonSerializable(typeof(string))]
+internal sealed partial class GitConfigurationSourceGenerationContext : JsonSerializerContext
+{
 }

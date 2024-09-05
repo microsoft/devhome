@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using HyperVExtension.Common;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
@@ -79,7 +80,9 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var shouldEndSession = false;
             var adaptiveCardStateNotRecognizedError = _stringResource.GetLocalized("AdaptiveCardStateNotRecognizedError");
 
-            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
+            var sourceGenerationContext = new AdaptiveCardActionPayloadSourceGenerationContext(Helpers.Json.Options);
+
+            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action, sourceGenerationContext.AdaptiveCardActionPayload);
             if (actionPayload == null)
             {
                 _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
@@ -156,21 +159,11 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
             var enterNewVMNameLabel = _stringResource.GetLocalized("EnterNewVMNameLabel");
             var enterNewVMNamePlaceHolder = _stringResource.GetLocalized("EnterNewVMNamePlaceHolder");
 
+            List<VMGalleryImageListImage> imageGalleryList = new();
+
             foreach (var image in _vMGalleryImageList.Images)
             {
-                var dataJson = new JsonObject
-                {
-                    { "ImageDescription", GetMergedDescription(image) },
-                    { "SubDescription", image.Publisher },
-                    { "Header", image.Name },
-                    { "HeaderIcon", image.Symbol.Base64Image },
-                    { "ActionButtonText", "More info" },
-                    { "ContentDialogInfo", SetupContentDialogInfo(image) },
-                    { "ButtonToLaunchContentDialogLabel", buttonToLaunchContentDialogLabel },
-                    { "SecondaryButtonForContentDialogText", secondaryButtonForContentDialogText },
-                };
-
-                jsonArrayOfGalleryImages.Add(dataJson);
+                imageGalleryList.Add(new VMGalleryImageListImage(image, GetSetupContentDialogInfo(image), buttonToLaunchContentDialogLabel, secondaryButtonForContentDialogText));
             }
 
             var templateData =
@@ -179,7 +172,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
                 $"\"SettingsCardLabel\": \"{settingsCardLabel}\"," +
                 $"\"EnterNewVMNameLabel\": \"{enterNewVMNameLabel}\"," +
                 $"\"EnterNewVMNamePlaceHolder\": \"{enterNewVMNamePlaceHolder}\"," +
-                $"\"GalleryImages\" : {jsonArrayOfGalleryImages.ToJsonString()}" +
+                $"\"GalleryImages\" : {JsonSerializer.Serialize(imageGalleryList, JsonSourceGenerationContext.Default.ListVMGalleryImageListImage)}" +
                 $"}}";
 
             var template = LoadTemplate(SessionState.InitialCreationForm);
@@ -202,7 +195,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     {
         try
         {
-            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(VMGalleryCreationUserInput));
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, JsonSourceGenerationContext.Default.VMGalleryCreationUserInput);
             var inputForGalleryOperation = deserializedObject as VMGalleryCreationUserInput ?? throw new InvalidOperationException($"Json deserialization failed for input Json: {inputJson}");
 
             if (inputForGalleryOperation.SelectedImageListIndex < 0 ||
@@ -253,7 +246,7 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     /// </summary>
     /// <param name="image">The c# class that represents the gallery image</param>
     /// <returns>A string that combines the original list of strings into one</returns>
-    public string GetMergedDescription(VMGalleryImage image)
+    public static string GetMergedDescription(VMGalleryImage image)
     {
         var description = string.Empty;
         for (var i = 0; i < image.Description.Count; i++)
@@ -270,34 +263,20 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
     /// </summary>
     /// <param name="image">The c# class that represents the gallery image</param>
     /// <returns>A Json object that contains the data needed to display an adaptive card within a content dialogs body</returns>
-    private JsonObject SetupContentDialogInfo(VMGalleryImage image)
+    public SetupContentDialogInfo GetSetupContentDialogInfo(VMGalleryImage image)
     {
-        var adaptiveCardImageFacts = new JsonArray();
+        List<AdaptiveCardImageFact> adaptiveCardImageFacts = new();
         foreach (var fact in image.Details)
         {
-            var adaptiveCardfactObj = new JsonObject
-            {
-                { "title", fact.Name },
-                { "value", fact.Value },
-            };
-            adaptiveCardImageFacts.Add(adaptiveCardfactObj);
+            adaptiveCardImageFacts.Add(new AdaptiveCardImageFact(fact.Name, fact.Value));
         }
 
-        var osVersionForContentDialog = _stringResource.GetLocalized("OsVersionForContentDialog");
-        var localeForContentDialog = _stringResource.GetLocalized("LocaleForContentDialog");
-        var lastUpdatedForContentDialog = _stringResource.GetLocalized("LastUpdatedForContentDialog");
-        var downloadForContentDialog = _stringResource.GetLocalized("DownloadForContentDialog");
+        adaptiveCardImageFacts.Add(new AdaptiveCardImageFact(_stringResource.GetLocalized("OsVersionForContentDialog"), image.Version));
+        adaptiveCardImageFacts.Add(new AdaptiveCardImageFact(_stringResource.GetLocalized("LocaleForContentDialog"), image.Locale));
+        adaptiveCardImageFacts.Add(new AdaptiveCardImageFact(_stringResource.GetLocalized("LastUpdatedForContentDialog"), image.LastUpdated.ToLongDateString()));
+        adaptiveCardImageFacts.Add(new AdaptiveCardImageFact(_stringResource.GetLocalized("DownloadForContentDialog"), BytesHelper.ConvertBytesToString(image.Disk.SizeInBytes)));
 
-        adaptiveCardImageFacts.Add(new JsonObject() { { "title", osVersionForContentDialog }, { "value", image.Version } });
-        adaptiveCardImageFacts.Add(new JsonObject() { { "title", localeForContentDialog }, { "value", image.Locale } });
-        adaptiveCardImageFacts.Add(new JsonObject() { { "title", lastUpdatedForContentDialog }, { "value", image.LastUpdated.ToLongDateString() } });
-        adaptiveCardImageFacts.Add(new JsonObject() { { "title", downloadForContentDialog }, { "value", BytesHelper.ConvertBytesToString(image.Disk.SizeInBytes) } });
-
-        return new JsonObject
-        {
-            { "GalleryImageFacts", adaptiveCardImageFacts },
-            { "ImageDescription", GetMergedDescription(image) },
-        };
+        return new SetupContentDialogInfo(adaptiveCardImageFacts, GetMergedDescription(image));
     }
 
     private async Task<ProviderOperationResult> HandleActionWhenFormInInitialState(AdaptiveCardActionPayload actionPayload, string inputs)
@@ -339,5 +318,62 @@ public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSessio
         }
 
         return (operationResult, shouldEndSession);
+    }
+
+    public class AdaptiveCardImageFact
+    {
+        public string Name { get; }
+
+        public string Value { get; }
+
+        public AdaptiveCardImageFact(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
+
+    public class SetupContentDialogInfo
+    {
+        public List<AdaptiveCardImageFact> GalleryImageFacts { get; }
+
+        public string ImageDescription { get; }
+
+        public SetupContentDialogInfo(List<AdaptiveCardImageFact> galleryImageFacts, string imageDescription)
+        {
+            GalleryImageFacts = galleryImageFacts;
+            ImageDescription = imageDescription;
+        }
+    }
+
+    public class VMGalleryImageListImage
+    {
+        public string ImageDescription { get; }
+
+        public string SubDescription { get; }
+
+        public string Header { get; }
+
+        public string HeaderIcon { get; }
+
+        public string ActionButtonText { get; }
+
+        public SetupContentDialogInfo ContentDialogInfo { get; }
+
+        public string ButtonToLaunchContentDialogLabel { get; }
+
+        public string SecondaryButtonForContentDialogText { get; }
+
+        public VMGalleryImageListImage(VMGalleryImage image, SetupContentDialogInfo contentDialogInfo, string buttonToLaunchContentDialogLabel, string secondaryButtonForContentDialogText)
+        {
+            ImageDescription = GetMergedDescription(image);
+            SubDescription = image.Publisher;
+            Header = image.Name;
+            HeaderIcon = image.Symbol.Base64Image;
+            ActionButtonText = "More info";
+            ContentDialogInfo = contentDialogInfo;
+            ButtonToLaunchContentDialogLabel = buttonToLaunchContentDialogLabel;
+            SecondaryButtonForContentDialogText = secondaryButtonForContentDialogText;
+        }
     }
 }

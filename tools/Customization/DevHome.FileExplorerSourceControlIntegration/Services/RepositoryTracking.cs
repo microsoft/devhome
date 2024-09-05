@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SourceControlIntegration;
@@ -61,7 +62,7 @@ public class RepositoryTracking
     {
         lock (_trackRepoLock)
         {
-            var caseSensitiveDictionary = _fileService.Read<Dictionary<string, string>>(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName);
+            var caseSensitiveDictionary = _fileService.Read(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, RepositoryTrackingSourceGenerationContext.Default.DictionaryStringString);
 
             // No repositories are currently being tracked. The file will be created on first add to repository tracking.
             if (caseSensitiveDictionary == null)
@@ -87,7 +88,7 @@ public class RepositoryTracking
             if (!TrackedRepositories.ContainsKey(rootPath))
             {
                 TrackedRepositories[rootPath] = extensionCLSID!;
-                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories, RepositoryTrackingSourceGenerationContext.Default.DictionaryStringString);
                 _log.Information("Repository added to repo store");
                 try
                 {
@@ -114,7 +115,7 @@ public class RepositoryTracking
         {
             TrackedRepositories.TryGetValue(rootPath, out extensionCLSID);
             TrackedRepositories.Remove(rootPath);
-            _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+            _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories, RepositoryTrackingSourceGenerationContext.Default.DictionaryStringString);
             _log.Information("Repository removed from repo store");
             try
             {
@@ -164,7 +165,7 @@ public class RepositoryTracking
             if (TrackedRepositories.TryGetValue(rootPath, out var existingExtensionCLSID))
             {
                 TrackedRepositories[rootPath] = extensionCLSID;
-                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories);
+                _fileService.Save(RepoStoreOptions.RepoStoreFolderPath, RepoStoreOptions.RepoStoreFileName, TrackedRepositories, RepositoryTrackingSourceGenerationContext.Default.DictionaryStringString);
                 _log.Information("Source control extension for tracked repository modified");
             }
             else
@@ -184,4 +185,11 @@ public class RepositoryTracking
             _log.Information("Tracked repositories restored from JSON at {0}", DateTime.Now);
         }
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(Dictionary<string, string>))]
+internal sealed partial class RepositoryTrackingSourceGenerationContext : JsonSerializerContext
+{
 }

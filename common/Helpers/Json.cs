@@ -4,13 +4,14 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 
 namespace DevHome.Common.Helpers;
 
 public static class Json
 {
-    public static async Task<T> ToObjectAsync<T>(string value)
+    public static async Task<T> ToObjectAsync<T>(string value, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (typeof(T) == typeof(bool))
         {
@@ -18,10 +19,10 @@ public static class Json
         }
 
         await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(value));
-        return (await JsonSerializer.DeserializeAsync<T>(stream))!;
+        return (await JsonSerializer.DeserializeAsync<T>(stream, jsonTypeInfo))!;
     }
 
-    public static async Task<string> StringifyAsync<T>(T value)
+    public static async Task<string> StringifyAsync<T>(T value, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (typeof(T) == typeof(bool))
         {
@@ -29,7 +30,7 @@ public static class Json
         }
 
         await using var stream = new MemoryStream();
-        await JsonSerializer.SerializeAsync(stream, value);
+        await JsonSerializer.SerializeAsync(stream, value, jsonTypeInfo);
         return Encoding.UTF8.GetString(stream.ToArray());
     }
 }

@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
@@ -44,7 +46,7 @@ public class LocalSettingsService : ILocalSettingsService
     {
         if (!_isInitialized)
         {
-            _settings = await Task.Run(() => _fileService.Read<Dictionary<string, object>>(_applicationDataFolder, _localSettingsFile)) ?? new Dictionary<string, object>();
+            _settings = await Task.Run(() => _fileService.Read(_applicationDataFolder, _localSettingsFile, LocalSettingsServiceSourceGenerationContext.Default.DictionaryStringObject)) ?? new Dictionary<string, object>();
 
             _isInitialized = true;
         }
@@ -69,13 +71,13 @@ public class LocalSettingsService : ILocalSettingsService
         return false;
     }
 
-    public async Task<T?> ReadSettingAsync<T>(string key)
+    public async Task<T?> ReadSettingAsync<T>(string key, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (RuntimeHelper.IsMSIX)
         {
             if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
             {
-                return await Helpers.Json.ToObjectAsync<T>((string)obj);
+                return await Helpers.Json.ToObjectAsync<T>((string)obj, jsonTypeInfo);
             }
         }
         else
@@ -84,26 +86,33 @@ public class LocalSettingsService : ILocalSettingsService
 
             if (_settings != null && _settings.TryGetValue(key, out var obj))
             {
-                return await Helpers.Json.ToObjectAsync<T>((string)obj);
+                return await Helpers.Json.ToObjectAsync<T>((string)obj, jsonTypeInfo);
             }
         }
 
         return default;
     }
 
-    public async Task SaveSettingAsync<T>(string key, T value)
+    public async Task SaveSettingAsync<T>(string key, T value, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (RuntimeHelper.IsMSIX)
         {
-            ApplicationData.Current.LocalSettings.Values[key] = await Helpers.Json.StringifyAsync(value!);
+            ApplicationData.Current.LocalSettings.Values[key] = await Helpers.Json.StringifyAsync(value!, jsonTypeInfo);
         }
         else
         {
             await InitializeAsync();
 
-            _settings[key] = await Helpers.Json.StringifyAsync(value!);
+            _settings[key] = await Helpers.Json.StringifyAsync(value!, jsonTypeInfo);
 
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings));
+            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings, LocalSettingsServiceSourceGenerationContext.Default.DictionaryStringObject));
         }
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(Dictionary<string, object>))]
+internal sealed partial class LocalSettingsServiceSourceGenerationContext : JsonSerializerContext
+{
 }

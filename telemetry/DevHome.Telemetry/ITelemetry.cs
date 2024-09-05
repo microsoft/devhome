@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DevHome.Telemetry;
 
@@ -59,7 +60,7 @@ public interface ITelemetry
     /// <param name="data">Values to send to the telemetry system.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
-    public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    public void Log<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase;
 
     /// <summary>
@@ -71,6 +72,6 @@ public interface ITelemetry
     /// <param name="data">Values to send to the telemetry system.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
-    public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    public void LogError<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase;
 }

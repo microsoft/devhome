@@ -55,9 +55,11 @@ public sealed class VMGalleryService : IVMGalleryService
             // This should be quick as the file is around 28.0 KB, so a 5 minute timeout should be ok on the worst network.
             cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(5));
 
+            var temp = new SourceGenerationContext(_jsonOptions);
+
             // get the JSON data
             var resultJson = await _downloaderService.DownloadStringAsync(VmGalleryUrl.AbsoluteUri, cancellationTokenSource.Token);
-            _imageList = JsonSerializer.Deserialize(resultJson, typeof(VMGalleryImageList), _jsonOptions) as VMGalleryImageList ?? emptyList;
+            _imageList = JsonSerializer.Deserialize(resultJson, temp.VMGalleryImageList) ?? emptyList;
 
             // Now we need to download the base64 images for the symbols (icons). So they can be used within an adaptive card.
             foreach (var image in _imageList.Images)

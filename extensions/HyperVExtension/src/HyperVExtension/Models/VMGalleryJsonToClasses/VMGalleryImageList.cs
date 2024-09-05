@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace HyperVExtension.Models.VMGalleryJsonToClasses;
 
 /// <summary>
@@ -9,4 +11,11 @@ namespace HyperVExtension.Models.VMGalleryJsonToClasses;
 public sealed class VMGalleryImageList
 {
     public List<VMGalleryImage> Images { get; set; } = new List<VMGalleryImage>();
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing VMGalleryImageList to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(VMGalleryImageList))]
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
+{
 }

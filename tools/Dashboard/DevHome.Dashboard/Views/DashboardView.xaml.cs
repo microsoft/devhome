@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -199,11 +200,11 @@ public partial class DashboardView : ToolPage, IDisposable
             {
                 ViewModel.HasWidgetServiceInitialized = true;
 
-                var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
+                var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, DashboardViewSourceGenerationContext.Default.Boolean));
                 _log.Information($"Is first dashboard run = {isFirstDashboardRun}");
                 if (isFirstDashboardRun)
                 {
-                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                    await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true, DashboardViewSourceGenerationContext.Default.Boolean);
                 }
 
                 try
@@ -266,7 +267,7 @@ public partial class DashboardView : ToolPage, IDisposable
                     await widget.Widget.DeleteAsync();
                 }
 
-                await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, false);
+                await _localSettingsService.SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, false, DashboardViewSourceGenerationContext.Default.Boolean);
             }
             finally
             {
@@ -1050,4 +1051,11 @@ public partial class DashboardView : ToolPage, IDisposable
         BannerViewModel.ResetDashboardBanner();
     }
 #endif
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(bool))]
+internal sealed partial class DashboardViewSourceGenerationContext : JsonSerializerContext
+{
 }

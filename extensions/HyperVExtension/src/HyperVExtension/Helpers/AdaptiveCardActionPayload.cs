@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Serialization;
+
 namespace HyperVExtension.Helpers;
 
 internal sealed class AdaptiveCardActionPayload
@@ -59,4 +61,11 @@ internal sealed class AdaptiveCardActionPayload
     {
         return Type == "Action.Execute";
     }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(AdaptiveCardActionPayload))]
+internal sealed partial class AdaptiveCardActionPayloadSourceGenerationContext : JsonSerializerContext
+{
 }

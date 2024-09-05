@@ -48,3 +48,10 @@ public partial class ExternalTool_v1 : ObservableObject
         ID = Guid.NewGuid().ToString();
     }
 }
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(ExternalTool_v1[]))]
+internal sealed partial class ExternalToolv1SourceGenerationContext : JsonSerializerContext
+{
+}

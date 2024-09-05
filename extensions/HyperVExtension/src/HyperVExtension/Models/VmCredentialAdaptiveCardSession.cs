@@ -5,6 +5,7 @@ using System.Net;
 using System.Security;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.CommunicationWithGuest;
@@ -21,24 +22,6 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
 {
     private const int MaxAttempts = 3;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(VmCredentialAdaptiveCardSession));
-
-    private sealed class InputPayload
-    {
-        public string? Id
-        {
-            get; set;
-        }
-
-        public string? UserVal
-        {
-            get; set;
-        }
-
-        public string? PassVal
-        {
-            get; set;
-        }
-    }
 
     private readonly IStringResource _stringResource;
     private readonly ApplyConfigurationOperation _operation;
@@ -140,10 +123,11 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
                     case "VmCredential":
                         {
                             _log.Debug($"inputs: {inputs}");
-                            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            var sourceGenerationContext = new AdaptiveCardActionPayloadSourceGenerationContext(Helpers.Json.Options);
+                            var actionPayload = Helpers.Json.ToObject(action, sourceGenerationContext.AdaptiveCardActionPayload) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
-                                var inputPayload = Helpers.Json.ToObject<InputPayload>(inputs) ?? throw new InvalidOperationException("Invalid inputs");
+                                var inputPayload = Helpers.Json.ToObject(inputs, InputPayloadSourceGenerationContext.Default.InputPayload) ?? throw new InvalidOperationException("Invalid inputs");
                                 _usernameString = inputPayload.UserVal;
                                 _passwordString = new NetworkCredential(string.Empty, inputPayload.PassVal).SecurePassword;
                             }
@@ -215,4 +199,29 @@ public sealed class VmCredentialAdaptiveCardSession : IExtensionAdaptiveCardSess
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }
+}
+
+internal sealed class InputPayload
+{
+    public string? Id
+    {
+        get; set;
+    }
+
+    public string? UserVal
+    {
+        get; set;
+    }
+
+    public string? PassVal
+    {
+        get; set;
+    }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(InputPayload))]
+internal sealed partial class InputPayloadSourceGenerationContext : JsonSerializerContext
+{
 }

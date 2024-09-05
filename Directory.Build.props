@@ -14,6 +14,7 @@
     <PlatformTarget>$(Platform)</PlatformTarget>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     <Configurations>Debug;Release;Debug_FailFast</Configurations>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
 <!--

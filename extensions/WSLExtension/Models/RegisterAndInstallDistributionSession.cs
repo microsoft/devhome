@@ -4,6 +4,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel;
@@ -76,7 +77,16 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                 var shouldEndSession = false;
                 var adaptiveCardStateNotRecognizedError = _stringResource.GetLocalized("AdaptiveCardStateNotRecognizedError");
 
-                var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action);
+                JsonSerializerOptions options = new()
+                {
+                    PropertyNameCaseInsensitive = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+                    IncludeFields = true,
+                };
+
+                var temp = new AdaptiveCardActionPayloadSourceGenerationContext(options);
+
+                var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action, temp.AdaptiveCardActionPayload);
                 if (actionPayload == null)
                 {
                     _log.Error($"Actions in Adaptive card action Json not recognized: {action}");
@@ -188,7 +198,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
         {
             // Create the JSON array for the available wsl distributions that can be installed and
             // add the data for each one. These will be display in the initial creation form.
-            var jsonArrayOfAvailableDistributions = new JsonArray();
+            List<AvailableDistributions> jsonArrayOfAvailableDistributions = new();
             var primaryButtonForCreationFlowText = _stringResource.GetLocalized("PrimaryButtonLabelForCreationFlow");
             var secondaryButtonForCreationFlowText = _stringResource.GetLocalized("SecondaryButtonLabelForCreationFlow");
             var settingsCardLabel = _stringResource.GetLocalized("SettingsCardLabel", _availableDistributionsToInstall.Count);
@@ -200,32 +210,20 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                 var base64Logo =
                     string.IsNullOrEmpty(distribution.Base64StringLogo) ? _defaultWslLogo : distribution.Base64StringLogo;
 
-                var dataJson = new JsonObject
-                {
-                    { "Header", distribution.FriendlyName },
-                    { "HeaderIcon", base64Logo },
-                    { "PublisherName", distribution.Publisher },
-                };
-
-                jsonArrayOfAvailableDistributions.Add(dataJson);
+                jsonArrayOfAvailableDistributions.Add(new AvailableDistributions(distribution.FriendlyName, base64Logo, distribution.Publisher));
             }
 
-            // Make sure we show the error message for when there are no distributions available to install
-            var noDistributionErrorData = new JsonArray
+            List<NoDistributionErrorData> noDistributionErrorDatas = new()
             {
-                new JsonObject
-                {
-                    { "NoDistributionsFoundError", noDistributionsFound },
-                    { "NoDistributionsFoundErrorVisibility", _availableDistributionsToInstall.Count == 0 },
-                },
+                new NoDistributionErrorData(noDistributionsFound, _availableDistributionsToInstall.Count == 0),
             };
 
             var templateData =
                 $"{{\"PrimaryButtonLabelForCreationFlow\" : \"{primaryButtonForCreationFlowText}\"," +
                 $"\"SecondaryButtonLabelForCreationFlow\" : \"{secondaryButtonForCreationFlowText}\"," +
                 $"\"SettingsCardLabel\": \"{settingsCardLabel}\"," +
-                $"\"NoDistributionErrorData\": {noDistributionErrorData.ToJsonString()}," +
-                $"\"AvailableDistributions\" : {jsonArrayOfAvailableDistributions.ToJsonString()}" +
+                $"\"NoDistributionErrorData\": {JsonSerializer.Serialize(noDistributionErrorDatas, DistributionSessionSourceGenerationContext.Default.NoDistributionErrorData)}," +
+                $"\"AvailableDistributions\" : {JsonSerializer.Serialize(jsonArrayOfAvailableDistributions, DistributionSessionSourceGenerationContext.Default.AvailableDistributions)}" +
                 $"}}";
 
             var template = LoadTemplate(SessionState.WslInstallationForm);
@@ -248,7 +246,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
     {
         try
         {
-            var deserializedObject = JsonSerializer.Deserialize(inputJson, typeof(WslInstallationUserInput));
+            var deserializedObject = JsonSerializer.Deserialize(inputJson, WslInstallationUserInputSourceGenerationContext.Default.WslInstallationUserInput);
 
             if (!(deserializedObject is WslInstallationUserInput inputForWslInstallation))
             {
@@ -301,4 +299,41 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
     public void Dispose()
     {
     }
+}
+
+public class AvailableDistributions
+{
+    public string Header { get; }
+
+    public string? HeaderIcon { get; set; }
+
+    public string PublisherName { get; set; }
+
+    public AvailableDistributions(string header, string? headerIcon, string publisherName)
+    {
+        Header = header;
+        HeaderIcon = headerIcon;
+        PublisherName = publisherName;
+    }
+}
+
+public class NoDistributionErrorData
+{
+    public string? NoDistributionsFoundError { get; }
+
+    public bool NoDistributionsFoundErrorVisibility { get; }
+
+    public NoDistributionErrorData(string? noDistributionsFoundError, bool noDistributionsFoundErrorVisibility)
+    {
+        NoDistributionsFoundError = noDistributionsFoundError;
+        NoDistributionsFoundErrorVisibility = noDistributionsFoundErrorVisibility;
+    }
+}
+
+// Uses .NET's JSON source generator support for serializing / deserializing to get some perf gains at startup.
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(AvailableDistributions))]
+[JsonSerializable(typeof(NoDistributionErrorData))]
+internal sealed partial class DistributionSessionSourceGenerationContext : JsonSerializerContext
+{
 }

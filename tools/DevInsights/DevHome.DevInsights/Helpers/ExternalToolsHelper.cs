@@ -5,11 +5,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using DevHome.Common.Helpers;
 using Serilog;
 using Windows.Storage;
@@ -89,7 +91,7 @@ internal sealed class ExternalToolsHelper
             var jsonData = File.ReadAllText(_toolInfoFileName);
             try
             {
-                var toolCollection = JsonSerializer.Deserialize<ExternalToolCollection>(jsonData);
+                var toolCollection = JsonSerializer.Deserialize(jsonData, ExternalToolCollectionSourceGenerationContext.Default.ExternalToolCollection);
                 var existingData = toolCollection?.ExternalTools ?? [];
                 foreach (var toolItem in existingData)
                 {
@@ -109,7 +111,7 @@ internal sealed class ExternalToolsHelper
     {
         try
         {
-            var oldFormatData = JsonSerializer.Deserialize<ExternalTool_v1[]>(jsonData) ?? [];
+            var oldFormatData = JsonSerializer.Deserialize(jsonData, ExternalToolv1SourceGenerationContext.Default.ExternalTool_v1Array) ?? [];
             foreach (var oldTool in oldFormatData)
             {
                 var arguments = string.Empty;
@@ -175,7 +177,7 @@ internal sealed class ExternalToolsHelper
         }
     }
 
-    private bool IsJsonIgnoreProperty<T>(string? propertyName)
+    private bool IsJsonIgnoreProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(string? propertyName)
     {
         if (string.IsNullOrEmpty(propertyName))
         {
@@ -210,7 +212,8 @@ internal sealed class ExternalToolsHelper
     private void WriteToolsJsonFile()
     {
         var toolCollection = new ExternalToolCollection(ToolsCollectionVersion, _allExternalTools);
-        var updatedJson = JsonSerializer.Serialize(toolCollection, _serializerOptions);
+        var temp = new ExternalToolCollectionSourceGenerationContext(_serializerOptions);
+        var updatedJson = JsonSerializer.Serialize(toolCollection, temp.ExternalToolCollection);
 
         try
         {

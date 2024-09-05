@@ -3,25 +3,19 @@
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace WSLExtension.Helpers;
 
 public static class Json
 {
-    private static readonly JsonSerializerOptions _options = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        IncludeFields = true,
-    };
-
-    public static T? ToObject<T>(string value)
+    public static T? ToObject<T>(string value, JsonTypeInfo<T> jsonTypeInfo)
     {
         if (typeof(T) == typeof(bool))
         {
             return (T)(object)bool.Parse(value);
         }
 
-        return JsonSerializer.Deserialize<T>(value, _options);
+        return JsonSerializer.Deserialize<T>(value, jsonTypeInfo);
     }
 }

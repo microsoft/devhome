@@ -1,8 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization.Metadata;
+using Newtonsoft.Json.Linq;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
@@ -114,7 +117,7 @@ internal class ResponseBase : IGuestResponse
         }
     }
 
-    protected T GetRequiredValue<T>(string nodeName)
+    protected T GetRequiredValue<T>(string nodeName, JsonTypeInfo<T> jsonTypeInfo)
     {
         // Calling JsonSerializer.Deserialize directly on JasonNode fails (why?), but deserializing
         // from the original string works.
@@ -124,7 +127,7 @@ internal class ResponseBase : IGuestResponse
             throw new JsonException($"Missing {nodeName} in JSON data.");
         }
 
-        var result = JsonSerializer.Deserialize<T>(node);
+        var result = JsonSerializer.Deserialize<T>(node, jsonTypeInfo);
         if (result == null)
         {
             throw new JsonException($"Failed to deserialize {nodeName} from JSON data.");

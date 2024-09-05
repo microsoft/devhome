@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using HyperVExtension.Models.VirtualMachineCreation;
+using static HyperVExtension.Models.VMGalleryCreationAdaptiveCardSession;
 
 namespace HyperVExtension.Models.VMGalleryJsonToClasses;
 
@@ -25,6 +27,7 @@ namespace HyperVExtension.Models.VMGalleryJsonToClasses;
 [JsonSerializable(typeof(VMGallerySymbol))]
 [JsonSerializable(typeof(VMGalleryThumbnail))]
 [JsonSerializable(typeof(VMGalleryCreationUserInput))]
+[JsonSerializable(typeof(List<VMGalleryImageListImage>))]
 public sealed partial class JsonSourceGenerationContext : JsonSerializerContext
 {
 }

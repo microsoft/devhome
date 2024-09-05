@@ -129,7 +129,8 @@ public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSess
                     case "WaitForVmUserLogin":
                         {
                             _log.Debug($"inputs: {inputs}");
-                            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action) ?? throw new InvalidOperationException("Invalid action");
+                            var sourceGenerationContext = new AdaptiveCardActionPayloadSourceGenerationContext(Helpers.Json.Options);
+                            var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action, sourceGenerationContext.AdaptiveCardActionPayload) ?? throw new InvalidOperationException("Invalid action");
                             if (actionPayload.IsOkAction())
                             {
                                 _isUserLoggedIn = true;
