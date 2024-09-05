@@ -27,7 +27,6 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Newtonsoft.Json.Linq;
 using Serilog;
-using Windows.Data.Json;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -156,10 +155,10 @@ public partial class WidgetViewModel : ObservableObject
             {
                 var template = new AdaptiveCardTemplate(cardTemplate);
 
-                var hostData = new Windows.Data.Json.JsonObject
+                var hostData = new JsonObject
                 {
                     // TODO Add support to host theme in hostData
-                    { "widgetSize", Windows.Data.Json.JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
+                    { "widgetSize", WidgetSize.ToString().ToLowerInvariant() }, // "small", "medium" or "large"
                 }.ToString();
 
                 var context = new EvaluationContext(cardData, hostData);
