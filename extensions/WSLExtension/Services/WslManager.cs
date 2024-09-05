@@ -117,9 +117,9 @@ public class WslManager : IWslManager
     }
 
     /// <inheritdoc cref="IWslManager.LaunchDistribution"/>
-    public void LaunchDistribution(string distributionName, string? windowsTerminalProfile = null)
+    public void LaunchDistribution(string distributionName)
     {
-        _wslServicesMediator.LaunchDistribution(distributionName, windowsTerminalProfile);
+        _wslServicesMediator.LaunchDistribution(distributionName);
     }
 
     /// <inheritdoc cref="IWslManager.InstallDistribution"/>

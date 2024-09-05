@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -11,7 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
+using DevHome.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -170,13 +172,6 @@ public static class Program
         else if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.StartupTask)
         {
             // Start the app in the background to handle the startup task and register the hotkey
-            if (wasFirstActivation && !App.IsFeatureEnabled())
-            {
-                // Exit the process if PI Expermental feature is not enabled and its the first activation in the process
-                Log.Information("Experimental feature is not enabled. Exiting the process.");
-                Process.GetCurrentProcess().Kill(false);
-            }
-
             // Don't show the bar window for startup task activations.
             return;
         }

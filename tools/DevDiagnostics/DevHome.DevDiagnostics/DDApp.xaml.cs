@@ -91,27 +91,6 @@ public partial class App : Application, IApp
         // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
         // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
         Application.Current.GetService<PrimaryWindow>();
-        Application.Current.GetService<LoaderSnapAssistantTool>();
-    }
-
-    internal static bool IsFeatureEnabled()
-    {
-        var isEnabled = false;
-
-        ApplicationData.Current.LocalSettings.Values.TryGetValue($"ExperimentalFeature_DevDiagnosticsExperiment", out var isEnabledObj);
-        if (isEnabledObj is not null && isEnabledObj is string isEnabledValue)
-        {
-            isEnabled = isEnabledValue == "true";
-        }
-        else
-        {
-#if DEBUG
-            // Override on debug builds to be enabled by default
-            isEnabled = true;
-#endif
-        }
-
-        return isEnabled;
     }
 
     internal static ITelemetry Logger => TelemetryFactory.Get<ITelemetry>();

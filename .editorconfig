@@ -2,6 +2,12 @@
 # You can modify the rules from these initially generated values to suit your own policies.
 # You can learn more about editorconfig here: https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference.
 
+# top-most EditorConfig file for this level
+root = true
+
+[*]
+trim_trailing_whitespace = true
+
 [*.cs]
 
 file_header_template = Copyright (c) Microsoft Corporation.\r\nLicensed under the MIT License.
@@ -132,7 +138,6 @@ csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:silent
 
-[*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
@@ -231,4 +236,3 @@ spelling_exclusion_path = .\exclusion.dic
 
 # CS8305: Type is for evaluation purposes only and is subject to change or removal in future updates.
 dotnet_diagnostic.CS8305.severity = suggestion
-

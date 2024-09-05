@@ -32,7 +32,6 @@
                 <Setter Property="IsReadOnly" Value="True"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="0 2 0 0"/>
-                <Setter Property="Height" Value="25"/>
             </Style>
         </Grid.Resources>
         <TextBlock x:Uid="HexLabelTextBlock" Grid.Column="1" AutomationProperties.AutomationId="HexLabel"/>

@@ -10,7 +10,7 @@ public sealed partial class ClipboardMonitoringWindow : WindowEx
 {
     public ClipboardMonitoringWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
         Title = CommonHelper.GetLocalizedString("ClipboardMonitorWindowTitle");
     }
 }

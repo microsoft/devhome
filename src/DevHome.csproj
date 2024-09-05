@@ -85,7 +85,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\service\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+    <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
     <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\service\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
@@ -184,7 +184,7 @@
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\service\Devhome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+    <None Include="..\service\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
