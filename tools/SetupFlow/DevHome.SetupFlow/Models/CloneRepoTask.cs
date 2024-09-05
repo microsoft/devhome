@@ -282,8 +282,9 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
             // TODO: Is this the best place to add the repository to the database?
             // Maybe a "PostExecutionStep" would be nice.
-            _host.GetService<RepositoryManagementDataAccessService>()
-            .AddRepository(RepositoryName, CloneLocation.FullName);
+            var serviceForMe = _host.GetService<RepositoryManagementDataAccessService>();
+            var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName);
+            serviceForMe.Save(newRepo);
 
             WasCloningSuccessful = true;
 

@@ -28,72 +28,125 @@ public partial class RepositoryManagementItemViewModel
 
     private readonly RepositoryManagementDataAccessService _dataAccess;
 
-    public string RepositoryName { get; set; }
+    private string _repositoryName;
 
-    public string ClonePath { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the repository.  Nulls are converted to string.empty.
+    /// </summary>
+    public string RepositoryName
+    {
+        get => _repositoryName ?? string.Empty;
 
-    public string LatestCommit { get; set; }
+        set => _repositoryName = value ?? string.Empty;
+    }
 
-    public string Branch { get; set; }
+    private string _clonePath;
+
+    /// <summary>
+    /// Gets or sets the local path the repository is cloned to.  Nulls are converted to string.empty.
+    /// </summary>
+    public string ClonePath
+    {
+        get => _clonePath ?? string.Empty;
+
+        set => _clonePath = value ?? string.Empty;
+    }
+
+    private string _latestCommit;
+
+    /// <summary>
+    /// Gets or sets the latest commit.  Nulls are converted to string.empty.
+    /// </summary>
+    /// <remarks>
+    /// TODO: Test values are strings only.
+    /// </remarks>
+    public string LatestCommit
+    {
+        get => _latestCommit ?? string.Empty;
+
+        set => _latestCommit = value ?? string.Empty;
+    }
+
+    private string _branch;
+
+    /// <summary>
+    /// Gets or sets the local branch name.  Nulls are converted to string.empty.
+    /// </summary>
+    public string Branch
+    {
+        get => _branch ?? string.Empty;
+        set => _branch = value ?? string.Empty;
+    }
 
     public bool IsHiddenFromPage { get; set; }
 
     [RelayCommand]
     public async Task OpenInFileExplorer()
     {
-        var localRepositoryName = RepositoryName;
-        if (string.IsNullOrEmpty(RepositoryName))
-        {
-            _log.Warning("RepositoryName is either null or empty.");
-            localRepositoryName = string.Empty;
-        }
-
-        var localClonePath = ClonePath;
-        if (string.IsNullOrEmpty(ClonePath))
-        {
-            _log.Warning("ClonePath is either null or empty");
-            localClonePath = string.Empty;
-        }
-
         // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
+        if (!Directory.Exists(Path.GetFullPath(ClonePath)))
         {
-            await CloneLocationNotFoundNotifyUser(localRepositoryName, ClonePath);
+            await CloneLocationNotFoundNotifyUser(RepositoryName);
         }
 
-        OpenRepositoryInFileExplorer(localRepositoryName, localClonePath, nameof(OpenInFileExplorer));
+        OpenRepositoryInFileExplorer(RepositoryName, ClonePath, nameof(OpenInFileExplorer));
     }
 
     [RelayCommand]
     public async Task OpenInCMD()
     {
-        var localRepositoryName = RepositoryName;
-        if (string.IsNullOrEmpty(RepositoryName))
-        {
-            _log.Warning("RepositoryName is either null or empty.");
-            localRepositoryName = string.Empty;
-        }
-
-        var localClonePath = ClonePath;
-        if (string.IsNullOrEmpty(ClonePath))
-        {
-            _log.Warning("ClonePath is either null or empty");
-            localClonePath = string.Empty;
-        }
-
         // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
+        if (!Directory.Exists(Path.GetFullPath(ClonePath)))
         {
-            await CloneLocationNotFoundNotifyUser(localRepositoryName, ClonePath);
+            await CloneLocationNotFoundNotifyUser(RepositoryName);
         }
 
-        OpenRepositoryinCMD(localRepositoryName, localClonePath, nameof(OpenInCMD));
+        OpenRepositoryinCMD(RepositoryName, ClonePath, nameof(OpenInCMD));
     }
 
     [RelayCommand]
-    public void MoveRepository()
+    public async Task MoveRepository()
     {
-        throw new NotImplementedException();
+        var newLocation = await PickNewLocationForRepositoryAsync();
+        if (string.IsNullOrEmpty(newLocation))
+        {
+            _log.Information("The path from the folder picker is either null or empty.  Not updating the clone path");
+            return;
+        }
+
+        var oldLocation = ClonePath;
+        var repository = _dataAccess.GetRepository(RepositoryName, oldLocation);
+
+        // The user clicked on this menu from the repository management page.
+        // The repository should be in the database.
+        // Somehow getting the repository returned null.
+        if (repository is null)
+        {
+            _log.Warning($"The repository with name {RepositoryName} and clone location {oldLocation} is not in the database when it is expected to be there.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
+
+            return;
+        }
+
+        RepositoryName = null;
+
+        // The repository exists at the location stored in the Database
+        // and the new location is set.
+        var didUpdate = _dataAccess.UpdateCloneLocation(repository, newLocation);
+
+        if (!didUpdate)
+        {
+            _log.Warning($"Could not update the database.  Check logs");
+        }
+
+        var didSave = _dataAccess.Save(repository);
+        if (!didSave)
+        {
+            _log.Warning($"Could not save to the database.  Check logs");
+        }
     }
 
     [RelayCommand]
@@ -134,12 +187,14 @@ public partial class RepositoryManagementItemViewModel
             LogLevel.Critical,
             new RepositoryLineItemEvent(action, repositoryName));
 
-        var processStartInfo = new ProcessStartInfo();
-        processStartInfo.UseShellExecute = true;
+        var processStartInfo = new ProcessStartInfo
+        {
+            UseShellExecute = true,
 
-        // Not catching PathTooLongException.  If the file was in a location that had a too long path,
-        // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
-        processStartInfo.FileName = Path.GetFullPath(cloneLocation);
+            // Not catching PathTooLongException.  If the file was in a location that had a too long path,
+            // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
+            FileName = Path.GetFullPath(cloneLocation),
+        };
 
         StartProcess(processStartInfo, action);
     }
@@ -152,13 +207,15 @@ public partial class RepositoryManagementItemViewModel
             LogLevel.Critical,
             new RepositoryLineItemEvent(action, repositoryName));
 
-        var processStartInfo = new ProcessStartInfo();
-        processStartInfo.UseShellExecute = true;
+        var processStartInfo = new ProcessStartInfo
+        {
+            UseShellExecute = true,
 
-        // Not catching PathTooLongException.  If the file was in a location that had a too long path,
-        // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
-        processStartInfo.FileName = "CMD";
-        processStartInfo.WorkingDirectory = Path.GetFullPath(cloneLocation);
+            // Not catching PathTooLongException.  If the file was in a location that had a too long path,
+            // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
+            FileName = "CMD",
+            WorkingDirectory = Path.GetFullPath(cloneLocation),
+        };
 
         StartProcess(processStartInfo, action);
     }
@@ -215,11 +272,10 @@ public partial class RepositoryManagementItemViewModel
     }
 
     private async Task CloneLocationNotFoundNotifyUser(
-        string repositoryName,
-        string cloneLocation)
+        string repositoryName)
     {
         // strings need to be localized
-        ContentDialog cantFindRepositoryDialog = new ContentDialog()
+        var cantFindRepositoryDialog = new ContentDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
             Title = $"Can not find {RepositoryName}.",
@@ -270,7 +326,7 @@ public partial class RepositoryManagementItemViewModel
                 _log.Warning($"Could not update the database.  Check logs");
             }
 
-            var didSave = _dataAccess.Save();
+            var didSave = _dataAccess.Save(repository);
             if (!didSave)
             {
                 _log.Warning($"Could not save to the database.  Check logs");

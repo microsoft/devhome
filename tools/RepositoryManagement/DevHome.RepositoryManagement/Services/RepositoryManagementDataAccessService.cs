@@ -5,16 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
-using DevHome.Database;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Factories;
-using DevHome.RepositoryManagement.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.Services;
@@ -32,34 +27,42 @@ public class RepositoryManagementDataAccessService
         _databaseContextFactory = databaseContextFactory;
     }
 
-    public void AddRepository(string repositoryName, string cloneLocation)
+    public Repository MakeRepository(string repositoryName, string cloneLocation)
     {
-        Repository newRepo = new();
-        newRepo.RepositoryName = repositoryName;
-        newRepo.RepositoryClonePath = cloneLocation;
+        var existingRepository = GetRepository(repositoryName, cloneLocation);
+        if (existingRepository != null)
+        {
+            _log.Information($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
+            return existingRepository;
+        }
 
-        RepositoryMetadata newMetadata = new();
-        newMetadata.Repository = newRepo;
-        newMetadata.RepositoryId = newRepo.RepositoryId;
-        newMetadata.IsHiddenFromPage = false;
+        Repository newRepo = new()
+        {
+            RepositoryName = repositoryName,
+            RepositoryClonePath = cloneLocation,
+        };
+
+        RepositoryMetadata newMetadata = new()
+        {
+            Repository = newRepo,
+            RepositoryId = newRepo.RepositoryId,
+            IsHiddenFromPage = false,
+        };
 
         newRepo.RepositoryMetadata = newMetadata;
 
-        using var dbContext = _databaseContextFactory.GetNewContext();
-        dbContext.Add(newRepo);
-        dbContext.Add(newMetadata);
+        return newRepo;
     }
 
     public List<Repository> GetRepositories()
     {
         _log.Information("Getting repositories");
-        var dbContext = _databaseContextFactory.GetNewContext();
-
         List<Repository> repositories = [];
 
         try
         {
-            repositories = dbContext.Repositories.Include(x => x.RepositoryMetadata).ToList();
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            repositories = [.. dbContext.Repositories.Include(x => x.RepositoryMetadata)];
         }
         catch (Exception ex)
         {
@@ -79,8 +82,10 @@ public class RepositoryManagementDataAccessService
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName.Equals(repositoryName, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(Path.GetFullPath(x.RepositoryClonePath), Path.GetFullPath(cloneLocation), StringComparison.OrdinalIgnoreCase));
+#pragma warning disable CA1309 // Use ordinal string comparison
+            return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName.Equals(repositoryName)
+            && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation)));
+#pragma warning restore CA1309 // Use ordinal string comparison
         }
         catch (Exception ex)
         {
@@ -100,11 +105,22 @@ public class RepositoryManagementDataAccessService
         return true;
     }
 
-    public bool Save()
+    public bool Save(Repository repository)
     {
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
+
+            var maybeExistingRepository = GetRepository(repository.RepositoryName, repository.RepositoryClonePath);
+            if (maybeExistingRepository != null)
+            {
+                dbContext.Update(repository);
+            }
+            else
+            {
+                dbContext.Add(repository);
+            }
+
             dbContext.SaveChanges();
             return true;
         }
@@ -114,7 +130,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(AddRepository), ex));
+                new DevHomeDatabaseEvent(nameof(Save), ex));
             return false;
         }
     }

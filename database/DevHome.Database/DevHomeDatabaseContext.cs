@@ -27,14 +27,45 @@ public class DevHomeDatabaseContext : DbContext
 
     public DevHomeDatabaseContext()
     {
+        DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
+        /*
+        var figuredOutTheDbPath = false;
         if (RuntimeHelper.IsMSIX)
         {
-            DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
+            try
+            {
+                DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
+
+                _log.Information("database found in Application Data");
+                figuredOutTheDbPath = true;
+            }
+            catch
+            {
+                _log.Information("Cound not find the database in Application data.");
+            }
         }
-        else
+
+        if (!figuredOutTheDbPath)
         {
-            DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
+            try
+            {
+                DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
+                figuredOutTheDbPath = true;
+                _log.Information("Database found in local application data.");
+            }
+            catch
+            {
+                _log.Information($"Could not find the database file in local application data.");
+            }
         }
+
+        if (!figuredOutTheDbPath)
+        {
+            _log.Warning($"Cound not find the database file.");
+        }
+
+        DbPath = string.Empty;
+        */
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

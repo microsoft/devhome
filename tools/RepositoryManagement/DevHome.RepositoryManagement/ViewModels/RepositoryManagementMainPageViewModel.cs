@@ -21,7 +21,7 @@ public partial class RepositoryManagementMainPageViewModel
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    public ObservableCollection<RepositoryManagementItemViewModel> Items => new(_dataAccessService.GetRepositories(true));
+    public ObservableCollection<RepositoryManagementItemViewModel> Items { get; private set; }
 
     [RelayCommand]
     public void AddExistingRepository()
@@ -47,7 +47,7 @@ public partial class RepositoryManagementMainPageViewModel
     private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
     {
         _log.Information("Converting repositories from the database into view models for display");
-        List<RepositoryManagementItemViewModel> items = new();
+        List<RepositoryManagementItemViewModel> items = [];
 
         foreach (var repo in repositories)
         {
