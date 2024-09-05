@@ -67,7 +67,8 @@ public class LoaderSnapAssistantTool
 
     private void MyETWListener()
     {
-        TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
+        using TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
+        session.StopOnDispose = true;
 
         // Enable the loader snaps provider
         session.EnableProvider(WindowsImageETWProvider, TraceEventLevel.Error, LoaderSnapsFlag);
