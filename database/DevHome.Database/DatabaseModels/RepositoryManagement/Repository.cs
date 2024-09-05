@@ -24,7 +24,5 @@ public class Repository
 
     public DateTime? UpdatedUTCDate { get; set; }
 
-    // 1:1 relationship.  Repository is the parent and needs only
-    // the object of the dependant.
-    public RepositoryMetadata? RepositoryMetadata { get; set; }
+    public bool IsHidden { get; set; }
 }

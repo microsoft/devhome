@@ -40,7 +40,6 @@ public class RepositoryTests
         Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
         Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
         Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
-        Assert.IsNull(savedRepository.RepositoryMetadata);
 
         // Modify the record.
         savedRepository.RepositoryName = "MyNewName";
@@ -54,15 +53,5 @@ public class RepositoryTests
         Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
         Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
         Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
-        Assert.IsNull(savedRepository.RepositoryMetadata);
-
-        RepositoryMetadata savedRepositoryMetadata = new RepositoryMetadata();
-        savedRepositoryMetadata.IsHiddenFromPage = true;
-        savedRepository.RepositoryMetadata = savedRepositoryMetadata;
-        dbContext.SaveChanges();
-
-        allRepositories = dbContext.Repositories.ToList();
-        savedRepository = allRepositories[0];
-        Assert.IsNotNull(savedRepository.RepositoryMetadata);
     }
 }

@@ -9,7 +9,6 @@ using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Factories;
 using DevHome.Telemetry;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.Services;
@@ -49,20 +48,10 @@ public class RepositoryManagementDataAccessService
             RepositoryClonePath = cloneLocation,
         };
 
-        RepositoryMetadata newMetadata = new()
-        {
-            Repository = newRepo,
-            RepositoryId = newRepo.RepositoryId,
-            IsHiddenFromPage = false,
-        };
-
-        newRepo.RepositoryMetadata = newMetadata;
-
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
             dbContext.Add(newRepo);
-            dbContext.Add(newMetadata);
             dbContext.SaveChanges();
         }
         catch (Exception ex)
@@ -86,7 +75,7 @@ public class RepositoryManagementDataAccessService
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            repositories = [.. dbContext.Repositories.Include(x => x.RepositoryMetadata)];
+            repositories = [.. dbContext.Repositories];
         }
         catch (Exception ex)
         {
@@ -151,5 +140,33 @@ public class RepositoryManagementDataAccessService
         }
 
         return true;
+    }
+
+    public void SetIsHidden(Repository repository, bool isHidden)
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
+            if (maybeRepository == null)
+            {
+                _log.Warning($"{nameof(SetIsHidden)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return;
+            }
+
+            maybeRepository.IsHidden = isHidden;
+            repository.IsHidden = isHidden;
+
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when updating the clone location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
+            return;
+        }
     }
 }

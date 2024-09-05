@@ -170,7 +170,7 @@
                                         <MenuFlyoutItem Text="Move Repository" Command="{x:Bind MoveRepositoryCommand}" />
                                         <MenuFlyoutItem Text="Add to Config file" />
                                         <MenuFlyoutItem Text="Run to config file" />
-                                        <MenuFlyoutItem Text="Remove from this list" />
+                                        <MenuFlyoutItem Text="Remove from this list" Command="{x:Bind RemoveThisRepositoryFromTheListCommand}" />
                                         <MenuFlyoutItem Text="Delete Repository" />
                                     </MenuFlyout>
                                 </Button.Flyout>

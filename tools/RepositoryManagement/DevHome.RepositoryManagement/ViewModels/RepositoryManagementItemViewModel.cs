@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -105,10 +103,19 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public async Task MoveRepository()
     {
+        // TODO: Save to the database before moving the folder.
         var newLocation = await PickNewLocationForRepositoryAsync();
+
+        // TODO: Warn the user no action will take place
         if (string.IsNullOrEmpty(newLocation))
         {
             _log.Information("The path from the folder picker is either null or empty.  Not updating the clone path");
+            return;
+        }
+
+        if (string.Equals(Path.GetFullPath(newLocation), Path.GetFullPath(ClonePath), StringComparison.OrdinalIgnoreCase))
+        {
+            _log.Information("The selected path is the same as the current path.");
             return;
         }
 
@@ -131,7 +138,19 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
         var newDirectoryInfo = new DirectoryInfo(Path.Join(newLocation, RepositoryName));
         var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(localOldClonePath));
-        currentDirectoryInfo.MoveTo(newDirectoryInfo.FullName);
+
+        try
+        {
+            currentDirectoryInfo.MoveTo(newDirectoryInfo.FullName);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Cound not move repository to the selected location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(nameof(MoveRepository), RepositoryName));
+        }
 
         // The repository exists at the location stored in the Database
         // and the new location is set.
@@ -166,7 +185,23 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public void RemoveThisRepositoryFromTheList()
     {
-        throw new NotImplementedException();
+        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
+
+        // The user clicked on this menu from the repository management page.
+        // The repository should be in the database.
+        // Somehow getting the repository returned null.
+        if (repository is null)
+        {
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
+
+            return;
+        }
+
+        _dataAccess.SetIsHidden(repository, true);
     }
 
     public RepositoryManagementItemViewModel(Window window, RepositoryManagementDataAccessService dataAccess)

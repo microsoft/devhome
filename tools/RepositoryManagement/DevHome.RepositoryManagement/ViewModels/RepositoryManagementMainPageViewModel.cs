@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
@@ -34,7 +35,10 @@ public partial class RepositoryManagementMainPageViewModel
     {
         Items.Clear();
         var repositoriesFromTheDatabase = _dataAccessService.GetRepositories();
-        ConvertToLineItems(repositoriesFromTheDatabase).ForEach(x => Items.Add(x));
+        ConvertToLineItems(repositoriesFromTheDatabase)
+            .Where(x => x.IsHiddenFromPage == false)
+            .ToList()
+            .ForEach(x => Items.Add(x));
     }
 
     public RepositoryManagementMainPageViewModel(IHost host, RepositoryManagementDataAccessService dataAccessService)
@@ -57,7 +61,7 @@ public partial class RepositoryManagementMainPageViewModel
             lineItem.RepositoryName = repo.RepositoryName;
             lineItem.LatestCommit = "No commits found"; // Test value.  Will change in the future.
 
-            lineItem.IsHiddenFromPage = repo.RepositoryMetadata.IsHiddenFromPage;
+            lineItem.IsHiddenFromPage = repo.IsHidden;
             items.Add(lineItem);
         }
 

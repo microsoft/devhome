@@ -28,6 +28,9 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasColumnType("TEXT")
                     .HasDefaultValueSql("datetime()");
 
+                b.Property<bool>("IsHidden")
+                    .HasColumnType("INTEGER");
+
                 b.Property<string>("RepositoryClonePath")
                     .IsRequired()
                     .ValueGeneratedOnAdd()
@@ -51,59 +54,6 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .IsUnique();
 
                 b.ToTable("Repository", (string)null);
-            });
-
-        modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
-            {
-                b.Property<int>("RepositoryMetadataId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("INTEGER");
-
-                b.Property<DateTime?>("CreatedUTCDate")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("TEXT")
-                    .HasDefaultValueSql("datetime()");
-
-                b.Property<bool>("IsHiddenFromPage")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("INTEGER")
-                    .HasDefaultValue(false);
-
-                b.Property<int>("RepositoryId")
-                    .HasColumnType("INTEGER");
-
-                b.Property<DateTime?>("UpdatedUTCDate")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("TEXT")
-                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-
-                b.Property<DateTime>("UtcDateHidden")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("TEXT")
-                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
-
-                b.HasKey("RepositoryMetadataId");
-
-                b.HasIndex("RepositoryId")
-                    .IsUnique();
-
-                b.ToTable("RepositoryMetadata", (string)null);
-            });
-
-        modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", b =>
-            {
-                b.HasOne("DevHome.Database.DatabaseModels.RepositoryManagement.Repository", "Repository")
-                    .WithOne("RepositoryMetadata")
-                    .HasForeignKey("DevHome.Database.DatabaseModels.RepositoryManagement.RepositoryMetadata", "RepositoryId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.Navigation("Repository");
-            });
-
-        modelBuilder.Entity("DevHome.Database.DatabaseModels.RepositoryManagement.Repository", b =>
-            {
-                b.Navigation("RepositoryMetadata");
             });
 #pragma warning restore 612, 618
     }
