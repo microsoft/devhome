@@ -39,17 +39,8 @@ public static class Constants
     public const int WslVersion2 = 2;
     public const int WslExeExitSuccess = 0;
 
-    // Launch terminal with specific profile and log the user into their home directory in the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionInTerminalWithProfile { get; } = "--profile {0} -- wsl --shell-type login --cd ~ --distribution {1}";
-
-    // Launch without using a Terminal profile and log the user into their home directory using the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionInTerminalWithNoProfile { get; } = "wsl --shell-type login --cd ~ --distribution {0}";
-
     // Launch into the wsl process without terminal and log the user into their home directory using the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionWithoutTerminal { get; } = "--shell-type login --cd ~ --distribution {0}";
+    public static string LaunchDistributionArgs { get; } = "--shell-type login --cd ~ --distribution {0}";
 
     // Arguments to unregister a wsl distribution from a machine using wsl.exe
     public const string UnregisterDistributionArgs = "--unregister {0}";
@@ -57,13 +48,8 @@ public static class Constants
     // Arguments to terminate all wsl sessions for a specific distribution using wsl.exe
     public const string TerminateDistributionArgs = "--terminate {0}";
 
-    // Arguments to download, install and register a wsl distribution using Terminal
-    // Note: this opens a new terminal window in the UI
-    public const string InstallDistributionWithTerminal = "wsl --install --distribution {0}";
-
-    // Arguments to download, install and register a wsl distribution without using terminal
-    // Note: this opens a cmd window in the UI
-    public const string InstallDistributionWithoutTerminal = "--install --distribution {0}";
+    // Arguments to download, install and register a wsl distribution.
+    public const string InstallDistributionArgs = "--install --distribution {0}";
 
     // Arguments to list of all running distributions on a machine using wsl.exe
     public const string ListAllRunningDistributions = "--list --running";

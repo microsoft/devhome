@@ -29,7 +29,7 @@ public interface IWslServicesMediator
     void UnregisterDistribution(string distributionName);
 
     /// <summary> Launches a new WSL process with the provided distribution. </summary>
-    void LaunchDistribution(string distributionName, string? windowsTerminalProfile);
+    void LaunchDistribution(string distributionName);
 
     /// <summary> Installs and registers a new distribution on the machine. </summary>
     void InstallDistribution(string distributionName);
