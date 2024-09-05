@@ -465,4 +465,24 @@
     <value>Provided by {0}</value>
     <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
   </data>
+  <data name="AssignSourceControlErrorDialog_Title" xml:space="preserve">
+    <value>Error assigning source control provider</value>
+    <comment>Title for the Assign Source Control Provider Error dialog</comment>
+  </data>
+  <data name="ValidateSourceControlErrorOnRepositoryProviderInstanceCreation" xml:space="preserve">
+    <value>Failed to create an instance of the local repository provider.</value>
+    <comment>An error message when an instance of the local repository provider cannot be created</comment>
+  </data>
+  <data name="ValidateSourceControlErrorOnGetRepository" xml:space="preserve">
+    <value>An exception was thrown while obtaining the repository from the local repository provider: </value>
+    <comment>An error message when an exception is thrown while obtaining the repository from the local repository provider</comment>
+  </data>
+   <data name="RegistrationErrorWithFileExplorer" xml:space="preserve">
+    <value>Failed to register repository root folder with File Explorer </value>
+    <comment>An error message when the repository root folder cannot be registered with File Explorer</comment>
+  </data>
+  <data name="CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text for a button to close a content dialog.</comment>
+  </data>
 </root>
