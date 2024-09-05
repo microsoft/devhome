@@ -11,9 +11,13 @@ using Windows.Win32.System.Com;
 
 namespace DevHome.Service;
 
+internal delegate void ServiceStopEvent();
+
 internal sealed class ServiceLifetimeController
 {
     private static readonly List<Process> _processes = new();
+
+    internal static event ServiceStopEvent? ServiceStop;
 
     public static void RegisterProcess(Process p)
     {
@@ -31,6 +35,7 @@ internal sealed class ServiceLifetimeController
                         if (_processes.Count == 0)
                         {
                             // It's ok to stop the service now
+                            ServiceStop?.Invoke();
                             WindowsBackgroundService.Stop();
                         }
                     }

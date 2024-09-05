@@ -1278,4 +1278,12 @@ Dump File creation time: {1}</value>
     <value>(No insights found)</value>
     <comment>Placeholder text on the Insights page when the insights list is empty.</comment>
   </data>
+  <data name="InsightProcessExitMissingDependenciesTitle" xml:space="preserve">
+    <value>Process exited due to missing files</value>
+    <comment>Title of an insight informing the user of a reason why a process exited</comment>
+  </data>
+  <data name="InsightProcessExitMissingDependencies" xml:space="preserve">
+    <value>Process {0} (pid: {1,6}) exited with error code {2}. Enabling loader snaps can help diagnose why the app exited.</value>
+    <comment>{Locked="{0}, "{1,6}", "{2}"} Formatted string informing the user the process name {0}, the Process ID {1}, the exit code {2} of a process.</comment>
+  </data>
 </root>
