@@ -147,10 +147,10 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
             var themeService = Application.Current.GetService<IThemeSelectorService>();
             var deletionContentDialog = new ContentDialog
             {
-                Title = _stringResource.GetLocalized("DeleteEnviroment_Title"),
-                Content = _stringResource.GetLocalized("DeleteEnviroment_Content"),
-                PrimaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_ConfirmButton"),
-                SecondaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_CancelButton"),
+                Title = _stringResource.GetLocalized("DeleteEnvironment_Title"),
+                Content = _stringResource.GetLocalized("DeleteEnvironment_Content"),
+                PrimaryButtonText = _stringResource.GetLocalized("DeleteEnvironment_ConfirmButton"),
+                SecondaryButtonText = _stringResource.GetLocalized("DeleteEnvironment_CancelButton"),
                 XamlRoot = _mainWindow?.Content.XamlRoot,
                 RequestedTheme = themeService.Theme,
             };
