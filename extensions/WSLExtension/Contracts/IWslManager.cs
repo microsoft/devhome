@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 using WSLExtension.DistributionDefinitions;
 using WSLExtension.Models;
 
@@ -52,4 +53,10 @@ public interface IWslManager
     /// This is a wrapper for <see cref="IWslServicesMediator.IsDistributionRunning(string)"/>
     /// </summary>
     public bool IsDistributionRunning(string distributionName);
+
+    /// <summary> Installs the WSL kernel package from the Microsoft store if it is not already installed. </summary>
+    public Task InstallWslKernelPackageAsync(Action<string>? statusUpdateCallback, CancellationToken cancellationToken);
+
+    /// <summary> Provides subscribers with download/installation progress for Microsoft store app installs. </summary>
+    public event EventHandler<AppInstallItem>? WslInstallationEventHandler;
 }
