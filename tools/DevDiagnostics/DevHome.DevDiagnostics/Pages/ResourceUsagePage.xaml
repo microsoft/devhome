@@ -11,13 +11,13 @@
     <Grid>
         <TabView x:Name="TabView4" SelectedIndex="0" IsAddTabButtonVisible="False" MinHeight="475">
             <TabView.TabItems>
-                <TabViewItem x:Name="SystemResourceUsageTab" x:Uid="SystemResourceTab" IsClosable="False">
+                <TabViewItem x:Name="SystemResourceUsageTab" x:Uid="SystemResourceTab" AutomationProperties.AutomationId="SystemResourceTab" IsClosable="False">
                     <TabViewItem.Header>
                         <TextBlock x:Uid="SystemResourceUsageTabHeader" Margin="0" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" AutomationProperties.AutomationId="SystemResourceUsageTabHeader"/>
                     </TabViewItem.Header>
                     <local:SystemResourceUsagePage />
                 </TabViewItem>
-                <TabViewItem x:Name="ProcessResourceTab" Visibility="{x:Bind ViewModel.PerAppDataVisibility, Mode=OneWay}" IsClosable="False">
+                <TabViewItem x:Name="ProcessResourceTab" x:Uid="ProcessResourceTab" AutomationProperties.AutomationId="ProcessResourceTab"  Visibility="{x:Bind ViewModel.PerAppDataVisibility, Mode=OneWay}" IsClosable="False">
                     <TabViewItem.Header>
                         <TextBlock x:Uid="ApplicationResourceUsageTabHeader" Margin="0" FontSize="{StaticResource SubtitleTextBlockFontSize}" AutomationProperties.AutomationId="ApplicationResourceUsageTabHeader"/>
                     </TabViewItem.Header>

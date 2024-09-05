@@ -1478,6 +1478,14 @@ Dump File creation time: {1}</value>
     <value>System</value>
     <comment>System resource usage tab header.</comment>
   </data>
+  <data name="SystemResourceTab.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>System</value>
+    <comment>Name of the System tab in Resource Usage Page</comment>
+  </data>
+  <data name="ProcessResourceTab.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Application</value>
+    <comment>Name of the Application tab in Resource Usage Page</comment>
+  </data>
   <data name="ApplicationResourceUsageTabHeader.Text" xml:space="preserve">
     <value>Application</value>
     <comment>Application resource usage tab header.</comment>
