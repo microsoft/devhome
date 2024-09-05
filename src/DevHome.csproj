@@ -85,7 +85,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\service\Devhome.Service.IDL\Devhome.Service.IDL.vcxproj" />
+    <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
     <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\service\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
@@ -95,11 +95,12 @@
     <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\DevInsights\DevHome.DevInsights\DevHome.DevInsights.csproj" />
+    <ProjectReference Include="..\tools\DevDiagnostics\DevHome.DevDiagnostics\DevHome.DevDiagnostics.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
+    <ProjectReference Include="..\tools\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj" />
     <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     <ProjectReference Include="..\extensions\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
@@ -175,7 +176,7 @@
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\service\Devhome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
+    <None Include="..\service\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

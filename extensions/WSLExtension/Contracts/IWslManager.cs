@@ -37,7 +37,7 @@ public interface IWslManager
     /// <summary> Launches a new WSL distribution.
     /// This is a wrapper for <see cref="IWslServicesMediator.LaunchDistribution"/>
     /// </summary>
-    void LaunchDistribution(string distributionName, string? windowsTerminalProfile);
+    void LaunchDistribution(string distributionName);
 
     /// <summary> Installs a new WSL distribution.
     /// This is a wrapper for <see cref="IWslServicesMediator.InstallDistribution(string)"/>

@@ -78,6 +78,7 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                 _wslManager.InstallDistribution(_definition.Name);
                 WslRegisteredDistribution? registeredDistribution = null;
                 var distributionInstalledSuccessfully = false;
+                _wslManager.InstallDistribution(_definition.Name);
 
                 Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_waitingToComplete, 0));
                 while (!cancellationTokenSource.IsCancellationRequested)
