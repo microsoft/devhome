@@ -50,7 +50,7 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
                 UtilityAutomationId = "DevHome.EnvironmentVariables",
             },
-            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.DevDiagnostics.exe"), experimentationService, "DevDiagnosticsExperiment")
+            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.DevDiagnostics.exe"))
             {
                 Title = stringResource.GetLocalized("DevDiagnosticsTitle"),
                 Description = stringResource.GetLocalized("DevDiagnosticsDesc"),

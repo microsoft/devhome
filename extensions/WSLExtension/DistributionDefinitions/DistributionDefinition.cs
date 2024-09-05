@@ -24,7 +24,7 @@ public class DistributionDefinition
 
     public string? WindowsTerminalProfileGuid { get; set; }
 
-    public string? StoreAppId { get; set; }
+    public string StoreAppId { get; set; } = string.Empty;
 
     [JsonPropertyName("Amd64")]
     public bool IsAmd64Supported { get; set; }
