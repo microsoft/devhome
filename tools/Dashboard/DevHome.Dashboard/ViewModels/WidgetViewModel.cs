@@ -320,7 +320,7 @@ public partial class WidgetViewModel : ObservableObject
 
         if (string.IsNullOrEmpty(jsonStringB))
         {
-            return jsonStringB;
+            return jsonStringA;
         }
 
         var objA = JObject.Parse(jsonStringA);
