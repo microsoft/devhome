@@ -11,6 +11,7 @@ using DevHome.Database.Factories;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Windows.Media.Core;
 
 namespace DevHome.RepositoryManagement.Services;
 
@@ -102,25 +103,15 @@ public class RepositoryManagementDataAccessService
     public bool UpdateCloneLocation(Repository repository, string newLocation)
     {
         repository.RepositoryClonePath = newLocation;
+        Save();
         return true;
     }
 
-    public bool Save(Repository repository)
+    private bool Save()
     {
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-
-            var maybeExistingRepository = GetRepository(repository.RepositoryName, repository.RepositoryClonePath);
-            if (maybeExistingRepository != null)
-            {
-                dbContext.Update(repository);
-            }
-            else
-            {
-                dbContext.Add(repository);
-            }
-
             dbContext.SaveChanges();
             return true;
         }

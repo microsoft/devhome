@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.TelemetryEvents.RepositoryManagement;
@@ -114,15 +115,14 @@ public partial class RepositoryManagementItemViewModel
             return;
         }
 
-        var oldLocation = ClonePath;
-        var repository = _dataAccess.GetRepository(RepositoryName, oldLocation);
+        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
 
         // The user clicked on this menu from the repository management page.
         // The repository should be in the database.
         // Somehow getting the repository returned null.
         if (repository is null)
         {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {oldLocation} is not in the database when it is expected to be there.");
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 EventName,
                 LogLevel.Critical,
@@ -131,21 +131,17 @@ public partial class RepositoryManagementItemViewModel
             return;
         }
 
-        RepositoryName = null;
+        var newDirectoryInfo = new DirectoryInfo(Path.Join(newLocation, RepositoryName));
+        var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(ClonePath));
+        currentDirectoryInfo.MoveTo(newDirectoryInfo.FullName);
 
         // The repository exists at the location stored in the Database
         // and the new location is set.
-        var didUpdate = _dataAccess.UpdateCloneLocation(repository, newLocation);
+        var didUpdate = _dataAccess.UpdateCloneLocation(repository, newDirectoryInfo.FullName);
 
         if (!didUpdate)
         {
             _log.Warning($"Could not update the database.  Check logs");
-        }
-
-        var didSave = _dataAccess.Save(repository);
-        if (!didSave)
-        {
-            _log.Warning($"Could not save to the database.  Check logs");
         }
     }
 
@@ -300,15 +296,14 @@ public partial class RepositoryManagementItemViewModel
                 return;
             }
 
-            var oldLocation = ClonePath;
-            var repository = _dataAccess.GetRepository(RepositoryName, oldLocation);
+            var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
 
             // The user clicked on this menu from the repository management page.
             // The repository should be in the database.
             // Somehow getting the repository returned null.
             if (repository is null)
             {
-                _log.Warning($"The repository with name {RepositoryName} and clone location {oldLocation} is not in the database when it is expected to be there.");
+                _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
                 TelemetryFactory.Get<ITelemetry>().Log(
                     EventName,
                     LogLevel.Critical,
@@ -319,17 +314,11 @@ public partial class RepositoryManagementItemViewModel
 
             // The repository exists at the location stored in the Database
             // and the new location is set.
-            var didUpdate = _dataAccess.UpdateCloneLocation(repository, newLocation);
+            var didUpdate = _dataAccess.UpdateCloneLocation(repository, Path.Combine(newLocation, RepositoryName));
 
             if (!didUpdate)
             {
                 _log.Warning($"Could not update the database.  Check logs");
-            }
-
-            var didSave = _dataAccess.Save(repository);
-            if (!didSave)
-            {
-                _log.Warning($"Could not save to the database.  Check logs");
             }
         }
         else if (dialogResult == ContentDialogResult.Secondary)

@@ -284,7 +284,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             // Maybe a "PostExecutionStep" would be nice.
             var serviceForMe = _host.GetService<RepositoryManagementDataAccessService>();
             var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName);
-            serviceForMe.Save(newRepo);
 
             WasCloningSuccessful = true;
 

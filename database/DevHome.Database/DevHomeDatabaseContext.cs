@@ -9,7 +9,6 @@ using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Windows.Storage;
 
 namespace DevHome.Database;
 
