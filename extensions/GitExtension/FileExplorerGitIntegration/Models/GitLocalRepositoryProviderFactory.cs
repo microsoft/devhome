@@ -27,21 +27,22 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
     private readonly StringResource _stringResource = new("FileExplorerGitIntegration.pri", "Resources");
     private readonly string _errorResourceKey = "OpenRepositoryError";
 
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(GitLocalRepositoryProviderFactory));
+
     GetLocalRepositoryResult ILocalRepositoryProvider.GetRepository(string rootPath)
     {
-        var log = Log.ForContext("SourceContext", nameof(GitLocalRepositoryProviderFactory));
         try
         {
             return new GetLocalRepositoryResult(new GitLocalRepository(rootPath, _repositoryCache));
         }
         catch (RepositoryNotFoundException libGitEx)
         {
-            log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", libGitEx);
+            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", libGitEx);
             return new GetLocalRepositoryResult(libGitEx, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {libGitEx.Message} and HRESULT: {libGitEx.HResult}");
         }
         catch (Exception ex)
         {
-            log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
+            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
             if (ex.Message.Contains("not owned by current user") || ex.Message.Contains("detected dubious ownership in repository"))
             {
                 return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotOwnedByCurrentUser"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
