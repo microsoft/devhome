@@ -2,9 +2,10 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE-CODE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
-  <!-- SDK version and .NEt version needs to stay in sync with BuildDevSetupAgentHelper.ps1.props, DevSetupEngineIdl.vcxproj, and DevHome-CL.yaml-->
+  <!-- SDK version and .Net version needs to stay in sync with BuildDevSetupAgentHelper.ps1.props, DevSetupEngineIdl.vcxproj, and DevHome-CL.yaml-->
     <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <WindowsSdkPackageVersion>10.0.22621.38</WindowsSdkPackageVersion>
   </PropertyGroup>
 </Project>
