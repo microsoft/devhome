@@ -32,6 +32,12 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.GetAllNamesOfRunningDistributions"/>
     public HashSet<string> GetAllNamesOfRunningDistributions()
     {
+        // Only attempt to get the running distributions if the kernel package is installed.
+        if (_packageHelper.GetPackageFromPackageFamilyName(WSLPackageFamilyName) is null)
+        {
+            return new HashSet<string>();
+        }
+
         var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(WslExe, ListAllRunningDistributions);
 
         // wsl.exe returns an error code when there are no distributions running. But in that case

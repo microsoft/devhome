@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Models;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Contracts.Services;
 using DevHome.Environments.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -142,18 +144,20 @@ public partial class OperationsViewModel : IEquatable<OperationsViewModel>
         // Show confirmation popup in case of delete
         if (ComputeSystemOperation == ComputeSystemOperations.Delete)
         {
-            ContentDialog noWifiDialog = new ContentDialog
+            var themeService = Application.Current.GetService<IThemeSelectorService>();
+            var deletionContentDialog = new ContentDialog
             {
-                Title = _stringResource.GetLocalized("DeleteEnviroment_Title"),
-                Content = _stringResource.GetLocalized("DeleteEnviroment_Content"),
-                PrimaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_ConfirmButton"),
-                SecondaryButtonText = _stringResource.GetLocalized("DeleteEnviroment_CancelButton"),
+                Title = _stringResource.GetLocalized("DeleteEnvironment_Title"),
+                Content = _stringResource.GetLocalized("DeleteEnvironment_Content"),
+                PrimaryButtonText = _stringResource.GetLocalized("DeleteEnvironment_ConfirmButton"),
+                SecondaryButtonText = _stringResource.GetLocalized("DeleteEnvironment_CancelButton"),
                 XamlRoot = _mainWindow?.Content.XamlRoot,
+                RequestedTheme = themeService.Theme,
             };
 
             _mainWindow?.DispatcherQueue?.TryEnqueue(async () =>
             {
-                var result = await noWifiDialog.ShowAsync();
+                var result = await deletionContentDialog.ShowAsync();
 
                 // Delete the enviroment after confirmation
                 if (result == ContentDialogResult.Primary)

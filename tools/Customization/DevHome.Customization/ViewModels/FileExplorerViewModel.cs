@@ -49,6 +49,8 @@ public partial class FileExplorerViewModel : ObservableObject
 
     public bool IsFeatureEnabled => ExperimentationService.IsFeatureEnabled("FileExplorerSourceControlIntegration") && ExtraFolderPropertiesWrapper.IsSupported();
 
+    private readonly StringResource _stringResource = new("DevHome.Customization.pri", "DevHome.Customization/Resources");
+
     public FileExplorerViewModel(IExperimentationService experimentationService, IExtensionService extensionService, ILocalSettingsService localSettingsService)
     {
         _shellSettings = new ShellSettings();
@@ -56,11 +58,10 @@ public partial class FileExplorerViewModel : ObservableObject
         ExtensionService = extensionService;
         LocalSettingsService = localSettingsService;
 
-        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
         [
-            new(stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
-            new(stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
+            new(_stringResource.GetLocalized("MainPage_Header"), typeof(MainPageViewModel).FullName!),
+            new(_stringResource.GetLocalized("FileExplorer_Header"), typeof(FileExplorerViewModel).FullName!)
         ];
         RefreshTrackedRepositories();
     }
@@ -196,16 +197,16 @@ public partial class FileExplorerViewModel : ObservableObject
         RefreshTrackedRepositories();
     }
 
-    public async void AssignSourceControlProviderToRepository(IExtensionWrapper? extension, string rootPath)
+    public async Task<SourceControlValidationResult> AssignSourceControlProviderToRepository(IExtensionWrapper? extension, string rootPath)
     {
-        await Task.Run(() =>
+        var result = await Task.Run(() =>
         {
             var extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
             var result = SourceControlIntegration.ValidateSourceControlExtension(extensionCLSID, rootPath);
             if (result.Result == ResultType.Failure)
             {
                 _log.Error("Failed to validate source control extension");
-                return;
+                return new SourceControlValidationResult(ResultType.Failure, result.Error, result.Exception, result.DisplayMessage, result.DiagnosticText);
             }
 
             try
@@ -214,18 +215,21 @@ public partial class FileExplorerViewModel : ObservableObject
                 if (!wrapperResult.Succeeded)
                 {
                     _log.Error(wrapperResult.ExtendedError, "Failed to register folder for source control integration");
-                    return;
+                    return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, wrapperResult.ExtendedError, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), null);
                 }
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "An exception occurred while registering folder for File Explorer source control integration");
+                return new SourceControlValidationResult(ResultType.Failure, ErrorType.RegistrationWithFileExplorerFailed, ex, _stringResource.GetLocalized("RegistrationErrorWithFileExplorer"), null);
             }
 
             RepoTracker.ModifySourceControlProviderForTrackedRepository(extensionCLSID, rootPath);
+            return new SourceControlValidationResult();
         });
         RefreshTrackedRepositories();
-    }
+        return result;
+  }
 
     public bool CalculateEnabled(string settingName)
     {

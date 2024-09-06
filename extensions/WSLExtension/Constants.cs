@@ -20,7 +20,8 @@ public static class Constants
     public const string WindowsTerminalPackageFamilyName = "Microsoft.WindowsTerminal_8wekyb3d8bbwe";
     public const string WslExe = "wsl.exe";
     public const string WslTemplateSubfolderName = "WslTemplates";
-
+    public const string WslKernelPackageStoreId = "9P9TQF7MRM4R";
+    public const string WSLPackageFamilyName = "MicrosoftCorporationII.WindowsSubsystemForLinux_8wekyb3d8bbwe";
     public const string DefaultWslLogoPath = @"ms-appx:///WslAssets/wslLinux.png";
     public const string WslLogoPathFormat = @"ms-appx:///WslAssets/{0}";
     public const string KnownDistributionsLocalYamlLocation = @"ms-appx:///DistributionDefinitions/DistributionDefinition.yaml";

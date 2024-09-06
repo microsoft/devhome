@@ -2,13 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
-using DevHome.FileExplorerSourceControlIntegration.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -63,14 +61,33 @@ public sealed partial class AddRepositoriesView : UserControl
         }
     }
 
-    public void AssignSourceControlProviderButton_Click(object sender, RoutedEventArgs e)
+    public async void AssignSourceControlProviderButton_Click(object sender, RoutedEventArgs e)
     {
         // Extract relevant data from view and give to view model for assign
         MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
         if (menuItem.DataContext is RepositoryInformation repoInfo)
         {
-            ViewModel.AssignSourceControlProviderToRepository(menuItem.Tag as IExtensionWrapper, repoInfo.RepositoryRootPath);
+            var taskResult = await ViewModel.AssignSourceControlProviderToRepository(menuItem.Tag as IExtensionWrapper, repoInfo.RepositoryRootPath);
+            if (taskResult?.Result != Helpers.ResultType.Success)
+            {
+                _log.Error("Error occurred while assigning source control provider: ", taskResult?.Error, taskResult?.Exception, taskResult?.DiagnosticText, taskResult?.DisplayMessage);
+                ShowErrorContentDialog(taskResult!, this.XamlRoot);
+            }
         }
+    }
+
+    public async void ShowErrorContentDialog(SourceControlValidationResult result, XamlRoot xamlRoot)
+    {
+        var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
+        var errorDialog = new ContentDialog
+        {
+            Title = stringResource.GetLocalized("AssignSourceControlErrorDialog_Title"),
+            Content = result.DisplayMessage,
+            CloseButtonText = stringResource.GetLocalized("CloseButtonText"),
+            XamlRoot = xamlRoot,
+            RequestedTheme = ActualTheme,
+        };
+        _ = await errorDialog.ShowAsync();
     }
 
     public void OpenFolderInFileExplorer_Click(object sender, RoutedEventArgs e)

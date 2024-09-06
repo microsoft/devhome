@@ -76,7 +76,7 @@ public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSessi
                 var shouldEndSession = false;
                 var adaptiveCardStateNotRecognizedError = _stringResource.GetLocalized("AdaptiveCardStateNotRecognizedError");
 
-                var actionPayload = Json.ToObject<AdaptiveCardActionPayload>(action);
+                var actionPayload = Helpers.Json.ToObject<AdaptiveCardActionPayload>(action);
                 if (actionPayload == null)
                 {
                     _log.Error($"Actions in Adaptive card action Json not recognized: {action}");

@@ -84,8 +84,11 @@ public partial class BarWindow : WindowEx
     internal ClipboardMonitor? ClipboardMonitor { get; private set; }
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly object _parentProcessHwndLock = new();
 
     private float _previousCustomTitleBarOffset;
+
+    private HWND? _parentProcessHwnd;
 
     public BarWindow()
     {
@@ -123,6 +126,22 @@ public partial class BarWindow : WindowEx
                 ApplySystemThemeToCaptionButtons();
             });
         };
+
+        // Initialize the parent process HWND in the constructor to avoid re-entrancy on the UI thread
+        GetParentProcessHWND();
+    }
+
+    private HWND? GetParentProcessHWND()
+    {
+        lock (_parentProcessHwndLock)
+        {
+            if (!_parentProcessHwnd.HasValue)
+            {
+                _parentProcessHwnd = TryGetParentProcessHWND();
+            }
+
+            return _parentProcessHwnd;
+        }
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -155,7 +174,7 @@ public partial class BarWindow : WindowEx
 
         if (_settings.IsCpuUsageMonitoringEnabled)
         {
-            PerfCounters.Instance.Start();
+            Application.Current.GetService<PerfCounters>().Start();
         }
 
         // Apply the user's chosen theme setting.
@@ -387,9 +406,9 @@ public partial class BarWindow : WindowEx
 
         // If attached to an app it should show up on the monitor that the app is on
         // Be sure to grab the DPI for that monitor
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = monitorRect.right - monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * dpiScale)) / 2) + monitorRect.left,
@@ -401,8 +420,8 @@ public partial class BarWindow : WindowEx
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
         var settingWidth = Settings.Default.WindowWidth;
         if (settingWidth == 0)
@@ -459,7 +478,7 @@ public partial class BarWindow : WindowEx
         }
 
         TargetAppData.Instance.ClearAppData();
-        PerfCounters.Instance.Stop();
+        Application.Current.GetService<PerfCounters>().Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
@@ -485,11 +504,11 @@ public partial class BarWindow : WindowEx
         {
             if (_settings.IsCpuUsageMonitoringEnabled)
             {
-                PerfCounters.Instance.Start();
+                Application.Current.GetService<PerfCounters>().Start();
             }
             else
             {
-                PerfCounters.Instance.Stop();
+                Application.Current.GetService<PerfCounters>().Stop();
             }
         }
     }

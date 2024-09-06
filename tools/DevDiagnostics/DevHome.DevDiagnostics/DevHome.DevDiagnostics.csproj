@@ -26,10 +26,12 @@
   <ItemGroup>
     <None Remove="Controls\ClipboardMonitorControl.xaml" />
     <None Remove="Controls\ElevatedButtonControl.xaml" />
+    <None Remove="Controls\DDSeparator.xaml" />
     <None Remove="Controls\ExpandedViewControl.xaml" />
     <None Remove="Controls\InsightForMissingFileProcessTerminationControl.xaml" />
     <None Remove="Controls\InsightSimpleTextControl.xaml" />
     <None Remove="Controls\ProgressTextRing.xaml" />
+    <None Remove="DD.ico" />
     <None Remove="errors.db" />
     <None Remove="Images\DD.ico" />
     <None Remove="Pages\AboutPage.xaml" />
@@ -43,8 +45,10 @@
     <None Remove="Pages\ModulesPage.xaml" />
     <None Remove="Pages\PreferencesPage.xaml" />
     <None Remove="Pages\ProcessListPage.xaml" />
+    <None Remove="Pages\ProcessResourceUsagePage.xaml" />
     <None Remove="Pages\ResourceUsagePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
+    <None Remove="Pages\SystemResourceUsagePage.xaml" />
     <None Remove="Pages\WERPage.xaml" />
     <None Remove="Pages\WinLogsPage.xaml" />
     <None Remove="SettingsUi\AddToolControl.xaml" />
@@ -68,19 +72,20 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="DD.ico" />
     <Content Include="errors.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\DD.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="DD.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.3" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.9" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />
@@ -126,11 +131,6 @@
     <ProjectReference Include="..\Utilities\EnableLoaderSnaps\EnableLoaderSnaps.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DevHome.Service.Types">
-      <HintPath>..\..\..\x64\Debug\DevHome.Service.Types.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -156,6 +156,12 @@
     <Page Update="Pages\ResourceUsagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Pages\ProcessResourceUsagePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Pages\SystemResourceUsagePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Pages\WERPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -174,9 +180,6 @@
     <None Update="appsettings_dd.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Controls\ElevatedButtonControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Views\ClipboardMonitoringWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
