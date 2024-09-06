@@ -1198,8 +1198,11 @@ public partial class AddRepoViewModel : ObservableObject
         {
             try
             {
-                var uriBuilder = new UriBuilder(uri.OriginalString);
-                uriBuilder.Port = -1;
+                var uriBuilder = new UriBuilder(schemeName: Uri.UriSchemeHttps, hostName: uri.OriginalString)
+                {
+                    Port = -1,
+                };
+
                 uri = uriBuilder.Uri;
             }
             catch (Exception e)
