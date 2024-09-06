@@ -13,7 +13,7 @@ using static WSLExtension.Constants;
 namespace WSLExtension.DevHomeProviders;
 
 /// <summary> Provides functionality to enumerate and install WSL distributions </summary>
-public class WslProvider : IComputeSystemProvider
+public partial class WslProvider : IComputeSystemProvider
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslProvider));
 

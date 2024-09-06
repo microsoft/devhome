@@ -26,7 +26,7 @@ public enum SessionState
 /// Class used to send adaptive cards to Dev Home's machine create environment flow. It sends a list of available
 /// wsl distributions on the first page, and then the name and logo of the selected distribution on the review page.
 /// </summary>
-public class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSession2
+public partial class RegisterAndInstallDistributionSession : IExtensionAdaptiveCardSession2
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RegisterAndInstallDistributionSession));
 

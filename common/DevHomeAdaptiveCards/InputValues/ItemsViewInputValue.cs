@@ -13,7 +13,7 @@ namespace DevHome.Common.DevHomeAdaptiveCards.InputValues;
 /// <summary>
 /// Represents the current value of an ItemsView input element.
 /// </summary>
-public class ItemsViewInputValue : IAdaptiveInputValue
+public partial class ItemsViewInputValue : IAdaptiveInputValue
 {
     private readonly ItemsView _itemsView;
 

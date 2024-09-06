@@ -12,7 +12,7 @@ using Windows.UI;
 
 namespace DevHome.Common.Renderers;
 
-public class LabelGroup : IAdaptiveCardElement
+public partial class LabelGroup : IAdaptiveCardElement
 {
     public LabelGroup()
     {
@@ -53,7 +53,7 @@ public class LabelGroup : IAdaptiveCardElement
     IList<AdaptiveRequirement>? IAdaptiveCardElement.Requirements { get; }
 }
 
-public class LabelGroupParser : IAdaptiveElementParser
+public partial class LabelGroupParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(
         JsonObject inputJson,
@@ -87,7 +87,7 @@ public class LabelGroupParser : IAdaptiveElementParser
     }
 }
 
-public class LabelGroupRenderer : IAdaptiveElementRenderer
+public partial class LabelGroupRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {

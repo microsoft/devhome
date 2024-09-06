@@ -29,7 +29,7 @@ public enum TopLevelCardActionSetVisibility
 /// <remarks>
 /// It is expected that the adaptive card will have a top level action set with buttons that Dev Home can link to.
 /// </remarks>
-public class DevHomeActionSet : IDevHomeActionSetRender
+public partial class DevHomeActionSet : IDevHomeActionSetRender
 {
     /// <summary>
     /// Gets the visibility of the action in Dev Home's UI.

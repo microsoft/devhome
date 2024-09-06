@@ -7,7 +7,7 @@ using Windows.Data.Json;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 
-public class DevHomeSettingsCardChoiceSet : IAdaptiveCardElement, IAdaptiveInputElement
+public partial class DevHomeSettingsCardChoiceSet : IAdaptiveCardElement, IAdaptiveInputElement
 {
     // Specific properties for DevHomeAdaptiveSettingsCardItemsViewChoiceSet
     public IList<DevHomeSettingsCard> SettingsCards { get; set; } = [];

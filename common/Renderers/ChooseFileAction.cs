@@ -15,7 +15,7 @@ using WinRT.Interop;
 
 namespace DevHome.Common.Renderers;
 
-public class ChooseFileAction : IAdaptiveActionElement
+public partial class ChooseFileAction : IAdaptiveActionElement
 {
     // ChooseFile properties
     public string FilePath { get; set; } = string.Empty;
@@ -98,7 +98,7 @@ public class ChooseFileAction : IAdaptiveActionElement
     }
 }
 
-public class ChooseFileParser : IAdaptiveActionParser
+public partial class ChooseFileParser : IAdaptiveActionParser
 {
     public IAdaptiveActionElement FromJson(
         JsonObject inputJson,
@@ -123,7 +123,7 @@ public class ChooseFileParser : IAdaptiveActionParser
     }
 }
 
-public class ChooseFileActionRenderer : IAdaptiveActionRenderer
+public partial class ChooseFileActionRenderer : IAdaptiveActionRenderer
 {
     public UIElement Render(IAdaptiveActionElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {

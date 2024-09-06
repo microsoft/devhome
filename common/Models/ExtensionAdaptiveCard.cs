@@ -10,7 +10,7 @@ using Serilog;
 
 namespace DevHome.Common.Models;
 
-public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
+public partial class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     private readonly AdaptiveElementParserRegistration? _elementParserRegistration;
 

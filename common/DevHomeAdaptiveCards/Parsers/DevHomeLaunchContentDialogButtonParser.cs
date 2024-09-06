@@ -16,7 +16,7 @@ namespace DevHome.Common.DevHomeAdaptiveCards.Parsers;
 /// <remarks>
 /// the JsonObject is a Windows.Data.Json.JsonObject, which has methods that can throw an exception if the type is not correct.
 /// </remarks>
-public class DevHomeLaunchContentDialogButtonParser : IAdaptiveElementParser
+public partial class DevHomeLaunchContentDialogButtonParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(JsonObject inputJson, AdaptiveElementParserRegistration elementParsers, AdaptiveActionParserRegistration actionParsers, IList<AdaptiveWarning> warnings)
     {

@@ -14,7 +14,7 @@ namespace HyperVExtension.DevSetupEngine;
 [ComVisible(true)]
 [Guid("82E86C64-A8B9-44F9-9323-C37982F2D8BE")]
 [ComDefaultInterface(typeof(IDevSetupEngine))]
-internal sealed class DevSetupEngineImpl : IDevSetupEngine, IDisposable
+internal sealed partial class DevSetupEngineImpl : IDevSetupEngine, IDisposable
 {
     private bool _disposed;
 

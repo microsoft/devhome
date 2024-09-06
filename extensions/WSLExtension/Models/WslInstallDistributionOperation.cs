@@ -14,7 +14,7 @@ using static WSLExtension.Constants;
 
 namespace WSLExtension.Models;
 
-public class WslInstallDistributionOperation : ICreateComputeSystemOperation
+public partial class WslInstallDistributionOperation : ICreateComputeSystemOperation
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslInstallDistributionOperation));
 

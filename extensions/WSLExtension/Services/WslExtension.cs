@@ -18,7 +18,7 @@ namespace WSLExtension.Services;
 [Guid("7F572DC5-F40E-440F-B660-F579168B69B8")]
 #endif
 [ComDefaultInterface(typeof(IExtension))]
-public sealed class WslExtension : IExtension, IDisposable
+public sealed partial class WslExtension : IExtension, IDisposable
 {
     private readonly IComputeSystemProvider _computeSystemProvider;
 

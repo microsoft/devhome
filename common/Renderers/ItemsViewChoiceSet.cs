@@ -15,7 +15,7 @@ namespace DevHome.Common.Renderers;
 /// <summary>
 /// Renders a known Dev Home choice set as an ItemsView.
 /// </summary>
-public class ItemsViewChoiceSet : IAdaptiveElementRenderer
+public partial class ItemsViewChoiceSet : IAdaptiveElementRenderer
 {
     private readonly double _defaultSpacing = 5;
 

@@ -13,7 +13,7 @@ namespace DevHome.Common.Environments.Converters;
 /// Note: the 'ComputeSystem' prefix should be added to every new state in the
 /// resources.resw file.
 /// </summary>
-public class CardStateToLocalizedTextConverter : IValueConverter
+public partial class CardStateToLocalizedTextConverter : IValueConverter
 {
     private static readonly StringResource _stringResource = new("DevHome.Common.pri", "DevHome.Common/Resources");
     private const string Prefix = "ComputeSystem";

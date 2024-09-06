@@ -15,7 +15,7 @@ namespace WSLExtension.Models;
 
 public delegate WslComputeSystem WslRegisteredDistributionFactory(WslRegisteredDistribution distribution);
 
-public class WslComputeSystem : IComputeSystem
+public partial class WslComputeSystem : IComputeSystem
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslComputeSystem));
 

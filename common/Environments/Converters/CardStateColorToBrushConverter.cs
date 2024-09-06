@@ -12,7 +12,7 @@ namespace DevHome.Common.Environments.Converters;
 /// <summary>
 /// Converter to convert the CardStateColor enum value to a brush that will be displayed in the Environment Card.
 /// </summary>
-public class CardStateColorToBrushConverter : IValueConverter
+public partial class CardStateColorToBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {

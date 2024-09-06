@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.DevHomeAdaptiveCards.InputValues;
 
-public class CustomComboBoxInputValue : IAdaptiveInputValue
+public partial class CustomComboBoxInputValue : IAdaptiveInputValue
 {
     private readonly ComboBox _comboBox;
 

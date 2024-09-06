@@ -13,7 +13,7 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 /// <summary>
 /// Represents a settings card that can be rendered through an adaptive card based on the ElementTypeString.
 /// </summary>
-public class DevHomeSettingsCard : IDevHomeSettingsCard
+public partial class DevHomeSettingsCard : IDevHomeSettingsCard
 {
     // Specific properties for DevHomeSettingsCard
     // These properties relate to the Windows Community Toolkit's SettingsCard control.

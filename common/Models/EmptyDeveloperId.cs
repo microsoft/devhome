@@ -8,7 +8,7 @@ namespace DevHome.Common.Models;
 /// <summary>
 /// Empty implementation of IDeveloperId.
 /// </summary>
-public class EmptyDeveloperId : IDeveloperId
+public partial class EmptyDeveloperId : IDeveloperId
 {
     public string LoginId => string.Empty;
 

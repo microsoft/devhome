@@ -17,7 +17,7 @@ namespace HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
 [ComVisible(true)]
 [Guid("36DB1AC2-B5D0-462E-82E3-7AB474C6DEFD")]
 [ComDefaultInterface(typeof(IApplyConfigurationResult))]
-public class ApplyConfigurationResult : IApplyConfigurationResult
+public partial class ApplyConfigurationResult : IApplyConfigurationResult
 {
     public ApplyConfigurationResult(Exception? resultCode, string resultDescription, IOpenConfigurationSetResult? openConfigurationSetResult, IApplyConfigurationSetResult? applyConfigurationSetResult)
     {
@@ -39,7 +39,7 @@ public class ApplyConfigurationResult : IApplyConfigurationResult
 [ComVisible(true)]
 [Guid("8eecacf2-d864-46c5-aeb1-e66e96a8f654")]
 [ComDefaultInterface(typeof(IConfigurationUnitResultInformation))]
-public class ConfigurationUnitResultInformation : IConfigurationUnitResultInformation
+public partial class ConfigurationUnitResultInformation : IConfigurationUnitResultInformation
 {
     public ConfigurationUnitResultInformation(Exception? resultCode, string description, string details, DevSetupEngineTypes.ConfigurationUnitResultSource resultSource)
     {
@@ -65,7 +65,7 @@ public class ConfigurationUnitResultInformation : IConfigurationUnitResultInform
 [ComVisible(true)]
 [Guid("8c4db755-62e6-4c5e-b42a-cd8d27e3b675")]
 [ComDefaultInterface(typeof(IOpenConfigurationSetResult))]
-public class OpenConfigurationSetResult : IOpenConfigurationSetResult
+public partial class OpenConfigurationSetResult : IOpenConfigurationSetResult
 {
     public OpenConfigurationSetResult(Exception? resultCode, string field, string fieldValue, uint line, uint column)
     {
@@ -95,7 +95,7 @@ public class OpenConfigurationSetResult : IOpenConfigurationSetResult
 [ComVisible(true)]
 [Guid("6a2a0231-ea0e-4d71-97a5-922f340af798")]
 [ComDefaultInterface(typeof(IConfigurationUnit))]
-public class ConfigurationUnit : IConfigurationUnit
+public partial class ConfigurationUnit : IConfigurationUnit
 {
     public ConfigurationUnit(string type, string identifier, DevSetupEngineTypes.ConfigurationUnitState state, bool isGroup, IList<IConfigurationUnit>? units, ValueSet? settings, ConfigurationUnitIntent intent)
     {
@@ -132,7 +132,7 @@ public class ConfigurationUnit : IConfigurationUnit
 [ComVisible(true)]
 [Guid("a4915b80-fbb1-4c8f-bf86-35fd071a8a50")]
 [ComDefaultInterface(typeof(IConfigurationSetChangeData))]
-public class ConfigurationSetChangeData : IConfigurationSetChangeData
+public partial class ConfigurationSetChangeData : IConfigurationSetChangeData
 {
     public ConfigurationSetChangeData(DevSetupEngineTypes.ConfigurationSetChangeEventType change, DevSetupEngineTypes.ConfigurationSetState setState, DevSetupEngineTypes.ConfigurationUnitState unitState, IConfigurationUnitResultInformation resultInformation, IConfigurationUnit unit)
     {
@@ -162,7 +162,7 @@ public class ConfigurationSetChangeData : IConfigurationSetChangeData
 [ComVisible(true)]
 [Guid("6bf246e5-d4a4-4593-9253-778027f18197")]
 [ComDefaultInterface(typeof(IApplyConfigurationUnitResult))]
-public class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
+public partial class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
 {
     public ApplyConfigurationUnitResult(IConfigurationUnit unit, ConfigurationUnitState state, bool previouslyInDesiredState, bool rebootRequired, IConfigurationUnitResultInformation resultInformation)
     {
@@ -191,7 +191,7 @@ public class ApplyConfigurationUnitResult : IApplyConfigurationUnitResult
 [ComVisible(true)]
 [Guid("0ca281ff-537c-4919-a268-1bd67d83dbfb")]
 [ComDefaultInterface(typeof(IApplyConfigurationSetResult))]
-public class ApplyConfigurationSetResult : IApplyConfigurationSetResult
+public partial class ApplyConfigurationSetResult : IApplyConfigurationSetResult
 {
     public ApplyConfigurationSetResult(Exception? resultCode, IReadOnlyList<IApplyConfigurationUnitResult>? unitResults)
     {

@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Renderers;
 
-public class TextInputRenderer : IAdaptiveElementRenderer
+public partial class TextInputRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {

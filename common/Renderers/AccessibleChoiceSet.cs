@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Renderers;
 
-public class AccessibleChoiceSet : IAdaptiveElementRenderer
+public partial class AccessibleChoiceSet : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
