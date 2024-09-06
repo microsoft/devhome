@@ -5,12 +5,14 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.Principal;
+using Microsoft.Win32.SafeHandles;
 using Windows.ApplicationModel;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.System.Com;
 using Windows.Win32.System.Rpc;
+using Windows.Win32.System.Threading;
 
 namespace DevHome.Service;
 
@@ -45,10 +47,10 @@ internal sealed class ComHelpers
         }
     }
 
-    public static void VerifyCaller()
+    public static void VerifyCaller(Process caller)
     {
-        VerifyCallerIsInTheSameDirectory();
-        VerifyCallerIsFromTheSamePackage();
+        VerifyCallerIsFromTheSamePackage(caller);
+        VerifyCallerIsInTheSameDirectory(caller);
     }
 
     public static Process GetClientProcess()
@@ -68,10 +70,8 @@ internal sealed class ComHelpers
         }
     }
 
-    public static void VerifyCallerIsInTheSameDirectory()
+    public static void VerifyCallerIsInTheSameDirectory(Process callerProcess)
     {
-        Process callerProcess = GetClientProcess();
-
         FileInfo callerFileInfo = new FileInfo(callerProcess.MainModule?.FileName ?? string.Empty);
         FileInfo serverFileInfo = new FileInfo(Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty);
 
@@ -88,14 +88,25 @@ internal sealed class ComHelpers
         // Our caller is in the same directory that we are
     }
 
-    public static void VerifyCallerIsFromTheSamePackage()
+    public static void VerifyCallerIsFromTheSamePackage(Process caller)
     {
         unsafe
         {
             string devHomeServicePackage = Package.Current.Id.FullName;
-            PInvoke.CoImpersonateClient().ThrowOnFailure();
 
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            SafeProcessHandle h = new(PInvoke.OpenProcess(PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION, false, (uint)caller.Id), true);
+
+            if (h.IsInvalid)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            bool f = PInvoke.OpenProcessToken(h, TOKEN_ACCESS_MASK.TOKEN_QUERY, out SafeFileHandle token);
+
+            if (!f || token.IsInvalid)
+            {
+                throw new UnauthorizedAccessException();
+            }
 
             Span<char> outputBuffer = new char[10000];
             uint packageFullNameLength = 10000;
@@ -103,7 +114,7 @@ internal sealed class ComHelpers
             fixed (char* outBufferPointer = outputBuffer)
             {
                 var callerPackageName = new PWSTR(outBufferPointer);
-                var res = PInvoke.GetPackageFullNameFromToken(identity.AccessToken, ref packageFullNameLength, callerPackageName);
+                var res = PInvoke.GetPackageFullNameFromToken(token, ref packageFullNameLength, callerPackageName);
                 var callerPackageNameString = new string(callerPackageName);
 
                 if (res != WIN32_ERROR.ERROR_SUCCESS || !devHomeServicePackage.Equals(callerPackageNameString, StringComparison.Ordinal))
@@ -111,8 +122,6 @@ internal sealed class ComHelpers
                     throw new UnauthorizedAccessException();
                 }
             }
-
-            PInvoke.CoRevertToSelf();
 
             // We're running with the same package identity
         }
