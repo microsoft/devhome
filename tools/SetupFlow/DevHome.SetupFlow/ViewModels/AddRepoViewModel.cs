@@ -1184,7 +1184,7 @@ public partial class AddRepoViewModel : ObservableObject
         uri = null;
 
         // If the url isn't valid don't bother finding a provider.
-        if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) ||
+        if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute) ||
             !Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
