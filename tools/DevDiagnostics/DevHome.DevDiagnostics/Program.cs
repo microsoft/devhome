@@ -40,9 +40,6 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var service = CommonHelper.GetDevHomeService();
-        int num = service.GetNumber();
-
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevDiagnostics"));
         var configuration = new ConfigurationBuilder()

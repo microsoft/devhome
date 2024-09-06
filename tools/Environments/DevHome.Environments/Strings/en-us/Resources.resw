@@ -265,19 +265,19 @@
     <value>Manage environments:</value>
     <comment>Header text for the cards that in the UI that are not being created.</comment>
   </data>
-  <data name="DeleteEnviroment_CancelButton" xml:space="preserve">
+  <data name="DeleteEnvironment_CancelButton" xml:space="preserve">
     <value>Cancel</value>
     <comment>Text for the cancel button of the delete environment confirmation popup.</comment>
   </data>
-  <data name="DeleteEnviroment_ConfirmButton" xml:space="preserve">
+  <data name="DeleteEnvironment_ConfirmButton" xml:space="preserve">
     <value>Delete</value>
     <comment>Text for the delete confirmation button of the delete environment confirmation popup.</comment>
   </data>
-  <data name="DeleteEnviroment_Content" xml:space="preserve">
+  <data name="DeleteEnvironment_Content" xml:space="preserve">
     <value>Choosing to delete your environment will remove it permanently.</value>
     <comment>Text for the content of the delete environment confirmation popup.</comment>
   </data>
-  <data name="DeleteEnviroment_Title" xml:space="preserve">
+  <data name="DeleteEnvironment_Title" xml:space="preserve">
     <value>Do you want to delete your environment?</value>
     <comment>Text for the title of the delete environment confirmation popup.</comment>
   </data>

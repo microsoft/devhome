@@ -31,7 +31,7 @@ public class AdaptiveCardFlowNavigator
     /// <see cref="_nextButtonAdaptiveCardId"/> and <see cref="_previousButtonAdaptiveCardId"/> in order for
     /// Dev Home to know which buttons in the adaptive card Json moves the flow forward and backwards.
     /// </remarks>
-    public DevHomeActionSet DevHomeActionSetRenderer { get; } = new(TopLevelCardActionSetVisibility.Hidden);
+    public DevHomeActionSet DevHomeActionSetRenderer { get; private set; } = new(TopLevelCardActionSetVisibility.Hidden);
 
     /// <summary>
     /// Performs the validation work needed to navigate to the next page in an adaptive card. This is used
@@ -66,5 +66,10 @@ public class AdaptiveCardFlowNavigator
     public bool IsActionInvokerAvailable()
     {
         return DevHomeActionSetRenderer.ActionButtonInvoker != null;
+    }
+
+    public void ResetFlowNavigator()
+    {
+        DevHomeActionSetRenderer = new(TopLevelCardActionSetVisibility.Hidden);
     }
 }

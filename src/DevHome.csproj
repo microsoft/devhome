@@ -143,6 +143,14 @@
     <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
     <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
     <DevHomeInternal_Win32RuntimePath Condition="$(DevHomeInternal_Win32RuntimePath.EndsWith('native\\'))">$(DevHomeInternal_Win32RuntimePath)$(_DevHomeInternal_CppPlatform)\</DevHomeInternal_Win32RuntimePath>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateKeyFile>DevHome_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
