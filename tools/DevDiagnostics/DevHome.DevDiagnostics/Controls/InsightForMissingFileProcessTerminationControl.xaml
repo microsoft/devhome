@@ -14,7 +14,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="{x:Bind Text, Mode=OneWay}" VerticalAlignment="Center" TextWrapping="WrapWholeWords" />
+        <TextBox Text="{x:Bind Text, Mode=OneWay}" VerticalAlignment="Center" TextWrapping="WrapWholeWords" IsReadOnly="True"/>
         <local:ElevatedButtonControl Text="Enable" Grid.Column="1" Margin="20 0 0 0" Command="{x:Bind Command, Mode=OneWay}"/>
     </Grid>
 </UserControl>

@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid AutomationProperties.AutomationId="SimpleInsight">
         <RichTextBlock TextWrapping="Wrap" HorizontalAlignment="Left" AutomationProperties.AutomationId="RichTextBlock">
             <Paragraph>
                 <Run Text="{x:Bind Description, Mode=OneWay}"/>

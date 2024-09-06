@@ -11,7 +11,8 @@
     "DevDiagnostics (Package)": {
       "commandName": "MsixPackage",
       "commandLineArgs": "--utilitylaunch DevHome.DevDiagnostics.Exe ",
-      "nativeDebugging": true
+      "nativeDebugging": false,
+      "doNotLaunchApp": true
     }
   }
 }
