@@ -89,11 +89,6 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 
-## Developer guidance
-
-* You must be running Windows 11 21H2 (build >= 10.0.22000.0) or Windows 10 20H1 (build >= 10.0.19041.0) to run Dev Home
-* You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
-
 ---
 
 ## Code of conduct
