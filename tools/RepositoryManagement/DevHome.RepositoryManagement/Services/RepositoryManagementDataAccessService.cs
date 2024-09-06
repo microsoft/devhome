@@ -35,6 +35,11 @@ public class RepositoryManagementDataAccessService
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
     public Repository MakeRepository(string repositoryName, string cloneLocation)
     {
+        return MakeRepository(repositoryName, cloneLocation, string.Empty);
+    }
+
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName)
+    {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
         {
@@ -47,6 +52,19 @@ public class RepositoryManagementDataAccessService
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
         };
+
+        if (!string.IsNullOrEmpty(configurationFileLocationAndName))
+        {
+            if (!File.Exists(configurationFileLocationAndName))
+            {
+                _log.Information($"No file exists at {configurationFileLocationAndName}.  This repository will not have a configuration file.");
+            }
+            else
+            {
+                newRepo.ConfigurationFileLocation = configurationFileLocationAndName;
+                newRepo.HasAConfigurationFile = true;
+            }
+        }
 
         try
         {

@@ -22,7 +22,7 @@ public partial class RepositoryManagementMainPageViewModel
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    private readonly List<RepositoryManagementItemViewModel> _items;
+    private readonly List<RepositoryManagementItemViewModel> _items = [];
 
     public ObservableCollection<RepositoryManagementItemViewModel> Items { get; private set; }
 
@@ -35,10 +35,11 @@ public partial class RepositoryManagementMainPageViewModel
     [RelayCommand]
     public void LoadRepositories()
     {
+        _items.Clear();
         Items.Clear();
         var repositoriesFromTheDatabase = _dataAccessService.GetRepositories();
         ConvertToLineItems(repositoriesFromTheDatabase).ForEach(x => _items.Add(x));
-        _items.Where(x => x.IsHiddenFromPage = false).ToList().ForEach(x => Items.Add(x));
+        _items.Where(x => x.IsHiddenFromPage == false).ToList().ForEach(x => Items.Add(x));
     }
 
     public RepositoryManagementMainPageViewModel(IHost host, RepositoryManagementDataAccessService dataAccessService)

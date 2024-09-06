@@ -25,4 +25,8 @@ public class Repository
     public DateTime? UpdatedUTCDate { get; set; }
 
     public bool IsHidden { get; set; }
+
+    public bool HasAConfigurationFile { get; set; }
+
+    public string? ConfigurationFileLocation { get; set; }
 }

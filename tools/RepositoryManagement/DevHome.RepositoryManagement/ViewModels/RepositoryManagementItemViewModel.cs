@@ -17,6 +17,7 @@ using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
+// TODO: Clean up the code.
 public partial class RepositoryManagementItemViewModel : ObservableObject
 {
     public const string EventName = "DevHome_RepositorySpecific_Event";
@@ -179,7 +180,39 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public void OpenFileExplorerToConfigurationsFolder()
     {
-        throw new NotImplementedException();
+        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
+
+        // The user clicked on this menu from the repository management page.
+        // The repository should be in the database.
+        // Somehow getting the repository returned null.
+        if (repository is null)
+        {
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
+
+            return;
+        }
+
+        if (!repository.HasAConfigurationFile)
+        {
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} does not have a configuration file.");
+            return;
+        }
+
+        var locationToOpenTo = repository.ConfigurationFileLocation ?? string.Empty;
+        var processStartInfo = new ProcessStartInfo
+        {
+            UseShellExecute = true,
+
+            // Not catching PathTooLongException.  If the file was in a location that had a too long path,
+            // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
+            FileName = Path.GetFullPath(Path.GetDirectoryName(locationToOpenTo)),
+        };
+
+        StartProcess(processStartInfo, nameof(OpenFileExplorerToConfigurationsFolder));
     }
 
     [RelayCommand]
