@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using Microsoft.Win32;
 using WSLExtension.ClassExtensions;
 using WSLExtension.Contracts;
@@ -33,6 +32,12 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.GetAllNamesOfRunningDistributions"/>
     public HashSet<string> GetAllNamesOfRunningDistributions()
     {
+        // Only attempt to get the running distributions if the kernel package is installed.
+        if (_packageHelper.GetPackageFromPackageFamilyName(WSLPackageFamilyName) is null)
+        {
+            return new HashSet<string>();
+        }
+
         var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(WslExe, ListAllRunningDistributions);
 
         // wsl.exe returns an error code when there are no distributions running. But in that case
@@ -148,36 +153,12 @@ public class WslServicesMediator : IWslServicesMediator
     }
 
     /// <inheritdoc cref="IWslServicesMediator.LaunchDistribution"/>
-    public void LaunchDistribution(string distributionName, string? windowsTerminalProfile)
+    public void LaunchDistribution(string distributionName)
     {
-        var executable = GetFileNameForProcessLaunch();
-
-        // Only launch with terminal if its installed
-        if (executable.Equals(WindowsTerminalShimExe, StringComparison.OrdinalIgnoreCase))
-        {
-            LaunchDistributionUsingTerminal(distributionName, windowsTerminalProfile);
-            return;
-        }
-
-        // Default to starting the wsl process directly and passing in its command line args
-        _processCreator.CreateProcessWithWindow(executable, LaunchDistributionWithoutTerminal.FormatArgs(distributionName));
-    }
-
-    private void LaunchDistributionUsingTerminal(string distributionName, string? windowsTerminalProfile)
-    {
-        var terminalArgs = LaunchDistributionInTerminalWithNoProfile.FormatArgs(distributionName);
-
-        if (!string.IsNullOrEmpty(windowsTerminalProfile))
-        {
-            // Launch into terminal with the specified profile and run wsl.exe in the console window
-            terminalArgs = LaunchDistributionInTerminalWithProfile.FormatArgs(windowsTerminalProfile, distributionName);
-            _processCreator.CreateProcessWithWindow(WindowsTerminalShimExe, terminalArgs);
-        }
-        else
-        {
-            // Launch into terminal and run wsl.exe in the console window without a profile
-            _processCreator.CreateProcessWithWindow(WindowsTerminalShimExe, terminalArgs);
-        }
+        // Start the wsl process directly and passing in its command line args
+        _processCreator.CreateProcessWithWindow(
+            WslExe,
+            LaunchDistributionArgs.FormatArgs(distributionName));
     }
 
     /// <inheritdoc cref="IWslServicesMediator.TerminateDistribution"/>
@@ -194,21 +175,8 @@ public class WslServicesMediator : IWslServicesMediator
     /// <inheritdoc cref="IWslServicesMediator.InstallDistribution"/>
     public void InstallDistribution(string distributionName)
     {
-        var executable = GetFileNameForProcessLaunch();
-
-        // Launch into terminal if its installed and run wsl.exe in the console window
-        if (executable.Equals(WindowsTerminalShimExe, StringComparison.OrdinalIgnoreCase))
-        {
-            _processCreator.CreateProcessWithWindow(executable, InstallDistributionWithTerminal.FormatArgs(distributionName));
-            return;
-        }
-
-        // Default to starting the wsl process directly and passing in its command line args
-        _processCreator.CreateProcessWithWindow(executable, InstallDistributionWithoutTerminal.FormatArgs(distributionName));
-    }
-
-    private string GetFileNameForProcessLaunch()
-    {
-        return _packageHelper.IsPackageInstalled(WindowsTerminalPackageFamilyName) ? WindowsTerminalShimExe : WslExe;
+        _processCreator.CreateProcessWithWindow(
+            WslExe,
+            InstallDistributionArgs.FormatArgs(distributionName));
     }
 }

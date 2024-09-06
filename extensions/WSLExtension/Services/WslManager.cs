@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Services.Core.Contracts;
 using Serilog;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.System.Threading;
-using WSLExtension.ClassExtensions;
 using WSLExtension.Contracts;
 using WSLExtension.DistributionDefinitions;
 using WSLExtension.Helpers;
@@ -12,7 +13,7 @@ using static WSLExtension.Constants;
 
 namespace WSLExtension.Services;
 
-public class WslManager : IWslManager
+public class WslManager : IWslManager, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WslManager));
 
@@ -28,20 +29,35 @@ public class WslManager : IWslManager
 
     private readonly List<WslComputeSystem> _registeredWslDistributions = new();
 
+    private readonly IMicrosoftStoreService _microsoftStoreService;
+
+    private readonly IStringResource _stringResource;
+
+    private readonly SemaphoreSlim _wslKernelPackageInstallLock = new(1, 1);
+
     public event EventHandler<HashSet<string>>? DistributionStateSyncEventHandler;
 
     private Dictionary<string, DistributionDefinition>? _distributionDefinitionsMap;
 
     private ThreadPoolTimer? _timerForUpdatingDistributionStates;
 
+    private bool _disposed;
+
+    public event EventHandler<AppInstallItem>? WslInstallationEventHandler;
+
     public WslManager(
         IWslServicesMediator wslServicesMediator,
         WslRegisteredDistributionFactory wslDistributionFactory,
-        IDistributionDefinitionHelper distributionDefinitionHelper)
+        IDistributionDefinitionHelper distributionDefinitionHelper,
+        IMicrosoftStoreService microsoftStoreService,
+        IStringResource stringResource)
     {
         _wslRegisteredDistributionFactory = wslDistributionFactory;
         _wslServicesMediator = wslServicesMediator;
         _definitionHelper = distributionDefinitionHelper;
+        _microsoftStoreService = microsoftStoreService;
+        _stringResource = stringResource;
+        _microsoftStoreService.ItemStatusChanged += OnInstallChanged;
         StartDistributionStatePolling();
     }
 
@@ -117,9 +133,9 @@ public class WslManager : IWslManager
     }
 
     /// <inheritdoc cref="IWslManager.LaunchDistribution"/>
-    public void LaunchDistribution(string distributionName, string? windowsTerminalProfile = null)
+    public void LaunchDistribution(string distributionName)
     {
-        _wslServicesMediator.LaunchDistribution(distributionName, windowsTerminalProfile);
+        _wslServicesMediator.LaunchDistribution(distributionName);
     }
 
     /// <inheritdoc cref="IWslManager.InstallDistribution"/>
@@ -132,6 +148,35 @@ public class WslManager : IWslManager
     public void TerminateDistribution(string distributionName)
     {
         _wslServicesMediator.TerminateDistribution(distributionName);
+    }
+
+    /// <inheritdoc cref="IWslManager.InstallWslKernelPackageAsync"/>
+    public async Task InstallWslKernelPackageAsync(Action<string>? statusUpdateCallback, CancellationToken cancellationToken)
+    {
+        // Regardless of how many WSL distributions are being installed. Only one thread should be allowed to install the
+        // WSL kernel package if it isn't already installed.
+        await _wslKernelPackageInstallLock.WaitAsync(cancellationToken);
+        try
+        {
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("WslKernelPackageInstallationCheck"));
+            if (!_packageHelper.IsPackageInstalled(WSLPackageFamilyName))
+            {
+                // If not installed, we'll install it from the store.
+                statusUpdateCallback?.Invoke(_stringResource.GetLocalized("InstallingWslKernelPackage"));
+
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!await _microsoftStoreService.TryInstallPackageAsync(WslKernelPackageStoreId))
+                {
+                    throw new InvalidDataException("Failed to install the Wsl kernel package");
+                }
+            }
+
+            statusUpdateCallback?.Invoke(_stringResource.GetLocalized("WslKernelPackageInstalled"));
+        }
+        finally
+        {
+            _wslKernelPackageInstallLock.Release();
+        }
     }
 
     /// <summary>
@@ -178,5 +223,32 @@ public class WslManager : IWslManager
                 }
             },
             _oneMinutePollingInterval);
+    }
+
+    private void OnInstallChanged(object sender, AppInstallManagerItemEventArgs args)
+    {
+        var installItem = args.Item;
+
+        WslInstallationEventHandler?.Invoke(this, installItem);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            _log.Debug("Disposing WslManager");
+            if (disposing)
+            {
+                _wslKernelPackageInstallLock.Dispose();
+            }
+        }
+
+        _disposed = true;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

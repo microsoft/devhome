@@ -286,7 +286,7 @@ public class WslComputeSystem : IComputeSystem
             try
             {
                 UpdateState(ComputeSystemState.Starting);
-                _wslManager.LaunchDistribution(Id, _distribution.AssociatedTerminalProfileGuid);
+                _wslManager.LaunchDistribution(Id);
                 UpdateState(ComputeSystemState.Running);
                 return new ComputeSystemOperationResult();
             }
