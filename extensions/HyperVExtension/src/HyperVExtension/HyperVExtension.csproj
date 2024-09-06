@@ -40,7 +40,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.700.544" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1999.651.1932" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="System.Management.Automation" Version="7.4.3" />
     <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
