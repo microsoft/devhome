@@ -16,7 +16,7 @@ Related repositories include:
 
 ## Installing and running Dev Home
 
-> **Note**: Dev Home requires Windows 11 or Windows 10 version 2004 (code name 20H1 / build number 19041) or newer.
+> **Note**: Dev Home requires Windows 11 version 21H2 (build 22000) or Windows 10 version 22H2 (build 19045) or newer.
 
 If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
 
