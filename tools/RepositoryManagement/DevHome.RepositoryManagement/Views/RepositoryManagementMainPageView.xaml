@@ -168,10 +168,10 @@
                                         <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
                                         <MenuFlyoutItem Text="Open in Command Line" Command="{x:Bind OpenInCMDCommand}" />
                                         <MenuFlyoutItem Text="Move Repository" Command="{x:Bind MoveRepositoryCommand}" />
-                                        <MenuFlyoutItem Text="Add to Config file" />
-                                        <MenuFlyoutItem Text="Run to config file" Command="{x:Bind OpenFileExplorerToConfigurationsFolderCommand}" />
+                                        <MenuFlyoutItem Text="Add to WinGet configuration file" />
+                                        <MenuFlyoutItem Text="Run WinGet configuration file" Command="{x:Bind RunConfigurationFileCommand}" />
                                         <MenuFlyoutItem Text="Remove from this list" Command="{x:Bind RemoveThisRepositoryFromTheListCommand}" />
-                                        <MenuFlyoutItem Text="Delete Repository" />
+                                        <MenuFlyoutItem Text="Delete" Command="{x:Bind DeleteRepositoryCommand}" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

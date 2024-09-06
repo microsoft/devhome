@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -166,19 +167,73 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void DeleteRepository()
+    public async Task DeleteRepository()
     {
-        throw new NotImplementedException();
+        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
+
+        // The user clicked on this menu from the repository management page.
+        // The repository should be in the database.
+        // Somehow getting the repository returned null.
+        if (repository is null)
+        {
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(nameof(DeleteRepository), RepositoryName));
+
+            return;
+        }
+
+        var cantFindRepositoryDialog = new ContentDialog()
+        {
+            XamlRoot = _window.Content.XamlRoot,
+            Title = $"Would you like to delete this repository?",
+            Content = $"Deleting a repository means it will be permanently removed in File Explorer and from your PC.",
+            PrimaryButtonText = $"Yes",
+            CloseButtonText = "Cancel",
+        };
+
+        var dialogResult = await cantFindRepositoryDialog.ShowAsync();
+
+        if (dialogResult == ContentDialogResult.Primary)
+        {
+            // Remove the repository.
+            // TODO: Check if this location is a repository and the name matches the repo name
+            // in path.
+            if (!string.IsNullOrEmpty(ClonePath)
+                && Directory.Exists(ClonePath))
+            {
+                // Cumbersome, but needed to remove read-only files.
+                foreach (var myFile in Directory.EnumerateFiles(ClonePath, "*", SearchOption.AllDirectories))
+                {
+                    File.SetAttributes(myFile, FileAttributes.Normal);
+                    File.Delete(myFile);
+                }
+
+                foreach (var myDirectory in Directory.GetDirectories(ClonePath, "*", SearchOption.AllDirectories).Reverse())
+                {
+                    Directory.Delete(myDirectory);
+                }
+
+                File.SetAttributes(ClonePath, FileAttributes.Normal);
+                Directory.Delete(ClonePath, false);
+
+                _dataAccess.RemoveRepository(repository);
+            }
+        }
     }
 
     [RelayCommand]
     public void MakeConfigurationFileWithThisRepository()
     {
+        // D:\git\dhoehna\devhome\tools\SetupFlow\DevHome.SetupFlow\ViewModels\ReviewViewModel.cs
+        // DownloadConfigurationAsync has the code to do this.  Well, to make it from a configuration file.
         throw new NotImplementedException();
     }
 
     [RelayCommand]
-    public void OpenFileExplorerToConfigurationsFolder()
+    public void RunConfigurationFile()
     {
         var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
 
@@ -202,17 +257,14 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             return;
         }
 
-        var locationToOpenTo = repository.ConfigurationFileLocation ?? string.Empty;
-        var processStartInfo = new ProcessStartInfo
-        {
-            UseShellExecute = true,
+        var configurationFileLocation = repository.ConfigurationFileLocation ?? string.Empty;
+        var processStartInfo = new ProcessStartInfo();
+        processStartInfo.UseShellExecute = true;
+        processStartInfo.FileName = "winget";
+        processStartInfo.ArgumentList.Add("configure");
+        processStartInfo.Verb = "RunAs";
 
-            // Not catching PathTooLongException.  If the file was in a location that had a too long path,
-            // the repo, when cloning, would run into a PathTooLongException and repo would not be cloned.
-            FileName = Path.GetFullPath(Path.GetDirectoryName(locationToOpenTo)),
-        };
-
-        StartProcess(processStartInfo, nameof(OpenFileExplorerToConfigurationsFolder));
+        StartProcess(processStartInfo, nameof(RunConfigurationFile));
     }
 
     [RelayCommand]

@@ -145,6 +145,15 @@ public class RepositoryManagementDataAccessService
             repository.RepositoryClonePath = newLocation;
             maybeRepository.RepositoryClonePath = newLocation;
 
+            if (repository.HasAConfigurationFile)
+            {
+                var configurationFolder = Path.GetDirectoryName(repository.ConfigurationFileLocation);
+                var configurationFileName = Path.GetFileName(configurationFolder);
+
+                repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder, configurationFileName);
+                maybeRepository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder, configurationFileName);
+            }
+
             dbContext.SaveChanges();
         }
         catch (Exception ex)
@@ -174,6 +183,33 @@ public class RepositoryManagementDataAccessService
 
             maybeRepository.IsHidden = isHidden;
             repository.IsHidden = isHidden;
+
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when updating the clone location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
+            return;
+        }
+    }
+
+    public void RemoveRepository(Repository repository)
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
+            if (maybeRepository == null)
+            {
+                _log.Warning($"{nameof(RemoveRepository)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return;
+            }
+
+            dbContext.Repositories.Remove(maybeRepository);
 
             dbContext.SaveChanges();
         }
