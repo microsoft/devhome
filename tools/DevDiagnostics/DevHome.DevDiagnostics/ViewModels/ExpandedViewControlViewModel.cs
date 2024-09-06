@@ -19,7 +19,6 @@ namespace DevHome.DevDiagnostics.ViewModels;
 public partial class ExpandedViewControlViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly PerfCounters _perfCounters;
 
     [ObservableProperty]
     private Visibility _perfMarkersVisibility = Visibility.Collapsed;
@@ -68,9 +67,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
-
-        _perfCounters = Application.Current.GetService<PerfCounters>();
-        _perfCounters.PropertyChanged += PerfCounterHelper_PropertyChanged;
+        PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
         _appDetailsNavLink = new PageNavLink("\uE71D", CommonHelper.GetLocalizedString("AppDetailsHeaderTextBlock/Text"), typeof(AppDetailsPageViewModel));
         _resourceUsageNavLink = new PageNavLink("\uE950", CommonHelper.GetLocalizedString("ResourceUsageHeaderTextBlock/Text"), typeof(ResourceUsagePageViewModel));
@@ -87,9 +84,9 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         AddPagesIfNecessary(TargetAppData.Instance.TargetProcess);
 
         // Initial values
-        CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", _perfCounters.CpuUsage);
-        RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", _perfCounters.RamUsageInMB);
-        DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", _perfCounters.DiskUsage);
+        CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", PerfCounters.Instance.CpuUsage);
+        RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
+        DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
         NavigationService = Application.Current.GetService<INavigationService>();
     }
 
@@ -99,21 +96,21 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         {
             _dispatcher.TryEnqueue(() =>
             {
-                CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", _perfCounters.CpuUsage);
+                CpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormat", PerfCounters.Instance.CpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.RamUsageInMB))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", _perfCounters.RamUsageInMB);
+                RamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormat", PerfCounters.Instance.RamUsageInMB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.DiskUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", _perfCounters.DiskUsage);
+                DiskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormat", PerfCounters.Instance.DiskUsage);
             });
         }
     }
@@ -174,7 +171,6 @@ public partial class ExpandedViewControlViewModel : ObservableObject
     {
         if (!Links.Contains(_processListNavLink))
         {
-            Links.Add(_resourceUsageNavLink);
             Links.Add(_processListNavLink);
             Links.Add(_werNavLink);
             Links.Add(_insightsNavLink);
@@ -187,6 +183,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
             if (process is not null)
             {
                 Links.Insert(0, _appDetailsNavLink);
+                Links.Insert(1, _resourceUsageNavLink);
                 Links.Insert(2, _modulesNavLink);
 
                 // Process List #3
@@ -204,6 +201,7 @@ public partial class ExpandedViewControlViewModel : ObservableObject
         SelectedNavLinkIndex = Links.IndexOf(_processListNavLink);
 
         Links.Remove(_appDetailsNavLink);
+        Links.Remove(_resourceUsageNavLink);
         Links.Remove(_modulesNavLink);
         Links.Remove(_winLogsNavLink);
     }

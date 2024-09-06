@@ -43,10 +43,8 @@
     <None Remove="Pages\ModulesPage.xaml" />
     <None Remove="Pages\PreferencesPage.xaml" />
     <None Remove="Pages\ProcessListPage.xaml" />
-    <None Remove="Pages\ProcessResourceUsagePage.xaml" />
     <None Remove="Pages\ResourceUsagePage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
-    <None Remove="Pages\SystemResourceUsagePage.xaml" />
     <None Remove="Pages\WERPage.xaml" />
     <None Remove="Pages\WinLogsPage.xaml" />
     <None Remove="SettingsUi\AddToolControl.xaml" />
@@ -83,7 +81,6 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.0.240109" />
-    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.3" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.9" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="8.0.0" />
@@ -151,12 +148,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\ResourceUsagePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Pages\ProcessResourceUsagePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Pages\SystemResourceUsagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Pages\WERPage.xaml">
