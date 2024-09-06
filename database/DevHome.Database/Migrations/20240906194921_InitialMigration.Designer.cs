@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHome.Database.Migrations
 {
     [DbContext(typeof(DevHomeDatabaseContext))]
-    [Migration("20240905232557_InitialMigration")]
+    [Migration("20240906194921_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -26,10 +26,16 @@ namespace DevHome.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ConfigurationFileLocation")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("CreatedUTCDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("datetime()");
+
+                    b.Property<bool>("HasAConfigurationFile")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsHidden")
                         .HasColumnType("INTEGER");

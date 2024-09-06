@@ -23,10 +23,16 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("INTEGER");
 
+                b.Property<string>("ConfigurationFileLocation")
+                    .HasColumnType("TEXT");
+
                 b.Property<DateTime?>("CreatedUTCDate")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
                     .HasDefaultValueSql("datetime()");
+
+                b.Property<bool>("HasAConfigurationFile")
+                    .HasColumnType("INTEGER");
 
                 b.Property<bool>("IsHidden")
                     .HasColumnType("INTEGER");

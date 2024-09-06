@@ -27,6 +27,8 @@ public partial class InitialMigration : Migration
                 CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
                 UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
                 IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
+                HasAConfigurationFile = table.Column<bool>(type: "INTEGER", nullable: false),
+                ConfigurationFileLocation = table.Column<string>(type: "TEXT", nullable: true),
             },
             constraints: table =>
             {
