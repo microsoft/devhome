@@ -70,7 +70,7 @@ public partial class BarWindow : ThemeAwareWindow
     internal HWND ThisHwnd { get; private set; }
 
     private readonly object _parentProcessHwndLock = new();
-    
+
     private HWND? _parentProcessHwnd;
 
     public BarWindow()
@@ -85,7 +85,7 @@ public partial class BarWindow : ThemeAwareWindow
 
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
         CustomTitleBarButtons.Add(ExpandCollapseLayoutButton);
-        
+
         // Initialize the parent process HWND in the constructor to avoid re-entrancy on the UI thread
         GetParentProcessHWND();
     }
