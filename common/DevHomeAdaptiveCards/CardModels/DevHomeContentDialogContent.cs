@@ -11,7 +11,7 @@ namespace DevHome.Common.DevHomeAdaptiveCards.CardModels;
 /// Represents a content dialog that can be rendered through an adaptive card based on the
 /// Json template.
 /// </summary>
-public class DevHomeContentDialogContent : IAdaptiveCardElement
+public partial class DevHomeContentDialogContent : IAdaptiveCardElement
 {
     // Specific properties for DevHomeContentDialogContent
     public string Title { get; set; } = string.Empty;

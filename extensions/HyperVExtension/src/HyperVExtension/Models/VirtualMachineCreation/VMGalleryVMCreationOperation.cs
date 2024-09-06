@@ -19,7 +19,7 @@ public delegate VMGalleryVMCreationOperation VmGalleryCreationOperationFactory(V
 /// <summary>
 /// Class that represents the VM gallery VM creation operation.
 /// </summary>
-public sealed class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
+public sealed partial class VMGalleryVMCreationOperation : IVMGalleryVMCreationOperation
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", ComponentName);
 

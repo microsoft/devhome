@@ -17,7 +17,7 @@ using Windows.Foundation;
 namespace HyperVExtension.Providers;
 
 /// <summary> Class that provides compute system information for Hyper-V Virtual machines. </summary>
-public class HyperVProvider : IComputeSystemProvider
+public partial class HyperVProvider : IComputeSystemProvider
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVProvider));
 

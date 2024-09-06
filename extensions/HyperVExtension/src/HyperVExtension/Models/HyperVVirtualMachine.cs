@@ -30,7 +30,7 @@ namespace HyperVExtension.Models;
 public delegate HyperVVirtualMachine HyperVVirtualMachineFactory(PSObject pSObject);
 
 /// <summary> Class that represents a Hyper-V virtual machine object. </summary>
-public class HyperVVirtualMachine : IComputeSystem
+public partial class HyperVVirtualMachine : IComputeSystem
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(HyperVVirtualMachine));
 

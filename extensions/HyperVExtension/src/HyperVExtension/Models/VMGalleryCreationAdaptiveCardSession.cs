@@ -26,7 +26,7 @@ public enum SessionState
     ReviewForm,
 }
 
-public class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
+public partial class VMGalleryCreationAdaptiveCardSession : IExtensionAdaptiveCardSession2
 {
     private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(VMGalleryCreationAdaptiveCardSession));
 

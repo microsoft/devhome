@@ -18,7 +18,7 @@ namespace HyperVExtension;
 [Guid("28DD4098-162D-483C-9ED0-FB3887A22F61")]
 #endif
 [ComDefaultInterface(typeof(IExtension))]
-public sealed class HyperVExtension : IExtension, IDisposable
+public sealed partial class HyperVExtension : IExtension, IDisposable
 {
     private readonly IHost _host;
     private bool _disposed;

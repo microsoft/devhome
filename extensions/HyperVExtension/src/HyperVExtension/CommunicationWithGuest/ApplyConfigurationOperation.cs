@@ -11,7 +11,7 @@ using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace HyperVExtension.CommunicationWithGuest;
 
-public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, IDisposable
+public sealed partial class ApplyConfigurationOperation : IApplyConfigurationOperation, IDisposable
 {
     private readonly HyperVVirtualMachine _virtualMachine;
     private readonly CancellationTokenSource _cancellationTokenSource = new();

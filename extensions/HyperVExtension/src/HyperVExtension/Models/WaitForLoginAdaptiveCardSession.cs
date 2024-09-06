@@ -15,7 +15,7 @@ using Windows.Foundation;
 
 namespace HyperVExtension.Models;
 
-public sealed class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
+public sealed partial class WaitForLoginAdaptiveCardSession : IExtensionAdaptiveCardSession2, IDisposable
 {
     private const int MaxAttempts = 3;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WaitForLoginAdaptiveCardSession));
