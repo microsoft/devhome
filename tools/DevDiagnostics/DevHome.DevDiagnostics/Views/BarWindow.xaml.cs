@@ -69,6 +69,10 @@ public partial class BarWindow : ThemeAwareWindow
 
     internal HWND ThisHwnd { get; private set; }
 
+    private readonly object _parentProcessHwndLock = new();
+    
+    private HWND? _parentProcessHwnd;
+
     public BarWindow()
     {
         _viewModel = new BarWindowViewModel();
@@ -81,6 +85,22 @@ public partial class BarWindow : ThemeAwareWindow
 
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
         CustomTitleBarButtons.Add(ExpandCollapseLayoutButton);
+        
+        // Initialize the parent process HWND in the constructor to avoid re-entrancy on the UI thread
+        GetParentProcessHWND();
+    }
+
+    private HWND? GetParentProcessHWND()
+    {
+        lock (_parentProcessHwndLock)
+        {
+            if (!_parentProcessHwnd.HasValue)
+            {
+                _parentProcessHwnd = TryGetParentProcessHWND();
+            }
+
+            return _parentProcessHwnd;
+        }
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -113,7 +133,7 @@ public partial class BarWindow : ThemeAwareWindow
 
         if (_settings.IsCpuUsageMonitoringEnabled)
         {
-            PerfCounters.Instance.Start();
+            Application.Current.GetService<PerfCounters>().Start();
         }
 
         // Apply the user's chosen theme setting.
@@ -343,9 +363,9 @@ public partial class BarWindow : ThemeAwareWindow
 
         // If attached to an app it should show up on the monitor that the app is on
         // Be sure to grab the DPI for that monitor
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = monitorRect.right - monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * dpiScale)) / 2) + monitorRect.left,
@@ -357,8 +377,8 @@ public partial class BarWindow : ThemeAwareWindow
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
         var settingWidth = Settings.Default.WindowWidth;
         if (settingWidth == 0)
@@ -415,7 +435,7 @@ public partial class BarWindow : ThemeAwareWindow
         }
 
         TargetAppData.Instance.ClearAppData();
-        PerfCounters.Instance.Stop();
+        Application.Current.GetService<PerfCounters>().Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
@@ -441,11 +461,11 @@ public partial class BarWindow : ThemeAwareWindow
         {
             if (_settings.IsCpuUsageMonitoringEnabled)
             {
-                PerfCounters.Instance.Start();
+                Application.Current.GetService<PerfCounters>().Start();
             }
             else
             {
-                PerfCounters.Instance.Stop();
+                Application.Current.GetService<PerfCounters>().Stop();
             }
         }
     }
