@@ -94,7 +94,8 @@ internal sealed class CommitLogCache
 
     private CommitWrapper? FindLastCommitUsingCommandLine(string relativePath)
     {
-        if (relativePath == string.Empty)
+        if (string.IsNullOrEmpty(relativePath))
+
         {
             relativePath = ".";
         }
