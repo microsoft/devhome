@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace FileExplorerGitIntegration.Models;
-
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -10,7 +8,10 @@ using System.Threading.Channels;
 using LibGit2Sharp;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Win32;
+
+namespace FileExplorerGitIntegration.Models;
 
 // Caches the most recently obtained repo status.
 // Use FileSystemWatcher to invalidate the cache.
@@ -24,6 +25,7 @@ internal sealed class StatusCache : IDisposable
     private readonly ReaderWriterLockSlim _statusLock = new();
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(StatusCache));
 
     private GitRepositoryStatus? _status;
     private bool _disposedValue;
@@ -289,6 +291,10 @@ internal sealed class StatusCache : IDisposable
                 // For now, we only care about the <path>.
                 var filePath = Path.Combine(relativeDir, line.Substring(2)).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
+            }
+            else
+            {
+                _log.Warning($"Encountered unexpected line in ParseStatus: {line}");
             }
         }
     }

@@ -1,10 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Serilog;
+
 namespace FileExplorerGitIntegration.UnitTest;
 
 internal sealed class SandboxHelper
 {
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(SandboxHelper));
+
     private readonly Dictionary<string, string> _renames = new()
     {
         { "dot-git", ".git" },
@@ -24,7 +28,15 @@ internal sealed class SandboxHelper
 
     public void Cleanup()
     {
-        Directory.Delete(DeployedDirectory.FullName, true);
+        try
+        {
+            Directory.Delete(DeployedDirectory.FullName, true);
+        }
+        catch (Exception ex)
+        {
+            _log.Warning(ex, $"Failed to delete temp directory {DeployedDirectory.FullName}");
+            throw;
+        }
     }
 
     public string CreateSandbox(string directory)

@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using LibGit2Sharp;
+using Serilog;
 
 namespace FileExplorerGitIntegration.Models;
 
@@ -30,6 +31,8 @@ internal sealed class CommitLogCache
     private readonly bool _gitInstalled;
 
     private readonly LruCacheDictionary<string, CommitWrapper> _cache = new();
+
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(CommitLogCache));
 
     public CommitLogCache(Repository repo)
     {
@@ -104,6 +107,7 @@ internal sealed class CommitLogCache
         var filename = Path.GetFileName(fullPath);
         if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(filename))
         {
+            _log.Warning($"FindLastCommitUsingCommandLine failed to parse relativePath {relativePath}");
             return null;
         }
 
