@@ -19,8 +19,8 @@ public class GitSubmoduleUnitTests
     public static void ClassInitialize(TestContext testContext)
     {
         _sandbox = new();
-        var repoPath = _sandbox.CreateSandbox("submodules");
-        _sandbox.CreateSandbox("submodules_target");
+        var repoPath = _sandbox.CreateSandbox("submodules", testContext);
+        _sandbox.CreateSandbox("submodules_target", testContext);
         _repo = new GitLocalRepository(repoPath);
     }
 

@@ -39,26 +39,35 @@ internal sealed class SandboxHelper
         }
     }
 
-    public string CreateSandbox(string directory)
+    public string CreateSandbox(string directory, TestContext testContext)
     {
         var source = new DirectoryInfo(Path.Combine(ResourcesDirectory.FullName, directory));
         var target = new DirectoryInfo(Path.Combine(DeployedDirectory.FullName, directory));
-        CopyRecursive(source, target);
+        testContext.WriteLine($"Copying repository from {source.FullName} to {target.FullName}.");
+        var count = CopyRecursive(source, target);
+        testContext.WriteLine($"Copied {count} items.");
 
+        Assert.AreEqual(source.GetDirectories().Length, target.GetDirectories().Length);
+        Assert.AreEqual(source.GetFiles().Length, target.GetFiles().Length);
         return target.FullName;
     }
 
-    private void CopyRecursive(DirectoryInfo source, DirectoryInfo target)
+    private int CopyRecursive(DirectoryInfo source, DirectoryInfo target)
     {
+        int copiedFiles = 0;
         foreach (var dir in source.GetDirectories())
         {
+            ++copiedFiles;
             CopyRecursive(dir, target.CreateSubdirectory(FixName(dir.Name)));
         }
 
         foreach (var file in source.GetFiles())
         {
+            ++copiedFiles;
             file.CopyTo(Path.Combine(target.FullName, FixName(file.Name)));
         }
+
+        return copiedFiles;
     }
 
     private string FixName(string name)
