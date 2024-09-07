@@ -27,13 +27,12 @@ public class GitSubmoduleUnitTests
     [ClassCleanup]
     public static void ClassCleanup()
     {
+        _repo = null;
         if (_sandbox is not null)
         {
             _sandbox.Cleanup();
             _sandbox = null;
         }
-
-        _repo = null;
     }
 
     [TestMethod]

@@ -68,62 +68,72 @@ public sealed class GitLocalRepository : ILocalRepository
             return result;
         }
 
-        foreach (var propName in properties)
+        try
         {
-            switch (propName)
+            foreach (var propName in properties)
             {
-                case "System.VersionControl.LastChangeMessage":
-                    latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit is not null)
-                    {
-                        result.Add(propName, latestCommit.MessageShort);
-                    }
+                switch (propName)
+                {
+                    case "System.VersionControl.LastChangeMessage":
+                        latestCommit ??= FindLatestCommit(relativePath, repository);
+                        if (latestCommit is not null)
+                        {
+                            result.Add(propName, latestCommit.MessageShort);
+                        }
 
-                    break;
-                case "System.VersionControl.LastChangeAuthorName":
-                    latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit is not null)
-                    {
-                        result.Add(propName, latestCommit.AuthorName);
-                    }
+                        break;
+                    case "System.VersionControl.LastChangeAuthorName":
+                        latestCommit ??= FindLatestCommit(relativePath, repository);
+                        if (latestCommit is not null)
+                        {
+                            result.Add(propName, latestCommit.AuthorName);
+                        }
 
-                    break;
-                case "System.VersionControl.LastChangeDate":
-                    latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit is not null)
-                    {
-                        result.Add(propName, latestCommit.AuthorWhen);
-                    }
+                        break;
+                    case "System.VersionControl.LastChangeDate":
+                        latestCommit ??= FindLatestCommit(relativePath, repository);
+                        if (latestCommit is not null)
+                        {
+                            result.Add(propName, latestCommit.AuthorWhen);
+                        }
 
-                    break;
-                case "System.VersionControl.LastChangeAuthorEmail":
-                    latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit is not null)
-                    {
-                        result.Add(propName, latestCommit.AuthorEmail);
-                    }
+                        break;
+                    case "System.VersionControl.LastChangeAuthorEmail":
+                        latestCommit ??= FindLatestCommit(relativePath, repository);
+                        if (latestCommit is not null)
+                        {
+                            result.Add(propName, latestCommit.AuthorEmail);
+                        }
 
-                    break;
-                case "System.VersionControl.LastChangeID":
-                    latestCommit ??= FindLatestCommit(relativePath, repository);
-                    if (latestCommit is not null)
-                    {
-                        result.Add(propName, latestCommit.Sha);
-                    }
+                        break;
+                    case "System.VersionControl.LastChangeID":
+                        latestCommit ??= FindLatestCommit(relativePath, repository);
+                        if (latestCommit is not null)
+                        {
+                            result.Add(propName, latestCommit.Sha);
+                        }
 
-                    break;
-                case "System.VersionControl.Status":
-                    result.Add(propName, GetStatus(relativePath, repository));
-                    break;
+                        break;
+                    case "System.VersionControl.Status":
+                        result.Add(propName, GetStatus(relativePath, repository));
+                        break;
 
-                case "System.VersionControl.CurrentFolderStatus":
-                    var folderStatus = GetFolderStatus(relativePath, repository);
-                    if (folderStatus is not null)
-                    {
-                        result.Add(propName, folderStatus);
-                    }
+                    case "System.VersionControl.CurrentFolderStatus":
+                        var folderStatus = GetFolderStatus(relativePath, repository);
+                        if (folderStatus is not null)
+                        {
+                            result.Add(propName, folderStatus);
+                        }
 
-                    break;
+                        break;
+                }
+            }
+        }
+        finally
+        {
+            if (_repositoryCache is null)
+            {
+                repository.Dispose();
             }
         }
 

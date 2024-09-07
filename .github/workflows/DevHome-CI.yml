@@ -101,6 +101,10 @@ jobs:
     - name: Tools UnitTests
       if: ${{ matrix.platform != 'arm64' }}
       run: |
-        foreach ($UnitTestPath in (Get-ChildItem "tools\\*\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22621.0\\*.UnitTest.dll")) {
+        foreach ($UnitTestPath in (Get-ChildItem "tools\\**\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22621.0\\*.UnitTest.dll")) {
           cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} $UnitTestPath.FullName
         }
+
+    - name: GitExtension UnitTests
+      if: ${{ matrix.platform != 'arm64' }}
+      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} extensions\\GitExtension\\FileExplorerGitIntegration.UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22621.0\\FileExplorerGitIntegration.UnitTest.dll
