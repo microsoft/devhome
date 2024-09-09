@@ -38,7 +38,11 @@ public class WidgetServiceService : IWidgetServiceService
 
     public WidgetServiceStates GetWidgetServiceState()
     {
+        var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
+        _log.Information($"Checking for WidgetService on {isWindows11String}");
+
         // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
+        _log.Information("Checking for WidgetsPlatformRuntime...");
         var package = GetWidgetsPlatformRuntimePackage();
         _widgetServiceState = ValidatePackage(package);
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
@@ -48,6 +52,7 @@ public class WidgetServiceService : IWidgetServiceService
         }
 
         // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
+        _log.Information("Checking for WebExperiencePack...");
         package = GetWebExperiencePackPackage();
         _widgetServiceState = ValidatePackage(package);
 
@@ -87,24 +92,25 @@ public class WidgetServiceService : IWidgetServiceService
 
     private WidgetServiceStates ValidatePackage(Package package)
     {
-        var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
-        _log.Information($"Validating package {package.DisplayName} on {isWindows11String}");
-
+        WidgetServiceStates packageStatus;
         if (package == null)
         {
-            return WidgetServiceStates.NotAtMinVersion;
+            packageStatus = WidgetServiceStates.NotAtMinVersion;
         }
         else if (package.Status.VerifyIsOK())
         {
-            return WidgetServiceStates.MeetsMinVersion;
+            packageStatus = WidgetServiceStates.MeetsMinVersion;
         }
         else if (package.Status.Servicing == true)
         {
-            return WidgetServiceStates.Updating;
+            packageStatus = WidgetServiceStates.Updating;
         }
         else
         {
-            return WidgetServiceStates.NotOK;
+            packageStatus = WidgetServiceStates.NotOK;
         }
+
+        _log.Information($"ValidatePackage found {packageStatus}");
+        return packageStatus;
     }
 }
