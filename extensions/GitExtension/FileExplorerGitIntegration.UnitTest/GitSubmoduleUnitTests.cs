@@ -118,7 +118,8 @@ public class GitSubmoduleUnitTests
         GC.Collect(2);
         if (_repoPath is not null)
         {
-            for (var retries = 0; retries < 3; ++retries)
+            int milliseconds = 100;
+            for (var retries = 0; retries < 5; ++retries)
             {
                 try
                 {
@@ -127,7 +128,8 @@ public class GitSubmoduleUnitTests
                 }
                 catch (System.UnauthorizedAccessException)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(milliseconds);
+                    milliseconds *= 2;
                 }
             }
         }
