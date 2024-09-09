@@ -3,8 +3,17 @@ import "windows.foundation.idl";
 
 namespace DevHome.Service
 {
+    struct MissingFileProcessLaunchFailureInfo
+    {
+        String processName;
+        Int32 pid;
+        Int32 exitCode;
+    };
+
+    delegate void MissingFileProcessLaunchFailureHandler(MissingFileProcessLaunchFailureInfo failure);
+
     interface IDevHomeService
     {
-        Int32 GetNumber();
+        event MissingFileProcessLaunchFailureHandler MissingFileProcessLaunchFailure;
     }
 }
