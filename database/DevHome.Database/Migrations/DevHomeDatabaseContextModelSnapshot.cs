@@ -49,6 +49,9 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasColumnType("TEXT")
                     .HasDefaultValue(string.Empty);
 
+                b.Property<string>("RepositoryUri")
+                    .HasColumnType("TEXT");
+
                 b.Property<DateTime?>("UpdatedUTCDate")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")

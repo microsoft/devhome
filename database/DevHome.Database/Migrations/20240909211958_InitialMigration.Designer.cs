@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHome.Database.Migrations
 {
     [DbContext(typeof(DevHomeDatabaseContext))]
-    [Migration("20240906194921_InitialMigration")]
+    [Migration("20240909211958_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -51,6 +51,9 @@ namespace DevHome.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
+
+                    b.Property<string>("RepositoryUri")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("UpdatedUTCDate")
                         .ValueGeneratedOnAdd()

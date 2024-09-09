@@ -24,11 +24,12 @@ public partial class InitialMigration : Migration
                     .Annotation("Sqlite:Autoincrement", true),
                 RepositoryName = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
                 RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
-                CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
-                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
                 IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
                 HasAConfigurationFile = table.Column<bool>(type: "INTEGER", nullable: false),
                 ConfigurationFileLocation = table.Column<string>(type: "TEXT", nullable: true),
+                RepositoryUri = table.Column<string>(type: "TEXT", nullable: true),
+                CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
+                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
             },
             constraints: table =>
             {

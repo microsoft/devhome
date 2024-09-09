@@ -287,11 +287,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             // Add the configuration file.
             if (!string.IsNullOrEmpty(_summaryScreenInformation.FilePathAndName))
             {
-                var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName);
+                var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri);
             }
             else
             {
-                var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName);
+                var newRepo = serviceForMe.MakeRepository(RepositoryName, CloneLocation.FullName, RepositoryToClone.RepoUri);
             }
 
             WasCloningSuccessful = true;

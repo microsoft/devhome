@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.RepositoryManagement;
 using DevHome.Common.Windows.FileDialog;
+using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -41,17 +42,10 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
-    private string _repositoryName;
-
     /// <summary>
-    /// Gets or sets the name of the repository.  Nulls are converted to string.empty.
+    /// Gets the name of the repository.
     /// </summary>
-    public string RepositoryName
-    {
-        get => _repositoryName ?? string.Empty;
-
-        set => _repositoryName = value ?? string.Empty;
-    }
+    public string RepositoryName { get; }
 
     [ObservableProperty]
     private string _clonePath;
@@ -84,32 +78,20 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     public bool IsHiddenFromPage { get; set; }
 
+    public bool HasAConfigurationFile { get; set; }
+
     [RelayCommand]
     public async Task OpenInFileExplorer()
     {
-        var localClonePath = ClonePath ?? string.Empty;
-
-        // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
-        {
-            await CloneLocationNotFoundNotifyUser(RepositoryName);
-        }
-
-        OpenRepositoryInFileExplorer(RepositoryName, localClonePath, nameof(OpenInFileExplorer));
+        await CheckCloneLocationNotifyUserIfNotFound();
+        OpenRepositoryInFileExplorer(RepositoryName, ClonePath, nameof(OpenInFileExplorer));
     }
 
     [RelayCommand]
     public async Task OpenInCMD()
     {
-        var localClonePath = ClonePath ?? string.Empty;
-
-        // Ask the user if they can point DevHome to the correct location
-        if (!Directory.Exists(Path.GetFullPath(localClonePath)))
-        {
-            await CloneLocationNotFoundNotifyUser(RepositoryName);
-        }
-
-        OpenRepositoryinCMD(RepositoryName, localClonePath, nameof(OpenInCMD));
+        await CheckCloneLocationNotifyUserIfNotFound();
+        OpenRepositoryinCMD(RepositoryName, ClonePath, nameof(OpenInCMD));
     }
 
     [RelayCommand]
@@ -118,7 +100,6 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         // TODO: Save to the database before moving the folder.
         var newLocation = await PickNewLocationForRepositoryAsync();
 
-        // TODO: Warn the user no action will take place
         if (string.IsNullOrEmpty(newLocation))
         {
             _log.Information("The path from the folder picker is either null or empty.  Not updating the clone path");
@@ -127,29 +108,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
         if (string.Equals(Path.GetFullPath(newLocation), Path.GetFullPath(ClonePath), StringComparison.OrdinalIgnoreCase))
         {
-            _log.Information("The selected path is the same as the current path.");
-            return;
-        }
-
-        var localOldClonePath = ClonePath ?? string.Empty;
-        var repository = _dataAccess.GetRepository(RepositoryName, localOldClonePath);
-
-        // The user clicked on this menu from the repository management page.
-        // The repository should be in the database.
-        // Somehow getting the repository returned null.
-        if (repository is null)
-        {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {localOldClonePath} is not in the database when it is expected to be there.");
-            TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
-                LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
-
+            _log.Information("The selected path is the same as the current path.  Not updating the clone path");
             return;
         }
 
         var newDirectoryInfo = new DirectoryInfo(Path.Join(newLocation, RepositoryName));
-        var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(localOldClonePath));
+        var currentDirectoryInfo = new DirectoryInfo(Path.GetFullPath(ClonePath));
 
         try
         {
@@ -164,8 +128,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
                 new RepositoryLineItemEvent(nameof(MoveRepository), RepositoryName));
         }
 
-        // The repository exists at the location stored in the Database
-        // and the new location is set.
+        var repository = GetRepositoryReportIfNull(nameof(MoveRepository));
+        if (repository == null)
+        {
+            return;
+        }
+
         var didUpdate = _dataAccess.UpdateCloneLocation(repository, newDirectoryInfo.FullName);
 
         if (!didUpdate)
@@ -179,59 +147,54 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public async Task DeleteRepository()
     {
-        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
-
-        // The user clicked on this menu from the repository management page.
-        // The repository should be in the database.
-        // Somehow getting the repository returned null.
-        if (repository is null)
-        {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
-            TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
-                LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(DeleteRepository), RepositoryName));
-
-            return;
-        }
-
         var cantFindRepositoryDialog = new ContentDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
             Title = $"Would you like to delete this repository?",
             Content = $"Deleting a repository means it will be permanently removed in File Explorer and from your PC.",
-            PrimaryButtonText = $"Yes",
+            PrimaryButtonText = "Yes",
             CloseButtonText = "Cancel",
         };
 
         var dialogResult = await cantFindRepositoryDialog.ShowAsync();
 
-        if (dialogResult == ContentDialogResult.Primary)
+        if (dialogResult != ContentDialogResult.Primary)
         {
-            // Remove the repository.
-            // TODO: Check if this location is a repository and the name matches the repo name
-            // in path.
-            if (!string.IsNullOrEmpty(ClonePath)
-                && Directory.Exists(ClonePath))
-            {
-                // Cumbersome, but needed to remove read-only files.
-                foreach (var myFile in Directory.EnumerateFiles(ClonePath, "*", SearchOption.AllDirectories))
-                {
-                    File.SetAttributes(myFile, FileAttributes.Normal);
-                    File.Delete(myFile);
-                }
-
-                foreach (var myDirectory in Directory.GetDirectories(ClonePath, "*", SearchOption.AllDirectories).Reverse())
-                {
-                    Directory.Delete(myDirectory);
-                }
-
-                File.SetAttributes(ClonePath, FileAttributes.Normal);
-                Directory.Delete(ClonePath, false);
-
-                _dataAccess.RemoveRepository(repository);
-            }
+            return;
         }
+
+        // Remove the repository.
+        // TODO: Check if this location is a repository and the name matches the repo name
+        // in path.
+        if (!string.IsNullOrEmpty(ClonePath)
+            && Directory.Exists(ClonePath))
+        {
+            // Cumbersome, but needed to remove read-only files.
+            foreach (var myFile in Directory.EnumerateFiles(ClonePath, "*", SearchOption.AllDirectories))
+            {
+                File.SetAttributes(myFile, FileAttributes.Normal);
+                File.Delete(myFile);
+            }
+
+            foreach (var myDirectory in Directory.GetDirectories(ClonePath, "*", SearchOption.AllDirectories).Reverse())
+            {
+                Directory.Delete(myDirectory);
+            }
+
+            File.SetAttributes(ClonePath, FileAttributes.Normal);
+            Directory.Delete(ClonePath, false);
+        }
+
+        var repository = GetRepositoryReportIfNull(nameof(DeleteRepository));
+        if (repository == null)
+        {
+            // Do not warn the user here.  If the repository is not in the database
+            // the repository management page will not display the repository
+            // when entities are fetched.
+            return;
+        }
+
+        _dataAccess.RemoveRepository(repository);
     }
 
     [RelayCommand]
@@ -251,6 +214,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             if (!string.IsNullOrEmpty(fileName))
             {
                 var repositoryToUse = _dataAccess.GetRepository(RepositoryName, ClonePath);
+                var repository = GetRepositoryReportIfNull(nameof(MakeConfigurationFileWithThisRepository));
+                if (repository == null)
+                {
+                    return;
+                }
+
                 var configFile = _configurationFileBuilder.GetConfigurationFileForRepoAndGit(repositoryToUse);
                 await File.WriteAllTextAsync(fileName, configFile);
             }
@@ -264,19 +233,9 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public void RunConfigurationFile()
     {
-        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
-
-        // The user clicked on this menu from the repository management page.
-        // The repository should be in the database.
-        // Somehow getting the repository returned null.
-        if (repository is null)
+        var repository = GetRepositoryReportIfNull(nameof(RunConfigurationFile));
+        if (repository == null)
         {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
-            TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
-                LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
-
             return;
         }
 
@@ -299,35 +258,29 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public void RemoveThisRepositoryFromTheList()
     {
-        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
-
-        // The user clicked on this menu from the repository management page.
-        // The repository should be in the database.
-        // Somehow getting the repository returned null.
-        if (repository is null)
+        var repository = GetRepositoryReportIfNull(nameof(RemoveThisRepositoryFromTheList));
+        if (repository == null)
         {
-            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
-            TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
-                LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(OpenInFileExplorer), RepositoryName));
-
             return;
         }
 
         _dataAccess.SetIsHidden(repository, true);
     }
 
-    public RepositoryManagementItemViewModel(
+    internal RepositoryManagementItemViewModel(
         Window window,
         RepositoryManagementDataAccessService dataAccess,
         IStringResource stringResource,
-        ConfigurationFileBuilder configurationFileBuilder)
+        ConfigurationFileBuilder configurationFileBuilder,
+        string repositoryName,
+        string cloneLocation)
     {
         _window = window;
         _dataAccess = dataAccess;
         _stringResource = stringResource;
         _configurationFileBuilder = configurationFileBuilder;
+        RepositoryName = repositoryName;
+        _clonePath = cloneLocation;
     }
 
     private void OpenRepositoryInFileExplorer(string repositoryName, string cloneLocation, string action)
@@ -422,8 +375,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _log.Error(ex, string.Empty);
     }
 
-    private async Task CloneLocationNotFoundNotifyUser(
-        string repositoryName)
+    private async Task CloneLocationNotFoundNotifyUser()
     {
         // strings need to be localized
         var cantFindRepositoryDialog = new ContentDialog()
@@ -451,19 +403,9 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
                 return;
             }
 
-            var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
-
-            // The user clicked on this menu from the repository management page.
-            // The repository should be in the database.
-            // Somehow getting the repository returned null.
-            if (repository is null)
+            var repository = GetRepositoryReportIfNull(nameof(CloneLocationNotFoundNotifyUser));
+            if (repository == null)
             {
-                _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    EventName,
-                    LogLevel.Critical,
-                    new RepositoryLineItemEvent(nameof(OpenInFileExplorer), repositoryName));
-
                 return;
             }
 
@@ -483,53 +425,33 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         }
     }
 
-    /*
-    public WinGetConfigFile DownloadConfigFileFromARepository(Repository repository)
+    private Repository GetRepositoryReportIfNull(string action)
     {
-        List<WinGetConfigResource> resources = [];
-        resources.Add(MakeSomethingFromARepository(repository));
-        resources.Add(CreateWinGetInstallForGitPreReq());
+        var repository = _dataAccess.GetRepository(RepositoryName, ClonePath);
 
-        var wingetConfigProperties = new WinGetConfigProperties();
-
-        // Merge the resources into the Resources property in the properties object
-        wingetConfigProperties.Resources = resources.ToArray();
-        wingetConfigProperties.ConfigurationVersion = DscHelpers.WinGetConfigureVersion;
-
-        // Create the new WinGetConfigFile object and serialize it to yaml
-        return new WinGetConfigFile() { Properties = wingetConfigProperties };
-    }
-
-    private WinGetConfigResource MakeSomethingFromARepository(Repository repository)
-    {
-        // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
-        // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
-        var id = $"{RepoNamePrefix}{repository.RepositoryName}{RepoNameSuffix}{Path.GetFullPath(repository.RepositoryClonePath)}";
-
-        var gitDependsOnId = DscHelpers.GitWinGetPackageId;
-
-        // TODO: Add clone URL to the database
-        return new WinGetConfigResource()
+        // The user clicked on this menu from the repository management page.
+        // The repository should be in the database.
+        // Somehow getting the repository returned null.
+        if (repository is null)
         {
-            Resource = DscHelpers.GitCloneDscResource,
-            Id = id,
-            Directives = new() { AllowPrerelease = true, Description = $"Cloning: {repository.RepositoryName}" },
-            DependsOn = [gitDependsOnId],
-            Settings = new GitDscSettings() { HttpsUrl = string.Empty, RootDirectory = Path.GetFullPath(repository.RepositoryClonePath) },
-        };
+            _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                EventName,
+                LogLevel.Critical,
+                new RepositoryLineItemEvent(action, RepositoryName));
+
+            return null;
+        }
+
+        return repository;
     }
 
-    private WinGetConfigResource CreateWinGetInstallForGitPreReq()
+    private async Task CheckCloneLocationNotifyUserIfNotFound()
     {
-        var id = DscHelpers.GitWinGetPackageId;
-
-        return new WinGetConfigResource()
+        if (!Directory.Exists(Path.GetFullPath(ClonePath)))
         {
-            Resource = DscHelpers.WinGetDscResource,
-            Id = id,
-            Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
-            Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
-        };
+            // Ask the user if they can point DevHome to the correct location
+            await CloneLocationNotFoundNotifyUser();
+        }
     }
-    */
 }

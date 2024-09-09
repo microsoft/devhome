@@ -20,13 +20,15 @@ public class Repository
 
     public string? RepositoryClonePath { get; set; }
 
-    public DateTime? CreatedUTCDate { get; set; }
-
-    public DateTime? UpdatedUTCDate { get; set; }
-
     public bool IsHidden { get; set; }
 
     public bool HasAConfigurationFile { get; set; }
 
     public string? ConfigurationFileLocation { get; set; }
+
+    public Uri? RepositoryUri { get; set; }
+
+    public DateTime? CreatedUTCDate { get; set; }
+
+    public DateTime? UpdatedUTCDate { get; set; }
 }

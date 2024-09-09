@@ -33,12 +33,12 @@ public class RepositoryManagementDataAccessService
     /// <param name="repositoryName">The name of the repository to add.</param>
     /// <param name="cloneLocation">The local location the repository is cloned to.</param>
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
-    public Repository MakeRepository(string repositoryName, string cloneLocation)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
     {
-        return MakeRepository(repositoryName, cloneLocation, string.Empty);
+        return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
-    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
@@ -51,6 +51,7 @@ public class RepositoryManagementDataAccessService
         {
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
+            RepositoryUri = repositoryUri,
         };
 
         if (!string.IsNullOrEmpty(configurationFileLocationAndName))
@@ -107,7 +108,7 @@ public class RepositoryManagementDataAccessService
         return repositories;
     }
 
-    public Repository GetRepository(string repositoryName, string cloneLocation)
+    public Repository? GetRepository(string repositoryName, string cloneLocation)
     {
         _log.Information("Getting a repository");
         try
@@ -115,7 +116,7 @@ public class RepositoryManagementDataAccessService
             using var dbContext = _databaseContextFactory.GetNewContext();
 #pragma warning disable CA1309 // Use ordinal string comparison
             return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName!.Equals(repositoryName)
-            && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation))) ?? new Repository();
+            && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation)));
 #pragma warning restore CA1309 // Use ordinal string comparison
         }
         catch (Exception ex)
@@ -127,7 +128,7 @@ public class RepositoryManagementDataAccessService
                 new DevHomeDatabaseEvent(nameof(GetRepository), ex));
         }
 
-        return new Repository();
+        return null;
     }
 
     public bool UpdateCloneLocation(Repository repository, string newLocation)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.RepositoryManagement.Factories;
 using DevHome.RepositoryManagement.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +13,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddRepositoryManagement(this IServiceCollection services, HostBuilderContext context)
     {
         services.AddSingleton<RepositoryManagementMainPageViewModel>();
-        services.AddTransient<RepositoryManagementItemViewModel>();
+        services.AddSingleton<RepositoryManagementItemViewModelFactory>();
 
         return services;
     }

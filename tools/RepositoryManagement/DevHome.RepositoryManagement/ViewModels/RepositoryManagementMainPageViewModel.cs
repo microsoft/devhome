@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
-using Microsoft.Extensions.Hosting;
+using DevHome.RepositoryManagement.Factories;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -18,7 +17,7 @@ public partial class RepositoryManagementMainPageViewModel
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
 
-    private readonly IHost _host;
+    private readonly RepositoryManagementItemViewModelFactory _factory;
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
@@ -42,10 +41,12 @@ public partial class RepositoryManagementMainPageViewModel
         _items.Where(x => x.IsHiddenFromPage == false).ToList().ForEach(x => Items.Add(x));
     }
 
-    public RepositoryManagementMainPageViewModel(IHost host, RepositoryManagementDataAccessService dataAccessService)
+    public RepositoryManagementMainPageViewModel(
+        RepositoryManagementItemViewModelFactory factory,
+        RepositoryManagementDataAccessService dataAccessService)
     {
         _dataAccessService = dataAccessService;
-        _host = host;
+        _factory = factory;
         Items = [];
     }
 
@@ -56,13 +57,11 @@ public partial class RepositoryManagementMainPageViewModel
 
         foreach (var repo in repositories)
         {
-            var lineItem = _host.GetService<RepositoryManagementItemViewModel>();
-            lineItem.ClonePath = repo.RepositoryClonePath;
+            // TODO: get correct values for branch and latest commit information
+            var lineItem = _factory.MakeViewModel(repo.RepositoryName, repo.RepositoryClonePath, repo.IsHidden);
             lineItem.Branch = "main"; // Test value.  Will change in the future.
-            lineItem.RepositoryName = repo.RepositoryName;
             lineItem.LatestCommit = "No commits found"; // Test value.  Will change in the future.
-
-            lineItem.IsHiddenFromPage = repo.IsHidden;
+            lineItem.HasAConfigurationFile = repo.HasAConfigurationFile;
             items.Add(lineItem);
         }
 
