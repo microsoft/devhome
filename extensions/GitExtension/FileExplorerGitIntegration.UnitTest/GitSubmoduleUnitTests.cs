@@ -42,6 +42,10 @@ public class GitSubmoduleUnitTests
         gitDetector.DetectGit();
         var gitPath = gitDetector.GitConfiguration.ReadInstallPath();
 
+        // Set identity for git commits
+        GitExecute.ExecuteGitCommand(gitPath, _repoPath, $"config user.email test@GitSubmoduleUnitTests");
+        GitExecute.ExecuteGitCommand(gitPath, _repoPath, $"config user.name Test GitSubmoduleUnitTests");
+
         // Get the base and previous commit SHAs
         {
             var result = GitExecute.ExecuteGitCommand(gitPath, _repoPath, "log -n 2 --pretty=format:%H -- .");
