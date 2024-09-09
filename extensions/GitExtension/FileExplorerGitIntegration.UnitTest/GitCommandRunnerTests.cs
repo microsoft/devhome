@@ -65,7 +65,20 @@ public class GitCommandRunnerTests
                 dirInfo.Attributes = FileAttributes.Normal;
             }
 
-            Directory.Delete(RepoPath, true);
+            int milliseconds = 100;
+            for (var retries = 0; retries < 5; ++retries)
+            {
+                try
+                {
+                    Directory.Delete(RepoPath, true);
+                    break;
+                }
+                catch (System.UnauthorizedAccessException)
+                {
+                    Thread.Sleep(milliseconds);
+                    milliseconds *= 2;
+                }
+            }
         }
     }
 
