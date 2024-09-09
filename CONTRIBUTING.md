@@ -26,6 +26,8 @@ Therefore, if you do file issues or create PRs, please keep an eye on your GitHu
 
 **Please do not report security vulnerabilities through public GitHub issues.** Instead, please report them to the Microsoft Security Response Center (MSRC). See [SECURITY.md](./SECURITY.md) for more information.
 
+---
+
 ## Before you start, file an issue
 
 Please follow this simple rule to help us eliminate any unnecessary wasted effort & frustration, and ensure an efficient and effective use of everyone's time - yours, ours, and other community members':
@@ -150,6 +152,8 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ## Development
 
+> **Note:** You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development) in order to deploy Dev Home from Visual Studio.
+
 ### Fork, clone, branch and create your PR
 
 Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
@@ -181,7 +185,6 @@ Alternatively,
 - Open the Developer Command Prompt for Visual Studio
 - Run `Build` from Dev Home's root directory.  You can pass in a list of platforms/configurations
 - The Dev Home MSIX will be in your repo under `AppxPackages\x64\debug`
-
 
 ### Rules
 
