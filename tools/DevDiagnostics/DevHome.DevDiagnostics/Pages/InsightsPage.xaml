@@ -38,7 +38,7 @@
                         </interactivity:Interaction.Behaviors>
                         <Expander.Header >
                             <Grid>
-                                <TextBox Text="{x:Bind Title}" IsReadOnly="True" BorderThickness="0" Background="Transparent"/>
+                                <TextBox Text="{x:Bind Title}" AutomationProperties.AutomationId="TitleTextBlock" IsReadOnly="True" BorderThickness="0" Background="Transparent"/>
                                 <controls:InfoBadge
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Right"

@@ -9,10 +9,10 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Button Command="{x:Bind Command, Mode=OneWay}">
+        <Button Command="{x:Bind Command, Mode=OneWay}" AutomationProperties.AutomationId="ElevatedButtonControl">
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <SymbolIcon Symbol="Admin"/>
-                <TextBlock Margin="0" Text="{x:Bind Text, Mode=OneWay}"/>
+                <SymbolIcon Symbol="Admin" AutomationProperties.AutomationId="ElevatedButtonIcon"/>
+                <TextBlock Margin="0" Text="{x:Bind Text, Mode=OneWay}" AutomationProperties.AutomationId="ElevatedButtonText"/>
             </StackPanel>
         </Button>
     </Grid>

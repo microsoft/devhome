@@ -9,6 +9,6 @@
     mc:Ignorable="d">
 
     <Grid AutomationProperties.AutomationId="SimpleInsight">
-        <TextBox TextWrapping="Wrap" HorizontalAlignment="Left" AutomationProperties.AutomationId="TextBock" Text="{x:Bind Description, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent" />
+        <TextBox TextWrapping="Wrap" HorizontalAlignment="Left" AutomationProperties.AutomationId="ContentTextBock" Text="{x:Bind Description, Mode=OneWay}" IsReadOnly="True" BorderThickness="0" Background="Transparent" />
     </Grid>
 </UserControl>
