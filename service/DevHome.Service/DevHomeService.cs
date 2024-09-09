@@ -83,7 +83,6 @@ public class DevHomeService : IDevHomeService, IDisposable
             }
         };
 
-        // None of the loadersnap events are handled by the TraceEventParser, so we need to handle them ourselves
         _etwSession.Source.Process();
     }
 
