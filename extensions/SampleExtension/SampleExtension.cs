@@ -25,7 +25,7 @@ public sealed class SampleExtension : IExtension, IDisposable
     private readonly IHost _host;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SampleExtension));
 
-    private readonly string _url = string.Empty;
+    private readonly string _url;
     private readonly string _webContentPath = Path.Combine(AppContext.BaseDirectory, "WebContent");
     private WebServer.WebServer? _extensionWebServer;
 

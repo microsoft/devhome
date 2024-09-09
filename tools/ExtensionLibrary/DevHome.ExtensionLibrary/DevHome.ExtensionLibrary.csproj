@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240805-x2200" />
+		<PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240820-x2042" />
 		<PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.1799.589.1652" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
 	</ItemGroup>
