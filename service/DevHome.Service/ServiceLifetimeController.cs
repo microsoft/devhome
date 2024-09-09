@@ -27,19 +27,24 @@ internal sealed class ServiceLifetimeController
             {
                 _processes.Add(p);
                 p.EnableRaisingEvents = true;
-                p.Exited += (sender, e) =>
-                {
-                    lock (_processes)
-                    {
-                        _processes.Remove(p);
-                        if (_processes.Count == 0)
-                        {
-                            // It's ok to stop the service now
-                            ServiceStop?.Invoke();
-                            WindowsBackgroundService.Stop();
-                        }
-                    }
-                };
+                p.Exited += ProcessExited;
+            }
+        }
+    }
+
+    private static void ProcessExited(object? sender, EventArgs e)
+    {
+        Process? p = sender as Process;
+        Debug.Assert(p is not null, "What is this object?");
+
+        lock (_processes)
+        {
+            _processes.Remove(p);
+            if (_processes.Count == 0)
+            {
+                // It's ok to stop the service now
+                ServiceStop?.Invoke();
+                WindowsBackgroundService.Stop();
             }
         }
     }

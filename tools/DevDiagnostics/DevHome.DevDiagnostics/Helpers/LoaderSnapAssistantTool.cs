@@ -40,10 +40,7 @@ public class LoaderSnapAssistantTool
 
     private void Init()
     {
-        var crashDumpAnalyzerThread = new Thread(() =>
-        {
-            MyETWListener();
-        });
+        var crashDumpAnalyzerThread = new Thread(LoaderSnapETWListener);
         crashDumpAnalyzerThread.Name = "LoaderSnapAssistantThread";
         crashDumpAnalyzerThread.Start();
 
@@ -82,7 +79,7 @@ public class LoaderSnapAssistantTool
         };
     }
 
-    private void MyETWListener()
+    private void LoaderSnapETWListener()
     {
         using TraceEventSession session = new TraceEventSession("LoaderSnapAssistantSession");
         session.StopOnDispose = true;

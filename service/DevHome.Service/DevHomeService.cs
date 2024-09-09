@@ -49,6 +49,8 @@ public class DevHomeService : IDevHomeService, IDisposable
 
     private void Owner_Exited(object? sender, EventArgs e)
     {
+        // The owner of our object has exited. We'll stop listening to ETW events from this channel, but keep it open in case there are
+        // other listeners of the channel in this process.
         _etwSession?.Source.StopProcessing();
     }
 
