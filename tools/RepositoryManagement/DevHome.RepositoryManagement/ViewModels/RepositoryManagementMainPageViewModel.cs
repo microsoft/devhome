@@ -8,7 +8,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
-using DevHome.RepositoryManagement.Services;
+using DevHome.Database.Services;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 

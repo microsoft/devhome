@@ -11,7 +11,7 @@ using DevHome.Database.Factories;
 using DevHome.Telemetry;
 using Serilog;
 
-namespace DevHome.RepositoryManagement.Services;
+namespace DevHome.Database.Services;
 
 public class RepositoryManagementDataAccessService
 {
@@ -79,7 +79,7 @@ public class RepositoryManagementDataAccessService
                 "DevHome_Database_Event",
                 LogLevel.Critical,
                 new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
-            return null;
+            return new Repository();
         }
 
         return newRepo;
@@ -115,7 +115,7 @@ public class RepositoryManagementDataAccessService
             using var dbContext = _databaseContextFactory.GetNewContext();
 #pragma warning disable CA1309 // Use ordinal string comparison
             return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName!.Equals(repositoryName)
-            && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation)));
+            && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation))) ?? new Repository();
 #pragma warning restore CA1309 // Use ordinal string comparison
         }
         catch (Exception ex)
@@ -127,7 +127,7 @@ public class RepositoryManagementDataAccessService
                 new DevHomeDatabaseEvent(nameof(GetRepository), ex));
         }
 
-        return null;
+        return new Repository();
     }
 
     public bool UpdateCloneLocation(Repository repository, string newLocation)
@@ -150,8 +150,8 @@ public class RepositoryManagementDataAccessService
                 var configurationFolder = Path.GetDirectoryName(repository.ConfigurationFileLocation);
                 var configurationFileName = Path.GetFileName(configurationFolder);
 
-                repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder, configurationFileName);
-                maybeRepository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder, configurationFileName);
+                repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
+                maybeRepository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
             }
 
             dbContext.SaveChanges();

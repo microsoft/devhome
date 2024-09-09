@@ -8,9 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.RepositoryManagement;
 using DevHome.Common.Windows.FileDialog;
-using DevHome.RepositoryManagement.Services;
+using DevHome.Database.Services;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +23,10 @@ namespace DevHome.RepositoryManagement.ViewModels;
 // TODO: Clean up the code.
 public partial class RepositoryManagementItemViewModel : ObservableObject
 {
+    public const string RepoNamePrefix = "Clone ";
+
+    public const string RepoNameSuffix = ": ";
+
     public const string EventName = "DevHome_RepositorySpecific_Event";
 
     public const string ErrorEventName = "DevHome_RepositorySpecificError_Event";
@@ -30,6 +36,10 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     private readonly Window _window;
 
     private readonly RepositoryManagementDataAccessService _dataAccess;
+
+    private readonly IStringResource _stringResource;
+
+    private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
     private string _repositoryName;
 
@@ -225,11 +235,30 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void MakeConfigurationFileWithThisRepository()
+    public async Task MakeConfigurationFileWithThisRepository()
     {
-        // D:\git\dhoehna\devhome\tools\SetupFlow\DevHome.SetupFlow\ViewModels\ReviewViewModel.cs
-        // DownloadConfigurationAsync has the code to do this.  Well, to make it from a configuration file.
-        throw new NotImplementedException();
+        try
+        {
+            // Show the save file dialog
+            using var fileDialog = new WindowSaveFileDialog();
+
+            // TODO: Needs Localization
+            fileDialog.AddFileType(_stringResource.GetLocalized("{0} file", "YAML"), ".winget");
+            fileDialog.AddFileType(_stringResource.GetLocalized("{0} file", "YAML"), ".dsc.yaml");
+            var fileName = fileDialog.Show(_window);
+
+            // If the user selected a file, write the configuration to it
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                var repositoryToUse = _dataAccess.GetRepository(RepositoryName, ClonePath);
+                var configFile = _configurationFileBuilder.GetConfigurationFileForRepoAndGit(repositoryToUse);
+                await File.WriteAllTextAsync(fileName, configFile);
+            }
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, $"Failed to download configuration file.");
+        }
     }
 
     [RelayCommand]
@@ -289,10 +318,16 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _dataAccess.SetIsHidden(repository, true);
     }
 
-    public RepositoryManagementItemViewModel(Window window, RepositoryManagementDataAccessService dataAccess)
+    public RepositoryManagementItemViewModel(
+        Window window,
+        RepositoryManagementDataAccessService dataAccess,
+        IStringResource stringResource,
+        ConfigurationFileBuilder configurationFileBuilder)
     {
         _window = window;
         _dataAccess = dataAccess;
+        _stringResource = stringResource;
+        _configurationFileBuilder = configurationFileBuilder;
     }
 
     private void OpenRepositoryInFileExplorer(string repositoryName, string cloneLocation, string action)
@@ -447,4 +482,54 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             return;
         }
     }
+
+    /*
+    public WinGetConfigFile DownloadConfigFileFromARepository(Repository repository)
+    {
+        List<WinGetConfigResource> resources = [];
+        resources.Add(MakeSomethingFromARepository(repository));
+        resources.Add(CreateWinGetInstallForGitPreReq());
+
+        var wingetConfigProperties = new WinGetConfigProperties();
+
+        // Merge the resources into the Resources property in the properties object
+        wingetConfigProperties.Resources = resources.ToArray();
+        wingetConfigProperties.ConfigurationVersion = DscHelpers.WinGetConfigureVersion;
+
+        // Create the new WinGetConfigFile object and serialize it to yaml
+        return new WinGetConfigFile() { Properties = wingetConfigProperties };
+    }
+
+    private WinGetConfigResource MakeSomethingFromARepository(Repository repository)
+    {
+        // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+        // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+        var id = $"{RepoNamePrefix}{repository.RepositoryName}{RepoNameSuffix}{Path.GetFullPath(repository.RepositoryClonePath)}";
+
+        var gitDependsOnId = DscHelpers.GitWinGetPackageId;
+
+        // TODO: Add clone URL to the database
+        return new WinGetConfigResource()
+        {
+            Resource = DscHelpers.GitCloneDscResource,
+            Id = id,
+            Directives = new() { AllowPrerelease = true, Description = $"Cloning: {repository.RepositoryName}" },
+            DependsOn = [gitDependsOnId],
+            Settings = new GitDscSettings() { HttpsUrl = string.Empty, RootDirectory = Path.GetFullPath(repository.RepositoryClonePath) },
+        };
+    }
+
+    private WinGetConfigResource CreateWinGetInstallForGitPreReq()
+    {
+        var id = DscHelpers.GitWinGetPackageId;
+
+        return new WinGetConfigResource()
+        {
+            Resource = DscHelpers.WinGetDscResource,
+            Id = id,
+            Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
+            Settings = new WinGetDscSettings() { Id = DscHelpers.GitWinGetPackageId, Source = DscHelpers.DscSourceNameForWinGet },
+        };
+    }
+    */
 }
