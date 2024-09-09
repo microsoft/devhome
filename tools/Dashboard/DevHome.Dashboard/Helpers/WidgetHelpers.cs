@@ -19,8 +19,8 @@ internal sealed class WidgetHelpers
 {
     public const string WebExperiencePackPackageId = "9MSSGKG348SP";
     public const string WebExperiencePackageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-    public const string WidgetPlatformRuntimePackageId = "9N3RK8ZV2ZR8";
-    public const string WidgetPlatformRuntimePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+    public const string WidgetsPlatformRuntimePackageId = "9N3RK8ZV2ZR8";
+    public const string WidgetsPlatformRuntimePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
 
     public static readonly string[] DefaultWidgetDefinitionIds =
     {

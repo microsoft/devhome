@@ -38,8 +38,8 @@ public class WidgetServiceService : IWidgetServiceService
 
     public WidgetServiceStates GetWidgetServiceState()
     {
-        // First check for the WidgetPlatformRuntime package. If it's installed and has a valid state, we return that state.
-        var package = GetWidgetPlatformRuntimePackage();
+        // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
+        var package = GetWidgetsPlatformRuntimePackage();
         _widgetServiceState = ValidatePackage(package);
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
             _widgetServiceState == WidgetServiceStates.Updating)
@@ -47,7 +47,7 @@ public class WidgetServiceService : IWidgetServiceService
             return _widgetServiceState;
         }
 
-        // If the WidgetPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
+        // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
         package = GetWebExperiencePackPackage();
         _widgetServiceState = ValidatePackage(package);
 
@@ -57,8 +57,8 @@ public class WidgetServiceService : IWidgetServiceService
     public async Task<bool> TryInstallingWidgetService()
     {
         _log.Information("Try installing widget service...");
-        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetPlatformRuntimePackageId);
-        _widgetServiceState = ValidatePackage(GetWidgetPlatformRuntimePackage());
+        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetsPlatformRuntimePackageId);
+        _widgetServiceState = ValidatePackage(GetWidgetsPlatformRuntimePackage());
         _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
@@ -77,11 +77,11 @@ public class WidgetServiceService : IWidgetServiceService
         return packages.First();
     }
 
-    private Package GetWidgetPlatformRuntimePackage()
+    private Package GetWidgetsPlatformRuntimePackage()
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
         return packages.First();
     }
 
