@@ -85,6 +85,8 @@ public class GitSubmoduleUnitTests
 
         // Modify submodules
         File.AppendAllText(Path.Combine(_repoPath, "sm_changed_file/master.txt"), "In this submodule, the file is changed in the working directory.");
+        GitExecute.ExecuteGitCommand(gitPath, Path.Combine(_repoPath, "sm_changed_head"), $"config user.email test@GitSubmoduleUnitTests");
+        GitExecute.ExecuteGitCommand(gitPath, Path.Combine(_repoPath, "sm_changed_head"), $"config user.name Test GitSubmoduleUnitTests");
         File.AppendAllText(Path.Combine(_repoPath, "sm_changed_head/master.txt"), "In this submodule, the file is changed and the change is committed to HEAD.");
         GitExecute.ExecuteGitCommand(gitPath, Path.Combine(_repoPath, "sm_changed_head"), "commit --all --message \"Committing a change in the submodule.\"");
         File.AppendAllText(Path.Combine(_repoPath, "sm_changed_index/master.txt"), "In this submodule, the file is changed and the change is committed to HEAD.");
