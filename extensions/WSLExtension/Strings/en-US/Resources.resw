@@ -130,10 +130,6 @@
     <value>Starting the creation process for {0}</value>
     <comment>{Locked="{0}"} Text for when a user starts the creation process for a specific wsl distribution. {0} is the name of the distribution</comment>
   </data>
-  <data name="WSLWaitingToCompleteInstallation" xml:space="preserve">
-    <value>Waiting for {0}'s installation to complete</value>
-    <comment>{Locked="{0}"} Text message to display when a wsl distribution is installing. {0} is the name of the distribution</comment>
-  </data>
   <data name="WSLWaitingToCompleteRegistration" xml:space="preserve">
     <value>Waiting for the Windows Subsystem for Linux service to register {0}. This may take a few minutes.</value>
     <comment>{Locked="Windows", "Linux", "{0}"} Text to display when a specific wsl distribution is being registered. {0} is the name of the distribution</comment>
@@ -141,10 +137,6 @@
   <data name="WSLInstallationFailedWithException" xml:space="preserve">
     <value>Unable to install and register {0} due to error: {1}. Try using wsl.exe to install it manually. See aka.ms/wslinstall</value>
     <comment>{Locked="{0}", "{1}", "wsl.exe", "aka.ms/wslinstall"} Text message to display when the extension failed to install a wsl distribution. {0} is the name of the distribution and {1} is the error message.</comment>
-  </data>
- <data name="WSLInstallationFailedTimeOut" xml:space="preserve">
-    <value>Installation timed out, unable to install and register {0}. Try using wsl.exe to install manually. See aka.ms/wslinstall</value>
-    <comment>{Locked="{0}", "{wsl.exe}", "{aka.ms/wslinstall}"} Text message to display when the extension failed to install a wsl distribution. {0} is the name of the distribution</comment>
   </data>
   <data name="InstallingWslKernelPackage" xml:space="preserve">
     <value>The Windows Subsystem for Linux kernel package is not installed. Starting installation.</value>
@@ -154,9 +146,25 @@
     <value>Checking if the Windows Subsystem for Linux kernel package is installed</value>
     <comment>{Locked="Windows", "Linux"}</comment>
   </data>
+  <data name="DistributionPackageAlreadyInstalled" xml:space="preserve">
+    <value>The {0} package is already installed. Attempting to register it with the Windows Subsystem for Linux service.</value>
+    <comment>{Locked="{0}", "Windows", "Linux"} Text to display when a specific wsl distribution package is already installed. {0} is the name of the distribution</comment>
+  </data>
+  <data name="DistributionPackageInstallationCheck" xml:space="preserve">
+    <value>Checking if the {0} package is already installed</value>
+    <comment>{Locked="{0}"} Text to display when the extension checks the users system to confirm if a specific wsl distribution package is already installed. {0} is the name of the distribution</comment>
+  </data>
+  <data name="DistributionPackageInstallationStart" xml:space="preserve">
+    <value>The {0} package is not installed. Starting store installation.</value>
+    <comment>{Locked="{0}"} Text to display when a specific wsl distribution package is not installed. {0} is the name of the distribution</comment>
+  </data>
   <data name="WSLInstallationCompletedSuccessfully" xml:space="preserve">
     <value>Successfully installed {0}</value>
     <comment>{Locked="{0}"} Text to display when the extension successfully installs a specific wsl distribution package onto a users machine. {0} is the name of the distribution</comment>
+  </data>
+  <data name="WSLRegistrationCompletedSuccessfully" xml:space="preserve">
+    <value>Successfully registered {0}</value>
+    <comment>{Locked="{0}"} Text to display when the extension successfully registers a specific wsl distribution. {0} is the name of the distribution</comment>
   </data>
   <data name="VirtualMachinePlatformNotInstalled" xml:space="preserve">
     <value>The Virtual Machine Platform feature is needed for the WSL extension to function properly. The feature can be enabled in Dev Home's Windows customization page, under the virtualization feature management option. Enabling the feature will require a reboot. For more information on WSL requirements visit aka.ms/wslinstall</value>
@@ -213,5 +221,9 @@
   <data name="WslKernelPackageInstalled" xml:space="preserve">
     <value>The Windows Subsystem for Linux kernel package is installed</value>
     <comment>{Locked="Windows", "Linux"} Text to display when the wsl package is installed.</comment>
+  </data>
+  <data name="WSLRegistrationFailedDueToNoAppExAlias" xml:space="preserve">
+    <value>Failed to register {0} with the Windows Subsystem for Linux service due its app execution alias being turned off or missing. Please open the Windows Settings app and navigate to the app execution alias page to toggle the setting on for {0}, then try again.</value>
+    <comment>{Locked="{0}", "{Windows}", "Linux"} Text to display when the registration of a specific wsl distribution failed due to its app execution alias setting being turned off. {0} is the name of the distribution.</comment>
   </data>
 </root>
