@@ -56,7 +56,6 @@ public partial class App : Application, IApp
                 services.AddSingleton<IDevHomeService>(CommonHelper.GetDevHomeService());
                 services.AddSingleton<LoaderSnapAssistantTool>();
                 services.AddSingleton<PerfCounters>();
-                services.AddSingleton<HardwareMonitor>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();
@@ -70,8 +69,6 @@ public partial class App : Application, IApp
                 services.AddSingleton<ModulesPageViewModel>();
                 services.AddSingleton<ProcessListPage>();
                 services.AddSingleton<ProcessListPageViewModel>();
-                services.AddSingleton<ProcessResourceUsagePage>();
-                services.AddSingleton<ProcessResourceUsagePageViewModel>();
                 services.AddSingleton<ResourceUsagePage>();
                 services.AddSingleton<ResourceUsagePageViewModel>();
                 services.AddSingleton<WERPage>();
@@ -80,8 +77,6 @@ public partial class App : Application, IApp
                 services.AddSingleton<WinLogsPageViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsPageViewModel>();
-                services.AddSingleton<SystemResourceUsagePage>();
-                services.AddSingleton<SystemResourceUsagePageViewModel>();
 
                 // Settings sub-pages and viewmodels.
                 services.AddTransient<PreferencesViewModel>();

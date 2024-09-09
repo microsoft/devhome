@@ -35,4 +35,19 @@ public class DistributionDefinition
     public string PackageFamilyName { get; set; } = string.Empty;
 
     public string Publisher { get; set; } = string.Empty;
+
+    public bool IsSameDistribution(string name)
+    {
+        // Both name and friendly name should not be empty or null in the WSL distribution
+        // json.
+        if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(FriendlyName))
+        {
+            return false;
+        }
+
+        // For distributions retrieved from the WSL distribution Json, both the name and
+        // friendly names are unique.
+        return Name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
+            FriendlyName.Equals(name, StringComparison.OrdinalIgnoreCase);
+    }
 }

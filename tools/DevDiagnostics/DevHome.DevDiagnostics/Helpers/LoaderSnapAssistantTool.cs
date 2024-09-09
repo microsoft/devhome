@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -27,6 +28,7 @@ public class LoaderSnapAssistantTool
     private readonly DDInsightsService _insightsService;
     private readonly IDevHomeService _devHomeService;
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly Dictionary<int, string> _loaderSnapFailures = new();
 
     public LoaderSnapAssistantTool()
     {
@@ -58,6 +60,25 @@ public class LoaderSnapAssistantTool
                     _insightsService.AddInsight(insight);
                 });
             }
+            else
+            {
+                lock (_loaderSnapFailures)
+                {
+                    if (_loaderSnapFailures.TryGetValue(info.pid, out string? loadersnapError))
+                    {
+                        // We received information about this app's loader snap issue. Raise the insight.
+                        _loaderSnapFailures.Remove(info.pid);
+
+                        _dispatcher.TryEnqueue(() =>
+                        {
+                            var insight = new SimpleTextInsight();
+                            insight.Title = string.Format(CultureInfo.CurrentCulture, CommonHelper.GetLocalizedString("InsightProcessExitMissingDependenciesIdentifiedTitle"), info.processName, info.pid);
+                            insight.Description = loadersnapError;
+                            _insightsService.AddInsight(insight);
+                        });
+                    }
+                }
+            }
         };
     }
 
@@ -87,15 +108,12 @@ public class LoaderSnapAssistantTool
             s = s.Replace("\0", ": ");
             if (s.Contains("LdrpProcessWork - ERROR: Unable to load"))
             {
-                string processName = traceEvent.ProcessName;
-                int pid = traceEvent.ProcessID;
-                _dispatcher.TryEnqueue(() =>
+                lock (_loaderSnapFailures)
                 {
-                    var insight = new SimpleTextInsight();
-                    insight.Title = string.Format(CultureInfo.CurrentCulture, CommonHelper.GetLocalizedString("InsightProcessExitMissingDependenciesIdentifiedTitle"), processName, pid);
-                    insight.Description = s;
-                    _insightsService.AddInsight(insight);
-                });
+                    // At this point, we don't have the faulting process's executable name. Wait until we get the callback
+                    // from our service that tells of the process termination, and then we'll raise the insight.
+                    _loaderSnapFailures.Add(traceEvent.ProcessID, s);
+                }
             }
         }
     }

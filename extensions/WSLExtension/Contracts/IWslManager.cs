@@ -39,10 +39,11 @@ public interface IWslManager
     /// </summary>
     void LaunchDistribution(string distributionName);
 
-    /// <summary> Installs a new WSL distribution.
-    /// This is a wrapper for <see cref="IWslServicesMediator.InstallDistribution(string)"/>
-    /// </summary>
-    void InstallDistribution(string distributionName);
+    /// <summary> Installs a new WSL distribution from the Microsoft store.</summary>
+    public Task InstallDistributionPackageAsync(
+        DistributionDefinition definition,
+        Action<string>? statusUpdateCallback,
+        CancellationToken cancellationToken);
 
     /// <summary> Terminates all sessions for a new WSL distribution.
     /// This is a wrapper for <see cref="IWslServicesMediator.TerminateDistribution(string)"/>

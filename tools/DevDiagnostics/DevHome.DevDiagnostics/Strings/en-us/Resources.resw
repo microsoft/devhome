@@ -245,14 +245,6 @@
     <value>Resource usage</value>
     <comment>The contents of a text block referring to process resource usage information.</comment>
   </data>
-  <data name="SystemResourceUsageHeaderTextBlock.Text" xml:space="preserve">
-    <value>Resource usage</value>
-    <comment>The contents of a text block referring to system resource usage information.</comment>
-  </data>
-  <data name="ResourceUsageDetailsTextBlock.Text" xml:space="preserve">
-    <value>Detailed hardware data</value>
-    <comment>The contents of a text block referring to detailed system hardware data.</comment>
-  </data>
   <data name="IsRespondingTextblock.Text" xml:space="preserve">
     <value>Is responding</value>
     <comment>Refers to whether the application or process is responsive, or if it is stuck.</comment>
@@ -260,10 +252,6 @@
   <data name="CpuUsageTextblock.Text" xml:space="preserve">
     <value>CPU usage</value>
     <comment>Refers to how much of the central processing unit (CPU) the process is utilizing.</comment>
-  </data>
-  <data name="SystemCpuUsageTextblock.Text" xml:space="preserve">
-    <value>CPU usage</value>
-    <comment>Refers to how much of the central processing unit (CPU) the system is utilizing.</comment>
   </data>
   <data name="GpuUsageTextBlock.Text" xml:space="preserve">
     <value>GPU usage</value>
@@ -273,17 +261,9 @@
     <value>Memory usage</value>
     <comment>Refers to how much random access memory (RAM) the process is utilizing.</comment>
   </data>
-  <data name="SystemMemoryUsageTextBlock.Text" xml:space="preserve">
-    <value>Memory usage</value>
-    <comment>Refers to how much random access memory (RAM) the system is utilizing.</comment>
-  </data>
   <data name="DiskUsageTextBlock.Text" xml:space="preserve">
     <value>Disk usage</value>
     <comment>Refers to how much disk storage (hard drive/solid state drive) the process is utilizing.</comment>
-  </data>
-  <data name="SystemDiskUsageTextBlock.Text" xml:space="preserve">
-    <value>Disk usage</value>
-    <comment>Refers to how much disk storage (hard drive/solid state drive) the system is utilizing.</comment>
   </data>
   <data name="WERHeaderTextBlock.Text" xml:space="preserve">
     <value>Crash reports</value>
@@ -1279,11 +1259,7 @@ Dump File creation time: {1}</value>
     <comment>Description of the Insights page.</comment>
   </data>
   <data name="ResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
-    <value>A list of a wide range of resource usage for both your target app.</value>
-    <comment>Description of the Resource usage page.</comment>
-  </data>
-  <data name="SystemResourceUsageHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
-    <value>A list of a wide range of resource usage and sensor items for the system as a whole. The sensor information is updated every 2 seconds and will only be updated when the page is open. Some sensor item requires running Dev Diagnostics as Administrator.</value>
+    <value>A list of a wide range of resource usage and sensor items for both your target app (if any), and for the system as a whole.</value>
     <comment>Description of the Resource usage page.</comment>
   </data>
   <data name="ModulesHeaderTextBlock.ToolTipService.ToolTip" xml:space="preserve">
@@ -1309,194 +1285,6 @@ Dump File creation time: {1}</value>
   <data name="InsightProcessExitMissingDependencies" xml:space="preserve">
     <value>Process {0} (pid: {1,6}) exited with error code {2}. Enabling loader snaps and trying to launch the process again can help diagnose why the app exited.</value>
     <comment>{Locked="{0}, "{1,6}", "{2}"} Formatted string informing the user the process name {0}, the Process ID {1}, the exit code {2} of a process.</comment>
-  </data>
-  <data name="VoltageSensorFormat" xml:space="preserve">
-    <value>{0:F3} V</value>
-    <comment>Format for voltage sensor values in volts</comment>
-  </data>
-  <data name="CurrentSensorFormat" xml:space="preserve">
-    <value>{0:F3} A</value>
-    <comment>Format for current sensor values in amperes</comment>
-  </data>
-  <data name="ClockSensorFormat" xml:space="preserve">
-    <value>{0:F1} MHz</value>
-    <comment>Format for clock sensor values in megahertz</comment>
-  </data>
-  <data name="LoadSensorFormat" xml:space="preserve">
-    <value>{0:F1} %</value>
-    <comment>Format for load sensor values in percentage</comment>
-  </data>
-  <data name="TemperatureSensorFormat" xml:space="preserve">
-    <value>{0:F1} °C</value>
-    <comment>Format for temperature sensor values in Celsius</comment>
-  </data>
-  <data name="FanSensorFormat" xml:space="preserve">
-    <value>{0:F0} RPM</value>
-    <comment>Format for fan speed sensor values in RPM</comment>
-  </data>
-  <data name="FlowSensorFormat" xml:space="preserve">
-    <value>{0:F1} L/h</value>
-    <comment>Format for flow sensor values in liters per hour</comment>
-  </data>
-  <data name="ControlSensorFormat" xml:space="preserve">
-    <value>{0:F1} %</value>
-    <comment>Format for control sensor values in percentage</comment>
-  </data>
-  <data name="LevelSensorFormat" xml:space="preserve">
-    <value>{0:F1} %</value>
-    <comment>Format for level sensor values in percentage</comment>
-  </data>
-  <data name="PowerSensorFormat" xml:space="preserve">
-    <value>{0:F1} W</value>
-    <comment>Format for power sensor values in watts</comment>
-  </data>
-  <data name="DataSensorFormat" xml:space="preserve">
-    <value>{0:F1} GB</value>
-    <comment>Format for data sensor values in gigabytes</comment>
-  </data>
-  <data name="SmallDataSensorFormat" xml:space="preserve">
-    <value>{0:F1} MB</value>
-    <comment>Format for small data sensor values in megabytes</comment>
-  </data>
-  <data name="FactorSensorFormat" xml:space="preserve">
-    <value>{0:F3}</value>
-    <comment>Format for factor sensor values</comment>
-  </data>
-  <data name="FrequencySensorFormat" xml:space="preserve">
-    <value>{0:F1} Hz</value>
-    <comment>Format for frequency sensor values in hertz</comment>
-  </data>
-  <data name="ThroughputSensorFormat" xml:space="preserve">
-    <value>{0:F1} B/s</value>
-    <comment>Format for throughput sensor values in bytes per second</comment>
-  </data>
-  <data name="TimeSpanSensorFormat" xml:space="preserve">
-    <value>{0:g}</value>
-    <comment>Format for timespan sensor values</comment>
-  </data>
-  <data name="EnergySensorFormat" xml:space="preserve">
-    <value>{0:F0} mWh</value>
-    <comment>Format for energy sensor values in milliwatt-hours</comment>
-  </data>
-  <data name="NoiseSensorFormat" xml:space="preserve">
-    <value>{0:F0} dBA</value>
-    <comment>Format for noise sensor values in decibels</comment>
-  </data>
-  <data name="ConnectionSpeedSensorFormatBps" xml:space="preserve">
-    <value>{0:F0} B/s</value>
-    <comment>Format for connection speed sensor values in bps</comment>
-  </data>
-  <data name="ConnectionSpeedSensorFormatKbps" xml:space="preserve">
-    <value>{0:F1} KB/s</value>
-    <comment>Format for connection speed sensor values in Kbps</comment>
-  </data>
-  <data name="ConnectionSpeedSensorFormatMibps" xml:space="preserve">
-    <value>{0:F1} MiB/s</value>
-    <comment>Format for connection speed sensor values in Mibps</comment>
-  </data>
-  <data name="ConnectionSpeedSensorFormatGibps" xml:space="preserve">
-    <value>{0:F1} GiB/s</value>
-    <comment>Format for connection speed sensor values in Gibps</comment>
-  </data>
-  <data name="ConnectionSpeedSensorValue100Mbps" xml:space="preserve">
-    <value>100 MB/s</value>
-    <comment>Connection speed sensor value of 100 Mbps</comment>
-  </data>
-  <data name="ConnectionSpeedSensorValue1Gbps" xml:space="preserve">
-    <value>1 GB/s</value>
-    <comment>Connection speed sensor value of 1 Gbps</comment>
-  </data>
-  <data name="SensorTypeVoltage" xml:space="preserve">
-    <value>Voltages</value>
-    <comment>Voltage Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeCurrent" xml:space="preserve">
-    <value>Currents</value>
-    <comment>Current Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeEnergy" xml:space="preserve">
-    <value>Capacities</value>
-    <comment>Energy Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeClock" xml:space="preserve">
-    <value>Clocks</value>
-    <comment>Clock Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeLoad" xml:space="preserve">
-    <value>Load</value>
-    <comment>Load Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeTemperature" xml:space="preserve">
-    <value>Temperatures</value>
-    <comment>Temperature Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeFan" xml:space="preserve">
-    <value>Fans</value>
-    <comment>Fan Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeFlow" xml:space="preserve">
-    <value>Flows</value>
-    <comment>Flow Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeControl" xml:space="preserve">
-    <value>Controls</value>
-    <comment>Control Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeLevel" xml:space="preserve">
-    <value>Levels</value>
-    <comment>Level Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypePower" xml:space="preserve">
-    <value>Powers</value>
-    <comment>Power Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeData" xml:space="preserve">
-    <value>Data</value>
-    <comment>Data Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeFactor" xml:space="preserve">
-    <value>Factors</value>
-    <comment>Factor Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeFrequency" xml:space="preserve">
-    <value>Frequencies</value>
-    <comment>Frequency Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeThroughput" xml:space="preserve">
-    <value>Throughput</value>
-    <comment>Throughput Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeTimeSpan" xml:space="preserve">
-    <value>Times</value>
-    <comment>TimeSpan Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeNoise" xml:space="preserve">
-    <value>Noise Levels</value>
-    <comment>Noise Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeConductivity" xml:space="preserve">
-    <value>Conductivities</value>
-    <comment>Conductivity Sensor Type Display Name</comment>
-  </data>
-  <data name="SensorTypeHumidity" xml:space="preserve">
-    <value>Humidity Levels</value>
-    <comment>Humidity Sensor Type Display Name</comment>
-  </data>
-  <data name="SystemResourceUsageTabHeader.Text" xml:space="preserve">
-    <value>System</value>
-    <comment>System resource usage tab header.</comment>
-  </data>
-  <data name="SystemResourceTab.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>System</value>
-    <comment>Name of the System tab in Resource Usage Page</comment>
-  </data>
-  <data name="ProcessResourceTab.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Application</value>
-    <comment>Name of the Application tab in Resource Usage Page</comment>
-  </data>
-  <data name="ApplicationResourceUsageTabHeader.Text" xml:space="preserve">
-    <value>Application</value>
-    <comment>Application resource usage tab header.</comment>
   </data>
   <data name="InsightProcessExitMissingDependenciesIdentifiedTitle" xml:space="preserve">
     <value>Process {0} (pid: {1,6}) exited due to missing files</value>

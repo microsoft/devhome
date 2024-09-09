@@ -140,7 +140,7 @@ public sealed class GitLocalRepository : ILocalRepository
     {
         try
         {
-            return repository.GetRepoStatus();
+            return repository.GetRepoStatus(relativePath);
         }
         catch
         {

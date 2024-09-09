@@ -20,8 +20,10 @@ public class DevHomeService : IDevHomeService, IDisposable
 
     public DevHomeService()
     {
-        ComHelpers.VerifyCaller();
-        _owner = ComHelpers.GetClientProcess();
+        Process myCaller = ComHelpers.GetClientProcess();
+        ComHelpers.VerifyCaller(myCaller);
+
+        _owner = myCaller;
         _owner.EnableRaisingEvents = true;
 
         // Track our caller process

@@ -8,6 +8,7 @@ using DevHome.Common.Helpers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Services.Core.Contracts;
 using Serilog;
+using Windows.ApplicationModel;
 
 namespace DevHome.Dashboard.Services;
 
@@ -20,14 +21,12 @@ public class WidgetServiceService : IWidgetServiceService
 
     private WidgetServiceStates _widgetServiceState = WidgetServiceStates.Unknown;
 
-    public WidgetServiceStates GetWidgetServiceState() => _widgetServiceState;
-
     public enum WidgetServiceStates
     {
-        HasWebExperienceGoodVersion,
-        HasWebExperienceNoOrBadVersion,
-        HasStoreWidgetServiceGoodVersion,
-        HasStoreWidgetServiceNoOrBadVersion,
+        MeetsMinVersion,
+        NotAtMinVersion,
+        NotOK,
+        Updating,
         Unknown,
     }
 
@@ -37,52 +36,34 @@ public class WidgetServiceService : IWidgetServiceService
         _msStoreService = msStoreService;
     }
 
-    public bool CheckForWidgetServiceAsync()
+    public WidgetServiceStates GetWidgetServiceState()
     {
-        // If we're on Windows 11, check if we have the right WebExperiencePack version of the WidgetService.
-        if (RuntimeHelper.IsOnWindows11)
+        // First check for the WidgetPlatformRuntime package. If it's installed and has a valid state, we return that state.
+        var package = GetWidgetPlatformRuntimePackage();
+        _widgetServiceState = ValidatePackage(package);
+        if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
+            _widgetServiceState == WidgetServiceStates.Updating)
         {
-            if (HasValidWebExperiencePack())
-            {
-                _log.Information("On Windows 11, HasWebExperienceGoodVersion");
-                _widgetServiceState = WidgetServiceStates.HasWebExperienceGoodVersion;
-                return true;
-            }
-            else
-            {
-                _log.Information("On Windows 11, HasWebExperienceNoOrBadVersion");
-                _widgetServiceState = WidgetServiceStates.HasWebExperienceNoOrBadVersion;
-                return false;
-            }
+            return _widgetServiceState;
         }
-        else
-        {
-            // If we're on Windows 10, check if we have the store version installed.
-            if (HasValidWidgetServicePackage())
-            {
-                _log.Information("On Windows 10, HasStoreWidgetServiceGoodVersion");
-                _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceGoodVersion;
-                return true;
-            }
-            else
-            {
-                _log.Information("On Windows 10, HasStoreWidgetServiceNoOrBadVersion");
-                _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
-                return false;
-            }
-        }
+
+        // If the WidgetPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
+        package = GetWebExperiencePackPackage();
+        _widgetServiceState = ValidatePackage(package);
+
+        return _widgetServiceState;
     }
 
     public async Task<bool> TryInstallingWidgetService()
     {
         _log.Information("Try installing widget service...");
-        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetServiceStorePackageId);
-        _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
+        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetPlatformRuntimePackageId);
+        _widgetServiceState = ValidatePackage(GetWidgetPlatformRuntimePackage());
         _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
 
-    private bool HasValidWebExperiencePack()
+    private Package GetWebExperiencePackPackage()
     {
         var minSupportedVersion400 = new Version(423, 3800);
         var minSupportedVersion500 = new Version(523, 3300);
@@ -93,14 +74,37 @@ public class WidgetServiceService : IWidgetServiceService
             WidgetHelpers.WebExperiencePackageFamilyName,
             (minSupportedVersion400, version500),
             (minSupportedVersion500, null));
-        return packages.Any();
+        return packages.First();
     }
 
-    private bool HasValidWidgetServicePackage()
+    private Package GetWidgetPlatformRuntimePackage()
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetServicePackageFamilyName, (minSupportedVersion, null));
-        return packages.Any();
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
+        return packages.First();
+    }
+
+    private WidgetServiceStates ValidatePackage(Package package)
+    {
+        var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
+        _log.Information($"Validating package {package.DisplayName} on {isWindows11String}");
+
+        if (package == null)
+        {
+            return WidgetServiceStates.NotAtMinVersion;
+        }
+        else if (package.Status.VerifyIsOK())
+        {
+            return WidgetServiceStates.MeetsMinVersion;
+        }
+        else if (package.Status.Servicing == true)
+        {
+            return WidgetServiceStates.Updating;
+        }
+        else
+        {
+            return WidgetServiceStates.NotOK;
+        }
     }
 }
