@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using DevHome.DevDiagnostics.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -21,6 +22,10 @@ namespace DevHome.DevDiagnostics.Controls;
 public sealed partial class InsightForMissingFileProcessTerminationControl : UserControl
 {
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string ElevationButtonTextString { get; } = CommonHelper.GetLocalizedString("InsightsMissingFileEnableLoaderSnapsButtonLabel");
+
+    public string ElevationButtonToolTipString { get; } = CommonHelper.GetLocalizedString("InsightsMissingFileEnableLoaderSnapsButtonToolTip");
 
     private string _text = string.Empty;
 

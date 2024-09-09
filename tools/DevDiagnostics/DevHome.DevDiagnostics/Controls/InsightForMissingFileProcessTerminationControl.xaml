@@ -14,7 +14,11 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Text="{x:Bind Text, Mode=OneWay}" VerticalAlignment="Center" TextWrapping="WrapWholeWords" IsReadOnly="True"/>
-        <local:ElevatedButtonControl Text="Enable" Grid.Column="1" Margin="20 0 0 0" Command="{x:Bind Command, Mode=OneWay}"/>
+        <TextBox Text="{x:Bind Text, Mode=OneWay}" BorderThickness="0" VerticalAlignment="Center" IsReadOnly="True" Background="Transparent"/>
+        <local:ElevatedButtonControl Text="{x:Bind ElevationButtonTextString}" Grid.Column="1" Margin="20 0 0 0" Command="{x:Bind Command, Mode=OneWay}" AutomationProperties.Name="{x:Bind ElevationButtonTextString}" >
+            <ToolTipService.ToolTip>
+                <ToolTip Content="{x:Bind ElevationButtonToolTipString}" />
+            </ToolTipService.ToolTip>
+        </local:ElevatedButtonControl>
     </Grid>
 </UserControl>
