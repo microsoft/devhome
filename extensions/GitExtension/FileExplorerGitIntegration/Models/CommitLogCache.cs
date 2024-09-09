@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using LibGit2Sharp;
+using Serilog;
 
 namespace FileExplorerGitIntegration.Models;
 
@@ -30,6 +31,8 @@ internal sealed class CommitLogCache
     private readonly bool _gitInstalled;
 
     private readonly LruCacheDictionary<string, CommitWrapper> _cache = new();
+
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(CommitLogCache));
 
     public CommitLogCache(Repository repo)
     {
@@ -94,7 +97,21 @@ internal sealed class CommitLogCache
 
     private CommitWrapper? FindLastCommitUsingCommandLine(string relativePath)
     {
-        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, $"log -n 1 --pretty=format:%s%n%an%n%ae%n%aI%n%H -- {relativePath}");
+        if (string.IsNullOrEmpty(relativePath))
+        {
+            relativePath = ".";
+        }
+
+        var fullPath = Path.Combine(_workingDirectory, relativePath);
+        var directory = Path.GetDirectoryName(fullPath);
+        var filename = Path.GetFileName(fullPath);
+        if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(filename))
+        {
+            _log.Warning($"FindLastCommitUsingCommandLine failed to parse relativePath {relativePath}");
+            return null;
+        }
+
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), directory, $"log -n 1 --pretty=format:%s%n%an%n%ae%n%aI%n%H -- {filename}");
         if ((result.Status != Microsoft.Windows.DevHome.SDK.ProviderOperationStatus.Success) || (result.Output is null))
         {
             return null;

@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+	worktree = ../../../sm_unchanged
+[remote "origin"]
+	url = ../submodules_target
+	fetch = +refs/heads/*:refs/remotes/origin/*

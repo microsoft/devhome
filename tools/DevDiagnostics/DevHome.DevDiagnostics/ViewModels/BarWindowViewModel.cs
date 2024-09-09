@@ -34,7 +34,6 @@ public partial class BarWindowViewModel : ObservableObject
 
     private readonly ObservableCollection<Button> _externalTools = [];
     private readonly DDInsightsService _insightsService;
-    private readonly PerfCounters _perfCounters;
 
     [ObservableProperty]
     private string _systemCpuUsage = string.Empty;
@@ -101,12 +100,11 @@ public partial class BarWindowViewModel : ObservableObject
 
         TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
 
-        _perfCounters = Application.Current.GetService<PerfCounters>();
-        _perfCounters.PropertyChanged += PerfCounterHelper_PropertyChanged;
+        PerfCounters.Instance.PropertyChanged += PerfCounterHelper_PropertyChanged;
 
-        SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", _perfCounters.SystemCpuUsage);
-        SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", _perfCounters.SystemRamUsageInGB);
-        SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", _perfCounters.SystemDiskUsage);
+        SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
+        SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
+        SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
 
         var process = TargetAppData.Instance.TargetProcess;
 
@@ -213,7 +211,7 @@ public partial class BarWindowViewModel : ObservableObject
         {
             _dispatcher.TryEnqueue(() =>
             {
-                SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", _perfCounters.SystemCpuUsage);
+                SystemCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.SystemCpuUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemRamUsageInGB))
@@ -221,21 +219,21 @@ public partial class BarWindowViewModel : ObservableObject
             _dispatcher.TryEnqueue(() =>
             {
                 // Convert from bytes to GBs
-                SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", _perfCounters.SystemRamUsageInGB);
+                SystemRamUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabelGB", PerfCounters.Instance.SystemRamUsageInGB);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.SystemDiskUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", _perfCounters.SystemDiskUsage);
+                SystemDiskUsage = CommonHelper.GetLocalizedString("DiskPerfPercentUsageTextFormatNoLabel", PerfCounters.Instance.SystemDiskUsage);
             });
         }
         else if (e.PropertyName == nameof(PerfCounters.CpuUsage))
         {
             _dispatcher.TryEnqueue(() =>
             {
-                AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", _perfCounters.CpuUsage);
+                AppCpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
             });
         }
     }

@@ -1,0 +1,34 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[submodule "sm_changed_file"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_missing_commits"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_changed_head"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_changed_index"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_changed_untracked_file"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_unchanged"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_unchanged_detached"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_missing_commits_detached"]
+	url = E:/Repos/GitHub/devhome/extensions/GitExtension/FileExplorerGitIntegration.UnitTest/resources/submodules_target
+	active = true
+[submodule "sm_added_and_uncommitted"]
+	url = E:/temp/resources/submodules_target
+	active = true

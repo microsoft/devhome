@@ -133,7 +133,7 @@ public partial class BarWindow : ThemeAwareWindow
 
         if (_settings.IsCpuUsageMonitoringEnabled)
         {
-            Application.Current.GetService<PerfCounters>().Start();
+            PerfCounters.Instance.Start();
         }
 
         // Apply the user's chosen theme setting.
@@ -435,7 +435,7 @@ public partial class BarWindow : ThemeAwareWindow
         }
 
         TargetAppData.Instance.ClearAppData();
-        Application.Current.GetService<PerfCounters>().Stop();
+        PerfCounters.Instance.Stop();
 
         var primaryWindow = Application.Current.GetService<PrimaryWindow>();
         primaryWindow.ClearBarWindow();
@@ -461,11 +461,11 @@ public partial class BarWindow : ThemeAwareWindow
         {
             if (_settings.IsCpuUsageMonitoringEnabled)
             {
-                Application.Current.GetService<PerfCounters>().Start();
+                PerfCounters.Instance.Start();
             }
             else
             {
-                Application.Current.GetService<PerfCounters>().Stop();
+                PerfCounters.Instance.Stop();
             }
         }
     }

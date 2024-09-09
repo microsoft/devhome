@@ -3,8 +3,6 @@
 
 using System;
 using DevHome.Common.Extensions;
-using DevHome.DevDiagnostics.Helpers;
-using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Telemetry;
 using DevHome.DevDiagnostics.ViewModels;
 using Microsoft.UI.Xaml;
@@ -13,26 +11,25 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.DevDiagnostics.Pages;
 
-public sealed partial class ResourceUsagePage : Page
+public sealed partial class ResourceUsagePage : Page, IDisposable
 {
     private ResourceUsagePageViewModel ViewModel { get; }
 
     public ResourceUsagePage()
     {
         ViewModel = Application.Current.GetService<ResourceUsagePageViewModel>();
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         Application.Current.GetService<TelemetryReporter>().SwitchTo(Feature.ResourceUsage);
-        Application.Current.GetService<SystemResourceUsagePageViewModel>().Start();
     }
 
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    public void Dispose()
     {
-        base.OnNavigatedFrom(e);
-        Application.Current.GetService<SystemResourceUsagePageViewModel>().Stop();
+        ViewModel.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
