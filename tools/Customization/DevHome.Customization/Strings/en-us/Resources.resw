@@ -483,6 +483,10 @@
   </data>
   <data name="CloseButtonText" xml:space="preserve">
     <value>Close</value>
-    <comment>Text for a button to close a content dialog.</comment>
+    <comment>Text for a button to close a content dialog</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More Options</value>
+    <comment>Text for the more options button on the setting card for the Add Repositories UI</comment>
   </data>
 </root>
