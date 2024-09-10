@@ -92,13 +92,13 @@
         },
         {
           "buildType": "canary",
-          "enabledByDefault": false,
+          "enabledByDefault": true,
           "visible": true
         },
         {
           "buildType": "stable",
           "enabledByDefault": false,
-          "visible": false
+          "visible": true
         }
       ],
       "openPage": {

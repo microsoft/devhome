@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
   <Import Project="$(SolutionDir)ToolingVersions.props" />
-  <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>DevHome.Service</RootNamespace>
@@ -11,12 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.9" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="$(PkgMicrosoft_Diagnostics_Tracing_TraceEvent)\lib\netstandard2.0\TraceReloggerLib.dll" />
+    <None Remove="$(PkgMicrosoft_Diagnostics_Tracing_TraceEvent)\lib\netstandard2.0\Dia2Lib.dll" />
   </ItemGroup>
 
   <ItemGroup>

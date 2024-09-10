@@ -29,7 +29,7 @@ internal sealed class ThrottledTask
         _interval = interval;
     }
 
-    // The first time Run is called, create a task to invoke _action, and then delay for _interval as a "cooldown".
+    // The first time Run is called, wait until new requests stop getting queued, checking every _interval, then create a task to invoke _action.
     // If Run is not called again while the task is active (during the action or cooldown)
     //   then the task exits normally and resets state back to initial.
     // Otherwise, if Run is called again while the task is active,
@@ -48,11 +48,29 @@ internal sealed class ThrottledTask
             _currentTask = Task.Run(
                 async () =>
                 {
-                    bool shouldContinue = true;
-                    while (shouldContinue)
+                    bool runAgain = true;
+                    while (runAgain)
                     {
+                        bool waitAgain = false;
+                        do
+                        {
+                            await Task.Delay(_interval, cancellationToken);
+                            lock (_lock)
+                            {
+                                if (_shouldQueue)
+                                {
+                                    _shouldQueue = false;
+                                    waitAgain = true;
+                                }
+                                else
+                                {
+                                    waitAgain = false;
+                                }
+                            }
+                        }
+                        while (!waitAgain);
+
                         _action.Invoke();
-                        await Task.Delay(_interval, cancellationToken);
                         lock (_lock)
                         {
                             if (_shouldQueue)
@@ -61,7 +79,7 @@ internal sealed class ThrottledTask
                             }
                             else
                             {
-                                shouldContinue = false;
+                                runAgain = false;
                                 _currentTask = null;
                             }
                         }
