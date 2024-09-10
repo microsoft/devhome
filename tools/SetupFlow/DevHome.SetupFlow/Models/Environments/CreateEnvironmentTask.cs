@@ -11,11 +11,13 @@ using CommunityToolkit.Mvvm.Messaging;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Models;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
@@ -148,7 +150,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Creation_Event",
                 LogLevel.Critical,
-                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started),
+                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Started, new TelemetryResult()),
                 _orchestrator.ActivityId);
 
             if (string.IsNullOrWhiteSpace(UserJsonInput))
@@ -164,10 +166,12 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
                 var logErrorMsg = $"Timed out waiting for the {ProviderDetails.ComputeSystemProvider.Id} provider to stop the adaptive card session";
                 _log.Error(logErrorMsg);
 
+                var failureResult = new ProviderOperationResult(ProviderOperationStatus.Failure, new TimeoutException(), logErrorMsg, logErrorMsg);
+                var providerId = ProviderDetails.ComputeSystemProvider.Id;
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Environment_Creation_Event",
                     LogLevel.Critical,
-                    new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, EnvironmentsTelemetryStatus.Failed, logErrorMsg, logErrorMsg),
+                    new EnvironmentCreationEvent(providerId, EnvironmentsTelemetryStatus.Failed, new TelemetryResult(failureResult)),
                     _orchestrator.ActivityId);
 
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.EnvironmentCreationFailedToGetProviderInformation), MessageSeverityKind.Error);
