@@ -117,11 +117,14 @@ public class SourceControlProvider :
 
         // Trim any string properties to 80 characters
         var result = repository.GetProperties(properties, relativePath);
-        foreach (var key in result.Keys)
+        foreach (var key in result.Keys.ToList())
         {
             if (result[key] is string str)
             {
-                result[key] = str[..80];
+                if (str.Length > 80)
+                {
+                    result[key] = str[..80];
+                }
             }
         }
 
