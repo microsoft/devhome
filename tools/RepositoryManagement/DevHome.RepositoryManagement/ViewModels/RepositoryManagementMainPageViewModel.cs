@@ -41,6 +41,18 @@ public partial class RepositoryManagementMainPageViewModel
         _items.Where(x => x.IsHiddenFromPage == false).ToList().ForEach(x => Items.Add(x));
     }
 
+    [RelayCommand]
+    public void HideRepository(RepositoryManagementItemViewModel repository)
+    {
+        if (repository == null)
+        {
+            return;
+        }
+
+        repository.RemoveThisRepositoryFromTheList();
+        LoadRepositories();
+    }
+
     public RepositoryManagementMainPageViewModel(
         RepositoryManagementItemViewModelFactory factory,
         RepositoryManagementDataAccessService dataAccessService)

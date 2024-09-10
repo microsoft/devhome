@@ -255,18 +255,6 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         StartProcess(processStartInfo, nameof(RunConfigurationFile));
     }
 
-    [RelayCommand]
-    public void RemoveThisRepositoryFromTheList()
-    {
-        var repository = GetRepositoryReportIfNull(nameof(RemoveThisRepositoryFromTheList));
-        if (repository == null)
-        {
-            return;
-        }
-
-        _dataAccess.SetIsHidden(repository, true);
-    }
-
     internal RepositoryManagementItemViewModel(
         Window window,
         RepositoryManagementDataAccessService dataAccess,
@@ -281,6 +269,17 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _configurationFileBuilder = configurationFileBuilder;
         RepositoryName = repositoryName;
         _clonePath = cloneLocation;
+    }
+
+    public void RemoveThisRepositoryFromTheList()
+    {
+        var repository = GetRepositoryReportIfNull(nameof(RemoveThisRepositoryFromTheList));
+        if (repository == null)
+        {
+            return;
+        }
+
+        _dataAccess.SetIsHidden(repository, true);
     }
 
     private void OpenRepositoryInFileExplorer(string repositoryName, string cloneLocation, string action)

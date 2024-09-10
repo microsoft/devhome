@@ -13,6 +13,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.RepositoryManagement.ViewModels"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    x:Name="RepositoryManagementMainPage"
     mc:Ignorable="d">
     <commonviews:ToolPage.Resources>
         <ResourceDictionary>
@@ -81,6 +82,7 @@
             </Grid.ColumnDefinitions>
             
             <!-- Needs localization -->
+            <!-- TODO: Implemenet filtering -->
             <TextBox Grid.Column="0" PlaceholderText="Filter" />
 
             <!-- Needs localization -->
@@ -89,7 +91,8 @@
                 VerticalAlignment="Center"
                 Text="Sort:" />
             <ComboBox Grid.Column="3" MinWidth="150">
-                <!-- Needs localization. -->
+                <!-- TODO: Needs localization. -->
+                <!-- TODO: Implement sort.-->
                 <ComboBoxItem Content="A to Z" IsSelected="True" />
                 <ComboBoxItem Content="Z to A" />
             </ComboBox>
@@ -104,6 +107,7 @@
                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
                 ScrollViewer.VerticalScrollMode="Auto" 
                 SelectionMode="None">
+                <!-- Look into the DataTable control from the community toolkit -->
                 <ListView.Header>
                     <Grid
                         Margin="0,0,0,5"
@@ -111,58 +115,70 @@
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                         BorderThickness="0,0,0,1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
+                            <ColumnDefinition/>
+                            <!-- Reserve space for the configuration icon-->
+                            <ColumnDefinition Width="16" />
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="40" />
+                            <ColumnDefinition Width="50" />
                         </Grid.ColumnDefinitions>
 
                         <!-- Needs localization -->
                         <TextBlock Grid.Column="0" Text="Name" />
 
                         <!-- Needs localization -->
-                        <TextBlock Grid.Column="1" Text="Clone path" />
+                        <TextBlock Grid.Column="2" Text="Clone path" />
 
                         <!-- Needs localization -->
-                        <TextBlock Grid.Column="2" Text="Latest commit" />
+                        <TextBlock Grid.Column="3" Text="Latest commit" />
 
                         <!-- Needs localization -->
-                        <TextBlock Grid.Column="3" Text="Branch" />
+                        <TextBlock Grid.Column="4" Text="Branch" />
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:RepositoryManagementItemViewModel">
                         <Grid ColumnSpacing="10">
+                            <!-- Add icon when a configuration file is detected.-->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
+                                <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition />
                                 <ColumnDefinition />
-                                <ColumnDefinition Width="35" />
+                                <ColumnDefinition Width="50" />
                             </Grid.ColumnDefinitions>
                             <TextBlock
                                 Grid.Column="0"
                                 Text="{x:Bind RepositoryName}"
                                 ToolTipService.ToolTip="{x:Bind RepositoryName}" />
-                            <TextBlock
+                            <FontIcon
                                 Grid.Column="1"
+                                FontSize="16"
+                                Visibility="{x:Bind HasAConfigurationFile}"
+                                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                Glyph="&#xE946;"
+                                VerticalAlignment="Top"
+                                Margin="0, 2, 0, 0"
+                                ToolTipService.ToolTip="WinGet Configuration file found. Run it from the '...' menu to set up this repo"/>
+                            <TextBlock
+                                Grid.Column="2"
                                 Text="{x:Bind ClonePath, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind ClonePath, Mode=OneWay}" />
                             <TextBlock
-                                Grid.Column="2"
+                                Grid.Column="3"
                                 Text="{x:Bind LatestCommit}"
                                 ToolTipService.ToolTip="{x:Bind LatestCommit}" />
                             <TextBlock
-                                Grid.Column="3"
+                                Grid.Column="4"
                                 Text="{x:Bind Branch}"
                                 ToolTipService.ToolTip="{x:Bind Branch}" />
                             <Button
                                 x:Uid="MoreOptionsButton"
-                                Grid.Column="4"
+                                Grid.Column="5"
                                 Style="{StaticResource HorizontalThreeDotsStyle}">
                                 <Button.Flyout>
-
                                     <!-- Needs localization -->
                                     <MenuFlyout>
                                         <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
@@ -170,7 +186,7 @@
                                         <MenuFlyoutItem Text="Move Repository" Command="{x:Bind MoveRepositoryCommand}" />
                                         <MenuFlyoutItem Text="Add to WinGet configuration file" Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
                                         <MenuFlyoutItem Text="Run WinGet configuration file" Command="{x:Bind RunConfigurationFileCommand}" IsEnabled="{x:Bind HasAConfigurationFile}" />
-                                        <MenuFlyoutItem Text="Remove from this list" Command="{x:Bind RemoveThisRepositoryFromTheListCommand}" />
+                                        <MenuFlyoutItem Text="Remove from this list" Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}" CommandParameter="{x:Bind}" />
                                         <MenuFlyoutItem Text="Delete" Command="{x:Bind DeleteRepositoryCommand}" />
                                     </MenuFlyout>
                                 </Button.Flyout>
