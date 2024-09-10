@@ -64,6 +64,7 @@
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
 
+            <!-- TODO: Buttons are not aligned with sort text box.-->
             <!-- TODO: Needs localization -->
             <Button
                 Grid.Column="1"

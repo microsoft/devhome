@@ -40,6 +40,7 @@ public partial class RepositoryManagementMainPageViewModel
     {
         try
         {
+            // TODO: Use extensions to determine if the selected location is a repository.
             _log.Information("Opening folder picker to select a new location");
             using var folderPicker = new WindowOpenFolderDialog();
             var newLocation = await folderPicker.ShowAsync(_window);
@@ -52,9 +53,9 @@ public partial class RepositoryManagementMainPageViewModel
                 _log.Information("Didn't select a location to clone to");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _log.Error(e, "Failed to open folder picker");
+            _log.Error(ex, "Failed to open folder picker");
         }
     }
 

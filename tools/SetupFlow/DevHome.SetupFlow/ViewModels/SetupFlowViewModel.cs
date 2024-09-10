@@ -45,9 +45,9 @@ public partial class SetupFlowViewModel : ObservableObject
         SetupFlowOrchestrator orchestrator,
         PackageProvider packageProvider)
     {
-        _navigationTargets.Add(_creationFlowNavigationParameter, LocalStartCreationFlow);
-        _navigationTargets.Add("StartQuickstartPlayground", LocalStartQuickTestFlow);
-        _navigationTargets.Add(KnownPageKeys.RepositoryConfiguration, LocalStartRepositoryConfigurationFlow);
+        _navigationTargets.Add(_creationFlowNavigationParameter, StartCreationFlow);
+        _navigationTargets.Add("StartQuickstartPlayground", StartQuickTestFlow);
+        _navigationTargets.Add(KnownPageKeys.RepositoryConfiguration, StartRepositoryConfigurationFlow);
 
         _host = host;
         _stringResource = stringResource;
@@ -135,14 +135,6 @@ public partial class SetupFlowViewModel : ObservableObject
         await _mainPageViewModel.StartConfigurationFileAsync(file);
     }
 
-    public void StartCreationFlow(string originPage)
-    {
-        Orchestrator.FlowPages = [_mainPageViewModel];
-
-        // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
-        _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, originPage);
-    }
-
     public void StartSetupFlow(string originPage, ComputeSystemReviewItem item)
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
@@ -200,17 +192,21 @@ public partial class SetupFlowViewModel : ObservableObject
         _mainPageViewModel.StartAppManagementFlow(query);
     }
 
-    private void LocalStartCreationFlow(string parameter)
+    private void StartCreationFlow(string parameter)
     {
         // We expect that when navigating from anywhere in Dev Home to the create environment page
         // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
         // and the second value being the page name that redirection came from for telemetry purposes.
         var parameters = parameter.Split(';');
         Cancel();
-        StartCreationFlow(originPage: parameters[1]);
+
+        Orchestrator.FlowPages = [_mainPageViewModel];
+
+        // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
+        _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, parameters[1]);
     }
 
-    private void LocalStartQuickTestFlow(string parameter)
+    private void StartQuickTestFlow(string parameter)
     {
         Cancel();
         Orchestrator.FlowPages = [_mainPageViewModel];
@@ -218,7 +214,7 @@ public partial class SetupFlowViewModel : ObservableObject
         _mainPageViewModel.StartQuickstart(flowTitle);
     }
 
-    private void LocalStartRepositoryConfigurationFlow(string parameter)
+    private void StartRepositoryConfigurationFlow(string parameter)
     {
         Cancel();
         Orchestrator.FlowPages = [_mainPageViewModel];
