@@ -36,6 +36,8 @@ public partial class App : Application, IApp
 
     public App()
     {
+        UnhandledException += App_UnhandledException;
+
         InitializeComponent();
 
         UIDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -89,6 +91,16 @@ public partial class App : Application, IApp
         // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
         // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
         Application.Current.GetService<PrimaryWindow>();
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        Serilog.Log.Fatal(e.Exception, $"Unhandled exception: {e.Message}");
+        Serilog.Log.CloseAndFlush();
+
+        // We are very likely in a bad and unrecoverable state, so ensure we crash w/ the exception info.
+        Environment.FailFast(e.Message, e.Exception);
     }
 
     internal static ITelemetry Logger => TelemetryFactory.Get<ITelemetry>();
