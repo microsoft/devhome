@@ -1,8 +1,11 @@
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
-CREATE TABLE tblErrors(
-    code  INTEGER,
-    Name  TEXT,
+CREATE TABLE tblErrors(
+
+    code  INTEGER,
+
+    Name  TEXT,
+
     Help  TEXT);
 INSERT INTO tblErrors VALUES(197120,'STG_S_CONVERTED','The underlying file was converted to compound file format.');
 INSERT INTO tblErrors VALUES(197121,'STG_S_BLOCK','The storage operation should block until more data is available.');

@@ -5,7 +5,6 @@ using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.DevDiagnostics.Helpers;
-
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Pages;
 using DevHome.DevDiagnostics.Services;
@@ -16,7 +15,6 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
 
 namespace DevHome.DevDiagnostics;
 

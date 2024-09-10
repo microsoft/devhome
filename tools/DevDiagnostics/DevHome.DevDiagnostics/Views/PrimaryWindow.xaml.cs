@@ -7,7 +7,6 @@ using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Properties;
-using DevHome.DevDiagnostics.Views;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.System;
