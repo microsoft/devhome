@@ -79,13 +79,7 @@ public class WidgetServiceService : IWidgetServiceService
             WidgetHelpers.WebExperiencePackageFamilyName,
             (minSupportedVersion400, version500),
             (minSupportedVersion500, null));
-
-        if (packages.Any())
-        {
-            return packages.First();
-        }
-
-        return null;
+        return packages.FirstOrDefault();
     }
 
     private Package GetWidgetsPlatformRuntimePackage()
@@ -93,12 +87,7 @@ public class WidgetServiceService : IWidgetServiceService
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
-        if (packages.Any())
-        {
-            return packages.First();
-        }
-
-        return null;
+        return packages.FirstOrDefault();
     }
 
     private WidgetServiceStates ValidatePackage(Package package)
