@@ -57,11 +57,19 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private bool _isNotDevDrive;
 
+    [ObservableProperty]
+    private List<string> _relatedEnvironmentVariablesToBeSet;
+
+    [ObservableProperty]
+    private List<string> _relatedCacheDirectories;
+
     public OptimizeDevDriveDialogViewModel(
         string existingCacheLocation,
         string environmentVariableToBeSet,
         string exampleDevDriveLocation,
-        List<string> existingDevDriveLetters)
+        List<string> existingDevDriveLetters,
+        List<string> relatedEnvironmentVariablesToBeSet,
+        List<string> relatedCacheDirectories)
     {
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         ExistingDevDriveLetters = existingDevDriveLetters;
@@ -75,6 +83,8 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         IsPrimaryButtonEnabled = true;
         ErrorMessage = string.Empty;
         IsNotDevDrive = false;
+        RelatedEnvironmentVariablesToBeSet = relatedEnvironmentVariablesToBeSet;
+        RelatedCacheDirectories = relatedCacheDirectories;
     }
 
     [RelayCommand]
@@ -244,6 +254,37 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         return false;
     }
 
+    private string GetDirectoryNameFromPath(string path)
+    {
+        var lastIndex = path.LastIndexOf('\\');
+        return path.Substring(lastIndex + 1);
+    }
+
+    private bool MoveDirectories(string sourceDirectory, string targetDirectory, List<string> relatedCacheDirectories)
+    {
+        foreach (var relatedCacheDirectory in relatedCacheDirectories)
+        {
+            var relatedCacheDirectoryName = GetDirectoryNameFromPath(relatedCacheDirectory);
+            if (!MoveDirectory(relatedCacheDirectory, targetDirectory + "\\Related Directories\\" + relatedCacheDirectoryName))
+            {
+                return false;
+            }
+        }
+
+        return MoveDirectory(sourceDirectory, targetDirectory);
+    }
+
+    private void SetRelatedEnvironmentVariables(List<string> relatedEnvironmentVariablesToBeSet, List<string> relatedCacheDirectories, string directoryPath)
+    {
+        var index = 0;
+        foreach (var relatedEnvironmentVariableToBeSet in relatedEnvironmentVariablesToBeSet)
+        {
+            var relatedCacheDirectoryName = GetDirectoryNameFromPath(relatedCacheDirectories[index]);
+            SetEnvironmentVariable(relatedEnvironmentVariableToBeSet, directoryPath + "\\Related Directories\\" + relatedCacheDirectoryName);
+            index++;
+        }
+    }
+
     [RelayCommand]
     private void DirectoryInputConfirmed()
     {
@@ -257,8 +298,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
                 {
                     // Send message to the DevDriveInsightsViewModel to let it display the progress ring for the move
                     // WeakReferenceMessenger.Default.Send(new DevDriveOptimizingMessage(new DevDriveOptimizingData()));
-                    if (MoveDirectory(ExistingCacheLocation, directoryPath))
+                    if (MoveDirectories(ExistingCacheLocation, directoryPath, RelatedCacheDirectories))
                     {
+                        SetRelatedEnvironmentVariables(RelatedEnvironmentVariablesToBeSet, RelatedCacheDirectories, directoryPath);
                         SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
                         var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
                         Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");

@@ -11,7 +11,9 @@ public delegate OptimizeDevDriveDialogViewModel OptimizeDevDriveDialogViewModelF
     string existingCacheLocation,
     string environmentVariableToBeSet,
     string exampleDevDriveLocation,
-    List<string> existingDevDriveLetters);
+    List<string> existingDevDriveLetters,
+    List<string> relatedEnvironmentVariablesToBeSet,
+    List<string> relatedCacheDirectories);
 
 public sealed partial class OptimizeDevDriveDialog : ContentDialog
 {

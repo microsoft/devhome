@@ -276,6 +276,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 Path.Join(_localAppDataPath, "pip", CacheStr),
                 Path.Join(_localAppDataPath, PackagesStr, "PythonSoftwareFoundation.Python"),
             },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "pip", CacheStr),
         },
         new DevDriveCacheData
@@ -283,6 +285,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "NuGet cache (dotnet)",
             EnvironmentVariable = "NUGET_PACKAGES",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".nuget", PackagesStr) },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "NuGet", CacheStr),
         },
         new DevDriveCacheData
@@ -294,6 +298,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 Path.Join(_appDataPath, "npm-cache"),
                 Path.Join(_localAppDataPath, "npm-cache"),
             },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "npm"),
         },
         new DevDriveCacheData
@@ -305,6 +311,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 Path.Join(_appDataPath, "vcpkg", ArchivesStr),
                 Path.Join(_localAppDataPath, "vcpkg", ArchivesStr),
             },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "vcpkg"),
         },
         new DevDriveCacheData
@@ -312,6 +320,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "Cargo cache (Rust)",
             EnvironmentVariable = "CARGO_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            RelatedEnvironmentVariables = new List<string> { "RUSTUP_HOME" },
+            RelatedCacheDirectories = new List<string> { Path.Join(_userProfilePath, ".rustup") },
             ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
         },
         new DevDriveCacheData
@@ -319,6 +329,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "Maven cache (Java)",
             EnvironmentVariable = "MAVEN_OPTS",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "m2"),
         },
         new DevDriveCacheData
@@ -326,6 +338,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "Gradle cache (Java)",
             EnvironmentVariable = "GRADLE_USER_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".gradle") },
+            RelatedEnvironmentVariables = new List<string> { },
+            RelatedCacheDirectories = new List<string> { },
             ExampleSubDirectory = Path.Join(PackagesStr, "gradle"),
         }
     ];
@@ -395,7 +409,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 exampleDirectory!, // example location on dev drive to move cache to
                 cache.EnvironmentVariable!, // environmentVariableToBeSet
                 existingDevDriveLetters,
-                !string.IsNullOrEmpty(environmentVariablePath));
+                !string.IsNullOrEmpty(environmentVariablePath),
+                cache.RelatedEnvironmentVariables!,
+                cache.RelatedCacheDirectories!);
             DevDriveOptimizerCardCollection.Add(card);
         }
 
