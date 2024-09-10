@@ -38,8 +38,12 @@ public class WidgetServiceService : IWidgetServiceService
 
     public WidgetServiceStates GetWidgetServiceState()
     {
-        // First check for the WidgetPlatformRuntime package. If it's installed and has a valid state, we return that state.
-        var package = GetWidgetPlatformRuntimePackage();
+        var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
+        _log.Information($"Checking for WidgetService on {isWindows11String}");
+
+        // First check for the WidgetsPlatformRuntime package. If it's installed and has a valid state, we return that state.
+        _log.Information("Checking for WidgetsPlatformRuntime...");
+        var package = GetWidgetsPlatformRuntimePackage();
         _widgetServiceState = ValidatePackage(package);
         if (_widgetServiceState == WidgetServiceStates.MeetsMinVersion ||
             _widgetServiceState == WidgetServiceStates.Updating)
@@ -47,7 +51,8 @@ public class WidgetServiceService : IWidgetServiceService
             return _widgetServiceState;
         }
 
-        // If the WidgetPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
+        // If the WidgetsPlatformRuntime package is not installed or not high enough version, check for the WebExperience package.
+        _log.Information("Checking for WebExperiencePack...");
         package = GetWebExperiencePackPackage();
         _widgetServiceState = ValidatePackage(package);
 
@@ -57,8 +62,8 @@ public class WidgetServiceService : IWidgetServiceService
     public async Task<bool> TryInstallingWidgetService()
     {
         _log.Information("Try installing widget service...");
-        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetPlatformRuntimePackageId);
-        _widgetServiceState = ValidatePackage(GetWidgetPlatformRuntimePackage());
+        var installedSuccessfully = await _msStoreService.TryInstallPackageAsync(WidgetHelpers.WidgetsPlatformRuntimePackageId);
+        _widgetServiceState = ValidatePackage(GetWidgetsPlatformRuntimePackage());
         _log.Information($"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
     }
@@ -77,34 +82,35 @@ public class WidgetServiceService : IWidgetServiceService
         return packages.First();
     }
 
-    private Package GetWidgetPlatformRuntimePackage()
+    private Package GetWidgetsPlatformRuntimePackage()
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetsPlatformRuntimePackageFamilyName, (minSupportedVersion, null));
         return packages.First();
     }
 
     private WidgetServiceStates ValidatePackage(Package package)
     {
-        var isWindows11String = RuntimeHelper.IsOnWindows11 ? "Windows 11" : "Windows 10";
-        _log.Information($"Validating package {package.DisplayName} on {isWindows11String}");
-
+        WidgetServiceStates packageStatus;
         if (package == null)
         {
-            return WidgetServiceStates.NotAtMinVersion;
+            packageStatus = WidgetServiceStates.NotAtMinVersion;
         }
         else if (package.Status.VerifyIsOK())
         {
-            return WidgetServiceStates.MeetsMinVersion;
+            packageStatus = WidgetServiceStates.MeetsMinVersion;
         }
         else if (package.Status.Servicing == true)
         {
-            return WidgetServiceStates.Updating;
+            packageStatus = WidgetServiceStates.Updating;
         }
         else
         {
-            return WidgetServiceStates.NotOK;
+            packageStatus = WidgetServiceStates.NotOK;
         }
+
+        _log.Information($"ValidatePackage found {packageStatus}");
+        return packageStatus;
     }
 }
