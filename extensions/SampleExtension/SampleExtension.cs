@@ -36,7 +36,12 @@ public sealed class SampleExtension : IExtension, IDisposable
 
         // select a method to get the URL
         // _url = GetUrlFromFilePath("ExtensionSettingsPage.html");
+
+        // use the web server to serve the page
         _url = GetUrlFromWebServer("ExtensionSettingsPage.html");
+
+        // use a public website
+        // _url = "https://github.com/login";
     }
 
     public object? GetProvider(ProviderType providerType)
