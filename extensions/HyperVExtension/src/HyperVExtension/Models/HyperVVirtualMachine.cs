@@ -626,6 +626,10 @@ public class HyperVVirtualMachine : IComputeSystem
 
             using var guestSession = new GuestKvpSession(Guid.Parse(Id));
 
+            // Verify that the VM OS supports configuration operation.
+            // Currently only Windows is supported. The minimum requirement is Windows 20H1 (19041)
+            ThrowIfApplyConfigurationIsNotSupported(guestSession);
+
             // Query VM by sending a request to DevSetupAgent.
             var getStateRequest = new GetStateRequest();
             var communicationId = guestSession.SendRequest(getStateRequest, CancellationToken.None);
@@ -804,6 +808,48 @@ public class HyperVVirtualMachine : IComputeSystem
             _log.Error(ex, $"Failed to apply configuration: VM details: {this}");
             return new ApplyConfigurationOperation(this, ex);
         }
+    }
+
+    private void ThrowIfApplyConfigurationIsNotSupported(GuestKvpSession guestSession)
+    {
+        Dictionary<string, string>? osVersionInfo = null;
+        var isApplyConfigurationSupported = false;
+
+        try
+        {
+            osVersionInfo = GetOsVersionInfo(guestSession);
+            var osPlatformId = int.Parse(osVersionInfo[HyperVStrings.OSPlatformId], CultureInfo.InvariantCulture);
+            if (osPlatformId == Constants.GuestPlatformIdWindows)
+            {
+                var osVersion = Version.Parse(osVersionInfo[HyperVStrings.OSVersion]);
+                if (osVersion >= Constants.MinWindowsVersionForApplyConfiguration)
+                {
+                    isApplyConfigurationSupported = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new GuestOsVersionException(_stringResource, ex, osVersionInfo);
+        }
+
+        if (!isApplyConfigurationSupported)
+        {
+            throw new GuestOsOperationNotSupportedException(_stringResource, osVersionInfo);
+        }
+    }
+
+    private Dictionary<string, string> GetOsVersionInfo(GuestKvpSession guestSession)
+    {
+        var guestOsProperties = guestSession.ReadGuestProperties();
+        if (guestOsProperties == null ||
+            !guestOsProperties.ContainsKey(HyperVStrings.OSPlatformId) ||
+            !guestOsProperties.ContainsKey(HyperVStrings.OSVersion))
+        {
+            throw new HResultException(HRESULT.E_UNEXPECTED, _stringResource.GetLocalized("FailedToReadGuestOsProperties"));
+        }
+
+        return guestOsProperties;
     }
 
     private bool DeployDevSetupAgent(ApplyConfigurationOperation operation, int attemptNumber)

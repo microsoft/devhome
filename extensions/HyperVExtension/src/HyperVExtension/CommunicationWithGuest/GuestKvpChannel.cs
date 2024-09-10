@@ -237,17 +237,17 @@ internal sealed class GuestKvpChannel : IDisposable
 
     private Dictionary<string, string> ReadGuestKvps()
     {
-        return MessageHelper.MergeMessageParts(ReadRawGuestKvps());
+        return MessageHelper.MergeMessageParts(ReadGuestExchangeItems());
     }
 
-    private Dictionary<string, string> ReadRawGuestKvps()
+    private Dictionary<string, string> ReadRawGuestKvps(string itemsType)
     {
         Dictionary<string, string> guestKvps = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         using var collection = _vmWmi.GetRelated("Msvm_KvpExchangeComponent");
         foreach (ManagementObject kvpExchangeComponent in collection)
         {
-            foreach (var exchangeDataItem in (string[])kvpExchangeComponent["GuestExchangeItems"])
+            foreach (var exchangeDataItem in (string[])kvpExchangeComponent[itemsType])
             {
                 XPathDocument xpathDoc = new XPathDocument(XmlReader.Create(new StringReader(exchangeDataItem)));
                 XPathNavigator navigator = xpathDoc.CreateNavigator();
@@ -267,6 +267,16 @@ internal sealed class GuestKvpChannel : IDisposable
         }
 
         return guestKvps;
+    }
+
+    private Dictionary<string, string> ReadGuestExchangeItems()
+    {
+        return ReadRawGuestKvps("GuestExchangeItems");
+    }
+
+    public Dictionary<string, string> ReadGuestProperties()
+    {
+        return ReadRawGuestKvps("GuestIntrinsicExchangeItems");
     }
 
     public void CleanUp()

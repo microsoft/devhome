@@ -28,4 +28,8 @@ internal sealed class Constants
     public const string HyperVTemplatesSubPath = @"HyperVExtension\Templates";
 
     public static string SystemRootPath { get; } = Path.GetPathRoot(Environment.SystemDirectory)!;
+
+    public static int GuestPlatformIdWindows { get; } = (int)Windows.Win32.System.Diagnostics.Debug.VER_PLATFORM.VER_PLATFORM_WIN32_NT;
+
+    public static Version MinWindowsVersionForApplyConfiguration { get; } = new Version(10, 0, 19041, 0);
 }
