@@ -13,7 +13,9 @@ using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Controls;
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Services;
+using DevHome.DevDiagnostics.TelemetryEvents;
 using DevHome.Service;
+using DevHome.Telemetry;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
 using Microsoft.UI.Xaml;
@@ -23,12 +25,36 @@ namespace DevHome.DevDiagnostics.Helpers;
 
 public class LoaderSnapAssistantTool
 {
+    private const string LoaderSnapsIdentifyNoLogsTelemetryName = "LoaderSnapsIdentifyNoLogs";
+    private const string LoaderSnapsIdentifyLogsTelemetryName = "LoaderSnapsIdentifyLogs";
+
     private const string WindowsImageETWProvider = "2cb15d1d-5fc1-11d2-abe1-00a0c911f518"; /*EP_Microsoft-Windows-ImageLoad*/
     private const uint LoaderSnapsFlag = 0x80; /* ETW_UMGL_LDR_SNAPS_FLAG */
+    private const string LoaderSnapsETWOpCode = "Opcode(215)";
+    private const string LoaderSnapsETWErrorLine = "LdrpProcessWork - ERROR: Unable to load";
+
     private readonly DDInsightsService _insightsService;
     private readonly IDevHomeService _devHomeService;
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly Dictionary<int, string> _loaderSnapFailures = new();
+
+    private struct LoaderSnapFailure
+    {
+        public int Pid { get; set; }
+
+        public string? ErrorLog { get; set; }
+
+        public string? ImageName { get; set; }
+    }
+
+    private readonly Dictionary<int, LoaderSnapFailure> _loaderSnapFailures = new();
+
+    [Flags]
+    private enum TraceFlags
+    {
+        HeapTracing = 1,
+        CritSecTracing = 2,
+        LoaderSnaps = 4,
+    }
 
     public LoaderSnapAssistantTool()
     {
@@ -48,6 +74,8 @@ public class LoaderSnapAssistantTool
         {
             if (!IsLoaderSnapLoggingEnabledForImage(info.processName))
             {
+                App.Log(LoaderSnapsIdentifyNoLogsTelemetryName, LogLevel.Measure);
+
                 _dispatcher.TryEnqueue(() =>
                 {
                     var insight = new InsightPossibleLoaderIssue();
@@ -61,18 +89,22 @@ public class LoaderSnapAssistantTool
             {
                 lock (_loaderSnapFailures)
                 {
-                    if (_loaderSnapFailures.TryGetValue(info.pid, out string? loadersnapError))
+                    if (_loaderSnapFailures.TryGetValue(info.pid, out LoaderSnapFailure loadersnapError))
                     {
-                        // We received information about this app's loader snap issue. Raise the insight.
+                        // We had previously received information about this app's loader snap issue but were waiting for the image name.
+                        // We can raise the notification now
                         _loaderSnapFailures.Remove(info.pid);
-
-                        _dispatcher.TryEnqueue(() =>
-                        {
-                            var insight = new SimpleTextInsight();
-                            insight.Title = string.Format(CultureInfo.CurrentCulture, CommonHelper.GetLocalizedString("InsightProcessExitMissingDependenciesIdentifiedTitle"), info.processName, info.pid);
-                            insight.Description = loadersnapError;
-                            _insightsService.AddInsight(insight);
-                        });
+                        loadersnapError.ImageName = info.processName;
+                        RaiseLoaderSnapInsight(loadersnapError);
+                    }
+                    else
+                    {
+                        // We haven't received the loader snap failure yet. Store the process name, and we'll raise the insight
+                        // when we receive the loader snap logs
+                        LoaderSnapFailure failure = default(LoaderSnapFailure);
+                        failure.Pid = info.pid;
+                        failure.ImageName = info.processName;
+                        _loaderSnapFailures.Add(info.pid, failure);
                     }
                 }
             }
@@ -97,22 +129,53 @@ public class LoaderSnapAssistantTool
 
     private void UnHandledEventsHandler(TraceEvent traceEvent)
     {
-        if (traceEvent.EventName.Contains("Opcode(215)"))
+        if (traceEvent.EventName.Contains(LoaderSnapsETWOpCode))
         {
             byte[] loaderSnapData = traceEvent.EventData();
             string s = System.Text.Encoding.Unicode.GetString(loaderSnapData.Skip(10).ToArray());
+
+            // The loader snap data has embedded nulls in its string. Get rid of the embedded nulls that signify newlines, and
+            // for the remaining ones, swap them out for colons
             s = s.Replace("\n\0", string.Empty);
             s = s.Replace("\0", ": ");
-            if (s.Contains("LdrpProcessWork - ERROR: Unable to load"))
+            if (s.Contains(LoaderSnapsETWErrorLine))
             {
                 lock (_loaderSnapFailures)
                 {
-                    // At this point, we don't have the faulting process's executable name. Wait until we get the callback
-                    // from our service that tells of the process termination, and then we'll raise the insight.
-                    _loaderSnapFailures.Add(traceEvent.ProcessID, s);
+                    if (_loaderSnapFailures.TryGetValue(traceEvent.ProcessID, out LoaderSnapFailure loadersnapError))
+                    {
+                        // We had previously received information about this app's loader snap issue but were waiting for the image name.
+                        // We can raise the notification now
+                        _loaderSnapFailures.Remove(traceEvent.ProcessID);
+                        loadersnapError.ErrorLog = s;
+                        RaiseLoaderSnapInsight(loadersnapError);
+                    }
+                    else
+                    {
+                        // At this point, we don't have the faulting process's executable name. Wait until we get the callback
+                        // from our service that tells of the process termination, and then we'll raise the insight.
+                        LoaderSnapFailure failure = default(LoaderSnapFailure);
+                        failure.Pid = traceEvent.ProcessID;
+                        failure.ErrorLog = s;
+                        _loaderSnapFailures.Add(traceEvent.ProcessID, failure);
+                    }
                 }
             }
         }
+    }
+
+    private void RaiseLoaderSnapInsight(LoaderSnapFailure failure)
+    {
+        App.Log(LoaderSnapsIdentifyLogsTelemetryName, LogLevel.Measure);
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            var insight = new SimpleTextInsight();
+            insight.Title = string.Format(CultureInfo.CurrentCulture, CommonHelper.GetLocalizedString("InsightProcessExitMissingDependenciesIdentifiedTitle"), failure.ImageName, failure.Pid);
+            Debug.Assert(!string.IsNullOrEmpty(failure.ErrorLog), "We should have an error log");
+            insight.Description = failure.ErrorLog;
+            _insightsService.AddInsight(insight);
+        });
     }
 
     private bool IsLoaderSnapLoggingEnabledForImage(string imageFileName)
@@ -132,7 +195,7 @@ public class LoaderSnapAssistantTool
             return false;
         }
 
-        if ((tracingFlags & 0x4) != 0x4)
+        if (!((TraceFlags)tracingFlags).HasFlag(TraceFlags.LoaderSnaps))
         {
             return false;
         }
@@ -143,6 +206,8 @@ public class LoaderSnapAssistantTool
 
 public class InsightPossibleLoaderIssue : Insight
 {
+    private const string LoaderSnapsEnableLogsTelemetryName = "LoaderSnapsEnableLogs";
+
     private readonly InsightForMissingFileProcessTerminationControl _mycontrol = new();
     private string _text = string.Empty;
 
@@ -167,6 +232,8 @@ public class InsightPossibleLoaderIssue : Insight
 
     public void ConfigureLoaderSnaps()
     {
+        App.Log(LoaderSnapsEnableLogsTelemetryName, LogLevel.Measure);
+
         try
         {
             FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);

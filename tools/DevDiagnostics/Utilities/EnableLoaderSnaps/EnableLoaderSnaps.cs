@@ -8,6 +8,14 @@ namespace EnableLoaderSnaps;
 
 internal sealed class EnableLoaderSnaps
 {
+    [Flags]
+    private enum TraceFlags
+    {
+        HeapTracing = 1,
+        CritSecTracing = 2,
+        LoaderSnaps = 4,
+    }
+
     public static void Main(string[] args)
     {
         if (args.Length != 1)
@@ -28,15 +36,15 @@ internal sealed class EnableLoaderSnaps
         // Create this as volatile so that it doesn't persist after a reboot
         RegistryKey? key = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\" + imageFileName, true, RegistryOptions.Volatile);
 
-        int? tracingFlags = key.GetValue("TracingFlags") as int?;
+        TraceFlags? tracingFlags = key.GetValue("TracingFlags") as TraceFlags?;
 
         if (tracingFlags is null)
         {
-            key.SetValue("TracingFlags", 0x4, RegistryValueKind.DWord);
+            key.SetValue("TracingFlags", TraceFlags.LoaderSnaps, RegistryValueKind.DWord);
         }
         else
         {
-            key.SetValue("TracingFlags", tracingFlags | 0x4, RegistryValueKind.DWord);
+            key.SetValue("TracingFlags", tracingFlags | TraceFlags.LoaderSnaps, RegistryValueKind.DWord);
         }
 
         return;
