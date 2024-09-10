@@ -61,6 +61,7 @@
     <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+    <None Remove="Styles\HyperlinkButton.xaml" />
     <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
   </ItemGroup>
 
@@ -122,6 +123,9 @@
     <None Update="NavConfig.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\HyperlinkButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
