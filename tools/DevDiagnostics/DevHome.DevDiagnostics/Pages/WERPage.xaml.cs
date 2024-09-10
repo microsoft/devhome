@@ -127,7 +127,7 @@ public sealed partial class WERPage : Page
         }
         else
         {
-            Debug.Assert(currentSelectedIndex == 0, "Expected only the first item would have a null tag");
+            Debug.Assert(currentSelectedIndex == 0 || currentSelectedIndex == -1, "Expected only the first item would have a null tag");
             WERInfo.Text = info.Report.Description;
         }
     }
