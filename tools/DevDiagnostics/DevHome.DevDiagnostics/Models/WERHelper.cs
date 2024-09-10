@@ -51,7 +51,7 @@ internal sealed class WERHelper : IDisposable
         WERReports = new(_werReports);
 
         // Subscribe for Application events matching the processName.
-        EventLogQuery subscriptionQuery = new("Application", PathType.LogName, WERSubmissionQuery);
+        EventLogQuery subscriptionQuery = new EventLogQuery("Application", PathType.LogName, WERSubmissionQuery);
         _eventLogWatcher = new EventLogWatcher(subscriptionQuery);
         _eventLogWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
     }
@@ -229,23 +229,20 @@ internal sealed class WERHelper : IDisposable
 
     private void ReadWERReportsFromEventLog()
     {
-        EventLog eventLog = new("Application");
-
-        foreach (EventLogEntry entry in eventLog.Entries)
+        var query = new EventLogQuery("Application", PathType.LogName, WERSubmissionQuery);
+        using var reader = new EventLogReader(query);
+        EventRecord? eventRecord;
+        while ((eventRecord = reader.ReadEvent()) is not null)
         {
-            if (entry.InstanceId == 1000
-                && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
-            {
-                var filePath = entry.ReplacementStrings[10];
-                var timeGenerated = entry.TimeGenerated;
-                var moduleName = entry.ReplacementStrings[3];
-                var executable = entry.ReplacementStrings[0];
-                var eventGuid = entry.ReplacementStrings[12];
-                var description = entry.Message;
-                var pid = entry.ReplacementStrings[8];
+            var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
+            var timeGenerated = eventRecord.TimeCreated ?? DateTime.Now;
+            var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
+            var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
+            var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
+            var description = eventRecord.FormatDescription();
+            var pid = eventRecord.Properties[8].Value.ToString() ?? string.Empty;
 
-                FindOrCreateWEREntryFromEventLog(filePath, timeGenerated, moduleName, executable, eventGuid, description, pid);
-            }
+            FindOrCreateWEREntryFromEventLog(filePath, timeGenerated, moduleName, executable, eventGuid, description, pid);
         }
     }
 
