@@ -138,7 +138,9 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
             ShouldShowDotOperations = false;
             ShouldShowSplitButton = false;
 
-            RegisterForAllOperationMessages(DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow), DataExtractor.FillLaunchButtonOperations(_provider, ComputeSystem, _configurationAction));
+            RegisterForAllOperationMessages(
+                DataExtractor.FillDotButtonOperations(ComputeSystem, _mainWindow),
+                DataExtractor.FillLaunchButtonOperations(_provider, ComputeSystem, _configurationAction));
 
             _ = Task.Run(async () =>
             {
@@ -319,25 +321,25 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
     {
         _mainWindow.DispatcherQueue.TryEnqueue(() =>
         {
-        var data = message.Value;
-        IsOperationInProgress = true;
-        ShouldShowLaunchOperation = false;
-        var providerId = ComputeSystem.AssociatedProviderId.Value;
+            var data = message.Value;
+            IsOperationInProgress = true;
+            ShouldShowLaunchOperation = false;
+            var providerId = ComputeSystem.AssociatedProviderId.Value;
 
-        _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name}");
+            _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name}");
 
-        var telemetryPayload = new EnvironmentOperationEvent(
-            EnvironmentsTelemetryStatus.Started,
-            data.ComputeSystemOperation,
-            providerId,
-            new TelemetryResult(),
-            data.AdditionalContext);
+            var telemetryPayload = new EnvironmentOperationEvent(
+                EnvironmentsTelemetryStatus.Started,
+                data.ComputeSystemOperation,
+                providerId,
+                new TelemetryResult(),
+                data.AdditionalContext);
 
-        TelemetryFactory.Get<ITelemetry>().Log(
-            "Environment_OperationInvoked_Event",
-            LogLevel.Critical,
-            telemetryPayload,
-            relatedActivityId: message.Value.ActivityId);
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Critical,
+                telemetryPayload,
+                relatedActivityId: message.Value.ActivityId);
         });
     }
 
