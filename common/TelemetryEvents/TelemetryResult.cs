@@ -2,14 +2,13 @@
 // Licensed under the MIT License.
 
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Win32.Foundation;
 
 namespace DevHome.Common.TelemetryEvents;
 
 public class TelemetryResult
 {
     private const int SuccessHResult = 0;
-
-    private const int InvalidArgHResult = unchecked((int)0x80070057);
 
     public int HResult { get; private set; }
 
@@ -45,6 +44,7 @@ public class TelemetryResult
             // The extension provided us with a null ProviderOperationResult,
             // so the telemetry should state this explicitly.
             Status = ProviderOperationStatus.Failure;
+            HResult = HRESULT.E_INVALIDARG;
             DiagnosticText = "ProviderOperationResult was null";
             DisplayMessage = "ProviderOperationResult was null";
             return;

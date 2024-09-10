@@ -327,11 +327,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         _log.Information($"operation '{data.ComputeSystemOperation}' starting for Compute System: {Name}");
 
         var telemetryPayload = new EnvironmentOperationEvent(
-                EnvironmentsTelemetryStatus.Started,
-                data.ComputeSystemOperation,
-                providerId,
-                new TelemetryResult(),
-                data.AdditionalContext);
+            EnvironmentsTelemetryStatus.Started,
+            data.ComputeSystemOperation,
+            providerId,
+            new TelemetryResult(),
+            data.AdditionalContext);
 
         TelemetryFactory.Get<ITelemetry>().Log(
             "Environment_OperationInvoked_Event",
