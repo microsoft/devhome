@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using DevHome.Common.Helpers;
 using FileExplorerGitIntegration.Models;
 using LibGit2Sharp;
 
@@ -63,20 +64,7 @@ public class GitLocalRepositoryProviderUnitTests
                 dirInfo.Attributes = FileAttributes.Normal;
             }
 
-            int milliseconds = 100;
-            for (var retries = 0; retries < 5; ++retries)
-            {
-                try
-                {
-                    Directory.Delete(RepoPath, true);
-                    break;
-                }
-                catch (System.UnauthorizedAccessException)
-                {
-                    Thread.Sleep(milliseconds);
-                    milliseconds *= 2;
-                }
-            }
+            DirectoryHelper.DeleteDirectoryWithRetries(RepoPath, true, 5, 100, false);
         }
     }
 

@@ -68,77 +68,79 @@ public sealed class GitLocalRepository : ILocalRepository
             return result;
         }
 
-        try
+        // If this repo wasn't fetched from the cache, we'll need to dispose of it at the end of the method.
+        using var repositoryCleanup = (_repositoryCache is null) ? repository : null;
+
+        foreach (var propName in properties)
         {
-            foreach (var propName in properties)
+            switch (propName)
             {
-                switch (propName)
-                {
-                    case "System.VersionControl.LastChangeMessage":
-                        latestCommit ??= FindLatestCommit(relativePath, repository);
-                        if (latestCommit is not null)
-                        {
-                            result.Add(propName, latestCommit.MessageShort);
-                        }
+                case "System.VersionControl.LastChangeMessage":
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
+                    {
+                        result.Add(propName, latestCommit.MessageShort);
+                    }
 
-                        break;
-                    case "System.VersionControl.LastChangeAuthorName":
-                        latestCommit ??= FindLatestCommit(relativePath, repository);
-                        if (latestCommit is not null)
-                        {
-                            result.Add(propName, latestCommit.AuthorName);
-                        }
+                    break;
+                case "System.VersionControl.LastChangeAuthorName":
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
+                    {
+                        result.Add(propName, latestCommit.AuthorName);
+                    }
 
-                        break;
-                    case "System.VersionControl.LastChangeDate":
-                        latestCommit ??= FindLatestCommit(relativePath, repository);
-                        if (latestCommit is not null)
-                        {
-                            result.Add(propName, latestCommit.AuthorWhen);
-                        }
+                    break;
+                case "System.VersionControl.LastChangeDate":
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
+                    {
+                        result.Add(propName, latestCommit.AuthorWhen);
+                    }
 
-                        break;
-                    case "System.VersionControl.LastChangeAuthorEmail":
-                        latestCommit ??= FindLatestCommit(relativePath, repository);
-                        if (latestCommit is not null)
-                        {
-                            result.Add(propName, latestCommit.AuthorEmail);
-                        }
+                    break;
+                case "System.VersionControl.LastChangeAuthorEmail":
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
+                    {
+                        result.Add(propName, latestCommit.AuthorEmail);
+                    }
 
-                        break;
-                    case "System.VersionControl.LastChangeID":
-                        latestCommit ??= FindLatestCommit(relativePath, repository);
-                        if (latestCommit is not null)
-                        {
-                            result.Add(propName, latestCommit.Sha);
-                        }
+                    break;
+                case "System.VersionControl.LastChangeID":
+                    latestCommit ??= FindLatestCommit(relativePath, repository);
+                    if (latestCommit is not null)
+                    {
+                        result.Add(propName, latestCommit.Sha);
+                    }
 
-                        break;
-                    case "System.VersionControl.Status":
-                        result.Add(propName, GetStatus(relativePath, repository));
-                        break;
+                    break;
+                case "System.VersionControl.Status":
+                    result.Add(propName, GetStatus(relativePath, repository));
+                    break;
 
-                    case "System.VersionControl.CurrentFolderStatus":
-                        var folderStatus = GetFolderStatus(relativePath, repository);
-                        if (folderStatus is not null)
-                        {
-                            result.Add(propName, folderStatus);
-                        }
+                case "System.VersionControl.CurrentFolderStatus":
+                    var folderStatus = GetFolderStatus(relativePath, repository);
+                    if (folderStatus is not null)
+                    {
+                        result.Add(propName, folderStatus);
+                    }
 
-                        break;
-                }
-            }
-        }
-        finally
-        {
-            if (_repositoryCache is null)
-            {
-                repository.Dispose();
+                    break;
             }
         }
 
         _log.Debug("Returning source control properties from git source control extension");
         return result;
+    }
+
+    private void AddLatestCommitProperty(ValueSet result, string relativePath, string propName, RepositoryWrapper repository)
+    {
+        var latestCommit = FindLatestCommit(relativePath, repository);
+        if (latestCommit is not null)
+        {
+            result.Add(propName, latestCommit.Sha);
+        }
     }
 
     public IPropertySet GetProperties(string[] properties, string relativePath)
@@ -172,6 +174,13 @@ public sealed class GitLocalRepository : ILocalRepository
 
     private CommitWrapper? FindLatestCommit(string relativePath, RepositoryWrapper repository)
     {
-        return repository.FindLastCommit(relativePath);
+        try
+        {
+            return repository.FindLastCommit(relativePath);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

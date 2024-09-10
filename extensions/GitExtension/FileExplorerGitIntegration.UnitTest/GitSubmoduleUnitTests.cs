@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Helpers;
 using FileExplorerGitIntegration.Models;
 using LibGit2Sharp;
 using Windows.Devices.Geolocation;
@@ -118,20 +119,7 @@ public class GitSubmoduleUnitTests
         GC.Collect(2);
         if (_repoPath is not null)
         {
-            int milliseconds = 100;
-            for (var retries = 0; retries < 5; ++retries)
-            {
-                try
-                {
-                    Directory.Delete(_repoPath, true);
-                    break;
-                }
-                catch (System.UnauthorizedAccessException)
-                {
-                    Thread.Sleep(milliseconds);
-                    milliseconds *= 2;
-                }
-            }
+            DirectoryHelper.DeleteDirectoryWithRetries(_repoPath, true, 5, 100, false);
         }
     }
 
