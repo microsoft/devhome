@@ -85,9 +85,9 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                         {
                             RenderWebView2(settingsProvider2);
                         }
-                        catch (Exception e)
+                        catch (NotImplementedException notImplementedException)
                         {
-                            _log.Error(e, $"Error loading WebView2: {e.Message}");
+                            _log.Error(notImplementedException, $"Error loading WebView2: {notImplementedException.Message}");
                             RenderAdaptiveCard(settingsProvider, extensionAdaptiveCardPanel);
                         }
                     }
