@@ -21,7 +21,6 @@ using DevHome.Customization.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using Windows.Foundation;
 
 namespace DevHome.Customization.ViewModels;
 
