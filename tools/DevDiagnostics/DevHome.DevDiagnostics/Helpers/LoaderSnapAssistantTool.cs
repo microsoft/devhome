@@ -59,6 +59,7 @@ public class LoaderSnapAssistantTool
     public LoaderSnapAssistantTool()
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        Debug.Assert(_dispatcher is not null, "Be sure to create this object on the UI thread");
         _insightsService = Application.Current.GetService<DDInsightsService>();
         _devHomeService = Application.Current.GetService<IDevHomeService>();
         Init();
