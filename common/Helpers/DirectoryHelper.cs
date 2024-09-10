@@ -10,11 +10,11 @@ namespace DevHome.Common.Helpers;
 
 public static class DirectoryHelper
 {
-    private static readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(DirectoryHelper));
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(DirectoryHelper));
 
     // Attempt to delete a directory with retries and an increasing backoff delay between retry attempts.
     // This is useful when the directory may be temporarily in use by another process and the deletion may fail.
-    public static void DeleteDirectoryWithRetries(string directoryPath, bool recursive, int maxRetries = 3, int initialRetryDelayMs = 100, bool throwOnFailure = true)
+    public static void DeleteDirectoryWithRetries(string directoryPath, bool recursive = true, int maxRetries = 3, int initialRetryDelayMs = 100, bool throwOnFailure = true)
     {
         ArgumentOutOfRangeException.ThrowIfNullOrEmpty(directoryPath);
         ArgumentOutOfRangeException.ThrowIfNegative(maxRetries);
