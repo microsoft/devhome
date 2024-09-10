@@ -285,9 +285,12 @@ internal sealed class WERHelper : IDisposable
     private void FindOrCreateWEREntryFromLocalDumpFile(string crashDumpFile)
     {
         var timeGenerated = File.GetCreationTime(crashDumpFile);
+        FileInfo dumpFileInfo = new(crashDumpFile);
+
+        Debug.Assert(dumpFileInfo.Exists, "Why doesn't this file exist?");
 
         // Only look at .dmp files
-        if (Path.GetExtension(crashDumpFile) != ".dmp")
+        if (dumpFileInfo.Extension != ".dmp")
         {
             return;
         }
@@ -301,15 +304,15 @@ internal sealed class WERHelper : IDisposable
         // Parse the filename starting from the back
 
         // Find the last dot index
-        var dmpExtensionIndex = crashDumpFile.LastIndexOf('.');
+        var dmpExtensionIndex = dumpFileInfo.Name.LastIndexOf('.');
         if (dmpExtensionIndex == -1)
         {
-            _log.Information("Unexpected crash dump filename: " + crashDumpFile);
+            _log.Information("Unexpected crash dump filename: " + dumpFileInfo.Name);
             return;
         }
 
         // Remove the .dmp. This should give us a string like a.b.exe.40912
-        var filenameWithNoDmp = crashDumpFile.Substring(0, dmpExtensionIndex);
+        var filenameWithNoDmp = dumpFileInfo.Name.Substring(0, dmpExtensionIndex);
 
         // Find the PID
         var pidIndex = filenameWithNoDmp.LastIndexOf('.');
@@ -325,9 +328,6 @@ internal sealed class WERHelper : IDisposable
         var executableFullPath = filenameWithNoDmp.Substring(0, pidIndex);
 
         FileInfo fileInfo = new(executableFullPath);
-
-        // Build a basic description of this file in case we don't have an event log entry for it
-        FileInfo dumpFileInfo = new(crashDumpFile);
 
         string description = string.Empty;
 
