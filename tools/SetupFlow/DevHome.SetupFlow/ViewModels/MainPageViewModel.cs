@@ -267,7 +267,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     /// Starts a setup flow that only includes repo config.
     /// </summary>
     [RelayCommand]
-    private void StartRepoConfig(string flowTitle)
+    public void StartRepoConfig(string flowTitle)
     {
         _log.Information("Starting flow for repo config");
         StartSetupFlowForTaskGroups(

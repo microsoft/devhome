@@ -4,11 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Factories;
+using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -17,18 +23,45 @@ public partial class RepositoryManagementMainPageViewModel
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
 
+    private readonly INavigationService _navigationService;
+
     private readonly RepositoryManagementItemViewModelFactory _factory;
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
+
+    private readonly Window _window;
 
     private readonly List<RepositoryManagementItemViewModel> _items = [];
 
     public ObservableCollection<RepositoryManagementItemViewModel> Items { get; private set; }
 
     [RelayCommand]
-    public void AddExistingRepository()
+    public async Task AddExistingRepository()
     {
-        throw new NotImplementedException();
+        try
+        {
+            _log.Information("Opening folder picker to select a new location");
+            using var folderPicker = new WindowOpenFolderDialog();
+            var newLocation = await folderPicker.ShowAsync(_window);
+            if (newLocation != null && newLocation.Path.Length > 0)
+            {
+                _log.Information($"Selected '{newLocation.Path}' for the repository path.");
+            }
+            else
+            {
+                _log.Information("Didn't select a location to clone to");
+            }
+        }
+        catch (Exception e)
+        {
+            _log.Error(e, "Failed to open folder picker");
+        }
+    }
+
+    [RelayCommand]
+    public void NavigateToCloneRepositoryExpirence()
+    {
+        _navigationService.NavigateTo(KnownPageKeys.SetupFlow, KnownPageKeys.RepositoryConfiguration);
     }
 
     [RelayCommand]
@@ -55,11 +88,15 @@ public partial class RepositoryManagementMainPageViewModel
 
     public RepositoryManagementMainPageViewModel(
         RepositoryManagementItemViewModelFactory factory,
-        RepositoryManagementDataAccessService dataAccessService)
+        RepositoryManagementDataAccessService dataAccessService,
+        INavigationService navigationService,
+        Window window)
     {
         _dataAccessService = dataAccessService;
         _factory = factory;
         Items = [];
+        _navigationService = navigationService;
+        _window = window;
     }
 
     private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
@@ -71,8 +108,8 @@ public partial class RepositoryManagementMainPageViewModel
         {
             // TODO: get correct values for branch and latest commit information
             var lineItem = _factory.MakeViewModel(repo.RepositoryName, repo.RepositoryClonePath, repo.IsHidden);
-            lineItem.Branch = "main"; // Test value.  Will change in the future.
-            lineItem.LatestCommit = "No commits found"; // Test value.  Will change in the future.
+            lineItem.Branch = "Test Value";
+            lineItem.LatestCommit = "Test Value";
             lineItem.HasAConfigurationFile = repo.HasAConfigurationFile;
             items.Add(lineItem);
         }

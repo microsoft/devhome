@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Windows.Storage;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -29,9 +30,10 @@ public partial class SetupFlowViewModel : ObservableObject
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
 
-    private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
     private readonly string _configurationFlowNavigationParameter = "StartConfigurationFlow";
-    private readonly string _quickstartNavigationParameter = "StartQuickstartPlayground";
+    private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
+
+    private readonly Dictionary<string, Action<string>> _navigationTargets = new();
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
@@ -43,6 +45,10 @@ public partial class SetupFlowViewModel : ObservableObject
         SetupFlowOrchestrator orchestrator,
         PackageProvider packageProvider)
     {
+        _navigationTargets.Add(_creationFlowNavigationParameter, LocalStartCreationFlow);
+        _navigationTargets.Add("StartQuickstartPlayground", LocalStartQuickTestFlow);
+        _navigationTargets.Add(KnownPageKeys.RepositoryConfiguration, LocalStartRepositoryConfigurationFlow);
+
         _host = host;
         _stringResource = stringResource;
         Orchestrator = orchestrator;
@@ -149,37 +155,42 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         // The setup flow isn't set up to support using the navigation service to navigate to specific
         // pages. Instead we need to navigate to the main page and then start the creation flow template manually.
-        var parameter = args.Parameter?.ToString();
+        var parameter = args.Parameter?.ToString() ?? string.Empty;
 
-        if ((!string.IsNullOrEmpty(parameter)) &&
-            parameter.Contains(_creationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(parameter))
         {
-            // We expect that when navigating from anywhere in Dev Home to the create environment page
-            // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
-            // and the second value being the page name that redirection came from for telemetry purposes.
-            var parameters = parameter.Split(';');
-            Cancel();
-            StartCreationFlow(originPage: parameters[1]);
+            _log.Information("args.Parameters is either null or empty.  Not navigating");
+            return;
         }
-        else if ((!string.IsNullOrEmpty(parameter)) &&
-            parameter.Contains(_quickstartNavigationParameter, StringComparison.OrdinalIgnoreCase))
+
+        var didNavigate = false;
+        var actionPair = _navigationTargets.FirstOrDefault(x => parameter.Contains(x.Key, StringComparison.OrdinalIgnoreCase), default);
+        if (actionPair.Key != default)
         {
-            Cancel();
-            Orchestrator.FlowPages = [_mainPageViewModel];
-            var flowTitle = _stringResource.GetLocalized("MainPage_QuickstartPlayground/Header");
-            _mainPageViewModel.StartQuickstart(flowTitle);
+            didNavigate = true;
+            actionPair.Value(parameter);
         }
-        else if (args.Parameter is object[] configObjs && configObjs.Length == 3)
+        else
         {
-            if (configObjs[0] is string configObj && configObj.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+            if (args.Parameter is object[] configObjs && configObjs.Length == 3)
             {
-                // We expect that when navigating from anywhere in Dev Home to the create environment page
-                // that the arg.Parameter variable be an object array with the the first value being 'StartCreationFlow',
-                // the second value being the page name that redirection came from for telemetry purposes, and
-                // the third value being the ComputeSystemReviewItem to setup.
-                Cancel();
-                StartSetupFlow(originPage: configObjs[1] as string, item: configObjs[2] as ComputeSystemReviewItem);
+                if (configObjs[0] is string configObj && configObj.Equals(_configurationFlowNavigationParameter, StringComparison.OrdinalIgnoreCase))
+                {
+                    didNavigate = true;
+
+                    // We expect that when navigating from anywhere in Dev Home to the create environment page
+                    // that the arg.Parameter variable be an object array with the the first value being 'StartCreationFlow',
+                    // the second value being the page name that redirection came from for telemetry purposes, and
+                    // the third value being the ComputeSystemReviewItem to setup.
+                    Cancel();
+                    StartSetupFlow(originPage: configObjs[1] as string, item: configObjs[2] as ComputeSystemReviewItem);
+                }
             }
+        }
+
+        if (!didNavigate)
+        {
+            _log.Warning($"Did not navigate with args {parameter}");
         }
     }
 
@@ -187,5 +198,30 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         Orchestrator.FlowPages = [_mainPageViewModel];
         _mainPageViewModel.StartAppManagementFlow(query);
+    }
+
+    private void LocalStartCreationFlow(string parameter)
+    {
+        // We expect that when navigating from anywhere in Dev Home to the create environment page
+        // that the arg.Parameter variable be semicolon delimited string with the first value being 'StartCreationFlow'
+        // and the second value being the page name that redirection came from for telemetry purposes.
+        var parameters = parameter.Split(';');
+        Cancel();
+        StartCreationFlow(originPage: parameters[1]);
+    }
+
+    private void LocalStartQuickTestFlow(string parameter)
+    {
+        Cancel();
+        Orchestrator.FlowPages = [_mainPageViewModel];
+        var flowTitle = _stringResource.GetLocalized("MainPage_QuickstartPlayground/Header");
+        _mainPageViewModel.StartQuickstart(flowTitle);
+    }
+
+    private void LocalStartRepositoryConfigurationFlow(string parameter)
+    {
+        Cancel();
+        Orchestrator.FlowPages = [_mainPageViewModel];
+        _mainPageViewModel.StartRepoConfig(_stringResource.GetLocalized("ReposConfigPageTitle"));
     }
 }

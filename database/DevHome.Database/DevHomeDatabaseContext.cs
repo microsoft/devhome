@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using DevHome.Common.Helpers;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
