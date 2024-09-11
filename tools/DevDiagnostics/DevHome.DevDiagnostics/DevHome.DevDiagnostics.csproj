@@ -125,6 +125,7 @@
     <ProjectReference Include="..\..\..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
     <ProjectReference Include="..\Utilities\EnableLoaderSnaps\EnableLoaderSnaps.csproj" />
+    <ProjectReference Include="..\Utilities\EnableLocalCabCollection\EnableLocalCabCollection.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

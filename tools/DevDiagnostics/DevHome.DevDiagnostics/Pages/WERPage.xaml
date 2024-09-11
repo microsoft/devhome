@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:DevHome.DevDiagnostics.Controls"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DevHome.DevDiagnostics.Models"
     mc:Ignorable="d"
@@ -36,20 +37,11 @@
 
                 <StackPanel x:Name="AppLocalDumpCollection" Visibility="{x:Bind ViewModel.AttachedToApp, Mode=OneWay}" Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="1" AutomationProperties.AutomationId="AppLocalDumpCollection">
                     <TextBlock x:Uid="LocalDumpCollectionLabel" x:Name="LocalDumpCollectionLabel" VerticalAlignment="Center" Margin="0 0 10 0" AutomationProperties.AutomationId="LocalDumpCollectionLabel"/>
-                    <ToggleSwitch
-                        x:Uid="LocalDumpCollectionToggle"
-                        x:Name="LocalDumpCollectionToggle"
-                        IsOn="{x:Bind ViewModel.LocalCollectionEnabledForApp, Mode=TwoWay}"
-                        IsEnabled="{x:Bind ViewModel.RunningAsAdmin}"
-                        Toggled="LocalDumpCollection_Toggled" MinWidth="0"
-                        AutomationProperties.AutomationId="LocalDumpCollectionToggle"
-                        AutomationProperties.LabeledBy="{Binding ElementName=LocalDumpCollectionLabel}"/>
-                    <Button x:Uid="RunElevatedButtonForWERButton" Visibility="{x:Bind ViewModel.AllowElevationOption}" Command="{x:Bind ViewModel.RunAsAdminCommand}" AutomationProperties.AutomationId="RunElevatedButtonForWERButton">
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <SymbolIcon Symbol="Admin"/>
-                            <TextBlock x:Uid="RunElevatedButtonForWER" x:Name="RunElevatedButtonForWER" Margin="0" AutomationProperties.AutomationId="RunElevatedButtonForWER"/>
-                        </StackPanel>
-                    </Button>
+                    <local:ElevatedButtonControl Text="{x:Bind ViewModel.LocalDumpEnableDisableButtonText, Mode=OneWay}" Grid.Column="1" Command="{x:Bind ViewModel.ToggleLocalCabCollectionCommand}" AutomationProperties.Name="{x:Bind ViewModel.LocalDumpEnableDisableButtonToolTip, Mode=OneWay}">
+                        <ToolTipService.ToolTip>
+                            <ToolTip Content="{x:Bind ViewModel.LocalDumpEnableDisableButtonToolTip, Mode=OneWay}" />
+                        </ToolTipService.ToolTip>
+                    </local:ElevatedButtonControl>
                     <HyperlinkButton x:Uid="LocalDumpMoreInfo" NavigateUri="https://go.microsoft.com/fwlink/?linkid=2279804" AutomationProperties.AutomationId="LocalDumpMoreInfo"/>
                 </StackPanel>
             </Grid>

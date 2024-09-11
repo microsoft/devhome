@@ -1013,9 +1013,9 @@
     <value>Local WER crash dump collection for app</value>
     <comment>Label for Windows Error reporting toggle switch</comment>
   </data>
-  <data name="LocalDumpCollectionToggle.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Toggle settings to allow capture of Windows Error Reporting dumps for offline analysis</value>
-    <comment>Tooltip for Windows Error reporting toggle switch</comment>
+  <data name="LocalDumpCollectionEnableToolTip" xml:space="preserve">
+    <value>Enable capture of Windows Error Reporting dumps for offline analysis</value>
+    <comment>Tooltip to enable local cab collection for Windows Error Reports</comment>
   </data>
   <data name="LocalDumpMoreInfo.Content" xml:space="preserve">
     <value>More</value>
@@ -1297,5 +1297,17 @@ Dump File creation time: {1}</value>
   <data name="InsightsMissingFileEnableLoaderSnapsButtonToolTip" xml:space="preserve">
     <value>Launch an elevated executable to enable loader snaps for this executable.</value>
     <comment>Tooltip that describes what the enable button will do</comment>
+  </data>
+  <data name="LocalDumpCollectionEnable" xml:space="preserve">
+    <value>Enable</value>
+    <comment>Text for a button to allow a user to enable local dump collection</comment>
+  </data>
+  <data name="LocalDumpCollectionDisable" xml:space="preserve">
+    <value>Disable</value>
+    <comment>Text for a button to allow a user to disable local dump collection</comment>
+  </data>
+  <data name="LocalDumpCollectionDisableToolTip" xml:space="preserve">
+    <value>Disable the capture of Windows Error Reporting dumps for offline analysis</value>
+    <comment>Tooltip to disable local cab collection for Windows Error Reports</comment>
   </data>
 </root>

@@ -132,11 +132,6 @@ public sealed partial class WERPage : Page
         }
     }
 
-    private void LocalDumpCollection_Toggled(object sender, RoutedEventArgs e)
-    {
-        ViewModel.ChangeLocalCollectionForApp(LocalDumpCollectionToggle.IsOn);
-    }
-
     private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
     {
         HyperlinkButton? hyperlinkButton = sender as HyperlinkButton;
