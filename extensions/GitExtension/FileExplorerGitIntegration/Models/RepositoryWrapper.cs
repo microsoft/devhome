@@ -1,20 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Concurrent;
-using System.Data;
 using System.Globalization;
-using System.Management.Automation;
 using DevHome.Common.Services;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
-using Serilog;
 
 namespace FileExplorerGitIntegration.Models;
 
 internal sealed class RepositoryWrapper : IDisposable
 {
-    private readonly Repository _repo;
+    private readonly GitDetect _gitDetect = new();
     private readonly ReaderWriterLockSlim _repoLock = new();
 
     private readonly string _workingDirectory;
@@ -33,15 +29,16 @@ internal sealed class RepositoryWrapper : IDisposable
     private readonly string _fileStatusModified;
     private readonly string _fileStatusRenamedModified;
 
-    private Commit? _head;
+    private string? _head;
     private CommitLogCache? _commits;
 
     private bool _disposedValue;
 
     public RepositoryWrapper(string rootFolder)
     {
-        _repo = new Repository(rootFolder);
-        _workingDirectory = _repo.Info.WorkingDirectory;
+        _gitDetect.DetectGit();
+        IsValidGitRepository(rootFolder);
+        _workingDirectory = string.Concat(rootFolder, Path.DirectorySeparatorChar.ToString());
         _statusCache = new StatusCache(rootFolder);
 
         _folderStatusBranch = _stringResource.GetLocalized("FolderStatusBranch");
@@ -56,6 +53,43 @@ internal sealed class RepositoryWrapper : IDisposable
         _fileStatusRenamedModified = _stringResource.GetLocalized("FileStatusRenamedModified");
     }
 
+    public void IsValidGitRepository(string rootFolder)
+    {
+        var validateGitRootRepo = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), rootFolder, "rev-parse --show-toplevel");
+        if (validateGitRootRepo.Status != ProviderOperationStatus.Success)
+        {
+            throw validateGitRootRepo.Ex ?? new InvalidOperationException();
+        }
+        else
+        {
+            var output = validateGitRootRepo.Output;
+            if (output is null || output.Contains("fatal: not a git repository"))
+            {
+                throw new ArgumentOutOfRangeException(rootFolder);
+            }
+            else
+            {
+                if (WslIntegrator.IsWSLRepo(rootFolder))
+                {
+                    var normalizedWorkingDirectory = WslIntegrator.GetWorkingDirectoryPath(rootFolder);
+                    if (output.TrimEnd('\n') != normalizedWorkingDirectory)
+                    {
+                        throw new ArgumentOutOfRangeException(rootFolder);
+                    }
+
+                    return;
+                }
+
+                var normalizedRootFolderPath = rootFolder.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                normalizedRootFolderPath = string.Concat(normalizedRootFolderPath, "\n");
+                if (output != normalizedRootFolderPath)
+                {
+                    throw new ArgumentOutOfRangeException(rootFolder);
+                }
+            }
+        }
+    }
+
     public CommitWrapper? FindLastCommit(string relativePath)
     {
         // Fetching the most recent status to check if the file is renamed
@@ -67,13 +101,24 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private CommitLogCache GetCommitLogCache()
     {
-        // Fast path: if we have an up-to-date commit log, return that
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "rev-parse HEAD");
+        if (result.Status != ProviderOperationStatus.Success)
+        {
+            throw result.Ex ?? new InvalidOperationException();
+        }
+
+        string? head = result.Output?.Trim();
+        if (head == null)
+        {
+            throw new InvalidOperationException("Git command output is null.");
+        }
+
         if (_head != null && _commits != null)
         {
             _repoLock.EnterReadLock();
             try
             {
-                if (_repo.Head.Tip == _head)
+                if (head == _head)
                 {
                     return _commits;
                 }
@@ -88,10 +133,10 @@ internal sealed class RepositoryWrapper : IDisposable
         _repoLock.EnterWriteLock();
         try
         {
-            if (_head == null || _commits == null || _repo.Head.Tip != _head)
+            if (_head == null || _commits == null || head != _head)
             {
-                _commits = new CommitLogCache(_repo);
-                _head = _repo.Head.Tip;
+                _commits = new CommitLogCache(_workingDirectory);
+                _head = head;
             }
         }
         finally
@@ -111,13 +156,13 @@ internal sealed class RepositoryWrapper : IDisposable
         try
         {
             _repoLock.EnterWriteLock();
-            branchName = _repo.Info.IsHeadDetached ?
-                string.Format(CultureInfo.CurrentCulture, _folderStatusDetached, _repo.Head.Tip.Sha[..7]) :
-                string.Format(CultureInfo.CurrentCulture, _folderStatusBranch, _repo.Head.FriendlyName);
-            if (_repo.Head.IsTracking)
+            branchName = repoStatus.IsHeadDetached() ?
+                string.Format(CultureInfo.CurrentCulture, _folderStatusDetached, repoStatus.Sha()[..7]) :
+                string.Format(CultureInfo.CurrentCulture, _folderStatusBranch, repoStatus.BranchName());
+            if (repoStatus.UpstreamBranch() != string.Empty)
             {
-                var behind = _repo.Head.TrackingDetails.BehindBy;
-                var ahead = _repo.Head.TrackingDetails.AheadBy;
+                var behind = repoStatus.BehindBy();
+                var ahead = repoStatus.AheadBy();
                 if (behind == 0 && ahead == 0)
                 {
                     branchStatus = " ≡";
@@ -236,7 +281,6 @@ internal sealed class RepositoryWrapper : IDisposable
         {
             if (disposing)
             {
-                _repo.Dispose();
                 _repoLock.Dispose();
             }
         }

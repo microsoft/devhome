@@ -5,6 +5,7 @@ namespace FileExplorerGitIntegration.Models;
 
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using LibGit2Sharp;
@@ -198,7 +199,7 @@ internal sealed class StatusCache : IDisposable
         //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
         //                       There could be old Git installations that predate it.
         // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
-        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 --branch -z");
         if (result.Status != ProviderOperationStatus.Success || result.Output == null)
         {
             return repoStatus;
@@ -295,6 +296,42 @@ internal sealed class StatusCache : IDisposable
                 // For now, we only care about the <path>.
                 var filePath = line.Substring(2);
                 repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
+            }
+            else if (line.StartsWith("# branch.oid ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.oid <sha>
+                // For now, we only care about the <sha>.
+                repoStatus.SetSha(line.Substring(13));
+            }
+            else if (line.StartsWith("# branch.ab ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.ab +<ahead> -<behind>
+                // For now, we only care about the <ahead> and <behind>.
+                var pieces = line.Split(' ', 4);
+                var aheadBy = int.Parse(pieces[2][1..], CultureInfo.InvariantCulture);
+                var behindBy = int.Parse(pieces[3][1..], CultureInfo.InvariantCulture);
+                repoStatus.SetAheadBy(aheadBy);
+                repoStatus.SetBehindBy(behindBy);
+            }
+            else if (line.StartsWith("# branch.upstream ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.upstream <upstream>
+                // For now, we only care about the <upstream>.
+                repoStatus.SetUpstreamBranch(line.Substring(17));
+            }
+
+            result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "branch --show-current");
+            if (result.Status == ProviderOperationStatus.Success && result.Output != null && result.Output != string.Empty)
+            {
+                repoStatus.SetBranchName(result.Output.TrimEnd('\n'));
+                repoStatus.SetIsBranchDetached(false);
+            }
+            else
+            {
+                repoStatus.SetIsBranchDetached(true);
             }
         }
 

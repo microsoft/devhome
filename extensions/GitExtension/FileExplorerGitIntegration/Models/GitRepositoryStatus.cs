@@ -19,6 +19,12 @@ internal sealed class GitRepositoryStatus
     private readonly List<GitStatusEntry> _renamedInWorkDir = new();
     private readonly List<GitStatusEntry> _conflicted = new();
     private readonly Dictionary<FileStatus, List<GitStatusEntry>> _statusEntries = new();
+    private string _branchName = string.Empty;
+    private bool _isBranchDetached;
+    private string _upstreamBranch = string.Empty;
+    private int _aheadBy;
+    private int _behindBy;
+    private string _sha = string.Empty;
 
     public GitRepositoryStatus()
     {
@@ -45,6 +51,36 @@ internal sealed class GitRepositoryStatus
         }
     }
 
+    public void SetSha(string sha)
+    {
+        _sha = sha;
+    }
+
+    public void SetBranchName(string branchName)
+    {
+        _branchName = branchName;
+    }
+
+    public void SetIsBranchDetached(bool isBranchDetached)
+    {
+        _isBranchDetached = isBranchDetached;
+    }
+
+    public void SetAheadBy(int aheadBy)
+    {
+        _aheadBy = aheadBy;
+    }
+
+    public void SetBehindBy(int behindBy)
+    {
+        _behindBy = behindBy;
+    }
+
+    public void SetUpstreamBranch(string upstreamBranch)
+    {
+        _upstreamBranch = upstreamBranch;
+    }
+
     public Dictionary<string, GitStatusEntry> FileEntries => _fileEntries;
 
     public List<GitStatusEntry> Added => _statusEntries[FileStatus.NewInIndex];
@@ -64,4 +100,16 @@ internal sealed class GitRepositoryStatus
     public List<GitStatusEntry> RenamedInWorkDir => _statusEntries[FileStatus.RenamedInWorkdir];
 
     public List<GitStatusEntry> Conflicted => _statusEntries[FileStatus.Conflicted];
+
+    public string BranchName() => _branchName;
+
+    public bool IsHeadDetached() => _isBranchDetached;
+
+    public int AheadBy() => _aheadBy;
+
+    public int BehindBy() => _behindBy;
+
+    public string Sha() => _sha;
+
+    public string UpstreamBranch() => _upstreamBranch;
 }
