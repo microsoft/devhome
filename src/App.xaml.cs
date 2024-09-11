@@ -84,6 +84,7 @@ public partial class App : Application, IApp
 
     public App()
     {
+        // TODO: Add database migration.
         InitializeComponent();
 #if DEBUG_FAILFAST
         DebugSettings.FailFastOnErrors = true;

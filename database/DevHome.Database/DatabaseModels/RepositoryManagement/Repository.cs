@@ -26,7 +26,8 @@ public class Repository
 
     public string? ConfigurationFileLocation { get; set; }
 
-    public Uri? RepositoryUri { get; set; }
+    // Use string here.  Uri is causing too many problems during add-migration.
+    public string? RepositoryUri { get; set; }
 
     public DateTime? CreatedUTCDate { get; set; }
 

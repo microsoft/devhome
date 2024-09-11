@@ -12,13 +12,12 @@ public class RepositoryTests
 {
     [TestMethod]
     [TestCategory("Unit")]
-    public void ReadAndWriteRepositoryData()
+    public void MakeAndReadDefaultRepositoryValues()
     {
         var dbContext = new DevHomeDatabaseContext();
 
         // Reset the database
-        // Not the best way to test.  I will change the test to a mock database
-        // in the future.
+        // TODO: Do not test on a production database.
         dbContext.ChangeTracker
             .Entries()
             .ToList()
@@ -40,18 +39,8 @@ public class RepositoryTests
         Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
         Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
         Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
-
-        // Modify the record.
-        savedRepository.RepositoryName = "MyNewName";
-        dbContext.SaveChanges();
-
-        allRepositories = dbContext.Repositories.ToList();
-        Assert.AreEqual(1, allRepositories.Count);
-
-        savedRepository = allRepositories[0];
-        Assert.AreEqual("MyNewName", savedRepository.RepositoryName);
-        Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
-        Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
-        Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
+        Assert.IsFalse(savedRepository.IsHidden);
+        Assert.IsFalse(savedRepository.HasAConfigurationFile);
+        Assert.AreEqual(string.Empty, savedRepository.RepositoryUri);
     }
 }

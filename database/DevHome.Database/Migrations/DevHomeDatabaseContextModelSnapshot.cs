@@ -24,7 +24,9 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasColumnType("INTEGER");
 
                 b.Property<string>("ConfigurationFileLocation")
-                    .HasColumnType("TEXT");
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValue(string.Empty);
 
                 b.Property<DateTime?>("CreatedUTCDate")
                     .ValueGeneratedOnAdd()
@@ -50,7 +52,9 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasDefaultValue(string.Empty);
 
                 b.Property<string>("RepositoryUri")
-                    .HasColumnType("TEXT");
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("TEXT")
+                    .HasDefaultValue(string.Empty);
 
                 b.Property<DateTime?>("UpdatedUTCDate")
                     .ValueGeneratedOnAdd()

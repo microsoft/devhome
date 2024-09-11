@@ -3,14 +3,22 @@
 
 using System;
 using System.IO;
+using System.Linq.Expressions;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Serilog;
 
 namespace DevHome.Database;
 
+/// <summary>
+/// To make the database please run the following in Package Manager Console
+/// Update-Database -StartupProject DevHome.Database -Project DevHome.Database
+///
+/// TODO: Remove this comment after database migration is implemeneted.
+/// </summary>
 public class DevHomeDatabaseContext : DbContext
 {
     private const string DatabaseFileName = "DevHome.db";
@@ -77,10 +85,12 @@ public class DevHomeDatabaseContext : DbContext
             var repositoryEntity = modelBuilder.Entity<Repository>();
             if (repositoryEntity != null)
             {
+                repositoryEntity.Property(x => x.ConfigurationFileLocation).HasDefaultValue(string.Empty);
                 repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                repositoryEntity.Property(x => x.RepositoryUri).HasDefaultValue(string.Empty);
                 repositoryEntity.ToTable("Repository");
             }
         }

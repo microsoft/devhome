@@ -51,7 +51,7 @@ public class RepositoryManagementDataAccessService
         {
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
-            RepositoryUri = repositoryUri,
+            RepositoryUri = repositoryUri.ToString(),
         };
 
         if (!string.IsNullOrEmpty(configurationFileLocationAndName))
