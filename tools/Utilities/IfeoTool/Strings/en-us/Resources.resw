@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="IfeoToolWindowTitle" xml:space="preserve">
+    <value>Image File Execution Options: </value>
+  </data>
   <data name="IfeoToolDisplayName" xml:space="preserve">
     <value>Image File Execution Options</value>
   </data>

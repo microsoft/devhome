@@ -6,16 +6,21 @@ using DevHome.IfeoTool.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 using Serilog;
-using Windows.ApplicationModel.Activation;
-using WinRT;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+using WinRT.Interop;
 
 namespace DevHome.IfeoTool;
 
 public partial class IfeoToolApp : Application
 {
+    private readonly DispatcherQueue _dispatcher;
+
     internal static Guid ActivityId { get; set; }
 
     internal static string TargetAppName { get; set; } = string.Empty;
@@ -39,6 +44,7 @@ public partial class IfeoToolApp : Application
 
     public IfeoToolApp()
     {
+        _dispatcher = DispatcherQueue.GetForCurrentThread();
         ActivityId = Guid.NewGuid();
 
         Log("IfeoToolApp_IfeoToolApp", LogLevel.Measure);
@@ -52,7 +58,26 @@ public partial class IfeoToolApp : Application
             services.AddSingleton<IfeoToolWindow, IfeoToolWindow>();
         }).Build();
 
+        AppInstance.GetCurrent().Activated += IfeoToolApp_Activated;
+
         Log("IfeoToolApp_IfeoToolApp_Initialized", LogLevel.Measure);
+    }
+
+    private void IfeoToolApp_Activated(object? sender, AppActivationArguments e)
+    {
+        _dispatcher.TryEnqueue(DispatcherQueuePriority.High, () =>
+        {
+            if (_mainWindow != null)
+            {
+                var hwnd = (HWND)WindowNative.GetWindowHandle(_mainWindow);
+                PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
+
+                // Activate is unreliable so use SetForegroundWindow
+                PInvoke.SetForegroundWindow(hwnd);
+            }
+
+            Log<IfeoToolAppLaunchEvent>("IfeoToolApp_Activated", LogLevel.Critical, new IfeoToolAppLaunchEvent());
+        });
     }
 
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)

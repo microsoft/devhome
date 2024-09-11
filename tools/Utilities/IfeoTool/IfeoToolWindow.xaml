@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<windowex:WindowEx
+<windows:ThemeAwareWindow
     x:Class="DevHome.IfeoTool.IfeoToolWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:windows="using:DevHome.Common.Windows"
     xmlns:windowex="using:WinUIEx"
-    xmlns:common="using:DevHome.Common.Windows"
-    MinWidth="400"
+    Width="640"
+    Height="480"
+    MinWidth="640"
     MinHeight="480"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="MainGrid">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel x:Name="ImageOptionsPanel" Margin="12" Spacing="12">
+        <StackPanel Orientation="Horizontal" Height="31">
+            <Image Source="/Images/dd.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
+            <TextBlock x:Name="IfeoToolTitle" 
+                    Style="{StaticResource CaptionTextBlockStyle}" 
+                    Margin="6,0,0,0" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Center"
+                    AutomationProperties.AutomationId="TitleTextBlock"/>
+        </StackPanel>
+        <StackPanel x:Name="ImageOptionsPanel" Margin="12" Spacing="12" Grid.Row="1">
             <ToggleSwitch x:Uid="AvrfSwitch" x:Name="AvrfSwitch" IsOn="{x:Bind _viewModel.IsAvrfEnabled, Mode=TwoWay}"/>
         </StackPanel>
     </Grid>
-</windowex:WindowEx>
+</windows:ThemeAwareWindow>
