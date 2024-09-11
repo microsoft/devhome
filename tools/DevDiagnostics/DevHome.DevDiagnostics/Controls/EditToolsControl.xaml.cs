@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Helpers;
 using Microsoft.UI.Xaml;
@@ -21,13 +22,22 @@ public sealed partial class EditToolsControl : UserControl
 
     private void UnregisterToolButton_Click(object sender, RoutedEventArgs e)
     {
-        var selectedItems = ToolsDataGrid.SelectedItems;
-        for (var i = selectedItems.Count - 1; i >= 0; i--)
+        List<ExternalTool> toolsToRemove = new();
+
+        // First, grab all the tools we want to remove. The grid seems to have some unexpected behavior
+        // with its list of selected items when you start removing them.
+        foreach (var item in ToolsDataGrid.SelectedItems)
         {
-            if (selectedItems[i] is ExternalTool tool)
+            if (item is ExternalTool tool)
             {
-                _externalTools.RemoveExternalTool(tool);
+                toolsToRemove.Add(tool);
             }
+        }
+
+        // And now remove all of the tools
+        foreach (var tool in toolsToRemove)
+        {
+            _externalTools.RemoveExternalTool(tool);
         }
 
         EnableUnregisterButton();
