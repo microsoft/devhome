@@ -142,6 +142,8 @@ public class RepositoryManagementDataAccessService
                 return false;
             }
 
+            // TODO: Figure out a method to update the entity in the database and
+            // the entity in memory.
             repository.RepositoryClonePath = newLocation;
             maybeRepository.RepositoryClonePath = newLocation;
 

@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -13,7 +12,6 @@ using DevHome.Common.Windows.FileDialog;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Factories;
-using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Serilog;
 

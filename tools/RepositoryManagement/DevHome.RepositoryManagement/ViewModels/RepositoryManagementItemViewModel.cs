@@ -24,10 +24,6 @@ namespace DevHome.RepositoryManagement.ViewModels;
 // TODO: Clean up the code.
 public partial class RepositoryManagementItemViewModel : ObservableObject
 {
-    public const string RepoNamePrefix = "Clone ";
-
-    public const string RepoNameSuffix = ": ";
-
     public const string EventName = "DevHome_RepositorySpecific_Event";
 
     public const string ErrorEventName = "DevHome_RepositorySpecificError_Event";
