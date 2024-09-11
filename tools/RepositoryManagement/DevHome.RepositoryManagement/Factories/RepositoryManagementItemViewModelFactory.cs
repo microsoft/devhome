@@ -18,19 +18,15 @@ public class RepositoryManagementItemViewModelFactory
 
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
-    private readonly IStringResource _stringResource;
-
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
     public RepositoryManagementItemViewModelFactory(
         Window window,
         RepositoryManagementDataAccessService dataAccess,
-        IStringResource stringResource,
         ConfigurationFileBuilder configurationFileBuilder)
     {
         _window = window;
         _dataAccessService = dataAccess;
-        _stringResource = stringResource;
         _configurationFileBuilder = configurationFileBuilder;
     }
 
@@ -53,7 +49,7 @@ public class RepositoryManagementItemViewModelFactory
             localIsHidden = true;
         }
 
-        var newViewModel = new RepositoryManagementItemViewModel(_window, _dataAccessService, _stringResource, _configurationFileBuilder, localRepositoryName, localCloneLocation);
+        var newViewModel = new RepositoryManagementItemViewModel(_window, _dataAccessService, _configurationFileBuilder, localRepositoryName, localCloneLocation);
 
         newViewModel.IsHiddenFromPage = localIsHidden;
 

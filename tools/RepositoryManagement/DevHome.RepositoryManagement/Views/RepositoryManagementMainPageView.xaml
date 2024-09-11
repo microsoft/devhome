@@ -56,27 +56,22 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- TODO: Needs localization -->
             <TextBlock
-                x:Name="EnvironmentsHeader"
+                x:Uid="RepositoryManagementHeader"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
 
-            <!-- TODO: Buttons are not aligned with sort text box.-->
-            <!-- TODO: Needs localization -->
             <Button
+                x:Uid="RepositoryManagementAddRepositoryButton"
                 Grid.Column="1"
-                Content="Add repository"
                 Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"
                 HorizontalAlignment="Right"/>
-            
-            <!-- TODO: Needs localization -->
+
             <Button
+                x:Uid="RepositoryManagementCloneRepositoriesButton"
                 Grid.Column="2"
-                Margin="0,0,50,0"
-                Content="Clone repository"
                 Command="{x:Bind ViewModel.NavigateToCloneRepositoryExpirenceCommand}"
                 HorizontalAlignment="Right"/>
         </Grid>
@@ -88,20 +83,24 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- TODO: Needs localization -->
             <!-- TODO: Implemenet filtering -->
-            <TextBox Grid.Column="0" PlaceholderText="Filter" />
+            <TextBox
+                x:Uid="RepositoryManagementFilterTextBox"
+                Grid.Column="0" />
 
-            <!-- TODO: Needs localization -->
+            <!-- TODO: Implemenet sorting -->
             <TextBlock
+                x:Uid="RepositoryManagementSortTextBlock"
                 Grid.Column="2"
-                VerticalAlignment="Center"
-                Text="Sort:" />
-            <ComboBox Grid.Column="3" MinWidth="150">
-                <!-- TODO: Needs localization. -->
-                <!-- TODO: Implement sort.-->
-                <ComboBoxItem Content="A to Z" IsSelected="True" />
-                <ComboBoxItem Content="Z to A" />
+                VerticalAlignment="Center"/>
+            <ComboBox
+                Grid.Column="3"
+                MinWidth="150">
+                <ComboBoxItem
+                    x:Uid="RepositoryManagementSortAlphabeticallyAscending"
+                    IsSelected="True" />
+                <ComboBoxItem
+                    x:Uid="RepositoryManagementSortAlphabeticallyDescending" />
             </ComboBox>
         </Grid>
         <Grid Grid.Row="2" Padding="0,10,0,0">
@@ -130,18 +129,18 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="50" />
                         </Grid.ColumnDefinitions>
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="0" Text="Name" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="2" Text="Clone path" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="3" Text="Latest commit" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="4" Text="Branch" />
+                        <TextBlock
+                            Grid.Column="0"
+                            x:Uid="RepositoryManagementNameHeader"/>
+                        <TextBlock
+                            Grid.Column="2"
+                            x:Uid="RepositoryManagementClonePathHeader" />
+                        <TextBlock
+                            Grid.Column="3"
+                            x:Uid="RepositoryManagementLatestCommitHeader" />
+                        <TextBlock
+                            Grid.Column="4"
+                            x:Uid="RepositoryManagementBranchHeader" />
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
@@ -169,9 +168,9 @@
                                 Margin="0, 2, 0, 0"
                                 ToolTipService.ToolTip="WinGet Configuration file found. Run it from the '...' menu to set up this repo"/>
                             <TextBlock
+                                x:Uid="RepositoryManagementConfigurationIcon"
                                 Grid.Column="2"
-                                Text="{x:Bind ClonePath, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind ClonePath, Mode=OneWay}" />
+                                Text="{x:Bind ClonePath, Mode=OneWay}"/>
                             <!-- TODO: Provide commit URL, name, author name, and time -->
                             <TextBlock
                                 Grid.Column="3"
@@ -181,20 +180,36 @@
                                 Grid.Column="4"
                                 Text="{x:Bind Branch}"
                                 ToolTipService.ToolTip="{x:Bind Branch}" />
+                            <!-- This button will need an accessible name -->
                             <Button
                                 x:Uid="MoreOptionsButton"
                                 Grid.Column="5"
                                 Style="{StaticResource HorizontalThreeDotsStyle}">
                                 <Button.Flyout>
-                                    <!-- TODO: Needs localization -->
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
-                                        <MenuFlyoutItem Text="Open in Command Line" Command="{x:Bind OpenInCMDCommand}" />
-                                        <MenuFlyoutItem Text="Move Repository" Command="{x:Bind MoveRepositoryCommand}" />
-                                        <MenuFlyoutItem Text="Add to WinGet configuration file" Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
-                                        <MenuFlyoutItem Text="Run WinGet configuration file" Command="{x:Bind RunConfigurationFileCommand}" IsEnabled="{x:Bind HasAConfigurationFile}" />
-                                        <MenuFlyoutItem Text="Remove from this list" Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}" CommandParameter="{x:Bind}" />
-                                        <MenuFlyoutItem Text="Delete" Command="{x:Bind DeleteRepositoryCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementOpenInFileExplorer"
+                                            Command="{x:Bind OpenInFileExplorerCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementOpenInCMD"
+                                            Command="{x:Bind OpenInCMDCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementMoveRepository"
+                                            Command="{x:Bind MoveRepositoryCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementAddToConfigurationFile"
+                                            Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementRunDetectedConfigurationFile"
+                                            Command="{x:Bind RunConfigurationFileCommand}"
+                                            IsEnabled="{x:Bind HasAConfigurationFile}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementRemoveRepositoryFromList"
+                                            Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}"
+                                            CommandParameter="{x:Bind}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RepositoryManagementDeleteRepository"
+                                            Command="{x:Bind DeleteRepositoryCommand}" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

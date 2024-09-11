@@ -34,7 +34,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     private readonly RepositoryManagementDataAccessService _dataAccess;
 
-    private readonly IStringResource _stringResource;
+    private readonly StringResource _stringResource = new("DevHome.RepositoryManagement.pri", "DevHome.RepositoryManagement/Resources");
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
@@ -146,10 +146,10 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         var cantFindRepositoryDialog = new ContentDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
-            Title = $"Would you like to delete this repository?",
-            Content = $"Deleting a repository means it will be permanently removed in File Explorer and from your PC.",
-            PrimaryButtonText = "Yes",
-            CloseButtonText = "Cancel",
+            Title = _stringResource.GetLocalized("DeleteRepositoryDialogTitle"),
+            Content = _stringResource.GetLocalized("DeleteRepositoryDialogContent"),
+            PrimaryButtonText = _stringResource.GetLocalized("RepositoryManagementYes"),
+            CloseButtonText = _stringResource.GetLocalized("RepositoryManagementCancel"),
         };
 
         var dialogResult = await cantFindRepositoryDialog.ShowAsync();
@@ -200,10 +200,8 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         {
             // Show the save file dialog
             using var fileDialog = new WindowSaveFileDialog();
-
-            // TODO: Needs Localization
-            fileDialog.AddFileType(_stringResource.GetLocalized("{0} file", "YAML"), ".winget");
-            fileDialog.AddFileType(_stringResource.GetLocalized("{0} file", "YAML"), ".dsc.yaml");
+            fileDialog.AddFileType(_stringResource.GetLocalized("ConfigurationFileNameFormat", "YAML"), ".winget");
+            fileDialog.AddFileType(_stringResource.GetLocalized("ConfigurationFileNameFormat", "YAML"), ".dsc.yaml");
             var fileName = fileDialog.Show(_window);
 
             // If the user selected a file, write the configuration to it
@@ -254,14 +252,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     internal RepositoryManagementItemViewModel(
         Window window,
         RepositoryManagementDataAccessService dataAccess,
-        IStringResource stringResource,
         ConfigurationFileBuilder configurationFileBuilder,
         string repositoryName,
         string cloneLocation)
     {
         _window = window;
         _dataAccess = dataAccess;
-        _stringResource = stringResource;
         _configurationFileBuilder = configurationFileBuilder;
         RepositoryName = repositoryName;
         _clonePath = cloneLocation;
@@ -372,16 +368,19 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     private async Task CloneLocationNotFoundNotifyUser()
     {
-        // strings need to be localized
         var cantFindRepositoryDialog = new ContentDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
-            Title = $"Can not find {RepositoryName}.",
-            Content = $"Cannot find {RepositoryName} at {Path.GetFullPath(ClonePath)}.  Do you know where it is?",
-            PrimaryButtonText = $"Locate {RepositoryName} via File Explorer.",
-            SecondaryButtonText = "Remove from list",
-            CloseButtonText = "Cancel",
+            Title = _stringResource.GetLocalized("LocateRepositoryDialogTitle", RepositoryName),
+            Content = _stringResource.GetLocalized("LocateRepositoryDialogContent", RepositoryName, ClonePath),
+            PrimaryButtonText = _stringResource.GetLocalized("LocateRepositoryDialogFindWithFileExplorer"),
+            SecondaryButtonText = _stringResource.GetLocalized("LocateRepositoryRemoveFromListInstead"),
+            CloseButtonText = _stringResource.GetLocalized("RepositoryManagementCancel"),
         };
+
+        // https://github.com/microsoft/microsoft-ui-xaml/issues/424
+        // Setting MaxWidth does not change the dialog size.
+        cantFindRepositoryDialog.Resources["ContentDialogMaxWidth"] = 700;
 
         var dialogResult = await cantFindRepositoryDialog.ShowAsync();
 
