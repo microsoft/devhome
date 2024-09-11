@@ -50,7 +50,9 @@ internal sealed class GuestKvpChannel : IDisposable
 
         // Try to remove all parts of the message first just in case if previous communication session was
         // abruptly terminates and we got old messages not removed.
-        for (var i = 0; i < numberOfParts; i++)
+        // The key format is DevSetup{<number>}-<index>-<total> where index starts from 1.
+        // Best effort. Log error if failed, but don't throw.
+        for (var i = 1; i <= numberOfParts; i++)
         {
             RemoveKvpItem($"{kvpNameStart}{i}{kvpNameEnd}");
         }
