@@ -121,7 +121,7 @@ public class ConfigurationFileBuilder
         return configStringWithHeader;
     }
 
-    public string GetConfigurationFileForRepoAndGit(Repository repository)
+    public string MakeConfigurationFileForRepoAndGit(Repository repository)
     {
         // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
         // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.

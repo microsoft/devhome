@@ -216,7 +216,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
                     return;
                 }
 
-                var configFile = _configurationFileBuilder.GetConfigurationFileForRepoAndGit(repositoryToUse);
+                var configFile = _configurationFileBuilder.MakeConfigurationFileForRepoAndGit(repositoryToUse);
                 await File.WriteAllTextAsync(fileName, configFile);
             }
         }

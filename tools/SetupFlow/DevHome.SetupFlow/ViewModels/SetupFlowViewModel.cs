@@ -18,7 +18,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Navigation;
 using Serilog;
 using Windows.Storage;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DevHome.SetupFlow.ViewModels;
 
