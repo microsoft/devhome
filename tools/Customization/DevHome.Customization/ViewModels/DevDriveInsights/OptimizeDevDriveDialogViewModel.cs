@@ -57,11 +57,9 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private bool _isNotDevDrive;
 
-    [ObservableProperty]
-    private List<string> _relatedEnvironmentVariablesToBeSet;
+    private List<string> RelatedEnvironmentVariablesToBeSet { get; set; } = new List<string>();
 
-    [ObservableProperty]
-    private List<string> _relatedCacheDirectories;
+    private List<string> RelatedCacheDirectories { get; set; } = new List<string>();
 
     public OptimizeDevDriveDialogViewModel(
         string existingCacheLocation,
