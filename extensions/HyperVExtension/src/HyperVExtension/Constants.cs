@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Windows.Win32.System.Diagnostics.Debug;
+
 namespace HyperVExtension;
 
 internal sealed class Constants
@@ -29,7 +31,7 @@ internal sealed class Constants
 
     public static string SystemRootPath { get; } = Path.GetPathRoot(Environment.SystemDirectory)!;
 
-    public static int GuestPlatformIdWindows { get; } = (int)Windows.Win32.System.Diagnostics.Debug.VER_PLATFORM.VER_PLATFORM_WIN32_NT;
+    public static int GuestPlatformIdWindows { get; } = (int)VER_PLATFORM.VER_PLATFORM_WIN32_NT;
 
     public static Version MinWindowsVersionForApplyConfiguration { get; } = new Version(10, 0, 19041, 0);
 }

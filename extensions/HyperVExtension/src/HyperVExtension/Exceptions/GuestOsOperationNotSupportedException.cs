@@ -9,7 +9,7 @@ namespace HyperVExtension.Exceptions;
 internal sealed class GuestOsOperationNotSupportedException : GuestOsVersionException
 {
     public GuestOsOperationNotSupportedException(IStringResource stringResource, Dictionary<string, string>? guestOsProperties)
-        : base(stringResource.GetLocalized("GuestOsOperationNotSupported"), guestOsProperties)
+        : base(stringResource.GetLocalized("GuestOsOperationNotSupported", $"Windows {Constants.MinWindowsVersionForApplyConfiguration}"), guestOsProperties)
     {
         HResult = HRESULT.E_NOTSUPPORTED;
     }

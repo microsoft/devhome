@@ -206,12 +206,12 @@
     <comment>Error text to tell the user that an error happened while trying to read virtual machine's OS properties.</comment>
   </data>
   <data name="FailedToDetermineGuestOsVersion" xml:space="preserve">
-    <value>Failed to determine guest OS version</value>
-    <comment>Error text to tell the user that an error happened while trying to determine virtual machine's OS version.</comment>
+    <value>Failed to determine guest OS version. The operation requires {0}</value>
+    <comment>Error text to tell the user that an error happened while trying to determine virtual machine's OS version. The {0} parameter will indicate the required OS version.</comment>
   </data>
   <data name="GuestOsOperationNotSupported" xml:space="preserve">
-    <value>This operation is not supported for the guest OS</value>
-    <comment>Error text to tell the user that an operation is not supported for the virtual machine's OS version.</comment>
+    <value>This operation is not supported for the guest OS. The operation requires {0}</value>
+    <comment>Error text to tell the user that an operation is not supported for the virtual machine's OS version. The {0} parameter will indicate the required OS version.</comment>
   </data>
   <data name="VmCredentialRequest.CancelText" xml:space="preserve">
     <value>Cancel</value>

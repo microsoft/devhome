@@ -817,6 +817,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
         try
         {
+            // The dictionary returned from GetOsVersionInfo is case-insensitive, so the keys are not case-sensitive.
             osVersionInfo = GetOsVersionInfo(guestSession);
             var osPlatformId = int.Parse(osVersionInfo[HyperVStrings.OSPlatformId], CultureInfo.InvariantCulture);
             if (osPlatformId == Constants.GuestPlatformIdWindows)

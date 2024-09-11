@@ -12,7 +12,7 @@ namespace HyperVExtension.Exceptions;
 internal class GuestOsVersionException : Exception
 {
     public GuestOsVersionException(IStringResource stringResource, Exception innerException, Dictionary<string, string>? guestOsProperties)
-        : base(stringResource.GetLocalized("FailedToDetermineGuestOsVersion"), innerException)
+        : base(stringResource.GetLocalized("FailedToDetermineGuestOsVersion", $"Windows {Constants.MinWindowsVersionForApplyConfiguration}"), innerException)
     {
         HResult = innerException.HResult;
         GuestOsProperties = guestOsProperties;
