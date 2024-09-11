@@ -40,7 +40,7 @@ public partial class ResourceUsagePageViewModel : ObservableObject, IDisposable
         _cpuUsage = CommonHelper.GetLocalizedString("CpuPerfTextFormatNoLabel", PerfCounters.Instance.CpuUsage);
         _ramUsage = CommonHelper.GetLocalizedString("MemoryPerfTextFormatNoLabel", PerfCounters.Instance.RamUsageInMB);
         _diskUsage = CommonHelper.GetLocalizedString("DiskPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
-        _gpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.DiskUsage);
+        _gpuUsage = CommonHelper.GetLocalizedString("GpuPerfTextFormatNoLabel", PerfCounters.Instance.GpuUsage);
         _responding = TargetAppData.Instance.TargetProcess?.Responding ?? false;
 
         // We don't have a great way to determine when the "Responding" member changes, so we'll poll every 10 seconds using a Timer
