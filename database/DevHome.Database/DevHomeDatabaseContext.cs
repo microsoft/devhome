@@ -18,6 +18,7 @@ namespace DevHome.Database;
 /// Update-Database -StartupProject DevHome.Database -Project DevHome.Database
 ///
 /// TODO: Remove this comment after database migration is implemeneted.
+/// TODO: Set up Github detection for files in this project.
 /// </summary>
 public class DevHomeDatabaseContext : DbContext
 {
