@@ -19,6 +19,7 @@ namespace DevHome.Database;
 ///
 /// TODO: Remove this comment after database migration is implemeneted.
 /// TODO: Set up Github detection for files in this project.
+/// TODO: Add documentation around migration and Entity Framework in DevHome.
 /// </summary>
 public class DevHomeDatabaseContext : DbContext
 {
