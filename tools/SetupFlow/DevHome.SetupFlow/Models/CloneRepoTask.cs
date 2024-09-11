@@ -284,7 +284,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             // Maybe a "PostExecutionStep" would be nice.
             var dataAccessService = _host.GetService<RepositoryManagementDataAccessService>();
 
-            // Add the configuration file.
+            // If the repository has a configuration file.
             if (!string.IsNullOrEmpty(_summaryScreenInformation.FilePathAndName))
             {
                 dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri);
