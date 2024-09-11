@@ -172,6 +172,7 @@
                                 Grid.Column="2"
                                 Text="{x:Bind ClonePath, Mode=OneWay}"
                                 ToolTipService.ToolTip="{x:Bind ClonePath, Mode=OneWay}" />
+                            <!-- TODO: Provide commit URL, name, author name, and time -->
                             <TextBlock
                                 Grid.Column="3"
                                 Text="{x:Bind LatestCommit}"
