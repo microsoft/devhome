@@ -23,6 +23,7 @@ public static class ServiceExtensions
         services.AddSingleton<OptimizeDevDriveDialogViewModelFactory>(sp =>
             (cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters, relatedEnvironmentVariablesToBeSet, relatedCacheDirectories) =>
                 ActivatorUtilities.CreateInstance<OptimizeDevDriveDialogViewModel>(sp, cacheLocation, environmentVariable, exampleDevDriveLocation, existingDevDriveLetters, relatedEnvironmentVariablesToBeSet, relatedCacheDirectories));
+
         services.AddSingleton<DevDriveInsightsViewModel>();
         services.AddTransient<DevDriveInsightsPage>();
 

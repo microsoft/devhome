@@ -254,18 +254,13 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         return false;
     }
 
-    private string GetDirectoryNameFromPath(string path)
-    {
-        var lastIndex = path.LastIndexOf('\\');
-        return path.Substring(lastIndex + 1);
-    }
-
     private bool MoveDirectories(string sourceDirectory, string targetDirectory, List<string> relatedCacheDirectories)
     {
+        // TODO: If in future we support some cache with multiple relatedCacheDirectories, we should consider using Parallel.ForEachAsync
         foreach (var relatedCacheDirectory in relatedCacheDirectories)
         {
-            var relatedCacheDirectoryName = GetDirectoryNameFromPath(relatedCacheDirectory);
-            if (!MoveDirectory(relatedCacheDirectory, targetDirectory + "\\Related Directories\\" + relatedCacheDirectoryName))
+            var relatedCacheDirectoryName = Path.GetFileName(relatedCacheDirectory);
+            if (!MoveDirectory(relatedCacheDirectory, $@"{targetDirectory}\Related Directories\{relatedCacheDirectoryName}"))
             {
                 return false;
             }
@@ -279,8 +274,8 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         var index = 0;
         foreach (var relatedEnvironmentVariableToBeSet in relatedEnvironmentVariablesToBeSet)
         {
-            var relatedCacheDirectoryName = GetDirectoryNameFromPath(relatedCacheDirectories[index]);
-            SetEnvironmentVariable(relatedEnvironmentVariableToBeSet, directoryPath + "\\Related Directories\\" + relatedCacheDirectoryName);
+            var relatedCacheDirectoryName = Path.GetFileName(relatedCacheDirectories[index]);
+            SetEnvironmentVariable(relatedEnvironmentVariableToBeSet, $@"{directoryPath}\Related Directories\{relatedCacheDirectoryName}");
             index++;
         }
     }

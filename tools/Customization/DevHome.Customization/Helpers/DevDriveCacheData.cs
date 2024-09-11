@@ -13,9 +13,9 @@ public partial class DevDriveCacheData
 
     public List<string>? CacheDirectory { get; set; }
 
-    public List<string>? RelatedCacheDirectories { get; set; }
+    public List<string>? RelatedCacheDirectories { get; set; } = new();
 
-    public List<string>? RelatedEnvironmentVariables { get; set; }
+    public List<string>? RelatedEnvironmentVariables { get; set; } = new();
 
     public string? ExampleSubDirectory { get; set; }
 }
