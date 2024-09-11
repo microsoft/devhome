@@ -63,7 +63,6 @@ public class RepositoryManagementDataAccessService
             else
             {
                 newRepo.ConfigurationFileLocation = configurationFileLocationAndName;
-                newRepo.HasAConfigurationFile = true;
             }
         }
 

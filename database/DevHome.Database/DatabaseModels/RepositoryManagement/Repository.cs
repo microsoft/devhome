@@ -22,7 +22,7 @@ public class Repository
 
     public bool IsHidden { get; set; }
 
-    public bool HasAConfigurationFile { get; set; }
+    public bool HasAConfigurationFile => string.IsNullOrEmpty(ConfigurationFileLocation) ? false : true;
 
     public string? ConfigurationFileLocation { get; set; }
 

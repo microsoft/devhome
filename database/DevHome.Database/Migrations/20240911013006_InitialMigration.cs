@@ -25,7 +25,6 @@ public partial class InitialMigration : Migration
                 RepositoryName = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
                 RepositoryClonePath = table.Column<string>(type: "TEXT", nullable: false, defaultValue: string.Empty),
                 IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
-                HasAConfigurationFile = table.Column<bool>(type: "INTEGER", nullable: false),
                 ConfigurationFileLocation = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
                 RepositoryUri = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
                 CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),

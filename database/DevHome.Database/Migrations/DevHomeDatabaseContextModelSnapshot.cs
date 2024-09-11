@@ -33,9 +33,6 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                     .HasColumnType("TEXT")
                     .HasDefaultValueSql("datetime()");
 
-                b.Property<bool>("HasAConfigurationFile")
-                    .HasColumnType("INTEGER");
-
                 b.Property<bool>("IsHidden")
                     .HasColumnType("INTEGER");
 
