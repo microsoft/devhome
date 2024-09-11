@@ -241,6 +241,8 @@ public partial class WERPageViewModel : ObservableObject
         {
             App.Log("ToggleLocalCabCollection", LogLevel.Measure);
 
+            bool fEnabled = WERUtils.IsCollectionEnabledForApp(attachedApp + ".exe");
+
             try
             {
                 FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
@@ -259,6 +261,13 @@ public partial class WERPageViewModel : ObservableObject
                 {
                     // Wait for the process to update registry keys
                     process.WaitForExit();
+
+                    bool fEnabledAfterProcessLaunch = WERUtils.IsCollectionEnabledForApp(attachedApp + ".exe");
+
+                    if (fEnabledAfterProcessLaunch == fEnabled)
+                    {
+                        App.Log("ToggleLocalCabCollectionFailure", LogLevel.Measure);
+                    }
 
                     _dispatcher.TryEnqueue(() =>
                     {
