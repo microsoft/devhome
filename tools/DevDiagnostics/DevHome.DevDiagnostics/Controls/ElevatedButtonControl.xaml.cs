@@ -18,7 +18,7 @@ using Windows.Foundation.Collections;
 
 namespace DevHome.DevDiagnostics.Controls;
 
-public sealed partial class ElevatedButtonControl : UserControl
+public sealed partial class ElevatedButtonControl : UserControl, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.DevDiagnostics.Controls;
 
-public sealed partial class InsightForMissingFileProcessTerminationControl : UserControl
+public sealed partial class InsightForMissingFileProcessTerminationControl : UserControl, INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
