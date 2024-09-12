@@ -9,13 +9,16 @@ using DevHome.DevDiagnostics.Properties;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Serilog;
+using Windows.ApplicationModel;
 
 namespace DevHome.DevDiagnostics.Helpers;
 
 public class ImageOptionsInternalTool : Tool
 {
-    private const string ButtonText = "\ue9d5";
+    private const string ButtonText = "\ue9d5"; // Checklist icon
     private static readonly string _toolName = CommonHelper.GetLocalizedString("ImageOptionsName");
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
 
     public ImageOptionsInternalTool()
         : base(_toolName, ToolType.Unknown, Settings.Default.IsImageOptionsToolPinned)
@@ -43,9 +46,11 @@ public class ImageOptionsInternalTool : Tool
             FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
             Directory.SetCurrentDirectory(fileInfo.DirectoryName ?? string.Empty);
 
+            var aliasRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}");
+
             var startInfo = new ProcessStartInfo()
             {
-                FileName = "DevHome.IfeoTool.exe",
+                FileName = Path.Combine(aliasRoot, "DevHome.IfeoTool.exe"),
                 Arguments = TargetAppData.Instance.TargetProcess.MainModule.ModuleName,
                 UseShellExecute = true,
                 WorkingDirectory = fileInfo.DirectoryName,
@@ -56,7 +61,7 @@ public class ImageOptionsInternalTool : Tool
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message);
+            _log.Error(ex.Message);
         }
     }
 

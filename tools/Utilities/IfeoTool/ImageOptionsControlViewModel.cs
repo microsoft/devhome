@@ -44,7 +44,7 @@ public partial class ImageOptionsControlViewModel : ObservableObject, IDisposabl
 
     private void PopulateViewModelProperties()
     {
-        if (_ifeo == null)
+        if (_ifeo is null)
         {
             return;
         }
@@ -56,7 +56,7 @@ public partial class ImageOptionsControlViewModel : ObservableObject, IDisposabl
     {
         base.OnPropertyChanged(e);
 
-        if (_ifeo == null)
+        if (_ifeo is null)
         {
             return;
         }
@@ -86,7 +86,7 @@ public partial class ImageOptionsControlViewModel : ObservableObject, IDisposabl
         {
             if (disposing)
             {
-                if (_ifeo != null)
+                if (_ifeo is not null)
                 {
                     _ifeo.GlobalFlagsChanged -= OnGlobalFlagsChanged;
                     _ifeo.Dispose();

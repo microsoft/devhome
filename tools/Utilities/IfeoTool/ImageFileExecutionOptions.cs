@@ -12,6 +12,8 @@ namespace DevHome.IfeoTool;
 [Flags]
 public enum IfeoFlags : uint
 {
+    // These flags are defined in the Windows SDK in ntexapi.h.  The DDK documentation is the best source of information though.
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/global-flag-reference
     None = 0,
     StopOnException = 0x00000001,
     ShowLdrSnaps = 0x00000002,
