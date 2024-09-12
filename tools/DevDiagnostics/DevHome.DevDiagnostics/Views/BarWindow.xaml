@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<winex:WindowEx
+<local:ThemeAwareWindow
     x:Class="DevHome.DevDiagnostics.BarWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -47,13 +47,14 @@
             </StackPanel>
             <StackPanel x:Name="ChromeButtonPanel" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,1,0" Background="Transparent" Grid.Column="1" SizeChanged="{x:Bind SetRegionsForTitleBar}" LayoutUpdated="{x:Bind TitlebarLayoutUpdate}">
                 <Button
-                     x:Uid="ExpandCollapseLayoutButton"
-                     Style="{StaticResource ChromeButton}"
-                     FontSize="{StaticResource CaptionTextBlockFontSize}"
-                     Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}"
-                     HorizontalAlignment="Left"
-                     ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}"
-                     AutomationProperties.AutomationId="ExpandCollapseLayoutButton">
+                    x:Uid="ExpandCollapseLayoutButton"
+                    x:Name="ExpandCollapseLayoutButton"
+                    Style="{StaticResource ChromeButton}"
+                    FontSize="{StaticResource CaptionTextBlockFontSize}"
+                    Command="{x:Bind _viewModel.ToggleExpandedContentVisibilityCommand}"
+                    HorizontalAlignment="Left"
+                    ToolTipService.ToolTip="{x:Bind _viewModel.CurrentExpandToolTip, Mode=OneWay}"
+                    AutomationProperties.AutomationId="ExpandCollapseLayoutButton">
                     <TextBlock x:Name="ExpandCollapseLayoutButtonText"/>
                 </Button>
             </StackPanel>
@@ -216,4 +217,4 @@
             <local:ExpandedViewControl x:Name="ExpandedViewControl"/>
         </Border>
     </Grid>
-</winex:WindowEx>
+</local:ThemeAwareWindow>

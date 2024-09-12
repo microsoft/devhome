@@ -101,4 +101,9 @@ public static class HyperVStrings
     public const string StartingState = "Starting";
     public const string StoppingState = "Stopping";
     public const string ResumingState = "Resuming";
+
+    // Hyper-V properties readable from GuestIntrinsicExchangeItems
+    public const string OSPlatformId = "OSPlatformId";
+    public const string OSVersion = "OSVersion";
+    public const string OSName = "OSName";
 }

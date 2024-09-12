@@ -6,8 +6,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.Environments;
+using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Environments.Models;
 using DevHome.Environments.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -15,6 +19,10 @@ namespace DevHome.Environments.Helpers;
 
 public class DataExtractor
 {
+    private static readonly string _pinnedToStartStatusContext = "PinnedToStartMenuStatus";
+
+    private static readonly string _pinnedToTaskBarStatusContext = "PinnedToTaskBarStatus";
+
     private static readonly StringResource _stringResource = new("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
     /// <summary>
@@ -48,12 +56,15 @@ public class DataExtractor
     public static async Task<List<PinOperationData>> FillDotButtonPinOperationsAsync(ComputeSystemCache computeSystem)
     {
         var supportedOperations = computeSystem.SupportedOperations.Value;
+        var providerId = computeSystem.AssociatedProviderId.Value;
         var operationData = new List<PinOperationData>();
         if (supportedOperations.HasFlag(ComputeSystemOperations.PinToTaskbar))
         {
             var pinResultTaskbar = await computeSystem.GetIsPinnedToTaskbarAsync();
             OperationsViewModel? operation = null;
-            if (pinResultTaskbar.Result.Status == ProviderOperationStatus.Success)
+            var pinStatusSucceeded = pinResultTaskbar.Result.Status == ProviderOperationStatus.Success;
+
+            if (pinStatusSucceeded)
             {
                 if (pinResultTaskbar.IsPinned)
                 {
@@ -67,6 +78,14 @@ public class DataExtractor
                 }
             }
 
+            var telemetryStatus = pinStatusSucceeded ? EnvironmentsTelemetryStatus.Succeeded : EnvironmentsTelemetryStatus.Failed;
+            var telemetryResult = new TelemetryResult(pinResultTaskbar.Result);
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Critical,
+                new EnvironmentOperationEvent(telemetryStatus, ComputeSystemOperations.PinToTaskbar, providerId, telemetryResult, _pinnedToTaskBarStatusContext));
+
             operationData.Add(new(operation, pinResultTaskbar));
         }
 
@@ -74,7 +93,9 @@ public class DataExtractor
         {
             var pinResultStartMenu = await computeSystem.GetIsPinnedToStartMenuAsync();
             OperationsViewModel? operation = null;
-            if (pinResultStartMenu.Result.Status == ProviderOperationStatus.Success)
+            var pinStatusSucceeded = pinResultStartMenu.Result.Status == ProviderOperationStatus.Success;
+
+            if (pinStatusSucceeded)
             {
                 if (pinResultStartMenu.IsPinned)
                 {
@@ -87,6 +108,14 @@ public class DataExtractor
                     operation = new OperationsViewModel(itemText, "\uE718", computeSystem.PinToStartMenuAsync, ComputeSystemOperations.PinToStartMenu, "Pin");
                 }
             }
+
+            var telemetryStatus = pinStatusSucceeded ? EnvironmentsTelemetryStatus.Succeeded : EnvironmentsTelemetryStatus.Failed;
+            var telemetryResult = new TelemetryResult(pinResultStartMenu.Result);
+
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "Environment_OperationInvoked_Event",
+                LogLevel.Critical,
+                new EnvironmentOperationEvent(telemetryStatus, ComputeSystemOperations.PinToStartMenu, providerId, telemetryResult, _pinnedToStartStatusContext));
 
             operationData.Add(new(operation, pinResultStartMenu));
         }

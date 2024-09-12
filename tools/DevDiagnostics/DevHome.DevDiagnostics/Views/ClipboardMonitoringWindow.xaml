@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<winex:WindowEx
+<controls:ThemeAwareWindow
     xmlns:winex="using:WinUIEx"
     x:Class="DevHome.DevDiagnostics.Views.ClipboardMonitoringWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -13,9 +13,29 @@
     MaxHeight="80"
     MinHeight="80"
     IsMaximizable="False"
-    TaskBarIcon="Images/dd.ico">
+    TaskBarIcon="Images/dd.ico"
+    Closed="ThemeAwareWindow_Closed">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop/>
+    </Window.SystemBackdrop>
 
     <Grid>
-        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Height="31">
+            <Image Source="/Images/dd.ico" Height="16" Width="16" Margin="8,2,0,0" VerticalAlignment="Center"/>
+            <TextBlock
+                x:Uid="ClipboardMonitorWindowTitle" 
+                Style="{StaticResource CaptionTextBlockStyle}" 
+                Margin="6,0,0,0" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Center"
+                AutomationProperties.AutomationId="TitleTextBlock"/>
+        </StackPanel>
+
+        <controls:ClipboardMonitorControl x:Name="ClipboardMonitorPanel" Grid.Row="1"/>
     </Grid>
-</winex:WindowEx>
+</controls:ThemeAwareWindow>

@@ -1,5 +1,7 @@
 ﻿GetCurrentPackageFullName
 WIN32_ERROR
+E_UNEXPECTED
+E_NOTSUPPORTED
 E_FAIL
 E_ABORT
 S_OK
@@ -8,3 +10,4 @@ SFBS_FLAGS
 StrFormatByteSizeEx
 SetForegroundWindow
 GetDiskFreeSpaceEx
+VER_PLATFORM

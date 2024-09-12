@@ -560,7 +560,7 @@ public partial class DashboardView : ToolPage, IDisposable
         }
         else
         {
-            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetPlatformRuntimePackageId}"));
+            await Windows.System.Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetsPlatformRuntimePackageId}"));
         }
     }
 

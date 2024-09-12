@@ -40,9 +40,6 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var service = CommonHelper.GetDevHomeService();
-        int num = service.GetNumber();
-
         // Set up Logging
         Environment.SetEnvironmentVariable("DEVHOME_LOGS_ROOT", Path.Join(Common.Logging.LogFolderRoot, "DevHome.DevDiagnostics"));
         var configuration = new ConfigurationBuilder()
@@ -175,6 +172,13 @@ public static class Program
         else if (e.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.StartupTask)
         {
             // Start the app in the background to handle the startup task and register the hotkey
+            if (wasFirstActivation && !App.IsFeatureEnabled())
+            {
+                // Exit the process if PI Expermental feature is not enabled and its the first activation in the process
+                Log.Information("Experimental feature is not enabled. Exiting the process.");
+                Process.GetCurrentProcess().Kill(false);
+            }
+
             // Don't show the bar window for startup task activations.
             return;
         }

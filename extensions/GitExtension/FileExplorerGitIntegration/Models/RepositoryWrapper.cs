@@ -298,6 +298,7 @@ internal sealed class RepositoryWrapper : IDisposable
             {
                 _repo.Dispose();
                 _repoLock.Dispose();
+                _statusCache.Dispose();
             }
         }
 

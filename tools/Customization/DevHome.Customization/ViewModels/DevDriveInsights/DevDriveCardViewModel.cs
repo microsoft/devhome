@@ -52,7 +52,7 @@ public partial class DevDriveCardViewModel : ObservableObject
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
         startInfo.FileName = Path.Join(Environment.SystemDirectory, Fsutil);
 
-        // Run the fstutil cmd to trust the dev drive
+        // Run the fsutil cmd to trust the dev drive
         startInfo.Arguments = $"devdrv trust /f {DriveLetter}:";
         startInfo.UseShellExecute = true;
         startInfo.Verb = "runas";

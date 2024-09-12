@@ -8,6 +8,7 @@ using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 using WSLExtension.Contracts;
 using WSLExtension.DistributionDefinitions;
+using WSLExtension.Exceptions;
 using static HyperVExtension.Helpers.BytesHelper;
 using static WSLExtension.Constants;
 
@@ -19,15 +20,9 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
 
     private readonly string _wslCreationProcessStart;
 
-    private readonly string _waitingToComplete;
-
-    private readonly string _installationFailedTimeout;
-
     private readonly string _installationSuccessful;
 
     private const uint IndeterminateProgressPercentage = 0U;
-
-    private readonly TimeSpan _threeSecondDelayInSeconds = TimeSpan.FromSeconds(3);
 
     private readonly DistributionDefinition _definition;
 
@@ -44,10 +39,6 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
         _stringResource = stringResource;
         _wslManager = wslManager;
         _wslCreationProcessStart = GetLocalizedString("WSLCreationProcessStart", _definition.FriendlyName);
-        _waitingToComplete = GetLocalizedString("WSLWaitingToCompleteInstallation", _definition.FriendlyName);
-
-        _installationFailedTimeout = GetLocalizedString("WSLInstallationFailedTimeOut", _definition.FriendlyName);
-
         _installationSuccessful = GetLocalizedString("WSLInstallationCompletedSuccessfully", _definition.FriendlyName);
     }
 
@@ -62,7 +53,6 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
         {
             try
             {
-                var startTime = DateTime.UtcNow;
                 _log.Information($"Starting installation for {_definition.Name}");
 
                 // Cancel waiting for install if the distribution hasn't been installed after 10 minutes.
@@ -75,33 +65,22 @@ public class WslInstallDistributionOperation : ICreateComputeSystemOperation
                 // Make sure the WSL kernel package is installed before attempting to install the selected distribution.
                 await _wslManager.InstallWslKernelPackageAsync(StatusUpdateCallback, cancellationToken);
 
-                _wslManager.InstallDistribution(_definition.Name);
-                WslRegisteredDistribution? registeredDistribution = null;
-                var distributionInstalledSuccessfully = false;
+                await _wslManager.InstallDistributionPackageAsync(_definition, StatusUpdateCallback, cancellationToken);
+                var registeredDistribution = await _wslManager.GetInformationOnRegisteredDistributionAsync(_definition.Name);
 
-                Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_waitingToComplete, 0));
-                while (!cancellationTokenSource.IsCancellationRequested)
+                if (registeredDistribution != null && registeredDistribution.IsDistributionFullyRegistered())
                 {
-                    // Wait in 3 second intervals before checking. Unfortunately there are no APIs to check for
-                    // installation so we need to keep checking for its completion.
-                    await Task.Delay(_threeSecondDelayInSeconds, cancellationToken);
-                    registeredDistribution = await _wslManager.GetInformationOnRegisteredDistributionAsync(_definition.Name);
-
-                    if ((registeredDistribution != null) &&
-                        (distributionInstalledSuccessfully = registeredDistribution.IsDistributionFullyRegistered()))
-                    {
-                        break;
-                    }
-                }
-
-                _log.Information($"Ending installation for {_definition.Name}. Operation took: {DateTime.UtcNow - startTime}");
-                if (distributionInstalledSuccessfully)
-                {
-                    Progress?.Invoke(this, new CreateComputeSystemProgressEventArgs(_installationSuccessful, 100));
+                    StatusUpdateCallback(_installationSuccessful);
                     return new CreateComputeSystemResult(new WslComputeSystem(_stringResource, registeredDistribution!, _wslManager));
                 }
 
-                throw new TimeoutException(_installationFailedTimeout);
+                throw new InvalidOperationException($"Failed to register {_definition.FriendlyName} distribution");
+            }
+            catch (AppExecutionAliasNotFoundException ex)
+            {
+                _log.Error(ex, $"Unable to register {_definition.FriendlyName} due to app execution alias being absent from registry");
+                var errorMsg = _stringResource.GetLocalized("WSLRegistrationFailedDueToNoAppExAlias", _definition.FriendlyName, ex.Message);
+                return new CreateComputeSystemResult(ex, errorMsg, ex.Message);
             }
             catch (Exception ex)
             {
