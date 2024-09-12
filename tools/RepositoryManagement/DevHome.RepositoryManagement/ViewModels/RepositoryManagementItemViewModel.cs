@@ -21,7 +21,6 @@ using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
-// TODO: Clean up the code.
 public partial class RepositoryManagementItemViewModel : ObservableObject
 {
     public const string EventName = "DevHome_RepositorySpecific_Event";

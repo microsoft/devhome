@@ -29,6 +29,10 @@ public class Repository
     // Use string here.  Uri is causing too many problems during add-migration.
     public string? RepositoryUri { get; set; }
 
+    public Guid? SourceControlClassId { get; set; }
+
+    public bool HasAssignedSourceControlProvider => SourceControlClassId == null ? false : SourceControlClassId.Value != Guid.Empty;
+
     public DateTime? CreatedUTCDate { get; set; }
 
     public DateTime? UpdatedUTCDate { get; set; }

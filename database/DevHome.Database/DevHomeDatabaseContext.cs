@@ -3,12 +3,10 @@
 
 using System;
 using System.IO;
-using System.Linq.Expressions;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Serilog;
 
 namespace DevHome.Database;
@@ -93,6 +91,7 @@ public class DevHomeDatabaseContext : DbContext
                 repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
                 repositoryEntity.Property(x => x.RepositoryUri).HasDefaultValue(string.Empty);
+                repositoryEntity.Property(x => x.SourceControlClassId).HasDefaultValue(Guid.Empty);
                 repositoryEntity.ToTable("Repository");
             }
         }

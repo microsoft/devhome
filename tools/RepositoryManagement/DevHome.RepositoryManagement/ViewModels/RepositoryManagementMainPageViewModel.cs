@@ -9,17 +9,25 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.Windows.FileDialog;
+using DevHome.Customization.Models;
+using DevHome.Customization.ViewModels;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Factories;
+using FileExplorerSourceControlIntegration;
+using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using WinRT;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
 public partial class RepositoryManagementMainPageViewModel
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
+
+    private readonly List<IExtensionWrapper> _repositorySourceControlProviders;
 
     private readonly INavigationService _navigationService;
 
@@ -28,6 +36,10 @@ public partial class RepositoryManagementMainPageViewModel
     private readonly RepositoryManagementDataAccessService _dataAccessService;
 
     private readonly Window _window;
+
+    private readonly IExtensionService _extensionService;
+
+    private readonly FileExplorerViewModel _sourceControlRegistrar;
 
     private readonly List<RepositoryManagementItemViewModel> _items = [];
 
@@ -38,17 +50,57 @@ public partial class RepositoryManagementMainPageViewModel
     {
         try
         {
-            // TODO: Use extensions to determine if the selected location is a repository.
             _log.Information("Opening folder picker to select a new location");
-            using var folderPicker = new WindowOpenFolderDialog();
-            var newLocation = await folderPicker.ShowAsync(_window);
-            if (newLocation != null && newLocation.Path.Length > 0)
+            var existingRepositoryLocation = await _sourceControlRegistrar.AddFolderClick();
+
+            if (string.IsNullOrEmpty(existingRepositoryLocation))
             {
-                _log.Information($"Selected '{newLocation.Path}' for the repository path.");
+                _log.Information("More than one repository was added");
+                return;
             }
-            else
+
+            _log.Information($"Selected '{existingRepositoryLocation}' for the repository path.");
+            var foundSourceControlProvider = false;
+            var extensionCLSID = string.Empty;
+            IExtensionWrapper selectedExtension = null;
+            foreach (var extension in _repositorySourceControlProviders)
             {
-                _log.Information("Didn't select a location to clone to");
+                extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
+                var didAdd = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, existingRepositoryLocation);
+
+                if (didAdd)
+                {
+                    foundSourceControlProvider = true;
+                    selectedExtension = extension;
+                    break;
+                }
+            }
+
+            if (foundSourceControlProvider)
+            {
+                string[] properties =
+                [
+                    "System.VersionControl.LastChangeAuthorName",
+                    "System.VersionControl.LastChangeDate",
+                    "System.VersionControl.LastChangeID",
+                ];
+
+                var blah = new SourceControlProvider();
+                var thisProvider = blah.GetProvider(existingRepositoryLocation);
+                var theseProperties = thisProvider.GetProperties(properties, existingRepositoryLocation);
+
+                /*
+                var theThing = selectedExtension.GetProviderAsync<ILocalRepositoryProvider>().Result;
+                var theRepo = theThing.GetRepository(existingRepositoryLocation);
+                var myProperties = theRepo.Repository.GetProperties(properties, existingRepositoryLocation);
+                */
+
+                /*
+                MarshalInterface<ILocalRepositoryProvider>.FromAbi(providerPtr);
+                var theThing = selectedExtension.GetProviderAsync<ILocalRepositoryProvider>().Result;
+                var theRepo = theThing.GetRepository(existingRepositoryLocation.Path);
+                var myProperties = theRepo.Repository.GetProperties(properties, existingRepositoryLocation.Path);
+                */
             }
         }
         catch (Exception ex)
@@ -89,13 +141,18 @@ public partial class RepositoryManagementMainPageViewModel
         RepositoryManagementItemViewModelFactory factory,
         RepositoryManagementDataAccessService dataAccessService,
         INavigationService navigationService,
-        Window window)
+        Window window,
+        IExtensionService extensionService,
+        FileExplorerViewModel sourceControlRegistrar)
     {
         _dataAccessService = dataAccessService;
         _factory = factory;
         Items = [];
         _navigationService = navigationService;
         _window = window;
+        _extensionService = extensionService;
+        _repositorySourceControlProviders = extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList();
+        _sourceControlRegistrar = sourceControlRegistrar;
     }
 
     private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
