@@ -7,7 +7,8 @@ public enum ErrorType
 {
     None,
     Unknown,
-    RepositoryProvderCreationFailed,
+    RepositoryProviderCreationFailed,
     OpenRepositoryFailed,
     SourceControlExtensionValidationFailed,
+    RegistrationWithFileExplorerFailed,
 }

@@ -145,13 +145,13 @@
                         VerticalAlignment="Center">
                         <TextBlock
                             Text="{x:Bind DisplayName, Mode=OneWay}"
-                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                             Margin=" 0 0 0 0"
                             IsTextSelectionEnabled="True"/>
                         <TextBlock
                             Margin="7 0 0 0"
                             Text="{x:Bind FormattedDeveloperId, Mode=OneWay}"
-                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                            Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                             Style="{ThemeResource BodyTextBlockStyle}"
                             IsTextSelectionEnabled="True"/>
                     </StackPanel>

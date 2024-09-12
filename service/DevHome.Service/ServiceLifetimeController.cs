@@ -11,9 +11,13 @@ using Windows.Win32.System.Com;
 
 namespace DevHome.Service;
 
+internal delegate void ServiceStopEvent();
+
 internal sealed class ServiceLifetimeController
 {
     private static readonly List<Process> _processes = new();
+
+    internal static event ServiceStopEvent? ServiceStop;
 
     public static void RegisterProcess(Process p)
     {
@@ -23,18 +27,24 @@ internal sealed class ServiceLifetimeController
             {
                 _processes.Add(p);
                 p.EnableRaisingEvents = true;
-                p.Exited += (sender, e) =>
-                {
-                    lock (_processes)
-                    {
-                        _processes.Remove(p);
-                        if (_processes.Count == 0)
-                        {
-                            // It's ok to stop the service now
-                            WindowsBackgroundService.Stop();
-                        }
-                    }
-                };
+                p.Exited += ProcessExited;
+            }
+        }
+    }
+
+    private static void ProcessExited(object? sender, EventArgs e)
+    {
+        Process? p = sender as Process;
+        Debug.Assert(p is not null, "What is this object?");
+
+        lock (_processes)
+        {
+            _processes.Remove(p);
+            if (_processes.Count == 0)
+            {
+                // It's ok to stop the service now
+                ServiceStop?.Invoke();
+                WindowsBackgroundService.Stop();
             }
         }
     }

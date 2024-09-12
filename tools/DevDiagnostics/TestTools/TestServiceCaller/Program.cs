@@ -15,8 +15,6 @@ internal sealed class Program
         {
             Console.WriteLine(typeof(IDevHomeService).GUID.ToString());
             var devHomeService = GetDevHomeService();
-            var number = devHomeService.GetNumber();
-            Console.WriteLine("Number = " + number);
         }
         catch (Exception e)
         {

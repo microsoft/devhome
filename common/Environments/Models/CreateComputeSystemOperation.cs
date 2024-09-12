@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Helpers;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
@@ -127,11 +128,14 @@ public class CreateComputeSystemOperation : IDisposable
                 Completed?.Invoke(this, CreateComputeSystemResult);
             }
 
-            var (displayMessage, diagnosticText, telemetryStatus) = ComputeSystemHelpers.LogResult(CreateComputeSystemResult?.Result, _log);
+            var (_, _, telemetryStatus) = ComputeSystemHelpers.LogResult(CreateComputeSystemResult?.Result, _log);
+            var telemetryResult = new TelemetryResult(CreateComputeSystemResult?.Result);
+            var providerId = ProviderDetails.ComputeSystemProvider.Id;
+
             TelemetryFactory.Get<ITelemetry>().Log(
                 "Environment_Creation_Event",
                 LogLevel.Critical,
-                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, telemetryStatus, displayMessage, diagnosticText),
+                new EnvironmentCreationEvent(ProviderDetails.ComputeSystemProvider.Id, telemetryStatus, telemetryResult),
                 _activityId);
 
             RemoveEventHandlers();

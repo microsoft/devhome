@@ -32,13 +32,13 @@
         <ItemsControl x:Name="InsightsItemsControl" ItemsSource="{x:Bind ViewModel.InsightsService.InsightsList}" Grid.Row="2">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:Insight">
-                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0,6" AutomationProperties.AutomationId="Expander">
+                    <Expander ExpandDirection="Down" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" VerticalAlignment="Top" Padding="0,6" AutomationProperties.Name="{x:Bind Title}">
                         <interactivity:Interaction.Behaviors>
                             <helpers:ExpanderBehavior />
                         </interactivity:Interaction.Behaviors>
-                        <Expander.Header>
-                            <Grid AutomationProperties.AutomationId="ExpanderHeader">
-                                <TextBlock Text="{x:Bind Title}" AutomationProperties.AutomationId="TitleTextBlock"/>
+                        <Expander.Header >
+                            <Grid>
+                                <TextBox Text="{x:Bind Title}" AutomationProperties.AutomationId="TitleTextBlock" Style="{StaticResource ReadOnlyTextBox}" />
                                 <controls:InfoBadge
                                     VerticalAlignment="Top"
                                     HorizontalAlignment="Right"
@@ -46,15 +46,12 @@
                                     MinHeight="16"
                                     Opacity="{x:Bind BadgeOpacity, Mode=OneWay}"
                                     Style="{StaticResource SuccessIconInfoBadgeStyle}"
+                                    AutomationProperties.Name="InfoBadge"
                                     AutomationProperties.AutomationId="InfoBadge">
                                 </controls:InfoBadge>
                             </Grid>
                         </Expander.Header>
-                        <RichTextBlock TextWrapping="Wrap" Margin="12,0,12,0" HorizontalAlignment="Left" AutomationProperties.AutomationId="RichTextBlock">
-                            <Paragraph>
-                                <Run Text="{x:Bind Description}"/>
-                            </Paragraph>
-                        </RichTextBlock>
+                        <ContentPresenter Margin="40,0,12,0" HorizontalAlignment="Stretch" Content="{x:Bind CustomControl}" AutomationProperties.AccessibilityView="Raw"/>
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

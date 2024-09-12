@@ -1,5 +1,3 @@
-CoImpersonateClient
-CoRevertToSelf
 CoInitializeEx
 CoInitializeSecurity
 CoGetCallContext
@@ -7,10 +5,14 @@ CoRegisterClassObject
 CoResumeClassObjects
 GetPackageFullNameFromToken
 I_RpcBindingInqLocalClientPID
+OpenProcess
+OpenProcessToken
 CLASS_E_NOAGGREGATION
 E_ACCESSDENIED
 E_NOINTERFACE
 GLOBALOPT_EH_VALUES
 GLOBALOPT_PROPERTIES
 GLOBALOPT_RO_FLAGS
+STATUS_DLL_NOT_FOUND
+WIN32_ERROR
 

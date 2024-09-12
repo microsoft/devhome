@@ -26,12 +26,19 @@ internal sealed class RepositoryWrapper : IDisposable
     private readonly string _folderStatusDetached;
     private readonly string _fileStatusMergeConflict;
     private readonly string _fileStatusUntracked;
+    private readonly string _fileStatusAdded;
+    private readonly string _fileStatusAddedModified;
     private readonly string _fileStatusStaged;
     private readonly string _fileStatusStagedRenamed;
     private readonly string _fileStatusStagedModified;
     private readonly string _fileStatusStagedRenamedModified;
     private readonly string _fileStatusModified;
     private readonly string _fileStatusRenamedModified;
+    private readonly string _submoduleStatusAdded;
+    private readonly string _submoduleStatusChanged;
+    private readonly string _submoduleStatusDirty;
+    private readonly string _submoduleStatusStaged;
+    private readonly string _submoduleStatusUntracked;
 
     private Commit? _head;
     private CommitLogCache? _commits;
@@ -48,12 +55,19 @@ internal sealed class RepositoryWrapper : IDisposable
         _folderStatusDetached = _stringResource.GetLocalized("FolderStatusDetached");
         _fileStatusMergeConflict = _stringResource.GetLocalized("FileStatusMergeConflict");
         _fileStatusUntracked = _stringResource.GetLocalized("FileStatusUntracked");
+        _fileStatusAdded = _stringResource.GetLocalized("FileStatusAdded");
+        _fileStatusAddedModified = _stringResource.GetLocalized("FileStatusAddedModified");
         _fileStatusStaged = _stringResource.GetLocalized("FileStatusStaged");
         _fileStatusStagedRenamed = _stringResource.GetLocalized("FileStatusStagedRenamed");
         _fileStatusStagedModified = _stringResource.GetLocalized("FileStatusStagedModified");
         _fileStatusStagedRenamedModified = _stringResource.GetLocalized("FileStatusStagedRenamedModified");
         _fileStatusModified = _stringResource.GetLocalized("FileStatusModified");
         _fileStatusRenamedModified = _stringResource.GetLocalized("FileStatusRenamedModified");
+        _submoduleStatusAdded = _stringResource.GetLocalized("SubmoduleStatusAdded");
+        _submoduleStatusChanged = _stringResource.GetLocalized("SubmoduleStatusChanged");
+        _submoduleStatusDirty = _stringResource.GetLocalized("SubmoduleStatusDirty");
+        _submoduleStatusStaged = _stringResource.GetLocalized("SubmoduleStatusStaged");
+        _submoduleStatusUntracked = _stringResource.GetLocalized("SubmoduleStatusUntracked");
     }
 
     public CommitWrapper? FindLastCommit(string relativePath)
@@ -102,7 +116,7 @@ internal sealed class RepositoryWrapper : IDisposable
         return _commits;
     }
 
-    public string GetRepoStatus()
+    public string GetRepoStatus(string relativePath)
     {
         var repoStatus = _statusCache.Status;
 
@@ -154,12 +168,20 @@ internal sealed class RepositoryWrapper : IDisposable
 
     public string GetFileStatus(string relativePath)
     {
-        GitStatusEntry? status;
-        if (!_statusCache.Status.FileEntries.TryGetValue(relativePath, out status))
+        if (_statusCache.Status.SubmoduleEntries.TryGetValue(relativePath, out var subStatus))
         {
-            return string.Empty;
+            return ToString(subStatus);
+        }
+        else if (_statusCache.Status.FileEntries.TryGetValue(relativePath, out var status))
+        {
+            return ToString(status);
         }
 
+        return string.Empty;
+    }
+
+    private string ToString(GitStatusEntry status)
+    {
         if (status.Status == FileStatus.Unaltered || status.Status.HasFlag(FileStatus.Nonexistent | FileStatus.Ignored))
         {
             return string.Empty;
@@ -174,7 +196,8 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         var statusString = string.Empty;
-        var staged = status.Status.HasFlag(FileStatus.NewInIndex) || status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex);
+        var added = status.Status.HasFlag(FileStatus.NewInIndex);
+        var staged = status.Status.HasFlag(FileStatus.ModifiedInIndex) || status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.TypeChangeInIndex);
         var modified = status.Status.HasFlag(FileStatus.ModifiedInWorkdir) || status.Status.HasFlag(FileStatus.TypeChangeInWorkdir);
         var renamed = status.Status.HasFlag(FileStatus.RenamedInIndex) || status.Status.HasFlag(FileStatus.RenamedInWorkdir);
 
@@ -197,6 +220,17 @@ internal sealed class RepositoryWrapper : IDisposable
                 statusString = _fileStatusStaged;
             }
         }
+        else if (added)
+        {
+            if (modified)
+            {
+                statusString = _fileStatusAddedModified;
+            }
+            else
+            {
+                statusString = _fileStatusAdded;
+            }
+        }
         else if (modified)
         {
             if (renamed)
@@ -210,6 +244,32 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         return statusString;
+    }
+
+    private string ToString(SubmoduleStatus status)
+    {
+        if (status.HasFlag(SubmoduleStatus.WorkDirFilesModified) || status.HasFlag(SubmoduleStatus.WorkDirFilesUntracked) || status.HasFlag(SubmoduleStatus.WorkDirFilesIndexDirty))
+        {
+            return _submoduleStatusDirty;
+        }
+        else if (status.HasFlag(SubmoduleStatus.WorkDirModified))
+        {
+            return _submoduleStatusChanged;
+        }
+        else if (status.HasFlag(SubmoduleStatus.WorkDirAdded))
+        {
+            return _submoduleStatusUntracked;
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexAdded))
+        {
+            return _submoduleStatusAdded;
+        }
+        else if (status.HasFlag(SubmoduleStatus.IndexModified))
+        {
+            return _submoduleStatusStaged;
+        }
+
+        return string.Empty;
     }
 
     // Detect uncommitted renames and return the original path.
@@ -238,6 +298,7 @@ internal sealed class RepositoryWrapper : IDisposable
             {
                 _repo.Dispose();
                 _repoLock.Dispose();
+                _statusCache.Dispose();
             }
         }
 

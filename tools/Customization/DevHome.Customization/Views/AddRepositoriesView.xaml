@@ -49,7 +49,7 @@
                                 </DropDownButton.Flyout>
                             </DropDownButton>
                             <Button 
-                                x:Name="MoreOptionsButton"
+                                x:Uid="MoreOptionsButton"
                                 Content="&#xe712;"
                                 Height="36" 
                                 MinWidth="36"

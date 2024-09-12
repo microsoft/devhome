@@ -16,7 +16,7 @@ Related repositories include:
 
 ## Installing and running Dev Home
 
-> **Note**: Dev Home requires Windows 11 21H2 (build 22000) or later.
+> **Note**: Dev Home requires Windows 11 version 21H2 (build 22000) or Windows 10 version 22H2 (build 19045) or newer.
 
 If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
 
@@ -88,11 +88,6 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * [Kayla Cinnamon](https://github.com/cinnamon-msft), Senior Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
-
-## Developer guidance
-
-* You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
-* You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
 
 ---
 

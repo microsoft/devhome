@@ -22,18 +22,24 @@ public class EnvironmentLaunchEvent : EventBase
 
     public string? DiagnosticText { get; }
 
+    public int HResult { get; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EnvironmentLaunchEvent"/> class.
     /// </summary>
     /// <param name="providerId">The Id of the compute system provider that owns the compute system that is being launched</param>
     /// <param name="status">The status of the launch operation</param>
-    /// <param name="diagnosticText">Associated error text for the operation</param>
-    public EnvironmentLaunchEvent(string providerId, EnvironmentsTelemetryStatus status, string? displayMessage = null, string? diagnosticText = null)
+    /// <param name="result">Associated telemetry result for the operation</param>
+    public EnvironmentLaunchEvent(
+        string providerId,
+        EnvironmentsTelemetryStatus status,
+        TelemetryResult result)
     {
         ProviderId = providerId;
         Status = status.ToString();
-        DisplayMessage = displayMessage;
-        DiagnosticText = diagnosticText;
+        HResult = result.HResult;
+        DisplayMessage = result.DisplayMessage;
+        DiagnosticText = result.DiagnosticText;
     }
 
     // Inherited but unused.

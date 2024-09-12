@@ -79,17 +79,20 @@ public class WERAnalyzer : IDisposable
         // with it.
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
         {
+            List<Tool> newAnalysisTools = new();
+
             foreach (Tool tool in e.NewItems)
             {
                 if (tool.Type.HasFlag(ToolType.DumpAnalyzer))
                 {
                     _registeredAnalysisTools.Add(tool);
+                    newAnalysisTools.Add(tool);
                 }
             }
 
             foreach (var report in _werAnalysisReports)
             {
-                RunToolAnalysis(report, e.NewItems.Cast<Tool>().ToList());
+                RunToolAnalysis(report, newAnalysisTools);
             }
         }
 
@@ -101,11 +104,11 @@ public class WERAnalyzer : IDisposable
                 if (tool.Type.HasFlag(ToolType.DumpAnalyzer))
                 {
                     _registeredAnalysisTools.Remove(tool);
-                }
 
-                foreach (var report in _werAnalysisReports)
-                {
-                    report.RemoveToolAnalysis(tool);
+                    foreach (var report in _werAnalysisReports)
+                    {
+                        report.RemoveToolAnalysis(tool);
+                    }
                 }
             }
         }
