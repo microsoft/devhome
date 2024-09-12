@@ -176,6 +176,7 @@ public partial class BarWindow : ThemeAwareWindow
 
         button.Icon = tool.GetIcon();
         button.Command = tool.InvokeCommand;
+        button.IsEnabled = tool.IsEnabled;
         button.CommandParameter = this;
         button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 
@@ -230,6 +231,11 @@ public partial class BarWindow : ThemeAwareWindow
                 {
                     ToolsCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
+            }
+            else if (args.PropertyName == nameof(Tool.IsEnabled))
+            {
+                primaryCommandButton.IsEnabled = tool.IsEnabled;
+                secondaryCommandButton.IsEnabled = tool.IsEnabled;
             }
         };
     }

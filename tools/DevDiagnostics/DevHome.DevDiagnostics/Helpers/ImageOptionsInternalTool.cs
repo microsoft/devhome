@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using DevHome.DevDiagnostics.Models;
@@ -21,8 +22,37 @@ public class ImageOptionsInternalTool : Tool
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
 
     public ImageOptionsInternalTool()
-        : base(_toolName, ToolType.Unknown, Settings.Default.IsImageOptionsToolPinned)
+        : base(_toolName, ToolType.Unknown, Settings.Default.IsImageOptionsToolPinned, false)
     {
+        TargetAppData.Instance.PropertyChanged += TargetApp_PropertyChanged;
+    }
+
+    private void TargetApp_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(TargetAppData.Instance.TargetProcess))
+        {
+            return;
+        }
+
+        var process = TargetAppData.Instance.TargetProcess;
+        try
+        {
+            if (process is not null && process.MainModule is not null)
+            {
+                IsEnabled = true;
+            }
+            else
+            {
+                IsEnabled = false;
+            }
+        }
+        catch (Win32Exception ex)
+        {
+            if (ex.NativeErrorCode == (int)Windows.Win32.Foundation.WIN32_ERROR.ERROR_ACCESS_DENIED)
+            {
+                IsEnabled = false;
+            }
+        }
     }
 
     public override IconElement GetIcon()
@@ -43,7 +73,7 @@ public class ImageOptionsInternalTool : Tool
 
         try
         {
-            FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+            var fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
             Directory.SetCurrentDirectory(fileInfo.DirectoryName ?? string.Empty);
 
             var aliasRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"Microsoft\\WindowsApps\\{Package.Current.Id.FamilyName}");
