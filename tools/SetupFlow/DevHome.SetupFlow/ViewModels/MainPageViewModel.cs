@@ -104,7 +104,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.PropertyChanged += ExperimentalFeaturesViewModel_PropertyChanged;
 
         // Hack around this by setting the property explicitly based on the state of the feature.
-        EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
+        EnableQuickstartPlayground = _host.GetService<IExperimentationService>().IsFeatureEnabled(QuickstartPlaygroundFlowFeatureName);
     }
 
     // Create a PropertyChanged handler that we will add to the ExperimentalFeaturesViewModel
@@ -113,7 +113,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     {
         if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))
         {
-            EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
+            EnableQuickstartPlayground = _host.GetService<IExperimentationService>().IsFeatureEnabled(QuickstartPlaygroundFlowFeatureName);
         }
     }
 
