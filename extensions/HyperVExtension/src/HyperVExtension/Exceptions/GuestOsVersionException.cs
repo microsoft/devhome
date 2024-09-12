@@ -64,6 +64,11 @@ internal class GuestOsVersionException : Exception
             }
         }
 
+        if (InnerException != null)
+        {
+            message.Append(CultureInfo.InvariantCulture, $"{Environment.NewLine}{InnerException}.");
+        }
+
         return message.ToString();
     }
 }
