@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow.QuickstartPlayground;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -51,6 +52,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private readonly ILocalSettingsService _localSettingsService;
 
     private readonly ObservableCollection<ExplorerItem> _dataSource = new();
+
+    private readonly IExperimentationService _experimentationService;
 
     public Guid ActivityId { get; }
 
@@ -175,7 +178,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         IQuickStartProjectService quickStartProjectService,
         ILocalSettingsService localSettingsService,
-        SetupFlowOrchestrator orchestrator)
+        SetupFlowOrchestrator orchestrator,
+        IExperimentationService experimentationService)
         : base(stringResource, orchestrator)
     {
         IsStepPage = false;
@@ -184,6 +188,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         _localSettingsService = localSettingsService;
 
         ActivityId = orchestrator.ActivityId;
+
+        _experimentationService = experimentationService;
 
         // Placeholder launch text while button is disabled.
         LaunchButtonText = StringResource.GetLocalized(StringResourceKey.QuickstartPlaygroundLaunchButton, string.Empty);
@@ -602,6 +608,17 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             ShowPrivacyAndTermsLink = false;
             IsLaunchButtonVisible = false;
             ConfigureForProviderSelection();
+        }
+    }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        var isEnabled = _experimentationService.ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, "QuickstartPlayground", StringComparison.Ordinal))!.IsEnabled;
+        if (!isEnabled)
+        {
+            var setupFlow = Application.Current.GetService<SetupFlowViewModel>();
+            setupFlow.ResetToMainPage();
         }
     }
 }

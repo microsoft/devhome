@@ -115,6 +115,11 @@ public partial class SetupFlowViewModel : ObservableObject
         _log.Information($"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Critical, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
 
+        ResetToMainPage();
+    }
+
+    public void ResetToMainPage()
+    {
         Orchestrator.ReleaseRemoteOperationObject();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         _packageProvider.Clear();
