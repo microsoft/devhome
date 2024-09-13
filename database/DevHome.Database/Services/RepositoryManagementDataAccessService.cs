@@ -33,17 +33,17 @@ public class RepositoryManagementDataAccessService
     /// <param name="repositoryName">The name of the repository to add.</param>
     /// <param name="cloneLocation">The local location the repository is cloned to.</param>
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
-    public Repository MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
-    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri, Guid.Empty);
     }
 
-    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri, Guid sourceControlProviderClassId)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid sourceControlProviderClassId)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -14,18 +15,28 @@ using DevHome.Customization.ViewModels;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Factories;
+using DevHome.SetupFlow.Common.Helpers;
+using FileExplorerGitIntegration.Models;
 using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using WinRT;
+using YamlDotNet.Core;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
 public partial class RepositoryManagementMainPageViewModel
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementMainPageViewModel));
+
+    private static readonly string[] _properties =
+    [
+        "System.VersionControl.LastChangeAuthorName",
+        "System.VersionControl.LastChangeDate",
+        "System.VersionControl.LastChangeID",
+    ];
 
     private readonly List<IExtensionWrapper> _repositorySourceControlProviders;
 
@@ -67,8 +78,7 @@ public partial class RepositoryManagementMainPageViewModel
             {
                 extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
                 var didAdd = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, existingRepositoryLocation);
-
-                if (didAdd)
+                if (didAdd.Result == Customization.Helpers.ResultType.Success)
                 {
                     foundSourceControlProvider = true;
                     selectedExtension = extension;
@@ -78,29 +88,22 @@ public partial class RepositoryManagementMainPageViewModel
 
             if (foundSourceControlProvider)
             {
-                string[] properties =
-                [
-                    "System.VersionControl.LastChangeAuthorName",
-                    "System.VersionControl.LastChangeDate",
-                    "System.VersionControl.LastChangeID",
-                ];
+                // Get url and branch name
+                var thisRepoOfSorts = new LibGit2Sharp.Repository(existingRepositoryLocation);
+                var urlOfRepo = thisRepoOfSorts.Network.Remotes.First().Url;
+                var localBranch = thisRepoOfSorts.Head.FriendlyName;
 
+                // get most recent commit information
                 var blah = new SourceControlProvider();
                 var thisProvider = blah.GetProvider(existingRepositoryLocation);
-                var theseProperties = thisProvider.GetProperties(properties, existingRepositoryLocation);
+                var helloAgain = thisProvider.GetProperties(_properties, string.Empty);
+                var authorName = helloAgain["System.VersionControl.LastChangeAuthorName"];
+                var lastChangedDate = helloAgain["System.VersionControl.LastChangeDate"];
+                var lastChangedId = helloAgain["System.VersionControl.LastChangeID"];
 
-                /*
-                var theThing = selectedExtension.GetProviderAsync<ILocalRepositoryProvider>().Result;
-                var theRepo = theThing.GetRepository(existingRepositoryLocation);
-                var myProperties = theRepo.Repository.GetProperties(properties, existingRepositoryLocation);
-                */
+                var configurationFileLocation = GetConfigurationFileIfExists(existingRepositoryLocation);
 
-                /*
-                MarshalInterface<ILocalRepositoryProvider>.FromAbi(providerPtr);
-                var theThing = selectedExtension.GetProviderAsync<ILocalRepositoryProvider>().Result;
-                var theRepo = theThing.GetRepository(existingRepositoryLocation.Path);
-                var myProperties = theRepo.Repository.GetProperties(properties, existingRepositoryLocation.Path);
-                */
+                _dataAccessService.MakeRepository(Path.GetFileName(existingRepositoryLocation), existingRepositoryLocation, configurationFileLocation, urlOfRepo, Guid.Parse(extensionCLSID));
             }
         }
         catch (Exception ex)
@@ -155,21 +158,99 @@ public partial class RepositoryManagementMainPageViewModel
         _sourceControlRegistrar = sourceControlRegistrar;
     }
 
-    private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
+    private async Task<List<RepositoryManagementItemViewModel>> ConvertToLineItems(List<Repository> repositories)
     {
         _log.Information("Converting repositories from the database into view models for display");
         List<RepositoryManagementItemViewModel> items = [];
 
         foreach (var repo in repositories)
         {
-            // TODO: get correct values for branch and latest commit information
-            var lineItem = _factory.MakeViewModel(repo.RepositoryName, repo.RepositoryClonePath, repo.IsHidden);
-            lineItem.Branch = "Test Value";
-            lineItem.LatestCommit = "Test Value";
+            // Get url and branch name
+            var thisRepoOfSorts = new LibGit2Sharp.Repository(repo.RepositoryClonePath);
+            var localBranch = thisRepoOfSorts.Head.FriendlyName;
+
+            // get most recent commit information
+            var blah = new SourceControlProvider();
+
+            // Will throw if the repository is not enhanced
+            // Should this enhance here?
+            IPerFolderRootPropertyProvider thisProvider = null;
+            try
+            {
+                thisProvider = blah.GetProvider(repo.RepositoryClonePath);
+            }
+            catch
+            {
+                _log.Information("Exception when getting the provider.  Will try and make the repository enhanced");
+            }
+
+            var foundSourceControlProvider = false;
+            if (thisProvider == null)
+            {
+                _sourceControlRegistrar.AddRepositoryAlreadyOnMachine(repo.RepositoryClonePath);
+                var extensionCLSID = string.Empty;
+                IExtensionWrapper selectedExtension = null;
+                foreach (var extension in _repositorySourceControlProviders)
+                {
+                    extensionCLSID = extension?.ExtensionClassId ?? string.Empty;
+                    var didAdd = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, repo.RepositoryClonePath);
+                    if (didAdd.Result == Customization.Helpers.ResultType.Success)
+                    {
+                        foundSourceControlProvider = true;
+                        selectedExtension = extension;
+                        break;
+                    }
+                }
+            }
+
+            if (foundSourceControlProvider)
+            {
+                thisProvider = blah.GetProvider(repo.RepositoryClonePath);
+            }
+
+            RepositoryManagementItemViewModel lineItem = null;
+            if (thisProvider != null)
+            {
+                var helloAgain = thisProvider.GetProperties(_properties, string.Empty);
+                var authorName = helloAgain["System.VersionControl.LastChangeAuthorName"];
+                var lastChangedDate = helloAgain["System.VersionControl.LastChangeDate"];
+                var lastChangedId = helloAgain["System.VersionControl.LastChangeID"];
+
+                lineItem = _factory.MakeViewModel(repo.RepositoryName, repo.RepositoryClonePath, repo.IsHidden);
+                lineItem.Branch = localBranch;
+                lineItem.LatestCommit = $"{lastChangedId}*{authorName}*{lastChangedDate}";
+            }
+            else
+            {
+                lineItem = _factory.MakeViewModel(repo.RepositoryName, repo.RepositoryClonePath, repo.IsHidden);
+                lineItem.Branch = string.Empty;
+                lineItem.LatestCommit = string.Empty;
+            }
+
             lineItem.HasAConfigurationFile = repo.HasAConfigurationFile;
             items.Add(lineItem);
         }
 
         return items;
+    }
+
+    private string GetConfigurationFileIfExists(string repositoryPath)
+    {
+        var configurationDirectory = Path.Join(repositoryPath, DscHelpers.ConfigurationFolderName);
+        if (Directory.Exists(configurationDirectory))
+        {
+            var fileToUse = Directory.EnumerateFiles(configurationDirectory)
+            .Where(file => file.EndsWith(DscHelpers.ConfigurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
+                           file.EndsWith(DscHelpers.ConfigurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(configurationFile => File.GetLastWriteTime(configurationFile))
+            .FirstOrDefault();
+
+            if (fileToUse != null)
+            {
+                return fileToUse;
+            }
+        }
+
+        return string.Empty;
     }
 }

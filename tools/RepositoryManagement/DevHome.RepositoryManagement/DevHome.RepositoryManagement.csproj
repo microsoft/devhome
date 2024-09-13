@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\database\DevHome.Database\DevHome.Database.csproj" />
+    <ProjectReference Include="..\..\..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\..\Customization\DevHome.Customization\DevHome.Customization.csproj" />
     <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
   </ItemGroup>

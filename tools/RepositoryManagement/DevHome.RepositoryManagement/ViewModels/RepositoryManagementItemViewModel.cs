@@ -75,6 +75,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     public bool HasAConfigurationFile { get; set; }
 
+    public string LatestCommitSHA { get; set; }
+
+    public string LatestCommitAuthor { get; set; }
+
+    public DateTime LatestCommitDateTime { get; set; }
+
     [RelayCommand]
     public async Task OpenInFileExplorer()
     {
