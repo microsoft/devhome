@@ -127,14 +127,9 @@ public sealed partial class WERPage : Page
         }
         else
         {
-            Debug.Assert(currentSelectedIndex == 0, "Expected only the first item would have a null tag");
+            Debug.Assert(currentSelectedIndex == 0 || currentSelectedIndex == -1, "Expected only the first item would have a null tag");
             WERInfo.Text = info.Report.Description;
         }
-    }
-
-    private void LocalDumpCollection_Toggled(object sender, RoutedEventArgs e)
-    {
-        ViewModel.ChangeLocalCollectionForApp(LocalDumpCollectionToggle.IsOn);
     }
 
     private void HyperlinkButton_Click(object sender, RoutedEventArgs e)

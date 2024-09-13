@@ -45,10 +45,13 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
-            <StackLayout x:Name="ExternalToolsHorizontalLayout" Orientation="Horizontal" />
-            <StackLayout x:Name="ExternalToolsVerticalLayout" Orientation="Vertical" />
 
+            <Style x:Key="ReadOnlyTextBox" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            
             <Thickness x:Key="SettingsCardMargin">0,0,0,4</Thickness>
             <Thickness x:Key="XSmallTopBottomMargin">0,8,0,8</Thickness>
             <Thickness x:Key="HyperlinkButtonNegativeMargin">-12,0,0,0</Thickness>

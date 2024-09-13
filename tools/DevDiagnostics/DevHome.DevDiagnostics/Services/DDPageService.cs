@@ -23,12 +23,10 @@ internal sealed class DDPageService : IPageService
         Configure<InsightsPageViewModel, InsightsPage>();
         Configure<ModulesPageViewModel, ModulesPage>();
         Configure<ProcessListPageViewModel, ProcessListPage>();
-        Configure<ProcessResourceUsagePageViewModel, ProcessResourceUsagePage>();
         Configure<ResourceUsagePageViewModel, ResourceUsagePage>();
         Configure<WERPageViewModel, WERPage>();
         Configure<WinLogsPageViewModel, WinLogsPage>();
         Configure<SettingsPageViewModel, SettingsPage>();
-        Configure<SystemResourceUsagePageViewModel, SystemResourceUsagePage>();
 
         // Settings sub-_pages.
         Configure<PreferencesViewModel, PreferencesPage>();

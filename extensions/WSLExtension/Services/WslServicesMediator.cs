@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Win32;
+using Windows.ApplicationModel;
 using WSLExtension.ClassExtensions;
 using WSLExtension.Contracts;
 using WSLExtension.Exceptions;
@@ -24,9 +25,13 @@ public class WslServicesMediator : IWslServicesMediator
 
     private readonly IProcessCreator _processCreator;
 
+    private readonly string _distributionPackageExesLocation;
+
     public WslServicesMediator(IProcessCreator creator)
     {
         _processCreator = creator;
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        _distributionPackageExesLocation = Path.Combine(localAppData, "Microsoft", "WindowsApps");
     }
 
     /// <inheritdoc cref="IWslServicesMediator.GetAllNamesOfRunningDistributions"/>
@@ -172,11 +177,73 @@ public class WslServicesMediator : IWslServicesMediator
         }
     }
 
-    /// <inheritdoc cref="IWslServicesMediator.InstallDistribution"/>
-    public void InstallDistribution(string distributionName)
+    /// <inheritdoc cref="IWslServicesMediator.InstallAndRegisterDistribution"/>
+    /// <remarks>
+    /// Registers a wsl distribution by getting the details of its distribution launcher. Note: All WSL distributions found in the
+    /// Microsoft Store must be created via the WSL distribution launcher project found here:
+    /// https://github.com/microsoft/WSL-DistroLauncher. The WSL launcher allows WSL packages in the store to be registered with the WSL
+    /// service via the "<launcher>.exe install" command. Where <launcher> is the name of the distributions application exe.
+    /// These are always stored in %localappdata%\Microsoft\WindowsApps\<package-family-name> and only the applications
+    /// executable file is placed in this location.
+    /// </remarks>
+    public void InstallAndRegisterDistribution(Package distributionPackage)
     {
-        _processCreator.CreateProcessWithWindow(
-            WslExe,
-            InstallDistributionArgs.FormatArgs(distributionName));
+        var exeFileName = GetDistributionExecutableNameFromRegistry(distributionPackage.InstalledPath);
+        var exeLocalAppPath = $@"{_distributionPackageExesLocation}\{distributionPackage.Id.FamilyName}\{exeFileName}";
+        var processData = _processCreator.CreateProcessWithoutWindowAndWaitForExit(exeLocalAppPath, InstallAndRegisterDistributionArgs);
+
+        if (!processData.ExitedSuccessfully())
+        {
+            throw new WslServicesMediatorException($"Unable to register {exeLocalAppPath} with WSL service : {processData}");
+        }
+    }
+
+    /// <summary>
+    /// Gets the executable name by using the app path registry location for the user.
+    /// </summary>
+    /// <param name="installationPath">Absolute path to the distribution package's installation location</param>
+    /// <returns>The executable name including the .exe part of the name</returns>
+    private string GetDistributionExecutableNameFromRegistry(string installationPath)
+    {
+        var appPathSubKey = CurrentUser.OpenSubKey(AppPathsRegistryLocation, false);
+
+        if (appPathSubKey == null)
+        {
+            throw new WslServicesMediatorException($"Unable to access subkey {AppPathsRegistryLocation} to find {installationPath}");
+        }
+
+        foreach (var subKeyName in appPathSubKey.GetSubKeyNames())
+        {
+            var subKey = appPathSubKey.OpenSubKey(subKeyName);
+
+            if (subKey == null)
+            {
+                continue;
+            }
+
+            // The subkey for the distribution contains a path value that points to the installation location of the distribution.
+            var appPath = subKey.GetValue("path") as string ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(appPath) && appPath[appPath.Length - 1] == '\\')
+            {
+                // Remove the ending backslash if one is found.
+                appPath = appPath.Substring(0, appPath.Length - 1);
+            }
+
+            if (!appPath.Equals(installationPath, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (subKey.GetValue(null) is string absolutePathToExe)
+            {
+                // value will be in the form of:
+                // C:\Program Files\WindowsApps\46932SUSE.openSUSETumbleweed_24177.7.109.0_x64__022rs5jcyhyac\openSUSE-Tumbleweed.exe
+                // We only need the last part e.g openSUSE-Tumbleweed.exe.
+                return absolutePathToExe.Split('\\').Last();
+            }
+        }
+
+        throw new AppExecutionAliasNotFoundException($"App execution alias not found. No (Default) entry for {installationPath} in {AppPathsRegistryLocation}");
     }
 }

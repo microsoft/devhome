@@ -8,16 +8,7 @@ namespace FileExplorerGitIntegration.Models;
 internal sealed class GitRepositoryStatus
 {
     private readonly Dictionary<string, GitStatusEntry> _fileEntries = new();
-    private readonly List<GitStatusEntry> _added = new();
-    private readonly List<GitStatusEntry> _staged = new();
-    private readonly List<GitStatusEntry> _removed = new();
-    private readonly List<GitStatusEntry> _untracked = new();
-    private readonly List<GitStatusEntry> _modified = new();
-    private readonly List<GitStatusEntry> _missing = new();
-    private readonly List<GitStatusEntry> _ignored = new();
-    private readonly List<GitStatusEntry> _renamedInIndex = new();
-    private readonly List<GitStatusEntry> _renamedInWorkDir = new();
-    private readonly List<GitStatusEntry> _conflicted = new();
+    private readonly Dictionary<string, SubmoduleStatus> _submoduleEntries = new();
     private readonly Dictionary<FileStatus, List<GitStatusEntry>> _statusEntries = new();
 
     public GitRepositoryStatus()
@@ -45,6 +36,11 @@ internal sealed class GitRepositoryStatus
         }
     }
 
+    public bool TryAdd(string path, SubmoduleStatus status)
+    {
+        return _submoduleEntries.TryAdd(path, status);
+    }
+
     public Dictionary<string, GitStatusEntry> FileEntries => _fileEntries;
 
     public List<GitStatusEntry> Added => _statusEntries[FileStatus.NewInIndex];
@@ -64,4 +60,6 @@ internal sealed class GitRepositoryStatus
     public List<GitStatusEntry> RenamedInWorkDir => _statusEntries[FileStatus.RenamedInWorkdir];
 
     public List<GitStatusEntry> Conflicted => _statusEntries[FileStatus.Conflicted];
+
+    public Dictionary<string, SubmoduleStatus> SubmoduleEntries => _submoduleEntries;
 }

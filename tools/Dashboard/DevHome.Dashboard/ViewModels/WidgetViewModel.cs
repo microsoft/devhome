@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -24,8 +25,8 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Newtonsoft.Json.Linq;
 using Serilog;
-using Windows.Data.Json;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -157,7 +158,7 @@ public partial class WidgetViewModel : ObservableObject
                 var hostData = new JsonObject
                 {
                     // TODO Add support to host theme in hostData
-                    { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
+                    { "widgetSize", WidgetSize.ToString().ToLowerInvariant() }, // "small", "medium" or "large"
                 }.ToString();
 
                 var context = new EvaluationContext(cardData, hostData);
@@ -310,6 +311,26 @@ public partial class WidgetViewModel : ObservableObject
         return grid;
     }
 
+    private string MergeJsonData(string jsonStringA, string jsonStringB)
+    {
+        if (string.IsNullOrEmpty(jsonStringA))
+        {
+            return jsonStringB;
+        }
+
+        if (string.IsNullOrEmpty(jsonStringB))
+        {
+            return jsonStringA;
+        }
+
+        var objA = JObject.Parse(jsonStringA);
+        var objB = JObject.Parse(jsonStringB);
+
+        objA.Merge(objB);
+
+        return objA.ToString();
+    }
+
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
         _log.Information($"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
@@ -320,20 +341,22 @@ public partial class WidgetViewModel : ObservableObject
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            var dataToSend = string.Empty;
+            var actionData = string.Empty;
+            var inputsData = string.Empty;
+
             var dataType = executeAction.DataJson.ValueType;
             if (dataType != Windows.Data.Json.JsonValueType.Null)
             {
-                dataToSend = executeAction.DataJson.Stringify();
+                actionData = executeAction.DataJson.Stringify();
             }
-            else
+
+            var inputType = args.Inputs.AsJson().ValueType;
+            if (inputType != Windows.Data.Json.JsonValueType.Null)
             {
-                var inputType = args.Inputs.AsJson().ValueType;
-                if (inputType != Windows.Data.Json.JsonValueType.Null)
-                {
-                    dataToSend = args.Inputs.AsJson().Stringify();
-                }
+                inputsData = args.Inputs.AsJson().Stringify();
             }
+
+            var dataToSend = MergeJsonData(actionData, inputsData);
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
@@ -406,7 +429,7 @@ public partial class WidgetViewModel : ObservableObject
     // we may add Caroussels, Tables and Facts to this list.
     // We just need to add the other controls in this dictionary
     // with the correct function to access its children.
-    private static readonly Dictionary<Type, string> ContainerTypes = new()
+    private static readonly Dictionary<Type, string> _containerTypes = new()
     {
         { typeof(AdaptiveContainer), "get_Items" },
         { typeof(AdaptiveColumn), "get_Items" },
@@ -432,7 +455,7 @@ public partial class WidgetViewModel : ObservableObject
 
         var containerElement = element as IAdaptiveContainerBase;
 
-        foreach (var containerType in ContainerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
+        foreach (var containerType in _containerTypes.Where(containerType => containerType.Key == containerElement.GetType()))
         {
             var itemsMethod = containerType.Key.GetMethod(containerType.Value, BindingFlags.Public | BindingFlags.Instance);
 
