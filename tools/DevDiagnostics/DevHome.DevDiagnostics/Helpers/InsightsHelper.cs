@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DevHome.DevDiagnostics.Models;
+using Microsoft.UI.Dispatching;
 using Serilog;
 
 namespace DevHome.DevDiagnostics.Helpers;
@@ -31,28 +33,47 @@ internal sealed partial class InsightsHelper
     [GeneratedRegex(@"0xc0000005", RegexOptions.IgnoreCase, "en-US")]
     private static partial Regex MemoryErrorRegex();
 
-    private static readonly List<InsightRegex> RegexList = [];
+    private static readonly List<InsightRegex> _regexList = [];
 
     static InsightsHelper()
     {
-        RegexList.Add(new InsightRegex(InsightType.LockedFile, LockedFileErrorRegex()));
-        RegexList.Add(new InsightRegex(InsightType.Security, BufferOverflowErrorRegex()));
-        RegexList.Add(new InsightRegex(InsightType.MemoryViolation, MemoryErrorRegex()));
+        _regexList.Add(new InsightRegex(InsightType.LockedFile, LockedFileErrorRegex()));
+        _regexList.Add(new InsightRegex(InsightType.Security, BufferOverflowErrorRegex()));
+        _regexList.Add(new InsightRegex(InsightType.MemoryViolation, MemoryErrorRegex()));
     }
 
-    internal static Insight? FindPattern(string errorText)
+    internal static async Task<Insight?> FindPattern(string errorText, DispatcherQueue dispatcher)
     {
         SimpleTextInsight? newInsight = null;
 
-        foreach (var insightRegex in RegexList)
+        foreach (var insightRegex in _regexList)
         {
             var match = insightRegex.Regex.Match(errorText);
             if (match.Success)
             {
-                newInsight = new SimpleTextInsight
+                var tcs = new TaskCompletionSource<bool>();
+                dispatcher.TryEnqueue(() =>
                 {
-                    InsightType = insightRegex.InsightType,
-                };
+                    try
+                    {
+                        newInsight = new SimpleTextInsight
+                        {
+                            InsightType = insightRegex.InsightType,
+                        };
+                        tcs.SetResult(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+
+                await tcs.Task;
+
+                if (newInsight is null)
+                {
+                    return null;
+                }
 
                 // Once we flesh out our error database, we should have a more structured way to
                 // handle different types of insights, rather than a switch statement.
