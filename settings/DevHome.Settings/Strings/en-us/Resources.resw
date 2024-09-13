@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
+  <!-- 
     Microsoft ResX Schema 
-
+    
     Version 2.0
-
+    
     The primary goals of this format is to allow a simple XML format 
     that is mostly human readable. The generation and parsing of the 
     various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,29 +26,29 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
+                
     There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
+    
     Each data row contains a name, and value. The row also contains a 
     type or mimetype. Type corresponds to a .NET class that support 
     text/value conversion through the TypeConverter architecture. 
     Classes that don't support this are serialized and stored with the 
     mimetype set.
-
+    
     The mimetype is used for serialized objects, and tells the 
     ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
+    
     Note - application/x-microsoft.net.object.binary.base64 is the format 
     that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
     value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Themes</value>
+    <value>Theme</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -150,7 +150,7 @@
     <comment>Message shown when the user does not have any Dev Home extensions installed</comment>
   </data>
   <data name="Settings_About_Description" xml:space="preserve">
-    <value>Info, Privacy Statement</value>
+    <value>Info, Privacy Statement, Terms of Use</value>
     <comment>Body text description for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_About_Header" xml:space="preserve">
@@ -522,7 +522,7 @@
     <value>Cancel</value>
   </data>
   <data name="Settings_ExperimentalFeatures_Description" xml:space="preserve">
-    <value>Configure experimental features</value>
+    <value>Enable access to features and settings in beta</value>
     <comment>The description for the Experimental Features settings card</comment>
   </data>
   <data name="Settings_ExperimentalFeatures_Header" xml:space="preserve">
@@ -577,10 +577,7 @@
     <value>View property information (such as commit status, last commit date etc.) from source control technologies inside File Explorer</value>
     <comment>Inline description of the FileExplorerSourceControlIntegration experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
   </data>
-  <data name="RepositoryManagementExperiment_Description" xml:space="preserve">
-    <value>Manage Repositories</value>
-  </data>
-  <data name="RepositoryManagementExperiment_Name" xml:space="preserve">
-    <value>Repository Management</value>
+  <data name="Settings_Accounts_AddAccount.Description" xml:space="preserve">
+    <value>Accounts used in Dev Home</value>
   </data>
 </root>

@@ -23,5 +23,7 @@ public partial class Account : ObservableObject
 
     public string LoginId => _devId.LoginId;
 
+    public string ProviderName => _accountsProvider.ProviderName;
+
     public void RemoveAccount() => _accountsProvider.RemoveAccount(_devId.LoginId);
 }

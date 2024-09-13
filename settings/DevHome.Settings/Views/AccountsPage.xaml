@@ -26,7 +26,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <ctControls:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <ctControls:SettingsCard Header="{x:Bind LoginId}" Description="{x:Bind ProviderName}" Margin="{StaticResource SettingsCardMargin}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
             </ctControls:SettingsCard>
         </DataTemplate>
