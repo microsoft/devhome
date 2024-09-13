@@ -354,7 +354,7 @@
       <Extensions>
         <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
         <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
-          <uap5:StartupTask TaskId="DevHome.DevDiagnostics.Hotkey" Enabled="true" DisplayName="ms-resource:DDStartupTaskDisplayName" />
+          <uap5:StartupTask TaskId="DevHome.DevDiagnostics.Hotkey" Enabled="false" DisplayName="ms-resource:DDStartupTaskDisplayName" />
         </uap5:Extension>
         <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
           <uap3:AppExecutionAlias>
