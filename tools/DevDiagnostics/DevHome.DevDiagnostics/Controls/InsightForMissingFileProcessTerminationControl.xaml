@@ -14,7 +14,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Text="{x:Bind Text, Mode=OneWay}" AutomationProperties.AutomationId="ContentTextBock" VerticalAlignment="Center" Style="{StaticResource ReadOnlyTextBox}" />
+        <TextBox Text="{x:Bind Text, Mode=OneWay}" AutomationProperties.AutomationId="ContentTextBock" VerticalAlignment="Center" Style="{StaticResource ReadOnlyTextBox}" TextWrapping="Wrap"/>
         <local:ElevatedButtonControl Text="{x:Bind ElevationButtonTextString}" Grid.Column="1" Margin="20 0 0 0" Command="{x:Bind Command, Mode=OneWay}" AutomationProperties.Name="{x:Bind ElevationButtonTextString}" >
             <ToolTipService.ToolTip>
                 <ToolTip Content="{x:Bind ElevationButtonToolTipString}" />
