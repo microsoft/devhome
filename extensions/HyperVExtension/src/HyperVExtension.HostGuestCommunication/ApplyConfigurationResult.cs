@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Xml.Serialization;
+
 namespace HyperVExtension.HostGuestCommunication;
 
 // Helper class to convert from the DevSetupEngine COM types to the .NET types and use them
@@ -55,15 +57,18 @@ public class ApplyConfigurationResult
     {
     }
 
-    public ApplyConfigurationResult(int resultCode, string? resultDescription = null)
+    public ApplyConfigurationResult(int resultCode, string? resultDescription = null, string? resultDiagnosticText = null)
     {
         ResultCode = resultCode;
         ResultDescription = resultDescription ?? string.Empty;
+        ResultDiagnosticText = resultDiagnosticText ?? string.Empty;
     }
 
     public int ResultCode { get; set; }
 
     public string ResultDescription { get; set; } = string.Empty;
+
+    public string ResultDiagnosticText { get; set; } = string.Empty;
 
     public OpenConfigurationSetResult? OpenConfigurationSetResult { get; set; }
 
