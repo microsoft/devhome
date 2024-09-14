@@ -177,6 +177,38 @@ public class RepositoryManagementDataAccessService
         return true;
     }
 
+    public bool SetSourceControlId(Repository repository, Guid sourceControlId)
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
+            if (maybeRepository == null)
+            {
+                _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return false;
+            }
+
+            // TODO: Figure out a method to update the entity in the database and
+            // the entity in memory.
+            repository.SourceControlClassId = sourceControlId;
+            maybeRepository.SourceControlClassId = sourceControlId;
+
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when updating the clone location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DevHomeDatabaseEvent(nameof(SetSourceControlId), ex));
+            return false;
+        }
+
+        return true;
+    }
+
     public void SetIsHidden(Repository repository, bool isHidden)
     {
         try

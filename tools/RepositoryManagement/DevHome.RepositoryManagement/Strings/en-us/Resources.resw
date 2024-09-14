@@ -133,11 +133,11 @@
     <value>Deleting a repository means it will be permanently removed in File Explorer and from your PC.</value>
     <comment>Message explaining what will happen if the repository is deleted.</comment>
   </data>
-  <data name="RepositoryManagementYes" xml:space="preserve">
+  <data name="Yes" xml:space="preserve">
     <value>Yes</value>
     <comment>Confirmation word</comment>
   </data>
-  <data name="RepositoryManagementCancel" xml:space="preserve">
+  <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
     <comment>Cancel</comment>
   </data>
@@ -157,80 +157,88 @@
     <value>Remove from list</value>
     <comment>Permission to remove the repository from the list.</comment>
   </data>
-  <data name="RepositoryManagementAddRepositoryButton.Content" xml:space="preserve">
+  <data name="AddRepositoryButton.Content" xml:space="preserve">
     <value>Add repository</value>
     <comment>Button content for adding an existing repository</comment>
   </data>
-  <data name="RepositoryManagementHeader.Text" xml:space="preserve">
+  <data name="Header.Text" xml:space="preserve">
     <value>Repositories</value>
     <comment>Title of the Repository Management page for the header</comment>
   </data>
-  <data name="RepositoryManagementCloneRepositoriesButton.Content" xml:space="preserve">
+  <data name="CloneRepositoriesButton.Content" xml:space="preserve">
     <value>Clone repository</value>
     <comment>Button allowing used to navigate to the repository flow</comment>
   </data>
-  <data name="RepositoryManagementFilterTextBox.PlaceholderText" xml:space="preserve">
+  <data name="FilterTextBox.PlaceholderText" xml:space="preserve">
     <value>Filter</value>
     <comment>Place holder text for the text box.</comment>
   </data>
-  <data name="RepositoryManagementSortTextBlock.Text" xml:space="preserve">
+  <data name="SortTextBlock.Text" xml:space="preserve">
     <value>Sort:</value>
     <comment>Introduces the sorting combo box.</comment>
   </data>
-  <data name="RepositoryManagementSortAlphabeticallyAscending.Content" xml:space="preserve">
+  <data name="SortAlphabeticallyAscending.Content" xml:space="preserve">
     <value>A to Z</value>
     <comment>Repositories are sorted from the beginning of the alphabet to the end.</comment>
   </data>
-  <data name="RepositoryManagementSortAlphabeticallyDescending.Content" xml:space="preserve">
+  <data name="SortAlphabeticallyDescending.Content" xml:space="preserve">
     <value>Z to A</value>
     <comment>Repositories are sorted from the end of the alphabet to the beginning.</comment>
   </data>
-  <data name="RepositoryManagementNameHeader.Text" xml:space="preserve">
+  <data name="NameHeader.Text" xml:space="preserve">
     <value>Name</value>
     <comment>Repository name header</comment>
   </data>
-  <data name="RepositoryManagementClonePathHeader.Text" xml:space="preserve">
+  <data name="ClonePathHeader.Text" xml:space="preserve">
     <value>Clone path</value>
     <comment>Repository clone path header</comment>
   </data>
-  <data name="RepositoryManagementLatestCommitHeader.Text" xml:space="preserve">
+  <data name="LatestCommitHeader.Text" xml:space="preserve">
     <value>Latest commit</value>
     <comment>Latest commit header</comment>
   </data>
-  <data name="RepositoryManagementBranchHeader.Text" xml:space="preserve">
+  <data name="BranchHeader.Text" xml:space="preserve">
     <value>Branch</value>
     <comment>Branch header</comment>
   </data>
-  <data name="RepositoryManagementConfigurationIcon.ToolTipService.ToolTip" xml:space="preserve">
+  <data name="ConfigurationIcon.ToolTipService.ToolTip" xml:space="preserve">
     <value>WinGet Configuration file found. Run it from the '...' menu to set up this repo</value>
     <comment>Tooltip telling users to use "..." to run the configuration file.</comment>
   </data>
-  <data name="RepositoryManagementOpenInFileExplorer.Text" xml:space="preserve">
+  <data name="OpenInFileExplorer.Text" xml:space="preserve">
     <value>Open in File Explorer</value>
     <comment>Option to open the selected repository in file explorer.</comment>
   </data>
-  <data name="RepositoryManagementOpenInCMD.Text" xml:space="preserve">
+  <data name="OpenInCMD.Text" xml:space="preserve">
     <value>Open in Command Line</value>
     <comment>Option to open the selected repository in cmd</comment>
   </data>
-  <data name="RepositoryManagementMoveRepository.Text" xml:space="preserve">
+  <data name="MoveRepository.Text" xml:space="preserve">
     <value>Move Repository</value>
     <comment>Option to move the selected repository to a new location</comment>
   </data>
-  <data name="RepositoryManagementAddToConfigurationFile.Text" xml:space="preserve">
+  <data name="AddToConfigurationFile.Text" xml:space="preserve">
     <value>Add to WinGet configuration file</value>
     <comment>Option to make a new configuration file with this repository</comment>
   </data>
-  <data name="RepositoryManagementRunDetectedConfigurationFile.Text" xml:space="preserve">
+  <data name="RunDetectedConfigurationFile.Text" xml:space="preserve">
     <value>Run WinGet configuration file</value>
     <comment>Option to run the detected configuration file in an admin command prompt</comment>
   </data>
-  <data name="RepositoryManagementRemoveRepositoryFromList.Text" xml:space="preserve">
+  <data name="RemoveRepositoryFromList.Text" xml:space="preserve">
     <value>Remove from this list</value>
     <comment>Option to remove the selected repository from the list</comment>
   </data>
-  <data name="RepositoryManagementDeleteRepository.Text" xml:space="preserve">
+  <data name="DeleteRepository.Text" xml:space="preserve">
     <value>Delete</value>
     <comment>Option to remove the repository from the computer</comment>
+  </data>
+  <data name="CommitNotFound.Text" xml:space="preserve">
+    <value>Not found</value>
+    <comment>message in the repository management when commit information isn't found.</comment>
+  </data>
+  <data name="MoreOptionsAutomationName" xml:space="preserve">
+    <value>More options for repository {0}</value>
+    <comment>{Locked="{0}"} {0} name of the repository.  Automation name for the ... menu</comment>
   </data>
 </root>

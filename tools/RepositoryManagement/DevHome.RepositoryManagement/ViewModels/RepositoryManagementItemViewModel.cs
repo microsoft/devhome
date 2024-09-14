@@ -79,7 +79,11 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     public string LatestCommitAuthor { get; set; }
 
-    public DateTime LatestCommitDateTime { get; set; }
+    public int MinutesSinceLatestCommit { get; set; }
+
+    public bool HasCommitInformation { get; set; }
+
+    public string MoreOptionsButtonAutomationName { get; set; }
 
     [RelayCommand]
     public async Task OpenInFileExplorer()
@@ -153,8 +157,8 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             XamlRoot = _window.Content.XamlRoot,
             Title = _stringResource.GetLocalized("DeleteRepositoryDialogTitle"),
             Content = _stringResource.GetLocalized("DeleteRepositoryDialogContent"),
-            PrimaryButtonText = _stringResource.GetLocalized("RepositoryManagementYes"),
-            CloseButtonText = _stringResource.GetLocalized("RepositoryManagementCancel"),
+            PrimaryButtonText = _stringResource.GetLocalized("Yes"),
+            CloseButtonText = _stringResource.GetLocalized("Cancel"),
         };
 
         var dialogResult = await cantFindRepositoryDialog.ShowAsync();
@@ -380,7 +384,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             Content = _stringResource.GetLocalized("LocateRepositoryDialogContent", RepositoryName, ClonePath),
             PrimaryButtonText = _stringResource.GetLocalized("LocateRepositoryDialogFindWithFileExplorer"),
             SecondaryButtonText = _stringResource.GetLocalized("LocateRepositoryRemoveFromListInstead"),
-            CloseButtonText = _stringResource.GetLocalized("RepositoryManagementCancel"),
+            CloseButtonText = _stringResource.GetLocalized("Cancel"),
         };
 
         // https://github.com/microsoft/microsoft-ui-xaml/issues/424
