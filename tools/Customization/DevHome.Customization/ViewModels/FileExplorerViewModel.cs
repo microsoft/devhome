@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -21,7 +20,6 @@ using FileExplorerSourceControlIntegration;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Storage;
 
@@ -229,7 +227,7 @@ public partial class FileExplorerViewModel : ObservableObject
         });
         RefreshTrackedRepositories();
         return result;
-  }
+    }
 
     public bool CalculateEnabled(string settingName)
     {
