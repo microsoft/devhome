@@ -4,22 +4,20 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    NavigationPagesResult::NavigationPagesResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> const& navigationPages)
+    NavigationPagesResult::NavigationPagesResult(array_view<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage const> navigationPages)
     {
-        _NavigationPages = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage>>(navigationPages);
-        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
+        throw hresult_not_implemented();
     }
     NavigationPagesResult::NavigationPagesResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
-        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText);
+        throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPagesResult::NavigationPages()
+    com_array<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPagesResult::NavigationPages()
     {
-        return *_NavigationPages.get();
+        throw hresult_not_implemented();
     }
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult NavigationPagesResult::Result()
     {
-        return *_Result.get();
+        throw hresult_not_implemented();
     }
 }
