@@ -402,6 +402,19 @@
         </uap3:Extension>
       </Extensions>
     </Application>
+    <Application Id="DevHome.IfeoTool" Executable="DevHome.IfeoTool.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:IfeoToolDisplayName" Description="ms-resource:IfeoToolDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.IfeoTool.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
   </Applications>
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
