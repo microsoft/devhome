@@ -38,7 +38,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
 
-    private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
+    internal const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
 
     private readonly IHost _host;
     private readonly IWinGet _winget;

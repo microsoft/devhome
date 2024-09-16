@@ -614,7 +614,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void OnLoaded()
     {
-        var isEnabled = _experimentationService.IsFeatureEnabled("QuickstartPlayground");
+        var isEnabled = _experimentationService.IsFeatureEnabled(MainPageViewModel.QuickstartPlaygroundFlowFeatureName);
         if (!isEnabled)
         {
             var setupFlow = Application.Current.GetService<SetupFlowViewModel>();
