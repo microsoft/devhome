@@ -1295,7 +1295,7 @@ Dump File creation time: {1}</value>
     <comment>Title of an insight informing the user of a reason why a process exited</comment>
   </data>
   <data name="InsightProcessExitMissingDependencies" xml:space="preserve">
-    <value>Process {0} (pid: {1,6}) exited with error code {2}. Enabling loader snaps and trying to launch the process again can help diagnose why the app exited.</value>
+    <value>Process {0} (pid: {1,6}) exited with error code {2}. To help diagnose this issue, enable loader snaps and try to launch the process again.</value>
     <comment>{Locked="{0}, "{1,6}", "{2}"} Formatted string informing the user the process name {0}, the Process ID {1}, the exit code {2} of a process.</comment>
   </data>
   <data name="InsightProcessExitMissingDependenciesIdentifiedTitle" xml:space="preserve">

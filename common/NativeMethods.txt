@@ -11,6 +11,9 @@ GetWindowLong
 WINDOW_EX_STYLE
 SHLoadIndirectString
 StrFormatByteSizeEx
+OpenProcessToken
+GetTokenInformation
+GetCurrentProcess
 SFBS_FLAGS
 MAX_PATH
 GetDpiForWindow
@@ -20,3 +23,4 @@ SetWindowPos
 MonitorFromWindow
 RegNotifyChangeKeyValue
 E_INVALIDARG
+TOKEN_ELEVATION_TYPE

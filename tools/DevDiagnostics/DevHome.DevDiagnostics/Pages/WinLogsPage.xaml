@@ -99,7 +99,15 @@
                 <toolkit:DataGridTemplateColumn x:Uid="LogMessageColumn" Width="*" ClipboardContentBinding="{Binding Message}" >
                     <toolkit:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Message}" SelectedText="{Binding SelectedText, Mode=TwoWay}" IsReadOnly="True"/>
+                            <TextBox
+                                Text="{Binding Message}"
+                                SelectedText="{Binding SelectedText, Mode=TwoWay}"
+                                IsReadOnly="True"
+                                TextWrapping="Wrap"
+                                MaxHeight="100"
+                                VerticalAlignment="Top"
+                                AcceptsReturn="True"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                         </DataTemplate>
                     </toolkit:DataGridTemplateColumn.CellTemplate>
                 </toolkit:DataGridTemplateColumn>
