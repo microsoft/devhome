@@ -40,6 +40,13 @@ namespace Microsoft.Windows.DevHome.SDK
         Failure
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    enum DisplayType
+    {
+        AdaptiveCard = 1,
+        WebView2 = 2,
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass ProviderOperationResult {
         ProviderOperationResult(ProviderOperationStatus status, HRESULT error, String displayMessage, String diagnosticText);
@@ -333,7 +340,12 @@ namespace Microsoft.Windows.DevHome.SDK
     interface ISettingsProvider2
         requires ISettingsProvider
     {
-        WebViewResult GetSettingsWebView();
+        DisplayType DisplayType
+        {
+            get;
+        };
+
+        WebViewResult GetWebView();
     };
 
     // Settings
@@ -1716,7 +1728,16 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
+        // Display type for this page.
+        DisplayType DisplayType
+        {
+            get;
+        };
+
         // Webview
         WebViewResult GetWebView();
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetAdaptiveCardSession();
     };
 }
