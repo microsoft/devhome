@@ -2027,4 +2027,12 @@
     <value>Generate configuration file info</value>
 	<comment>Narration for the informational icon next to the "Generate Configuration file" button</comment>
   </data>
+  <data name="NoInternetConnectionTitle" xml:space="preserve">
+    <value>No internet connection</value>
+	<comment>Title displayed when there is no internet connection</comment>
+  </data>
+  <data name="NoInternetConnectionDescription" xml:space="preserve">
+    <value>Please check your network settings and try again.</value>
+	<comment>Text displayed when there is no internet connection</comment>
+  </data>
 </root>

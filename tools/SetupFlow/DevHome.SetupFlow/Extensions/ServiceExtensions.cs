@@ -55,6 +55,7 @@ public static class ServiceExtensions
         services.AddTransient<PackageCatalogListViewModel>();
         services.AddTransient<AppManagementViewModel>();
         services.AddTransient<AppManagementReviewViewModel>();
+        services.AddTransient<SearchMessageViewModel>();
 
         // Services
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
