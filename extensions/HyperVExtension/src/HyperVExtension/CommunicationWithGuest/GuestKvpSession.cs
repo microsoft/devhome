@@ -70,6 +70,11 @@ internal sealed class GuestKvpSession : IDisposable
         return result;
     }
 
+    public Dictionary<string, string> ReadGuestProperties()
+    {
+        return _channel.ReadGuestProperties();
+    }
+
     public void Dispose()
     {
         Dispose(true);

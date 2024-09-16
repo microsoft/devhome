@@ -28,17 +28,22 @@ public abstract partial class Tool : ObservableObject
     [property: JsonIgnore]
     private ImageSource? _toolIconSource;
 
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private bool _isEnabled;
+
     public string Name { get; private set; }
 
     [JsonConverter(typeof(EnumStringConverter<ToolType>))]
     public ToolType Type { get; private set; }
 
-    public Tool(string name, ToolType type, bool isPinned)
+    public Tool(string name, ToolType type, bool isPinned, bool isEnabled = true)
     {
         Name = name;
         Type = type;
         IsPinned = isPinned;
         PinGlyph = IsPinned ? CommonHelper.UnpinGlyph : CommonHelper.PinGlyph;
+        IsEnabled = isEnabled;
     }
 
     public abstract IconElement GetIcon();

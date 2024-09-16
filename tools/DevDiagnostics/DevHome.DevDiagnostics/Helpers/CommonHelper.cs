@@ -178,11 +178,22 @@ internal sealed class CommonHelper
 
     public static IDevHomeService GetDevHomeService()
     {
-        var serverClass = new DevHomeServer();
-        var serverPtr = Marshal.GetIUnknownForObject(serverClass);
-        var server = MarshalInterface<IDevHomeService>.FromAbi(serverPtr);
+        try
+        {
+            var serverClass = new DevHomeServer();
+            var serverPtr = Marshal.GetIUnknownForObject(serverClass);
+            var server = MarshalInterface<IDevHomeService>.FromAbi(serverPtr);
+            return server;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to get DevHomeService");
 
-        return server;
+            // We shouldn't treat our inability to connect to the NT service as fatal. We should still be able to run, with reduced functionality.
+
+            // Return a "dummy" service that does nothing, so that we don't need to have multiple checks in the code to see if we have a service or not
+            return new StandInDevHomeService();
+        }
     }
 
     [ComImport]

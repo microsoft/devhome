@@ -1,5 +1,4 @@
-﻿RegNotifyChangeKeyValue
-REG_NOTIFY_FILTER
+﻿REG_NOTIFY_FILTER
 CoInitializeSecurity
 CoCreateInstance
 CLSCTX

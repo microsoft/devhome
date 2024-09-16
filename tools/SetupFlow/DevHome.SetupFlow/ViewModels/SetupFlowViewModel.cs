@@ -125,6 +125,7 @@ public partial class SetupFlowViewModel : ObservableObject
         _packageProvider.Clear();
         EndSetupFlow(null, EventArgs.Empty);
 
+        Orchestrator.AdaptiveCardFlowNavigator.ResetFlowNavigator();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 

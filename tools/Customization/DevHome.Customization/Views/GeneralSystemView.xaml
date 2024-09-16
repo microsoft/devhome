@@ -20,7 +20,7 @@
         <controls:SettingsCard x:Uid="LongPaths" Margin="{ThemeResource SettingsCardMargin}">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.LongPathsEnabled, Mode=TwoWay}" IsEnabled="{x:Bind ViewModel.CanModifyLongPaths, Mode=OneWay}"/>
         </controls:SettingsCard>
-        <controls:SettingsCard x:Uid="EndTaskOnTaskBar" Margin="{ThemeResource SettingsCardMargin}">
+        <controls:SettingsCard x:Uid="EndTaskOnTaskBar" Margin="{ThemeResource SettingsCardMargin}" Visibility="{x:Bind ViewModel.ShowEndTaskOnTaskBarSetting }">
             <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.EndTaskOnTaskBarEnabled, Mode=TwoWay}" />
         </controls:SettingsCard>
     </StackPanel>

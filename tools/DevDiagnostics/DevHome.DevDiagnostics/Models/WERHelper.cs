@@ -10,7 +10,6 @@ using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Threading;
-using DevHome.Common.Helpers;
 using DevHome.DevDiagnostics.Helpers;
 using Microsoft.Win32;
 using Serilog;
@@ -30,7 +29,6 @@ internal sealed class WERHelper : IDisposable
     private const string WERSubmissionQuery = "(*[System[Provider[@Name=\"Application Error\"]]] and *[System[EventID=1000]])";
     private const string WERReceiveQuery = "(*[System[Provider[@Name=\"Application Error\"]]] and *[System[EventID=1001]])";
     private const string DefaultDumpPath = "%LOCALAPPDATA%\\CrashDumps";
-    private const string LocalWERRegistryKey = "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\LocalDumps";
 
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WERHelper));
 
@@ -51,7 +49,7 @@ internal sealed class WERHelper : IDisposable
         WERReports = new(_werReports);
 
         // Subscribe for Application events matching the processName.
-        EventLogQuery subscriptionQuery = new("Application", PathType.LogName, WERSubmissionQuery);
+        EventLogQuery subscriptionQuery = new EventLogQuery("Application", PathType.LogName, WERSubmissionQuery);
         _eventLogWatcher = new EventLogWatcher(subscriptionQuery);
         _eventLogWatcher.EventRecordWritten += new EventHandler<EventRecordWrittenEventArgs>(EventLogEventRead);
     }
@@ -96,116 +94,6 @@ internal sealed class WERHelper : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    // Check to see if global local WER collection is enabled
-    // See https://learn.microsoft.com/windows/win32/wer/collecting-user-mode-dumps
-    // for more details
-    public bool IsGlobalCollectionEnabled()
-    {
-        var key = Registry.LocalMachine.OpenSubKey(LocalWERRegistryKey, false);
-
-        return IsCollectionEnabledForKey(key);
-    }
-
-    // See if local WER collection is enabled for a specific app
-    public bool IsCollectionEnabledForApp(string appName)
-    {
-        var key = Registry.LocalMachine.OpenSubKey(LocalWERRegistryKey, false);
-
-        // If the local dump key doesn't exist, then app collection is disabled
-        if (key is null)
-        {
-            return false;
-        }
-
-        var appKey = key.OpenSubKey(appName, false);
-
-        // If the app key doesn't exist, per-app collection isn't enabled. Check the global setting
-        if (appKey is null)
-        {
-            return IsGlobalCollectionEnabled();
-        }
-
-        return IsCollectionEnabledForKey(appKey);
-    }
-
-    private bool IsCollectionEnabledForKey(RegistryKey? key)
-    {
-        // If the key doesn't exist, then collection is disabled
-        if (key is null)
-        {
-            return false;
-        }
-
-        // If the key exists, but dumpcount is set to 0, it's also disabled
-        if (key.GetValue("DumpCount") is int dumpCount && dumpCount == 0)
-        {
-            return false;
-        }
-
-        // Collection is enabled enabled, but if we're not getting full memory dumps, so cabs may not be
-        // useful. In this case, report that collection is disabled.
-        var dumpType = key.GetValue("DumpType") as int?;
-        if (dumpType is null || dumpType != 2)
-        {
-            return false;
-        }
-
-        // Otherwise it's enabled
-        return true;
-    }
-
-    // This changes the registry keys necessary to allow local WER collection for a specific app
-    public void EnableCollectionForApp(string appname)
-    {
-        RuntimeHelper.VerifyCurrentProcessRunningAsAdmin();
-
-        var globalKey = Registry.LocalMachine.OpenSubKey(LocalWERRegistryKey, true);
-
-        if (globalKey is null)
-        {
-            // Need to create the key, and set the global dump collection count to 0 to prevent all apps from generating local dumps
-            globalKey = Registry.LocalMachine.CreateSubKey(LocalWERRegistryKey);
-            globalKey.SetValue("DumpCount", 0);
-        }
-
-        Debug.Assert(globalKey is not null, "Global key is null");
-
-        var appKey = globalKey.CreateSubKey(appname);
-        Debug.Assert(appKey is not null, "App key is null");
-
-        // If dumpcount doesn't exist or is set to 0, set the default value to get cabs
-        if (appKey.GetValue("DumpCount") is not int dumpCount || dumpCount == 0)
-        {
-            appKey.SetValue("DumpCount", 10);
-        }
-
-        // Make sure the cabs being collected are useful. Go for the full dumps instead of the mini dumps
-        appKey.SetValue("DumpType", 2);
-        return;
-    }
-
-    // This changes the registry keys necessary to disable local WER collection for a specific app
-    public void DisableCollectionForApp(string appname)
-    {
-        RuntimeHelper.VerifyCurrentProcessRunningAsAdmin();
-
-        var globalKey = Registry.LocalMachine.OpenSubKey(LocalWERRegistryKey, true);
-
-        if (globalKey is null)
-        {
-            // Local collection isn't enabled
-            return;
-        }
-
-        var appKey = globalKey.CreateSubKey(appname);
-        Debug.Assert(appKey is not null, "App key is null");
-
-        // Set the DumpCount value to 0 to disable collection
-        appKey.SetValue("DumpCount", 0);
-
-        return;
-    }
-
     // Callback that fires when we have a new EventLog message
     public void EventLogEventRead(object? obj, EventRecordWrittenEventArgs eventArg)
     {
@@ -229,23 +117,20 @@ internal sealed class WERHelper : IDisposable
 
     private void ReadWERReportsFromEventLog()
     {
-        EventLog eventLog = new("Application");
-
-        foreach (EventLogEntry entry in eventLog.Entries)
+        var query = new EventLogQuery("Application", PathType.LogName, WERSubmissionQuery);
+        using var reader = new EventLogReader(query);
+        EventRecord? eventRecord;
+        while ((eventRecord = reader.ReadEvent()) is not null)
         {
-            if (entry.InstanceId == 1000
-                && entry.Source.Equals("Application Error", StringComparison.OrdinalIgnoreCase))
-            {
-                var filePath = entry.ReplacementStrings[10];
-                var timeGenerated = entry.TimeGenerated;
-                var moduleName = entry.ReplacementStrings[3];
-                var executable = entry.ReplacementStrings[0];
-                var eventGuid = entry.ReplacementStrings[12];
-                var description = entry.Message;
-                var pid = entry.ReplacementStrings[8];
+            var filePath = eventRecord.Properties[10].Value.ToString() ?? string.Empty;
+            var timeGenerated = eventRecord.TimeCreated ?? DateTime.Now;
+            var moduleName = eventRecord.Properties[3].Value.ToString() ?? string.Empty;
+            var executable = eventRecord.Properties[0].Value.ToString() ?? string.Empty;
+            var eventGuid = eventRecord.Properties[12].Value.ToString() ?? string.Empty;
+            var description = eventRecord.FormatDescription();
+            var pid = eventRecord.Properties[8].Value.ToString() ?? string.Empty;
 
-                FindOrCreateWEREntryFromEventLog(filePath, timeGenerated, moduleName, executable, eventGuid, description, pid);
-            }
+            FindOrCreateWEREntryFromEventLog(filePath, timeGenerated, moduleName, executable, eventGuid, description, pid);
         }
     }
 
@@ -288,9 +173,12 @@ internal sealed class WERHelper : IDisposable
     private void FindOrCreateWEREntryFromLocalDumpFile(string crashDumpFile)
     {
         var timeGenerated = File.GetCreationTime(crashDumpFile);
+        FileInfo dumpFileInfo = new(crashDumpFile);
+
+        Debug.Assert(dumpFileInfo.Exists, "Why doesn't this file exist?");
 
         // Only look at .dmp files
-        if (Path.GetExtension(crashDumpFile) != ".dmp")
+        if (dumpFileInfo.Extension != ".dmp")
         {
             return;
         }
@@ -304,15 +192,15 @@ internal sealed class WERHelper : IDisposable
         // Parse the filename starting from the back
 
         // Find the last dot index
-        var dmpExtensionIndex = crashDumpFile.LastIndexOf('.');
+        var dmpExtensionIndex = dumpFileInfo.Name.LastIndexOf('.');
         if (dmpExtensionIndex == -1)
         {
-            _log.Information("Unexpected crash dump filename: " + crashDumpFile);
+            _log.Information("Unexpected crash dump filename: " + dumpFileInfo.Name);
             return;
         }
 
         // Remove the .dmp. This should give us a string like a.b.exe.40912
-        var filenameWithNoDmp = crashDumpFile.Substring(0, dmpExtensionIndex);
+        var filenameWithNoDmp = dumpFileInfo.Name.Substring(0, dmpExtensionIndex);
 
         // Find the PID
         var pidIndex = filenameWithNoDmp.LastIndexOf('.');
@@ -328,9 +216,6 @@ internal sealed class WERHelper : IDisposable
         var executableFullPath = filenameWithNoDmp.Substring(0, pidIndex);
 
         FileInfo fileInfo = new(executableFullPath);
-
-        // Build a basic description of this file in case we don't have an event log entry for it
-        FileInfo dumpFileInfo = new(crashDumpFile);
 
         string description = string.Empty;
 
@@ -479,7 +364,7 @@ internal sealed class WERHelper : IDisposable
     {
         var list = new List<string>();
 
-        var key = Registry.LocalMachine.OpenSubKey(LocalWERRegistryKey, false);
+        var key = Registry.LocalMachine.OpenSubKey(WERUtils.LocalWERRegistryKey, false);
 
         if (key is not null)
         {

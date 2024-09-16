@@ -41,5 +41,7 @@ public class SourceControlValidationResult
         Result = result;
         Error = error;
         Exception = exception;
+        DisplayMessage = displayMessage;
+        DiagnosticText = diagnosticText;
     }
 }

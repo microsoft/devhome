@@ -333,21 +333,17 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-
         <desktop6:Extension Category="windows.service" Executable="DevHome.Service.exe" EntryPoint="DevHome.Service">
           <desktop6:Service Name="DevHome-Can.Service" StartupType="manual" StartAccount="localSystem" />
         </desktop6:Extension>
-
         <com2:Extension Category="windows.comServer">
           <com2:ComServer>
-            <com3:ServiceServer ServiceName="DevHome-Can.Service"
-                LaunchAndActivationPermission="O:SYG:SYD:(A;;11;;;IU)">
+            <com3:ServiceServer ServiceName="DevHome-Can.Service" LaunchAndActivationPermission="O:SYG:SYD:(A;;11;;;IU)">
               <!-- Grant local activation rights to Interactive Users. -->
-              <com3:Class Id="0A920C6E-2569-44D1-A6E4-CE9FA44CD2A7" DisplayName="CLSID_DevHomeService"/>
+              <com3:Class Id="0A920C6E-2569-44D1-A6E4-CE9FA44CD2A7" DisplayName="CLSID_DevHomeService" />
             </com3:ServiceServer>
           </com2:ComServer>
         </com2:Extension>
-
       </Extensions>
     </Application>
     <Application Id="DevHome.DevDiagnostics" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication">
@@ -358,7 +354,7 @@
       <Extensions>
         <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
         <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
-          <uap5:StartupTask TaskId="DevHome.DevDiagnostics.Hotkey" Enabled="true" DisplayName="ms-resource:DDStartupTaskDisplayName" />
+          <uap5:StartupTask TaskId="DevHome.DevDiagnostics.Hotkey" Enabled="false" DisplayName="ms-resource:DDStartupTaskDisplayName" />
         </uap5:Extension>
         <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
           <uap3:AppExecutionAlias>
@@ -406,12 +402,25 @@
         </uap3:Extension>
       </Extensions>
     </Application>
+    <Application Id="DevHome.IfeoTool" Executable="DevHome.IfeoTool.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:IfeoToolDisplayName" Description="ms-resource:IfeoToolDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="DevHome.IfeoTool.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
   </Applications>
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="unvirtualizedResources" />
-    <rescap:Capability Name="packagedServices"/>
-    <rescap:Capability Name="localSystemServices"/>
+    <rescap:Capability Name="packagedServices" />
+    <rescap:Capability Name="localSystemServices" />
   </Capabilities>
   <genTemplate:Metadata>
     <genTemplate:Item Name="generator" Value="Template Studio" />

@@ -150,6 +150,20 @@ try {
                     & $vstestPath $winAppTestArgs
                 }
             }
+
+            $vstestArgs = @(
+                "/Platform:$platform",
+                "/Logger:trx;LogFileName=FileExplorerGitIntegration.UnitTest-$platform-$configuration.trx",
+                "extensions\GitExtension\FileExplorerGitIntegration.UnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\FileExplorerGitIntegration.UnitTest.dll"
+            )
+            & $vstestPath $vstestArgs
+
+            $vstestArgs = @(
+                "/Platform:$platform",
+                "/Logger:trx;LogFileName=DevHome.FileExplorerSourceControlIntegrationUnitTest.UnitTest-$platform-$configuration.trx",
+                "tools\Customization\DevHome.FileExplorerSourceControlIntegrationUnitTest\bin\$platform\$configuration\net8.0-windows10.0.22621.0\DevHome.FileExplorerSourceControlIntegrationUnitTest.dll"
+            )
+            & $vstestPath $vstestArgs
         }
     }
 } catch {

@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
@@ -18,7 +19,9 @@ using DevHome.Common.Helpers;
 using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Properties;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.DevDiagnostics.ViewModels;
 
@@ -27,7 +30,16 @@ public partial class WERPageViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly WERHelper _werHelper;
     private readonly WERAnalyzer _werAnalyzer;
+
+    private readonly string _localDumpEnableButtonText = CommonHelper.GetLocalizedString("LocalDumpCollectionEnable");
+    private readonly string _localDumpDisableButtonText = CommonHelper.GetLocalizedString("LocalDumpCollectionDisable");
+    private readonly string _localDumpEnableButtonToolTip = CommonHelper.GetLocalizedString("LocalDumpCollectionEnableToolTip");
+    private readonly string _localDumpDisableButtonToolTip = CommonHelper.GetLocalizedString("LocalDumpCollectionDisableToolTip");
+
     private Tool? _selectedAnalysisTool;
+
+    [ObservableProperty]
+    private string _localDumpEnableDisableButtonToolTip;
 
     [ObservableProperty]
     private string _werInfoText;
@@ -38,13 +50,7 @@ public partial class WERPageViewModel : ObservableObject
     private bool _attachedToApp;
 
     [ObservableProperty]
-    private bool _localCollectionEnabledForApp;
-
-    [ObservableProperty]
-    private bool _runningAsAdmin;
-
-    [ObservableProperty]
-    private bool _allowElevationOption;
+    private string _localDumpEnableDisableButtonText;
 
     [ObservableProperty]
     private AdvancedCollectionView _reportsView;
@@ -66,12 +72,11 @@ public partial class WERPageViewModel : ObservableObject
 
         _werHelper = Application.Current.GetService<WERHelper>();
 
-        RunningAsAdmin = RuntimeHelper.IsCurrentProcessRunningAsAdmin();
-        AllowElevationOption = !RunningAsAdmin;
-
         string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
         AttachedToApp = attachedApp is not null;
-        LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+        UpdateEnableDisableLocalDumpsButton();
+        Debug.Assert(_localDumpEnableDisableButtonText is not null, "UpdateEnableDisableLocalDumpsButton should set this");
+        Debug.Assert(_localDumpEnableDisableButtonToolTip is not null, "UpdateEnableDisableLocalDumpsButton should set this");
 
         _werAnalyzer = werAnalyzer;
         ((INotifyCollectionChanged)_werAnalyzer.WERAnalysisReports).CollectionChanged += WER_CollectionChanged;
@@ -101,7 +106,7 @@ public partial class WERPageViewModel : ObservableObject
 
             string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
             AttachedToApp = attachedApp is not null;
-            LocalCollectionEnabledForApp = attachedApp is not null ? _werHelper.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+            UpdateEnableDisableLocalDumpsButton();
         }
     }
 
@@ -111,6 +116,15 @@ public partial class WERPageViewModel : ObservableObject
         {
             RefreshView();
         }
+    }
+
+    private void UpdateEnableDisableLocalDumpsButton()
+    {
+        string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
+
+        bool localCollectionEnabledForApp = attachedApp is not null ? WERUtils.IsCollectionEnabledForApp(attachedApp + ".exe") : false;
+        LocalDumpEnableDisableButtonText = localCollectionEnabledForApp ? _localDumpDisableButtonText : _localDumpEnableButtonText;
+        LocalDumpEnableDisableButtonToolTip = localCollectionEnabledForApp ? _localDumpDisableButtonToolTip : _localDumpEnableButtonToolTip;
     }
 
     private void RefreshView()
@@ -199,44 +213,6 @@ public partial class WERPageViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private void RunAsAdmin()
-    {
-        if (TargetAppData.Instance.TargetProcess is not null)
-        {
-            CommonHelper.RunAsAdmin(TargetAppData.Instance.TargetProcess.Id, nameof(WERPageViewModel));
-        }
-    }
-
-    public void ChangeLocalCollectionForApp(bool enable)
-    {
-        Process? process = TargetAppData.Instance.TargetProcess;
-
-        if (process is null || process.ProcessName is null)
-        {
-            return;
-        }
-
-        string app = process.ProcessName + ".exe";
-
-        if (enable == _werHelper.IsCollectionEnabledForApp(app))
-        {
-            // No change, could be initialization of the UI
-            return;
-        }
-
-        Debug.Assert(RuntimeHelper.IsCurrentProcessRunningAsAdmin(), "Changing the local dump collection for an app can only happen when running as admin.");
-
-        if (enable)
-        {
-            _werHelper.EnableCollectionForApp(app);
-        }
-        else
-        {
-            _werHelper.DisableCollectionForApp(app);
-        }
-    }
-
     public void OpenCab(string file)
     {
         if (File.Exists(file))
@@ -249,5 +225,63 @@ public partial class WERPageViewModel : ObservableObject
 
             Process.Start(startInfo);
         }
+    }
+
+    [RelayCommand]
+    public void ToggleLocalCabCollection()
+    {
+        string? attachedApp = TargetAppData.Instance?.TargetProcess?.ProcessName ?? null;
+
+        if (attachedApp is null)
+        {
+            return;
+        }
+
+        ThreadPool.QueueUserWorkItem((o) =>
+        {
+            App.Log("ToggleLocalCabCollection", LogLevel.Measure);
+
+            bool fEnabled = WERUtils.IsCollectionEnabledForApp(attachedApp + ".exe");
+
+            try
+            {
+                FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+
+                var startInfo = new ProcessStartInfo()
+                {
+                    FileName = "EnableLocalCabCollection.exe",
+                    Arguments = attachedApp + ".exe",
+                    UseShellExecute = true,
+                    WorkingDirectory = fileInfo.DirectoryName,
+                    Verb = "runas",
+                };
+
+                var process = Process.Start(startInfo);
+                if (process is not null)
+                {
+                    // Wait for the process to update registry keys
+                    process.WaitForExit();
+
+                    bool fEnabledAfterProcessLaunch = WERUtils.IsCollectionEnabledForApp(attachedApp + ".exe");
+
+                    if (fEnabledAfterProcessLaunch == fEnabled)
+                    {
+                        App.Log("ToggleLocalCabCollectionFailure", LogLevel.Measure);
+                    }
+
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        UpdateEnableDisableLocalDumpsButton();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // This isn't necessarily bad... the user could deny the UAC, and in those cases, this would be
+                // a by-design failure.
+                Log.Warning(ex.Message);
+                App.Log("ToggleLocalCabCollectionFailure", LogLevel.Measure);
+            }
+        });
     }
 }

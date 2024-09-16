@@ -1,17 +1,17 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.DevDiagnostics.Helpers;
-
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Pages;
 using DevHome.DevDiagnostics.Services;
 using DevHome.DevDiagnostics.Telemetry;
 using DevHome.DevDiagnostics.TelemetryEvents;
 using DevHome.DevDiagnostics.ViewModels;
+using DevHome.Service;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,6 +36,8 @@ public partial class App : Application, IApp
 
     public App()
     {
+        UnhandledException += App_UnhandledException;
+
         InitializeComponent();
 
         UIDispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -53,6 +55,8 @@ public partial class App : Application, IApp
                 services.AddSingleton<WERAnalyzer>();
                 services.AddSingleton<ExternalToolsHelper>();
                 services.AddSingleton<InternalToolsHelper>();
+                services.AddSingleton<IDevHomeService>(CommonHelper.GetDevHomeService());
+                services.AddSingleton<LoaderSnapAssistantTool>();
 
                 // Window
                 services.AddSingleton<PrimaryWindow>();
@@ -89,6 +93,39 @@ public partial class App : Application, IApp
         // Provide an explicit implementationInstance otherwise AddSingleton does not create a new instance immediately.
         // It will lazily init when the first component requires it but the hotkey helper needs to be registered immediately.
         Application.Current.GetService<PrimaryWindow>();
+
+        // And start up the listener for process load failures immediately
+        Application.Current.GetService<LoaderSnapAssistantTool>();
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        Serilog.Log.Fatal(e.Exception, $"Unhandled exception: {e.Message}");
+        Serilog.Log.CloseAndFlush();
+
+        // We are very likely in a bad and unrecoverable state, so ensure we crash w/ the exception info.
+        Environment.FailFast(e.Message, e.Exception);
+    }
+
+    internal static bool IsFeatureEnabled()
+    {
+        var isEnabled = false;
+
+        ApplicationData.Current.LocalSettings.Values.TryGetValue($"ExperimentalFeature_DevDiagnosticsExperiment", out var isEnabledObj);
+        if (isEnabledObj is not null && isEnabledObj is string isEnabledValue)
+        {
+            isEnabled = isEnabledValue == "true";
+        }
+        else
+        {
+#if DEBUG
+            // Override on debug builds to be enabled by default
+            isEnabled = true;
+#endif
+        }
+
+        return isEnabled;
     }
 
     internal static ITelemetry Logger => TelemetryFactory.Get<ITelemetry>();

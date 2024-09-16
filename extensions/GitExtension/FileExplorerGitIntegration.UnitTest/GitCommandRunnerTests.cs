@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using DevHome.Common.Helpers;
 using FileExplorerGitIntegration.Models;
 using LibGit2Sharp;
 
@@ -65,7 +66,7 @@ public class GitCommandRunnerTests
                 dirInfo.Attributes = FileAttributes.Normal;
             }
 
-            Directory.Delete(RepoPath, true);
+            DirectoryHelper.DeleteDirectoryWithRetries(RepoPath, true, 5, 100, false);
         }
     }
 

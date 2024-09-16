@@ -41,6 +41,8 @@ public partial class GeneralSystemViewModel : ObservableObject
 
     public bool CanModifyLongPaths => _isUserAdministrator && !ModifyLongPathsCommand.IsRunning;
 
+    public bool ShowEndTaskOnTaskBarSetting => RuntimeHelper.IsOnWindows11;
+
     public GeneralSystemViewModel(DispatcherQueue dispatcherQueue)
     {
         _dispatcherQueue = dispatcherQueue;

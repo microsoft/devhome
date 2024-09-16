@@ -280,18 +280,16 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 }
             }
 
-            // TODO: Is this the best place to add the repository to the database?
-            // Maybe a "PostExecutionStep" would be nice.
-            var dataAccessService = _host.GetService<RepositoryManagementDataAccessService>();
 
-            // If the repository has a configuration file.
-            if (!string.IsNullOrEmpty(_summaryScreenInformation.FilePathAndName))
+            var experimentationService = _host.GetService<IExperimentationService>();
+            var canUseTheDatabase = experimentationService.IsFeatureEnabled("RepositoryManagementExperiment");
+
+            if (canUseTheDatabase)
             {
-                dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri);
-            }
-            else
-            {
-                dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, RepositoryToClone.RepoUri);
+                // TODO: Is this the best place to add the repository to the database?
+                // Maybe a "PostExecutionStep" would be nice.
+                _host.GetService<RepositoryManagementDataAccessService>()
+                .AddRepository(RepositoryName, CloneLocation.FullName);
             }
 
             WasCloningSuccessful = true;

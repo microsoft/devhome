@@ -46,8 +46,8 @@ public partial class DashboardViewModel : ObservableObject
         return (widgetCount == 0 && !isLoading && HasWidgetServiceInitialized) ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    public bool IsRunningAsAdmin()
+    public bool IsRunningElevated()
     {
-        return RuntimeHelper.IsCurrentProcessRunningAsAdmin();
+        return RuntimeHelper.IsCurrentProcessRunningElevated();
     }
 }

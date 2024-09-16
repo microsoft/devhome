@@ -72,7 +72,7 @@
     <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.1-beta" GeneratePathProperty="true" />
     <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.2.1-beta" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240820-x2042" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240910-x0103" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
@@ -108,6 +108,7 @@
     <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
     <ProjectReference Include="..\tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj" />
     <ProjectReference Include="..\tools\Utilities\HostsUtility\DevHome.HostsFileEditor.csproj" />
+    <ProjectReference Include="..\tools\Utilities\IfeoTool\DevHome.IfeoTool.csproj" />
     <ProjectReference Include="..\tools\Utilities\RegPreviewUtility\DevHome.RegistryPreview.csproj" />
     <ProjectReference Include="..\tools\Utilities\src\DevHome.Utilities.csproj" />
   </ItemGroup>

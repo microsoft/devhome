@@ -5,25 +5,21 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
+using DevHome.Common.Windows;
 using DevHome.DevDiagnostics.Controls;
 using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
 using DevHome.DevDiagnostics.Properties;
 using DevHome.DevDiagnostics.ViewModels;
-using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Serilog;
 using Windows.Foundation;
-using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -36,7 +32,7 @@ using static DevHome.DevDiagnostics.Helpers.WindowHelper;
 
 namespace DevHome.DevDiagnostics;
 
-public partial class BarWindow : WindowEx
+public partial class BarWindow : ThemeAwareWindow
 {
     private enum PinOption
     {
@@ -49,28 +45,18 @@ public partial class BarWindow : WindowEx
     private const string ManageToolsButtonText = "\uec7a"; // DeveloperTools
     private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(BarWindow));
 
-    private readonly string _aliasDisabledDialogTitle = CommonHelper.GetLocalizedString("AliasDisabledDialogTitle");
-    private readonly string _aliasDisabledDialogContent = CommonHelper.GetLocalizedString("AliasDisabledDialogContent");
-    private readonly string _aliasDisabledDialogButtonText = CommonHelper.GetLocalizedString("AliasDisabledDialogButtonText");
-
-    private readonly string _pinMenuItemText = CommonHelper.GetLocalizedString("PinMenuItemText");
-    private readonly string _unpinMenuItemText = CommonHelper.GetLocalizedString("UnpinMenuItemRawText");
-    private readonly string _unregisterMenuItemText = CommonHelper.GetLocalizedString("UnregisterMenuItemRawText");
-    private readonly string _manageToolsMenuItemText = CommonHelper.GetLocalizedString("ManageExternalToolsMenuText");
+    private readonly string _aliasDisabledDialogTitle = GetLocalizedString("AliasDisabledDialogTitle");
+    private readonly string _aliasDisabledDialogContent = GetLocalizedString("AliasDisabledDialogContent");
+    private readonly string _aliasDisabledDialogButtonText = GetLocalizedString("AliasDisabledDialogButtonText");
+    private readonly string _pinMenuItemText = GetLocalizedString("PinMenuItemText");
+    private readonly string _unpinMenuItemText = GetLocalizedString("UnpinMenuItemRawText");
+    private readonly string _unregisterMenuItemText = GetLocalizedString("UnregisterMenuItemRawText");
+    private readonly string _manageToolsMenuItemText = GetLocalizedString("ManageExternalToolsMenuText");
 
     private readonly Settings _settings = Settings.Default;
     private readonly BarWindowViewModel _viewModel;
-    private readonly UISettings _uiSettings = new();
-
     private readonly ExternalToolsHelper _externalTools;
     private readonly InternalToolsHelper _internalTools;
-
-    private readonly SolidColorBrush _darkModeActiveCaptionBrush;
-    private readonly SolidColorBrush _darkModeDeactiveCaptionBrush;
-    private readonly SolidColorBrush _nonDarkModeActiveCaptionBrush;
-    private readonly SolidColorBrush _nonDarkModeDeactiveCaptionBrush;
-
-    private WindowActivationState _currentActivationState = WindowActivationState.Deactivated;
 
     // Constants that control window sizes
     private const int WindowPositionOffsetY = 30;
@@ -79,50 +65,42 @@ public partial class BarWindow : WindowEx
     // Default size of the expanded view as a percentage of the screen size
     private const float DefaultExpandedViewHeightofScreen = 0.9f;
 
+    private float _previousCustomTitleBarOffset;
+
     internal HWND ThisHwnd { get; private set; }
 
-    internal ClipboardMonitor? ClipboardMonitor { get; private set; }
+    private readonly object _parentProcessHwndLock = new();
 
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-
-    private float _previousCustomTitleBarOffset;
+    private HWND? _parentProcessHwnd;
 
     public BarWindow()
     {
         _viewModel = new BarWindowViewModel();
         _externalTools = Application.Current.GetService<ExternalToolsHelper>();
         _internalTools = Application.Current.GetService<InternalToolsHelper>();
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        Title = CommonHelper.GetLocalizedString("DDDisplayName");
+        Title = GetLocalizedString("DDDisplayName");
 
         InitializeComponent();
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
 
-        ExtendsContentIntoTitleBar = true;
-        AppWindow.TitleBar.IconShowOptions = IconShowOptions.HideIconAndSystemMenu;
-
         ExpandCollapseLayoutButtonText.Text = _viewModel.ShowingExpandedContent ? CollapseButtonText : ExpandButtonText;
+        CustomTitleBarButtons.Add(ExpandCollapseLayoutButton);
 
-        // Precreate the brushes for the caption buttons
-        // In Dark Mode, the active state is white, and the deactive state is translucent white
-        // In Light Mode, the active state is black, and the deactive state is translucent black
-        Windows.UI.Color color = Colors.White;
-        _darkModeActiveCaptionBrush = new SolidColorBrush(color);
-        color.A = 0x66;
-        _darkModeDeactiveCaptionBrush = new SolidColorBrush(color);
+        // Initialize the parent process HWND in the constructor to avoid re-entrancy on the UI thread
+        GetParentProcessHWND();
+    }
 
-        color = Colors.Black;
-        _nonDarkModeActiveCaptionBrush = new SolidColorBrush(color);
-        color.A = 0x66;
-        _nonDarkModeDeactiveCaptionBrush = new SolidColorBrush(color);
-
-        _uiSettings.ColorValuesChanged += (sender, args) =>
+    private HWND? GetParentProcessHWND()
+    {
+        lock (_parentProcessHwndLock)
         {
-            _dispatcher.TryEnqueue(() =>
+            if (!_parentProcessHwnd.HasValue)
             {
-                ApplySystemThemeToCaptionButtons();
-            });
-        };
+                _parentProcessHwnd = TryGetParentProcessHWND();
+            }
+
+            return _parentProcessHwnd;
+        }
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -198,6 +176,7 @@ public partial class BarWindow : WindowEx
 
         button.Icon = tool.GetIcon();
         button.Command = tool.InvokeCommand;
+        button.IsEnabled = tool.IsEnabled;
         button.CommandParameter = this;
         button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 
@@ -252,6 +231,11 @@ public partial class BarWindow : WindowEx
                 {
                     ToolsCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
+            }
+            else if (args.PropertyName == nameof(Tool.IsEnabled))
+            {
+                primaryCommandButton.IsEnabled = tool.IsEnabled;
+                secondaryCommandButton.IsEnabled = tool.IsEnabled;
             }
         };
     }
@@ -371,12 +355,10 @@ public partial class BarWindow : WindowEx
 
         var transform = ChromeButtonPanel.TransformToVisual(null);
         var bounds = transform.TransformBounds(new Rect(0, 0, ChromeButtonPanel.ActualWidth, ChromeButtonPanel.ActualHeight));
-        Windows.Graphics.RectInt32 chromeButtonsRect = WindowHelper.GetRect(bounds, scaleAdjustment);
-
+        var chromeButtonsRect = GetRect(bounds, scaleAdjustment);
         var rectArray = new Windows.Graphics.RectInt32[] { chromeButtonsRect };
 
-        InputNonClientPointerSource nonClientInputSrc =
-            InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
+        var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
     }
 
@@ -387,9 +369,9 @@ public partial class BarWindow : WindowEx
 
         // If attached to an app it should show up on the monitor that the app is on
         // Be sure to grab the DPI for that monitor
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
         var screenWidth = monitorRect.right - monitorRect.left;
         this.Move(
             (int)((screenWidth - (Width * dpiScale)) / 2) + monitorRect.left,
@@ -401,8 +383,8 @@ public partial class BarWindow : WindowEx
         // Get the saved settings for the ExpandedView size. On first run, this will be
         // the default 0,0, so we'll set the size proportional to the monitor size.
         // Subsequently, it will be whatever size the user sets.
-        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
-        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? TryGetParentProcessHWND() ?? ThisHwnd);
+        RECT monitorRect = GetMonitorRectForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
+        var dpiScale = GetDpiScaleForWindow(_viewModel.ApplicationHwnd ?? GetParentProcessHWND() ?? ThisHwnd);
 
         var settingWidth = Settings.Default.WindowWidth;
         if (settingWidth == 0)
@@ -494,27 +476,6 @@ public partial class BarWindow : WindowEx
         }
     }
 
-    internal void SetRequestedTheme(ElementTheme theme)
-    {
-        if (Content is FrameworkElement rootElement)
-        {
-            rootElement.RequestedTheme = theme;
-
-            if (theme == ElementTheme.Dark)
-            {
-                SetCaptionButtonColors(Colors.White);
-            }
-            else if (theme == ElementTheme.Light)
-            {
-                SetCaptionButtonColors(Colors.Black);
-            }
-            else
-            {
-                ApplySystemThemeToCaptionButtons();
-            }
-        }
-    }
-
     private void ExpandLargeContentPanel()
     {
         // We're expanding.
@@ -569,59 +530,6 @@ public partial class BarWindow : WindowEx
     internal Frame GetFrame()
     {
         return ExpandedViewControl.GetPageFrame();
-    }
-
-    // workaround as AppWindow TitleBar doesn't update caption button colors correctly when changed while app is running
-    // https://task.ms/44172495
-    public void ApplySystemThemeToCaptionButtons()
-    {
-        if (Content is FrameworkElement rootElement)
-        {
-            Windows.UI.Color color;
-            if (rootElement.ActualTheme == ElementTheme.Dark)
-            {
-                color = Colors.White;
-            }
-            else
-            {
-                color = Colors.Black;
-            }
-
-            SetCaptionButtonColors(color);
-        }
-
-        return;
-    }
-
-    public void SetCaptionButtonColors(Windows.UI.Color color)
-    {
-        AppWindow.TitleBar.ButtonForegroundColor = color;
-        UpdateCustomTitleBarButtonsTextColor();
-    }
-
-    private void Window_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        // This follows the design guidance of dimming our title bar elements when the window isn't activated
-        // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
-        _currentActivationState = args.WindowActivationState;
-        UpdateCustomTitleBarButtonsTextColor();
-    }
-
-    private void UpdateCustomTitleBarButtonsTextColor()
-    {
-        FrameworkElement? rootElement = Content as FrameworkElement;
-        Debug.Assert(rootElement != null, "Expected Content to be a FrameworkElement");
-
-        if (_currentActivationState == WindowActivationState.Deactivated)
-        {
-            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeDeactiveCaptionBrush : _nonDarkModeDeactiveCaptionBrush;
-            ExpandCollapseLayoutButtonText.Foreground = brush;
-        }
-        else
-        {
-            SolidColorBrush brush = (rootElement.ActualTheme == ElementTheme.Dark) ? _darkModeActiveCaptionBrush : _nonDarkModeActiveCaptionBrush;
-            ExpandCollapseLayoutButtonText.Foreground = brush;
-        }
     }
 
     private void WindowEx_WindowStateChanged(object sender, WindowState e)
