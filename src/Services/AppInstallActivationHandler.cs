@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Web;
-using CommunityToolkit.WinUI.Helpers;
 using DevHome.Activation;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;

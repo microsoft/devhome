@@ -2029,10 +2029,10 @@
   </data>
   <data name="NoInternetConnectionTitle" xml:space="preserve">
     <value>No internet connection</value>
-	<comment>Title displayed when there is no internet connection</comment>
+    <comment>Title displayed when there is no internet connection</comment>
   </data>
   <data name="NoInternetConnectionDescription" xml:space="preserve">
     <value>Please check your network settings and try again.</value>
-	<comment>Text displayed when there is no internet connection</comment>
+    <comment>Text displayed when there is no internet connection</comment>
   </data>
 </root>
