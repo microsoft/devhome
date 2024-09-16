@@ -26,7 +26,8 @@ public class Repository
 
     public string? ConfigurationFileLocation { get; set; }
 
-    // Use string here.  Uri is causing too many problems during add-migration.
+    // Use string here. Add-Migration is running into an issue with the Uri class.
+    // This causes any fluent API statements to get ignored.
     public string? RepositoryUri { get; set; }
 
     public DateTime? CreatedUTCDate { get; set; }

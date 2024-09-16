@@ -45,7 +45,7 @@ public partial class SetupFlowViewModel : ObservableObject
         PackageProvider packageProvider)
     {
         _navigationTargets.Add(_creationFlowNavigationParameter, StartCreationFlow);
-        _navigationTargets.Add("StartQuickstartPlayground", StartQuickTestFlow);
+        _navigationTargets.Add("StartQuickstartPlayground", StartQuickStartFlow);
         _navigationTargets.Add(KnownPageKeys.RepositoryConfiguration, StartRepositoryConfigurationFlow);
 
         _host = host;
@@ -205,7 +205,7 @@ public partial class SetupFlowViewModel : ObservableObject
         _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, parameters[1]);
     }
 
-    private void StartQuickTestFlow(string parameter)
+    private void StartQuickStartFlow(string parameter)
     {
         Cancel();
         Orchestrator.FlowPages = [_mainPageViewModel];

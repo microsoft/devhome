@@ -148,9 +148,9 @@ public class ConfigurationFileBuilder
         wingetConfigProperties.ConfigurationVersion = DscHelpers.WinGetConfigureVersion;
 
         // Create the new WinGetConfigFile object and serialize it to yaml
-        var myFile = new WinGetConfigFile() { Properties = wingetConfigProperties };
+        var configurationFile = new WinGetConfigFile() { Properties = wingetConfigProperties };
 
-        return SerializeWingetFileObjectToString(myFile);
+        return SerializeWingetFileObjectToString(configurationFile);
     }
 
     /// <summary>

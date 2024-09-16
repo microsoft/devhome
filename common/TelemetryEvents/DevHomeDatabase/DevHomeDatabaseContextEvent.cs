@@ -13,20 +13,20 @@ public class DevHomeDatabaseContextEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PartA_PrivTags.ProductAndServicePerformance;
 
-    public string Step { get; } = string.Empty;
+    public string Action { get; } = string.Empty;
 
     public int HResult { get; }
 
     public string ExceptionMessage { get; } = string.Empty;
 
-    public DevHomeDatabaseContextEvent(string step)
+    public DevHomeDatabaseContextEvent(string action)
     {
-        Step = step;
+        Action = action;
     }
 
-    public DevHomeDatabaseContextEvent(string step, Exception ex)
+    public DevHomeDatabaseContextEvent(string action, Exception ex)
     {
-        Step = step;
+        Action = action;
         HResult = ex.HResult;
         ExceptionMessage = ex.Message;
     }

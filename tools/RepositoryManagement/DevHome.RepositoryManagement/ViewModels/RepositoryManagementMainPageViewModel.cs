@@ -29,6 +29,8 @@ public partial class RepositoryManagementMainPageViewModel
 
     private readonly Window _window;
 
+    // _items and Items are renamed in user/dhoehna/TODOsAndUsingTheGitExtension
+    // to descriptive names.
     private readonly List<RepositoryManagementItemViewModel> _items = [];
 
     public ObservableCollection<RepositoryManagementItemViewModel> Items { get; private set; }
@@ -39,6 +41,8 @@ public partial class RepositoryManagementMainPageViewModel
         try
         {
             // TODO: Use extensions to determine if the selected location is a repository.
+            // Adding the repository to the database is implemented in
+            // user/dhoehna/TODOsAndUsingTheGitExtension
             _log.Information("Opening folder picker to select a new location");
             using var folderPicker = new WindowOpenFolderDialog();
             var newLocation = await folderPicker.ShowAsync(_window);

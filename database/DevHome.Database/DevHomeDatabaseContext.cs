@@ -35,44 +35,6 @@ public class DevHomeDatabaseContext : DbContext
     {
         // TODO: How to run the DevHome in VS and not have the file move to the per app location.
         DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
-        /*
-        var figuredOutTheDbPath = false;
-        if (RuntimeHelper.IsMSIX)
-        {
-            try
-            {
-                DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
-
-                _log.Information("database found in Application Data");
-                figuredOutTheDbPath = true;
-            }
-            catch
-            {
-                _log.Information("Cound not find the database in Application data.");
-            }
-        }
-
-        if (!figuredOutTheDbPath)
-        {
-            try
-            {
-                DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
-                figuredOutTheDbPath = true;
-                _log.Information("Database found in local application data.");
-            }
-            catch
-            {
-                _log.Information($"Could not find the database file in local application data.");
-            }
-        }
-
-        if (!figuredOutTheDbPath)
-        {
-            _log.Warning($"Cound not find the database file.");
-        }
-
-        DbPath = string.Empty;
-        */
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

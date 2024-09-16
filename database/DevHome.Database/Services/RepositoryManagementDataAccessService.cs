@@ -33,12 +33,12 @@ public class RepositoryManagementDataAccessService
     /// <param name="repositoryName">The name of the repository to add.</param>
     /// <param name="cloneLocation">The local location the repository is cloned to.</param>
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
-    public Repository MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
+    public Repository? MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
-    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
+    public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
@@ -135,8 +135,8 @@ public class RepositoryManagementDataAccessService
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
-            if (maybeRepository == null)
+            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
+            if (repositoryToUpdate == null)
             {
                 _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
                 return false;
@@ -144,8 +144,10 @@ public class RepositoryManagementDataAccessService
 
             // TODO: Figure out a method to update the entity in the database and
             // the entity in memory.
+            // Maybe update the tracking information on repository.  This way
+            // EF will catch the change.
             repository.RepositoryClonePath = newLocation;
-            maybeRepository.RepositoryClonePath = newLocation;
+            repositoryToUpdate.RepositoryClonePath = newLocation;
 
             if (repository.HasAConfigurationFile)
             {
@@ -153,7 +155,7 @@ public class RepositoryManagementDataAccessService
                 var configurationFileName = Path.GetFileName(configurationFolder);
 
                 repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
-                maybeRepository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
+                repositoryToUpdate.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
             }
 
             dbContext.SaveChanges();
@@ -176,14 +178,14 @@ public class RepositoryManagementDataAccessService
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
-            if (maybeRepository == null)
+            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
+            if (repositoryToUpdate == null)
             {
                 _log.Warning($"{nameof(SetIsHidden)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
                 return;
             }
 
-            maybeRepository.IsHidden = isHidden;
+            repositoryToUpdate.IsHidden = isHidden;
             repository.IsHidden = isHidden;
 
             dbContext.SaveChanges();
@@ -204,14 +206,14 @@ public class RepositoryManagementDataAccessService
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            var maybeRepository = dbContext.Repositories.Find(repository.RepositoryId);
-            if (maybeRepository == null)
+            var repositoryToRemove = dbContext.Repositories.Find(repository.RepositoryId);
+            if (repositoryToRemove == null)
             {
                 _log.Warning($"{nameof(RemoveRepository)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
                 return;
             }
 
-            dbContext.Repositories.Remove(maybeRepository);
+            dbContext.Repositories.Remove(repositoryToRemove);
 
             dbContext.SaveChanges();
         }
