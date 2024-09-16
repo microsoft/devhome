@@ -14,12 +14,12 @@ using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels.DevDriveInsights;
 using DevHome.Customization.Views;
-using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.UI.Dispatching;
 using Serilog;
 
 namespace DevHome.Customization.ViewModels;
 
-public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<DevDriveOptimizedMessage>, IRecipient<DevDriveTrustedMessage>
+public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<DevDriveOptimizedMessage>, IRecipient<DevDriveTrustedMessage>, IRecipient<DevDriveOptimizingMessage>
 {
     public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
@@ -32,6 +32,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     private readonly IDevDriveManager _devDriveManager;
 
     private readonly OptimizeDevDriveDialogViewModelFactory _optimizeDevDriveDialogViewModelFactory;
+
+    private readonly DispatcherQueue _dispatcherQueue;
 
     [ObservableProperty]
     private bool _shouldShowCollectionView;
@@ -65,8 +67,10 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
 
     private const string ArchivesStr = "archives";
 
-    public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory)
+    public DevDriveInsightsViewModel(IDevDriveManager devDriveManager, OptimizeDevDriveDialogViewModelFactory optimizeDevDriveDialogViewModelFactory, DispatcherQueue dispatcherQueue)
     {
+        _dispatcherQueue = dispatcherQueue;
+
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         Breadcrumbs =
         [
@@ -82,6 +86,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
 
         // Register for the dev drive trusted message so we can refresh the UX
         WeakReferenceMessenger.Default.Register<DevDriveTrustedMessage>(this);
+
+        // Register for the dev drive optimizing message so we can display the progress ring
+        WeakReferenceMessenger.Default.Register<DevDriveOptimizingMessage>(this);
     }
 
     /// <summary>
@@ -90,9 +97,12 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// </summary>
     public void OnFirstNavigateTo()
     {
-        GetDevDrives();
-        GetDevDriveOptimizers();
-        GetDevDriveOptimizeds();
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            GetDevDrives();
+            GetDevDriveOptimizers();
+            GetDevDriveOptimizeds();
+        });
     }
 
     /// <summary>
@@ -302,6 +312,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "Cargo cache (Rust)",
             EnvironmentVariable = "CARGO_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            RelatedEnvironmentVariables = new List<string> { "RUSTUP_HOME" },
+            RelatedCacheDirectories = new List<string> { Path.Join(_userProfilePath, ".rustup") },
             ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
         },
         new DevDriveCacheData
@@ -385,7 +397,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 exampleDirectory!, // example location on dev drive to move cache to
                 cache.EnvironmentVariable!, // environmentVariableToBeSet
                 existingDevDriveLetters,
-                !string.IsNullOrEmpty(environmentVariablePath));
+                !string.IsNullOrEmpty(environmentVariablePath),
+                cache.RelatedEnvironmentVariables!,
+                cache.RelatedCacheDirectories!);
             DevDriveOptimizerCardCollection.Add(card);
         }
 
@@ -423,6 +437,15 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
     /// is received we reload the UX.
     /// </summary>
     public void Receive(DevDriveTrustedMessage message)
+    {
+        OnFirstNavigateTo();
+    }
+
+    /// <summary>
+    /// Implements the Receive method from the IRecipient<DevDriveOptimizingMessage> interface. When this message
+    /// is received we display the progress ring.
+    /// </summary>
+    public void Receive(DevDriveOptimizingMessage message)
     {
         OnFirstNavigateTo();
     }

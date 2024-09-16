@@ -8,8 +8,6 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetServiceService
 {
-    public bool CheckForWidgetServiceAsync();
-
     public Task<bool> TryInstallingWidgetService();
 
     public WidgetServiceStates GetWidgetServiceState();

@@ -26,6 +26,7 @@ public class SourceControlProvider :
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IExtraFolderPropertiesHandler,
     Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootSelector
 {
+    private readonly FileExplorerIntegrationUserSettings _fileExplorerIntegrationUserSettings = new();
     private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(SourceControlProvider));
     private readonly RepositoryTracking _repositoryTracker;
 
@@ -36,8 +37,8 @@ public class SourceControlProvider :
 
     public Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootPropertyProvider? GetProvider(string rootPath)
     {
-        ILocalRepositoryProvider localRepositoryProvider = GetLocalProvider(rootPath);
-        GetLocalRepositoryResult result = localRepositoryProvider.GetRepository(rootPath);
+        var localRepositoryProvider = GetLocalProvider(rootPath);
+        var result = localRepositoryProvider.GetRepository(rootPath);
         if (result.Result.Status == ProviderOperationStatus.Failure)
         {
             _log.Information("Could not open local repository.");
@@ -50,7 +51,6 @@ public class SourceControlProvider :
 
     internal ILocalRepositoryProvider GetLocalProvider(string rootPath)
     {
-        // TODO: Iterate extensions to find the correct one for this rootPath.
         ILocalRepositoryProvider? provider = null;
         var providerPtr = IntPtr.Zero;
         try
@@ -90,12 +90,52 @@ public class SourceControlProvider :
             throw new ArgumentException(localProviderResult.Result.DisplayMessage);
         }
 
-        return localProviderResult.Repository.GetProperties(propertyStrings, relativePath);
+        return GetProperties(propertyStrings, relativePath, localProviderResult.Repository, _fileExplorerIntegrationUserSettings);
+    }
+
+    internal static IPropertySet GetProperties(string[] properties, string relativePath, ILocalRepository repository, FileExplorerIntegrationUserSettings settings)
+    {
+        var repositoryStatusPropertyString = "System.VersionControl.CurrentFolderStatus";
+        var isFileExplorerVersionControlEnabled = settings.IsFileExplorerVersionControlEnabled();
+        var showFileExplorerVersionControlColumnData = settings.ShowFileExplorerVersionControlColumnData();
+        var showRepositoryStatus = settings.ShowRepositoryStatus();
+
+        if (!isFileExplorerVersionControlEnabled || (!showFileExplorerVersionControlColumnData && !showRepositoryStatus))
+        {
+            return new PropertySet();
+        }
+
+        if (showFileExplorerVersionControlColumnData && !showRepositoryStatus)
+        {
+            var filteredPropertyStrings = properties.Where(s => s != repositoryStatusPropertyString).ToArray();
+            properties = filteredPropertyStrings;
+        }
+        else if (!showFileExplorerVersionControlColumnData && showRepositoryStatus)
+        {
+            properties = [repositoryStatusPropertyString];
+        }
+
+        // Trim any string properties to 80 characters
+        var result = repository.GetProperties(properties, relativePath);
+        foreach (var key in result.Keys.ToList())
+        {
+            if (result[key] is string str)
+            {
+                if (str.Length > 80)
+                {
+                    result[key] = str[..80];
+                }
+            }
+        }
+
+        return result;
     }
 }
 
 internal sealed class RootFolderPropertyProvider : Microsoft.Internal.Windows.DevHome.Helpers.FileExplorer.IPerFolderRootPropertyProvider
 {
+    private readonly FileExplorerIntegrationUserSettings _fileExplorerIntegrationUserSettings = new();
+
     public RootFolderPropertyProvider(ILocalRepository repository)
     {
         _repository = repository;
@@ -103,7 +143,7 @@ internal sealed class RootFolderPropertyProvider : Microsoft.Internal.Windows.De
 
     public IPropertySet GetProperties(string[] properties, string relativePath)
     {
-        return _repository.GetProperties(properties, relativePath);
+        return SourceControlProvider.GetProperties(properties, relativePath, _repository, _fileExplorerIntegrationUserSettings);
     }
 
     private readonly ILocalRepository _repository;

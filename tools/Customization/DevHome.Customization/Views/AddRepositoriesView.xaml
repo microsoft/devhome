@@ -29,6 +29,7 @@
                 <DataTemplate>
                     <ctControls:SettingsCard 
                         Header="{Binding RepositoryRootPath}"
+                        Description="{Binding SourceControlProviderDisplayName}"
                         Margin="0">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon 
@@ -38,20 +39,17 @@
                         <StackPanel 
                             Orientation="Horizontal">
                             <DropDownButton 
-                                Content="{Binding SourceControlProviderDisplayName}">
+                                Content="{Binding SourceControlProviderDisplayName}"
+                                ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout 
+                                        Opening="SourceControlProviderMenuFlyout_Opening"
                                         Placement="Bottom">
-                                        <!-- WinUI does not currently allow populating MenuFlyoutItems dynamically within a DataTemplate. -->
-                                        <!-- The items must be statically constructed. -->
-                                        <MenuFlyoutItem
-                                            Text="Git" 
-                                            Click="AssignSourceControlProviderButton_Click"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>
                             <Button 
-                                x:Name="MoreOptionsButton"
+                                x:Uid="MoreOptionsButton"
                                 Content="&#xe712;"
                                 Height="36" 
                                 MinWidth="36"
@@ -63,6 +61,9 @@
                                         <MenuFlyoutItem
                                             x:Uid="RemoveFolder"
                                             Click="RemoveFolderButton_Click" />
+                                        <MenuFlyoutItem
+                                            x:Uid="OpenFolderInFileExplorer"
+                                            Click="OpenFolderInFileExplorer_Click" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.DevDiagnostics.Pages.AdvancedSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    Loaded="Page_Loaded">
+
+    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Breadcrumbs}" Margin="0,0,0,20" AutomationProperties.AutomationId="BreadcrumbBar">
+                <i:Interaction.Behaviors>
+                    <behaviors:BreadcrumbNavigationBehavior />
+                </i:Interaction.Behaviors>
+            </BreadcrumbBar>
+
+            <ctControls:SettingsCard x:Uid="MonitorCpuSettingCard" AutomationProperties.AutomationId="MonitorCpuSettingCard">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE950;"/>
+                </ctControls:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="CpuUsageToggle" Toggled="CpuUsageToggle_Toggled" AutomationProperties.AutomationId="CpuUsageToggle"/>
+            </ctControls:SettingsCard>
+
+            <ctControls:SettingsCard x:Uid="ShowInsightsCard" AutomationProperties.AutomationId="ShowInsightsCard">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE9D9;"/>
+                </ctControls:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="ShowInsightsToggle" Toggled="ShowInsightsToggle_Toggled" AutomationProperties.AutomationId="ShowInsightsToggle"/>
+            </ctControls:SettingsCard>
+
+            <ctControls:SettingsCard x:Uid="EnableClipboardMonitoringCard" AutomationProperties.AutomationId="EnableClipboardMonitoringCard">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF0E3;"/>
+                </ctControls:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="EnableClipboardMonitoringToggle" Toggled="EnableClipboardMonitoringToggle_Toggled" AutomationProperties.AutomationId="EnableClipboardMonitoringToggle"/>
+            </ctControls:SettingsCard>
+
+            <ctControls:SettingsCard x:Uid="ExcludedProcessesCard" AutomationProperties.AutomationId="ExcludedProcessesCard">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE71C;"/>
+                </ctControls:SettingsCard.HeaderIcon>
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="450"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="ExcludedProcessesTextBox"
+                        AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,6,0" Height="90"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0" AutomationProperties.AutomationId="ExcludedProcessesTextBox"/>
+                    <Button
+                        x:Uid="ExcludedProcessesButton"
+                        x:Name="ExcludedProcessesButton" Grid.Column="1"
+                        VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Width="100" Height="36" Click="ExcludedProcessesButton_Click" AutomationProperties.AutomationId="ExcludedProcessesButton"/>
+                </Grid>
+            </ctControls:SettingsCard>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</Page>

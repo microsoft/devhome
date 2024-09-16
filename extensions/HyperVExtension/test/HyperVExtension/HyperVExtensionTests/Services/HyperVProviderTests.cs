@@ -61,10 +61,7 @@ public class HyperVProviderTests : HyperVExtensionTestsBase
             });
 
         SetupPowerShellSessionInvokeResults()
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); }) // first call to load HyperV module
-            .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); }) // second call to load HyperV module
             .Returns(() => { return objectForVirtualMachineHost; })
-            .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock()); }) // call CreateVirtualMachineFromGallery which initially tries to load hyperV module
             .Returns(() => { return objectForVirtualMachine; })
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock()); }) // Calls Set-VMMemory to set VM startup memory but we don't need to check it
             .Returns(() => { return CreatePSObjectCollection(new PSCustomObjectMock()); }); // Calls Set-VMProcessor to set VM processor count but we don't need to check it

@@ -27,23 +27,38 @@ public static class StackedNotificationsBehaviorExtensions
             var notificationToShow = new Notification
             {
                 Title = title,
-                Message = message,
                 Severity = severity,
             };
 
+            // Create a stack panel to hold the message and button
+            // A custom control is needed to allow text selection in the message
+            var stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                Margin = new Thickness(0, -15, 0, 20),
+                Spacing = 10,
+            };
+
+            stackPanel.Children.Add(new TextBlock
+            {
+                Text = message,
+                TextWrapping = TextWrapping.WrapWholeWords,
+                IsTextSelectionEnabled = true,
+            });
+
             if (command != null)
             {
-                notificationToShow.ActionButton = new Button
+                // Make the command parameter the notification so RelayCommands can reference the notification in case they need
+                // to close it within the command.
+                stackPanel.Children.Add(new Button
                 {
                     Content = buttonContent,
                     Command = command,
-                };
-
-                // Make the command parameter the notification so RelayCommands can reference the notification in case they need
-                // to close it within the command.
-                notificationToShow.ActionButton.CommandParameter = notificationToShow;
+                    CommandParameter = notificationToShow,
+                });
             }
 
+            notificationToShow.Content = stackPanel;
             behavior.Show(notificationToShow);
         });
     }

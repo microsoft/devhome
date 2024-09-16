@@ -9,15 +9,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
-using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.Environments;
 using DevHome.Common.TelemetryEvents.SetupFlow.Environments;
 using DevHome.Common.Views;
-using DevHome.Services.DesiredStateConfiguration.Exceptions;
-using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.WingetConfigure;
 using DevHome.SetupFlow.Services;
@@ -29,6 +27,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
+using Windows.Win32.Foundation;
 using SDK = Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -301,14 +300,22 @@ public class ConfigureTargetTask : ISetupTask
 
             if (resultStatus == ProviderOperationStatus.Failure)
             {
-                throw new SDKApplyConfigurationSetResultException(errorDiagnosticText);
+                throw new SDKApplyConfigurationSetResultException(errorDiagnosticText, result.ExtendedError.HResult);
             }
 
             // Check if there were errors while opening the configuration set.
             if (!Result.OpenConfigSucceeded)
             {
+                _log.Error($"Failed to open configuration file on target machine. '{ComputeSystemName}'");
                 AddMessage(Result.OpenResult.GetErrorMessage(), MessageSeverityKind.Error);
-                throw new SDKOpenConfigurationSetResultException(Result.OpenResult.ResultCode, Result.OpenResult.Field, Result.OpenResult.Value);
+
+                if (Result.OpenResult.ResultCode != null)
+                {
+                    throw Result.OpenResult.ResultCode;
+                }
+
+                throw new InvalidOperationException(
+                    "Extension failed to open configuration file but it returned a null result code");
             }
 
             // Gather the configuration results. We'll display these to the user in the summary page if they are available.
@@ -339,21 +346,16 @@ public class ConfigureTargetTask : ISetupTask
                 throw new SDKApplyConfigurationSetResultException("No configuration units were found. This is likely due to an error within the extension.");
             }
         }
-        catch (SDKApplyConfigurationSetResultException)
+        catch (SDKApplyConfigurationSetResultException applyConfigEx)
         {
             _log.Error(result.ExtendedError, $"Extension failed to configure config file with exception. DisplayMessage: {resultInformation}, Diagnostic text: {errorDiagnosticText}");
             var telemetryMessage = !string.IsNullOrEmpty(resultInformation) ? resultInformation : "Provider did not return result information for configuration";
-            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, telemetryMessage, errorDiagnosticText);
-        }
-        catch (OpenConfigurationSetException openConfigEx)
-        {
-            _log.Error(openConfigEx, $"Failed to open configuration file on target machine. '{ComputeSystemName}'");
-            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, Result.OpenResult.GetErrorMessage(), errorDiagnosticText);
+            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, applyConfigEx.HResult, telemetryMessage, applyConfigEx.Message);
         }
         catch (Exception ex)
         {
             _log.Error(ex, $"Failed to apply configuration on target machine. '{ComputeSystemName}'");
-            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, ex.Message, ex.Message);
+            LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, ex.HResult, ex.Message, ex.Message);
         }
 
         var tempResultInfo = !string.IsNullOrEmpty(resultInformation) ? resultInformation : string.Empty;
@@ -401,7 +403,7 @@ public class ConfigureTargetTask : ISetupTask
                 TelemetryFactory.Get<ITelemetry>().Log(
                     "Environment_Configuration_Event",
                     LogLevel.Critical,
-                    new EnvironmentOperationEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, providerId),
+                    new EnvironmentOperationEvent(EnvironmentsTelemetryStatus.Started, ComputeSystemOperations.ApplyConfiguration, providerId, new TelemetryResult()),
                     _setupFlowOrchestrator.ActivityId);
 
                 var applyConfigurationOperation = computeSystem.CreateApplyConfigurationOperation(WingetConfigFileString);
@@ -442,18 +444,18 @@ public class ConfigureTargetTask : ISetupTask
                     throw Result.ProviderResult.ExtendedError ?? throw new SDKApplyConfigurationSetResultException("Applying the configuration failed but we weren't able to check the ProviderOperation results extended error.");
                 }
 
-                LogCompletionTelemetry(EnvironmentsTelemetryStatus.Succeeded);
+                LogCompletionTelemetry(EnvironmentsTelemetryStatus.Succeeded, HRESULT.S_OK);
                 return TaskFinishedState.Success;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _log.Error(e, $"Failed to apply configuration on target machine.");
+                _log.Error(ex, $"Failed to apply configuration on target machine.");
 
                 // Capture telemetry if an exception happens before the call to HandleCompletedOperation
                 // if an exception occurs, but don't capture it if we've already handled the failure in HandleCompletedOperation.
                 if (!_isCompletionTelemetryLogged)
                 {
-                    LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, e.Message, e.Message);
+                    LogCompletionTelemetry(EnvironmentsTelemetryStatus.Failed, ex.HResult, ex.Message, ex.Message);
                 }
 
                 return TaskFinishedState.Failure;
@@ -550,14 +552,27 @@ public class ConfigureTargetTask : ISetupTask
         return (_stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, unit.Intent, unit.Type, packageId, unitDescription), packageName);
     }
 
-    private void LogCompletionTelemetry(EnvironmentsTelemetryStatus status, string displayMessage = null, string diagnosticText = null)
+    private void LogCompletionTelemetry(EnvironmentsTelemetryStatus status, int hResult, string displayMessage = null, string diagnosticText = null)
     {
         var computeSystem = _computeSystemManager.ComputeSystemSetupItem.ComputeSystemToSetup;
+        var telemetryResult = new TelemetryResult();
+
+        if (status == EnvironmentsTelemetryStatus.Failed)
+        {
+            telemetryResult = new TelemetryResult(hResult, displayMessage, diagnosticText);
+        }
+
+        var telemetryPayload = new EnvironmentOperationEvent(
+                status,
+                ComputeSystemOperations.ApplyConfiguration,
+                computeSystem.AssociatedProviderId.Value,
+                telemetryResult,
+                string.Empty);
 
         TelemetryFactory.Get<ITelemetry>().Log(
             "Environment_Configuration_Event",
             LogLevel.Critical,
-            new EnvironmentOperationEvent(status, ComputeSystemOperations.ApplyConfiguration, computeSystem.AssociatedProviderId.Value, string.Empty, displayMessage, diagnosticText),
+            telemetryPayload,
             _setupFlowOrchestrator.ActivityId);
 
         if (status != EnvironmentsTelemetryStatus.Started)

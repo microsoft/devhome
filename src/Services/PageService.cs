@@ -57,6 +57,8 @@ public class PageService : IPageService
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;
             var needsFeaturePresenceCheck = experimentalFeature.NeedsFeaturePresenceCheck;
+            var openPageKey = experimentalFeature.OpenPage.Key;
+            var openPageParameter = experimentalFeature.OpenPage.Parameter;
             var isVisible = true;
             foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
             {
@@ -68,7 +70,7 @@ public class PageService : IPageService
                 }
             }
 
-            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, needsFeaturePresenceCheck, isVisible));
+            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, needsFeaturePresenceCheck, openPageKey, openPageParameter, isVisible));
         }
     }
 

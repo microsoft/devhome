@@ -13,6 +13,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.RepositoryManagement.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -152,7 +153,15 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, ISetupFlowStringResource stringResource, string providerName, Guid activityId, IHost host)
+    public CloneRepoTask(
+        IRepositoryProvider repositoryProvider,
+        DirectoryInfo cloneLocation,
+        IRepository repositoryToClone,
+        IDeveloperId developerId,
+        ISetupFlowStringResource stringResource,
+        string providerName,
+        Guid activityId,
+        IHost host)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -269,6 +278,17 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                     _summaryScreenInformation.RepoName = RepositoryName;
                     _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
                 }
+            }
+
+            var experimentationService = _host.GetService<IExperimentationService>();
+            var canUseTheDatabase = experimentationService.IsFeatureEnabled("RepositoryManagementExperiment");
+
+            if (canUseTheDatabase)
+            {
+                // TODO: Is this the best place to add the repository to the database?
+                // Maybe a "PostExecutionStep" would be nice.
+                _host.GetService<RepositoryManagementDataAccessService>()
+                .AddRepository(RepositoryName, CloneLocation.FullName);
             }
 
             WasCloningSuccessful = true;

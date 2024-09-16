@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DevHome.DevDiagnostics.Pages.AppDetailsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DevHome.DevDiagnostics.Models"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:local="using:DevHome.DevDiagnostics.Controls"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled">
+
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,2,0,6"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Uid="AppDetailsHeaderTextBlock" FontSize="{StaticResource SubtitleTextBlockFontSize}" FontWeight="SemiBold" Margin="0,0,0,8" AutomationProperties.AutomationId="AppDetailsHeaderTextBlock"/>
+            <Button
+                Grid.Column="1"
+                x:Uid="DetachAppButton"
+                Height="40"
+                BorderThickness="0"
+                Visibility="{x:Bind ViewModel.AppSettingsVisibility, Mode=OneWay}"
+                Command="{x:Bind ViewModel.DetachFromProcessCommand}"
+                AutomationProperties.AutomationId="DetachAppButton">
+                <TextBlock Text="&#xe894;" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{StaticResource SubtitleTextBlockFontSize}"/>
+            </Button>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,6,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Uid="IDTextBlock" x:Name="IDTextBlock" AutomationProperties.AutomationId="IDTextBlock"/>
+                <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ProcessId, Mode=OneWay}" IsReadOnly="True" AutomationProperties.AutomationId="ProcessIdTextBox" AutomationProperties.LabeledBy="{Binding ElementName=IDTextBlock}"/>
+
+                <!-- These fields can't be reported if we get an exception accessing them,
+                for example if the target app is running elevated but PI is not. -->
+                <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.AppInfo.Visibility, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Uid="BasePriorityTextBlock" x:Name="BasePriorityTextBlock" AutomationProperties.AutomationId="BasePriorityTextBlock"/>
+                    <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.BasePriority, Mode=OneWay}" AutomationProperties.AutomationId="BasePriorityTextBox" AutomationProperties.LabeledBy="{Binding ElementName=BasePriorityTextBlock}"/>
+                    <TextBlock Grid.Row="1" x:Uid="PriorityClassTextBlock" x:Name="PriorityClassTextBlock" AutomationProperties.AutomationId="PriorityClassTextBlock"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PriorityClass, Mode=OneWay}" AutomationProperties.AutomationId="PriorityClassTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PriorityClassTextBlock}"/>
+                    <TextBlock Grid.Row="2" x:Uid="MainModuleTextBlock" x:Name="MainModuleTextBlock" AutomationProperties.AutomationId="MainModuleTextBlock"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.MainModuleFileName, Mode=OneWay}" AutomationProperties.AutomationId="MainModuleFileNameTextBox" AutomationProperties.LabeledBy="{Binding ElementName=MainModuleTextBlock}"/>
+                    <TextBlock Grid.Row="3" x:Uid="CpuArchitectureTextBlock" x:Name="CpuArchitectureTextBlock" AutomationProperties.AutomationId="CpuArchitectureTextBlock"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.CpuArchitecture, Mode=OneWay}" AutomationProperties.AutomationId="CpuArchitectureTextBox" AutomationProperties.LabeledBy="{Binding ElementName=CpuArchitectureTextBlock}"/>
+                    <TextBlock Grid.Row="4" x:Uid="FrameworkTypesTextBlock" x:Name="FrameworkTypesTextBlock" AutomationProperties.AutomationId="FrameworkTypesTextBlock"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IdentifiedFrameWorkTypes, Mode=OneWay}" AutomationProperties.AutomationId="IdentifiedFrameWorkTypesTextBox" AutomationProperties.LabeledBy="{Binding ElementName=FrameworkTypesTextBlock}"/>
+                    <TextBlock Grid.Row="5" x:Uid="ActivationArgsTextBlock" x:Name="ActivationArgsTextBlock" AutomationProperties.AutomationId="ActivationArgsTextBlock"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.ActivationArgs, Mode=OneWay}" AutomationProperties.AutomationId="ActivationArgsTextBox" AutomationProperties.LabeledBy="{Binding ElementName=ActivationArgsTextBlock}"/>
+                    <TextBlock Grid.Row="6" x:Uid="MSIXPackagedTextBlock" x:Name="MSIXPackagedTextBlock" AutomationProperties.AutomationId="MSIXPackagedTextBlock"/>
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsPackaged, Mode=OneWay}" AutomationProperties.AutomationId="IsPackagedTextBox" AutomationProperties.LabeledBy="{Binding ElementName=MSIXPackagedTextBlock}"/>
+
+                    <!-- This panel is only visible if the target app is MSIX-packaged. -->
+                    <Grid Grid.Row="7" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ProcessPackageVisibility, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="PackageFullNameTextBlock" x:Name="PackageFullNameTextBlock" AutomationProperties.AutomationId="PackageFullNameTextBlock"/>
+                        <TextBox Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.FullName, Mode=OneWay}" AutomationProperties.AutomationId="PackageFullNameTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageFullNameTextBlock}"/>
+                        <TextBlock Grid.Row="1" x:Uid="PackageVersionTextBlock" x:Name="PackageVersionTextBlock" AutomationProperties.AutomationId="PackageVersionTextBlock"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Version, Mode=OneWay}" AutomationProperties.AutomationId="PackageVersionTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageVersionTextBlock}"/>
+                        <TextBlock Grid.Row="2" x:Uid="PackageDisplayNameTextBlock" x:Name="PackageDisplayNameTextBlock" AutomationProperties.AutomationId="PackageDisplayNameTextBlock"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.DisplayName, Mode=OneWay}" AutomationProperties.AutomationId="PackageDisplayNameTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageDisplayNameTextBlock}"/>
+                        <TextBlock Grid.Row="3" x:Uid="PackageInstalledDateTextBlock" x:Name="PackageInstalledDateTextBlock" AutomationProperties.AutomationId="PackageInstalledDateTextBlock"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.InstalledDate, Mode=OneWay}" AutomationProperties.AutomationId="PackageInstalledDateTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageInstalledDateTextBlock}"/>
+                        <TextBlock Grid.Row="4" x:Uid="PackageInstalledPathTextBlock" x:Name="PackageInstalledPathTextBlock" AutomationProperties.AutomationId="PackageInstalledPathTextBlock"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.InstalledPath, Mode=OneWay}" AutomationProperties.AutomationId="PackageInstalledPathTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageInstalledPathTextBlock}"/>
+                        <TextBlock Grid.Row="5" x:Uid="PackagePublisherTextBlock" x:Name="PackagePublisherTextBlock" AutomationProperties.AutomationId="PackagePublisherTextBlock"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Publisher, Mode=OneWay}" AutomationProperties.AutomationId="PackagePublisherTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackagePublisherTextBlock}"/>
+                        <TextBlock Grid.Row="6" x:Uid="PackageIsDevelopmentModeTextBlock" x:Name="PackageIsDevelopmentModeTextBlock" AutomationProperties.AutomationId="PackageIsDevelopmentModeTextBlock"/>
+                        <TextBox Grid.Row="6" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.IsDevelopmentMode, Mode=OneWay}" AutomationProperties.AutomationId="PackageIsDevelopmentModeTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageIsDevelopmentModeTextBlock}"/>
+                        <TextBlock Grid.Row="7" x:Uid="PackageSignatureKindTextBlock" x:Name="PackageSignatureKindTextBlock" AutomationProperties.AutomationId="PackageSignatureKindTextBlock"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.SignatureKind, Mode=OneWay}" AutomationProperties.AutomationId="PackageSignatureKindTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageSignatureKindTextBlock}"/>
+                        <TextBlock Grid.Row="8" x:Uid="PackageStatusTextBlock" x:Name="PackageStatusTextBlock" AutomationProperties.AutomationId="PackageStatusTextBlock"/>
+                        <TextBox Grid.Row="8" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Status, Mode=OneWay}" AutomationProperties.AutomationId="PackageStatusTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageStatusTextBlock}"/>
+                        <TextBlock Grid.Row="9" x:Uid="PackageDependenciesTextBlock" x:Name="PackageDependenciesTextBlock" AutomationProperties.AutomationId="PackageDependenciesTextBlock"/>
+                        <TextBox Grid.Row="9" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.PackageInfo.Dependencies, Mode=OneWay}" AutomationProperties.AutomationId="PackageDependenciesTextBox" AutomationProperties.LabeledBy="{Binding ElementName=PackageDependenciesTextBlock}"/>
+                    </Grid>
+                </Grid>
+
+                <!-- These fields can't be reported if the target process has exited -->
+                <Grid Grid.Row="2" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ProcessRunningParamsVisibility, Mode=OneWay}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="1" x:Uid="IsRunningAsSystemTextBlock" x:Name="IsRunningAsSystemTextBlock" AutomationProperties.AutomationId="IsRunningAsSystemTextBlock"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsSystem, Mode=OneWay}" IsReadOnly="True" AutomationProperties.AutomationId="IsRunningAsSystemTextBox" AutomationProperties.LabeledBy="{Binding ElementName=IsRunningAsSystemTextBlock}"/>
+                    <TextBlock Grid.Row="2" x:Uid="IsRunningAsAdminTextBlock" x:Name="IsRunningAsAdminTextBlock" AutomationProperties.AutomationId="IsRunningAsAdminTextBlock"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.AppInfo.IsRunningAsAdmin, Mode=OneWay}" IsReadOnly="True" AutomationProperties.AutomationId="IsRunningAsAdminTextBox" AutomationProperties.LabeledBy="{Binding ElementName=IsRunningAsAdminTextBlock}"/>
+                </Grid>
+
+                <Button
+                    Grid.Row="3" Grid.ColumnSpan="2" Margin="0,12,0,0"
+                    Visibility="{x:Bind ViewModel.RunAsAdminVisibility, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.RunAsAdminCommand}"
+                    AutomationProperties.AutomationId="RunAsAdminButton">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <SymbolIcon Symbol="Admin"/>
+                        <TextBlock x:Uid="RunElevatedButton" Margin="0" AutomationProperties.AutomationId="RunElevatedButton"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

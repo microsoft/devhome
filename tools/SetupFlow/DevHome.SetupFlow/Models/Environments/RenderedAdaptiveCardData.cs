@@ -15,9 +15,15 @@ public class RenderedAdaptiveCardData
 
     public RenderedAdaptiveCard RenderedAdaptiveCard { get; set; }
 
-    public RenderedAdaptiveCardData(object currentSetupFlowViewModel, RenderedAdaptiveCard renderedAdaptiveCard)
+    public string ErrorMessage { get; }
+
+    public RenderedAdaptiveCardData(
+        object currentSetupFlowViewModel,
+        RenderedAdaptiveCard renderedAdaptiveCard,
+        string errorMessage = null)
     {
         CurrentSetupFlowViewModel = currentSetupFlowViewModel;
         RenderedAdaptiveCard = renderedAdaptiveCard;
+        ErrorMessage = errorMessage;
     }
 }

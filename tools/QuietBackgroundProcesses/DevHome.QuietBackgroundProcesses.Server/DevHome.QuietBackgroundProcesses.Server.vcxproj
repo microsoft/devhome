@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <Language>C++</Language>
   </PropertyGroup>
-  <Import Project="..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240805-x2200\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props" Condition="Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240805-x2200\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" />
+  <Import Project="..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240910-x0103\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props" Condition="Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240910-x0103\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" />
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <Import Project="$(SolutionDir)Directory.CppBuild.props" />
   <PropertyGroup Label="Globals">
@@ -196,6 +196,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240805-x2200\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240805-x2200\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240910-x0103\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Internal.Windows.DevHome.Helpers.1.0.20240910-x0103\build\native\Microsoft.Internal.Windows.DevHome.Helpers.props'))" />
   </Target>
 </Project>
