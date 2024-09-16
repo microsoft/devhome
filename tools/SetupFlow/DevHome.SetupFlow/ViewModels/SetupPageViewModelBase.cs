@@ -3,7 +3,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Services;
@@ -93,12 +92,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         get;
     }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the base object is the page that displays the initial adaptive card
-    /// within a flow that supports adaptive cards with a next and previous button.
-    /// </summary>
-    public bool IsInitialAdaptiveCardPage { get; protected set; }
 
     public bool IsLastStepPage => IsStepPage && Orchestrator.SetupStepPages.LastOrDefault() == this;
 
@@ -195,27 +188,5 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         // Do nothing
         await Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Hook so the orchestrator can validate if the user can navigate to the next page when a page is rendering
-    /// an adaptive card that is hooked up to the <see cref="SetupFlowOrchestrator.DevHomeActionSetRenderer"/>.
-    /// </summary>
-    /// <remarks>
-    /// The orchestrator takes care of calling this when appropriate through <see cref="GetAdaptiveCardUserInputsForNavigationValidation"/>.
-    /// This runs on the UI thread, but the cost of validating the inputs should be minimal.
-    /// </remarks>
-    protected virtual AdaptiveInputs GetAdaptiveCardUserInputs()
-    {
-        return new AdaptiveInputs();
-    }
-
-    /// <summary>
-    /// Performs the work to validate the user inputs when navigating to the next page when the page is rendering an adaptive card.
-    /// </summary>
-    /// <returns>The adaptive card inputs for the adaptive card currently presented to the user on the setup flow page</returns>
-    public AdaptiveInputs GetAdaptiveCardUserInputsForNavigationValidation()
-    {
-        return GetAdaptiveCardUserInputs();
     }
 }

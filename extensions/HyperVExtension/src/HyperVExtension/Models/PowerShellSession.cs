@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Management.Automation;
 
 namespace HyperVExtension.Models;
@@ -55,7 +56,30 @@ public class PowerShellSession : IPowerShellSession, IDisposable
     /// <inheritdoc cref="IPowerShellSession.GetErrorMessages"/>
     public string GetErrorMessages()
     {
-        return string.Join(Environment.NewLine, _powerShellSession.Streams.Error.Select(err => err.Exception.Message));
+        if (_powerShellSession.Streams.Error.Count > 0)
+        {
+            List<string> errors = new List<string>();
+            for (int i = 0; i < _powerShellSession.Streams.Error.Count; i++)
+            {
+                var exception = _powerShellSession.Streams.Error[i].Exception;
+                errors.Add($"{exception.Message} (0x{exception.HResult.ToString("X", CultureInfo.InvariantCulture)})");
+            }
+
+            return string.Join(Environment.NewLine, errors);
+        }
+
+        return string.Empty;
+    }
+
+    /// <inheritdoc cref="IPowerShellSession.GetErrorFirstHResult"/>
+    public int GetErrorFirstHResult()
+    {
+        if (_powerShellSession.Streams.Error.Count > 0)
+        {
+            return _powerShellSession.Streams.Error[0].Exception.HResult;
+        }
+
+        return 0;
     }
 
     protected virtual void Dispose(bool disposing)

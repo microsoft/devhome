@@ -5,7 +5,9 @@
       "LocalizedProperties": [
         {
           "PublisherName": "Martí Climent",
-          "ProductTitle": "WingetUI Widgets"
+          "ProductDescription": "Widgets for the Windows Widgets and Dev Home applications that will help you quickly manage your software updates without having to launch UniGetUI.\n\nWARNING: This application requires UniGetUI to be installed and running on your system. This application does NOT perform any of the updates, but rather it interfaces with UniGetUI to keep your packages up-to-date.",
+          "ProductTitle": "Widgets for UniGetUI (formerly WingetUI)",
+          "ShortDescription": "Handy widgets to manage your packages without having to open UniGetUI"
         }
       ],
       "ProductId": "9NB9M5KZ8SLX",
@@ -17,7 +19,9 @@
       "LocalizedProperties": [
         {
           "PublisherName": "Microsoft Corporation",
-          "ProductTitle": "Microsoft Game Dev Extension (Preview)"
+          "ProductDescription": "Dev Home Microsoft Game Dev Extension provides Microsoft Game Development integration into the Dev Home experience. This extension provides gaming development package recommendations for Dev Home's machine configuration tool as well as game development widgets for the dashboard. You will need Dev Home installed in order to use this extension.",
+          "ProductTitle": "Microsoft Game Dev Extension (Preview)",
+          "ShortDescription": ""
         }
       ],
       "ProductId": "9NZ845RW19RW",
@@ -29,7 +33,9 @@
       "LocalizedProperties": [
         {
           "PublisherName": "Microsoft Corporation",
-          "ProductTitle": "Dev Home Azure Extension (Preview)"
+          "ProductDescription": "Dev Home Azure Extension provides Azure integration into the Dev Home experience. This extension provides repository recommendations for Dev Home's machine configuration tool as well as Azure widgets for the dashboard. You will need Dev Home installed in order to use this extension.\n\n\nThis is an open source project and we welcome community participation. To participate, please visit https://github.com/microsoft/devhomeazureextension",
+          "ProductTitle": "Dev Home Azure Extension (Preview)",
+          "ShortDescription": ""
         }
       ],
       "ProductId": "9MV8F79FGXTR",
@@ -41,7 +47,9 @@
       "LocalizedProperties": [
         {
           "PublisherName": "Microsoft Corporation",
-          "ProductTitle": "Dev Home GitHub Extension (Preview)"
+          "ProductDescription": "Dev Home GitHub Extension provides GitHub integration into the Dev Home experience. This extension provides repository recommendations for Dev Home's machine configuration tool as well as GitHub widgets for the dashboard. You will need Dev Home installed in order to use this extension.\n\n\nThis is an open source project and we welcome community participation. To participate, please visit https://github.com/microsoft/devhomegithubextension",
+          "ProductTitle": "Dev Home GitHub Extension (Preview)",
+          "ShortDescription": ""
         }
       ],
       "ProductId": "9NZCC27PR6N6",

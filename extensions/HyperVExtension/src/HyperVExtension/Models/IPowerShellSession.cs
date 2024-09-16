@@ -37,4 +37,7 @@ public interface IPowerShellSession
 
     /// <summary> Gets the error messages associated with this instance of the PowerShell session. </summary>
     public string GetErrorMessages();
+
+    /// <summary> Gets the first error HRESULT associated with this instance of the PowerShell session. </summary>
+    public int GetErrorFirstHResult();
 }

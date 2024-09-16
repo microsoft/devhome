@@ -7,12 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleExtension", "SampleExtension.csproj", "{81215577-330C-4EAC-B9C0-574B2176ED18}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExtensionSdk", "ExtensionSdk", "{A4E5B553-54A3-4063-8186-6CCE376CE195}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Windows.DevHome.SDK", "..\..\extensionsdk\Microsoft.Windows.DevHome.SDK\Microsoft.Windows.DevHome.SDK.vcxproj", "{295DD37E-C85D-4B08-AAFE-7381FA890463}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.DevHome.SDK.Lib", "..\..\extensionsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj", "{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -41,37 +35,9 @@ Global
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.ActiveCfg = Release|x86
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.Build.0 = Release|x86
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.Deploy.0 = Release|x86
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|arm64.ActiveCfg = Debug|ARM64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|arm64.Build.0 = Debug|ARM64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|x64.ActiveCfg = Debug|x64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|x64.Build.0 = Debug|x64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|x86.ActiveCfg = Debug|Win32
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Debug|x86.Build.0 = Debug|Win32
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|arm64.ActiveCfg = Release|ARM64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|arm64.Build.0 = Release|ARM64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|x64.ActiveCfg = Release|x64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|x64.Build.0 = Release|x64
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|x86.ActiveCfg = Release|Win32
-		{295DD37E-C85D-4B08-AAFE-7381FA890463}.Release|x86.Build.0 = Release|Win32
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|arm64.ActiveCfg = Debug|ARM64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|arm64.Build.0 = Debug|ARM64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|x64.ActiveCfg = Debug|x64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|x64.Build.0 = Debug|x64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|x86.ActiveCfg = Debug|x86
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Debug|x86.Build.0 = Debug|x86
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|arm64.ActiveCfg = Release|ARM64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|arm64.Build.0 = Release|ARM64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|x64.ActiveCfg = Release|x64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|x64.Build.0 = Release|x64
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|x86.ActiveCfg = Release|x86
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{295DD37E-C85D-4B08-AAFE-7381FA890463} = {A4E5B553-54A3-4063-8186-6CCE376CE195}
-		{CAD6D70B-6A44-4CDD-86E8-9BD64BD40F39} = {A4E5B553-54A3-4063-8186-6CCE376CE195}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {030B5641-B206-46BB-BF71-36FF009088FA}

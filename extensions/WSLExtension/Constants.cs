@@ -20,7 +20,8 @@ public static class Constants
     public const string WindowsTerminalPackageFamilyName = "Microsoft.WindowsTerminal_8wekyb3d8bbwe";
     public const string WslExe = "wsl.exe";
     public const string WslTemplateSubfolderName = "WslTemplates";
-
+    public const string WslKernelPackageStoreId = "9P9TQF7MRM4R";
+    public const string WSLPackageFamilyName = "MicrosoftCorporationII.WindowsSubsystemForLinux_8wekyb3d8bbwe";
     public const string DefaultWslLogoPath = @"ms-appx:///WslAssets/wslLinux.png";
     public const string WslLogoPathFormat = @"ms-appx:///WslAssets/{0}";
     public const string KnownDistributionsLocalYamlLocation = @"ms-appx:///DistributionDefinitions/DistributionDefinition.yaml";
@@ -28,6 +29,9 @@ public static class Constants
 
     // Wsl registry location for registered distributions.
     public const string WslRegistryLocation = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss";
+
+    // Registry location for app paths
+    public const string AppPathsRegistryLocation = @"Software\Microsoft\Windows\CurrentVersion\App Paths";
 
     // Wsl registry data names within a distribution location.
     public const string PackageFamilyRegistryName = "PackageFamilyName";
@@ -39,17 +43,8 @@ public static class Constants
     public const int WslVersion2 = 2;
     public const int WslExeExitSuccess = 0;
 
-    // Launch terminal with specific profile and log the user into their home directory in the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionInTerminalWithProfile { get; } = "--profile {0} -- wsl --shell-type login --cd ~ --distribution {1}";
-
-    // Launch without using a Terminal profile and log the user into their home directory using the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionInTerminalWithNoProfile { get; } = "wsl --shell-type login --cd ~ --distribution {0}";
-
     // Launch into the wsl process without terminal and log the user into their home directory using the login shell
-    // Note: this opens a new terminal window in the UI
-    public static string LaunchDistributionWithoutTerminal { get; } = "--shell-type login --cd ~ --distribution {0}";
+    public static string LaunchDistributionArgs { get; } = "--shell-type login --cd ~ --distribution {0}";
 
     // Arguments to unregister a wsl distribution from a machine using wsl.exe
     public const string UnregisterDistributionArgs = "--unregister {0}";
@@ -57,13 +52,13 @@ public static class Constants
     // Arguments to terminate all wsl sessions for a specific distribution using wsl.exe
     public const string TerminateDistributionArgs = "--terminate {0}";
 
-    // Arguments to download, install and register a wsl distribution using Terminal
-    // Note: this opens a new terminal window in the UI
-    public const string InstallDistributionWithTerminal = "wsl --install --distribution {0}";
-
-    // Arguments to download, install and register a wsl distribution without using terminal
-    // Note: this opens a cmd window in the UI
-    public const string InstallDistributionWithoutTerminal = "--install --distribution {0}";
+    // Arguments to installs and Register a wsl distribution using the distributions
+    // <launcher>.exe executable file. Where <launcher> is the WSL distributions name.
+    // See: https://github.com/microsoft/WSL-DistroLauncher?tab=readme-ov-file#contents
+    // for more information on the launcher executable. Using --root allows us to register
+    // the distribution without the command line session being hung waiting for the user to
+    // create a new username and password.
+    public const string InstallAndRegisterDistributionArgs = "install --root";
 
     // Arguments to list of all running distributions on a machine using wsl.exe
     public const string ListAllRunningDistributions = "--list --running";

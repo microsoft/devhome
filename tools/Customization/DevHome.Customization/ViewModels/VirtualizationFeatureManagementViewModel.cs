@@ -38,6 +38,8 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
 
     private readonly ModifyFeaturesDialog _modifyFeaturesDialog;
 
+    private readonly RestartDialog _restartDialog;
+
     private StackedNotificationsBehavior? _notificationQueue;
 
     public IAsyncRelayCommand LoadFeaturesCommand { get; }
@@ -90,7 +92,12 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
             }
         };
 
-        _modifyFeaturesDialog = new ModifyFeaturesDialog(ApplyChangesCommand)
+        _modifyFeaturesDialog = new ModifyFeaturesDialog()
+        {
+            XamlRoot = _window.Content.XamlRoot,
+        };
+
+        _restartDialog = new RestartDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
         };
@@ -203,17 +210,26 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
         var cancellationTokenSource = new CancellationTokenSource();
         _modifyFeaturesDialog.ViewModel.SetCommittingChanges(cancellationTokenSource);
 
-        var showDialogTask = _modifyFeaturesDialog.ShowAsync();
-
         await _window.DispatcherQueue.EnqueueAsync(async () =>
         {
-            var exitCode = await ModifyWindowsOptionalFeatures.ModifyFeaturesAsync(Features, _log, cancellationTokenSource.Token);
-
-            await LoadFeaturesCommand.ExecuteAsync(null);
-            _restartNeeded = HasFeatureStatusChanged();
-            if (_restartNeeded)
+            if (!Features.Any(f => f.HasChanged))
             {
-                ShowRestartNotification();
+                return;
+            }
+
+            var modifyFeatures = new ModifyWindowsOptionalFeatures(Features, _log, cancellationTokenSource.Token);
+            var exitCode = await modifyFeatures.Execute();
+
+            if (exitCode == ModifyWindowsOptionalFeatures.ExitCode.Success)
+            {
+                var showOperation = _modifyFeaturesDialog.ShowAsync();
+                exitCode = await modifyFeatures.WaitForCompleted();
+
+                await LoadFeaturesCommand.ExecuteAsync(null);
+                _restartNeeded = HasFeatureStatusChanged();
+
+                _modifyFeaturesDialog.Hide();
+                await showOperation;
             }
 
             switch (exitCode)
@@ -223,7 +239,7 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
                     // to be displayed when the user navigates away from the page and returns.
                     if (_restartNeeded)
                     {
-                        _modifyFeaturesDialog.ViewModel.SetCompleteRestartRequired();
+                        await _restartDialog.ShowAsync();
                     }
                     else
                     {
@@ -243,7 +259,10 @@ public partial class VirtualizationFeatureManagementViewModel : ObservableObject
             }
         });
 
-        await showDialogTask;
+        if (_restartNeeded)
+        {
+            ShowRestartNotification();
+        }
     }
 
     private async Task OnFeaturesChanged()

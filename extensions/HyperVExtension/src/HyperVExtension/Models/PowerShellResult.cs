@@ -14,4 +14,7 @@ public class PowerShellResult : PowerShellResultBase
 
     /// <inheritdoc cref="PowerShellResultBase.CommandOutputErrorMessage"/>
     public override string CommandOutputErrorMessage { get; set; } = string.Empty;
+
+    /// <inheritdoc cref="PowerShellResultBase.CommandOutputErrorFirstHresult"/>
+    public override int CommandOutputErrorFirstHResult { get; set; }
 }

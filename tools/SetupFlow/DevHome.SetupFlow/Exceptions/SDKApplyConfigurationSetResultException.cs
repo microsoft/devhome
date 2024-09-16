@@ -16,4 +16,10 @@ public class SDKApplyConfigurationSetResultException : Exception
     : base(message)
     {
     }
+
+    public SDKApplyConfigurationSetResultException(string message, int hResult)
+    : base(message)
+    {
+        HResult = hResult;
+    }
 }

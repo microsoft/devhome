@@ -1,14 +1,21 @@
 {
   "profiles": {
     "DevHome (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": false,
+      "nativeDebugging": false
     },
     "DevHome (Unpackaged)": {
       "commandName": "Project"
     },
-    "DevInsights (Package)": {
+    "DevDiagnostics (Package)": {
       "commandName": "MsixPackage",
-      "commandLineArgs": "--utilitylaunch DevHome.PI.Exe ",
+      "commandLineArgs": "--utilitylaunch DevHome.DevDiagnostics.Exe ",
+      "nativeDebugging": true
+    },
+    "IfeoTool (Packaged)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "--utilitylaunch DevHome.IfeoTool.Exe ",
       "nativeDebugging": true
     }
   }

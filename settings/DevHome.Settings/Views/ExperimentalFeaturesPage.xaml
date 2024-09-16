@@ -10,6 +10,7 @@
     xmlns:views="using:DevHome.Common.Views"
     xmlns:models="using:DevHome.Common.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     behaviors:NavigationViewHeaderBehavior.HeaderTemplate="{StaticResource BreadcrumbBarDataTemplate}"
     behaviors:NavigationViewHeaderBehavior.HeaderContext="{x:Bind ViewModel}">
 
@@ -27,12 +28,30 @@
                                 Header="{x:Bind Name, Mode=OneWay}"
                                 Description="{x:Bind Description, Mode=OneWay}"
                                 Margin="{ThemeResource SettingsCardMargin}"
-                                Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
+                                Visibility="{x:Bind IsVisible, Mode=OneWay}"
+                                IsClickEnabled="{x:Bind IsEnabled, Mode=OneWay}"
+                                Command="{x:Bind OpenCommand}">
+                                <ToggleSwitch
+                                    IsOn="{x:Bind IsEnabled, Mode=OneWay}"
+                                    Grid.Column="1">
                                     <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="Toggled">
                                             <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
                                         </ic:EventTriggerBehavior>
+                                        <ic:DataTriggerBehavior
+                                            Binding="{x:Bind IsEnabled, Mode=OneWay}"
+                                            Value="False">
+                                            <ic:ChangePropertyAction
+                                                PropertyName="Margin"
+                                                Value="0,0,27,0" />
+                                        </ic:DataTriggerBehavior>
+                                        <ic:DataTriggerBehavior
+                                            Binding="{x:Bind IsEnabled, Mode=OneWay}"
+                                            Value="True">
+                                            <ic:ChangePropertyAction
+                                                PropertyName="Margin"
+                                                Value="0" />
+                                        </ic:DataTriggerBehavior>
                                     </i:Interaction.Behaviors>
                                 </ToggleSwitch>
                             </ctControls:SettingsCard>

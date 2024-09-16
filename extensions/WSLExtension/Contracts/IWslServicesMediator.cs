@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using Windows.ApplicationModel;
 using WSLExtension.Models;
 
 namespace WSLExtension.Contracts;
@@ -29,10 +30,10 @@ public interface IWslServicesMediator
     void UnregisterDistribution(string distributionName);
 
     /// <summary> Launches a new WSL process with the provided distribution. </summary>
-    void LaunchDistribution(string distributionName, string? windowsTerminalProfile);
+    void LaunchDistribution(string distributionName);
 
-    /// <summary> Installs and registers a new distribution on the machine. </summary>
-    void InstallDistribution(string distributionName);
+    /// <summary> Installs and registers a distribution on the machine. </summary>
+    void InstallAndRegisterDistribution(Package distributionPackage);
 
     /// <summary> Terminates all running WSL sessions for the provided distribution on the machine. </summary>
     void TerminateDistribution(string distributionName);

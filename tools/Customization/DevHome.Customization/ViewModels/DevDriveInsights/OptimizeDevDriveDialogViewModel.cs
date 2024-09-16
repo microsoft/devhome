@@ -57,11 +57,17 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     [ObservableProperty]
     private bool _isNotDevDrive;
 
+    private List<string> RelatedEnvironmentVariablesToBeSet { get; set; } = new List<string>();
+
+    private List<string> RelatedCacheDirectories { get; set; } = new List<string>();
+
     public OptimizeDevDriveDialogViewModel(
         string existingCacheLocation,
         string environmentVariableToBeSet,
         string exampleDevDriveLocation,
-        List<string> existingDevDriveLetters)
+        List<string> existingDevDriveLetters,
+        List<string> relatedEnvironmentVariablesToBeSet,
+        List<string> relatedCacheDirectories)
     {
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
         ExistingDevDriveLetters = existingDevDriveLetters;
@@ -75,6 +81,8 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         IsPrimaryButtonEnabled = true;
         ErrorMessage = string.Empty;
         IsNotDevDrive = false;
+        RelatedEnvironmentVariablesToBeSet = relatedEnvironmentVariablesToBeSet;
+        RelatedCacheDirectories = relatedCacheDirectories;
     }
 
     [RelayCommand]
@@ -94,7 +102,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         };
 
         folderPicker.FileTypeFilter.Add("*");
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Microsoft.UI.Xaml.Application.Current.GetService<Window>().GetWindowHandle());
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<Window>().GetWindowHandle());
         var folder = await folderPicker.PickSingleFolderAsync();
 
         if (folder != null)
@@ -244,6 +252,32 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         return false;
     }
 
+    private bool MoveDirectories(string sourceDirectory, string targetDirectory, List<string> relatedCacheDirectories)
+    {
+        // TODO: If in future we support some cache with multiple relatedCacheDirectories, we should consider using Parallel.ForEachAsync
+        foreach (var relatedCacheDirectory in relatedCacheDirectories)
+        {
+            var relatedCacheDirectoryName = Path.GetFileName(relatedCacheDirectory);
+            if (!MoveDirectory(relatedCacheDirectory, $@"{targetDirectory}\Related Directories\{relatedCacheDirectoryName}"))
+            {
+                return false;
+            }
+        }
+
+        return MoveDirectory(sourceDirectory, targetDirectory);
+    }
+
+    private void SetRelatedEnvironmentVariables(List<string> relatedEnvironmentVariablesToBeSet, List<string> relatedCacheDirectories, string directoryPath)
+    {
+        var index = 0;
+        foreach (var relatedEnvironmentVariableToBeSet in relatedEnvironmentVariablesToBeSet)
+        {
+            var relatedCacheDirectoryName = Path.GetFileName(relatedCacheDirectories[index]);
+            SetEnvironmentVariable(relatedEnvironmentVariableToBeSet, $@"{directoryPath}\Related Directories\{relatedCacheDirectoryName}");
+            index++;
+        }
+    }
+
     [RelayCommand]
     private void DirectoryInputConfirmed()
     {
@@ -253,16 +287,23 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         {
             if (ChosenDirectoryInDevDrive(directoryPath))
             {
-                if (MoveDirectory(ExistingCacheLocation, directoryPath))
+                Task.Run(() =>
                 {
-                    SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
-                    var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
-                    Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
-                    TelemetryFactory.Get<ITelemetry>().Log("DevDriveInsights_PackageCacheMovedSuccessfully_Event", LogLevel.Critical, new ExceptionEvent(0, existingCacheLocationVetted));
+                    if (MoveDirectories(ExistingCacheLocation, directoryPath, RelatedCacheDirectories))
+                    {
+                        SetRelatedEnvironmentVariables(RelatedEnvironmentVariablesToBeSet, RelatedCacheDirectories, directoryPath);
+                        SetEnvironmentVariable(EnvironmentVariableToBeSet, directoryPath);
+                        var existingCacheLocationVetted = RemovePrivacyInfo(ExistingCacheLocation);
+                        Log.Debug($"Moved cache from {existingCacheLocationVetted} to {directoryPath}");
+                        TelemetryFactory.Get<ITelemetry>().Log(
+                            "DevDriveInsights_PackageCacheMovedSuccessfully_Event",
+                            LogLevel.Critical,
+                            new ExceptionEvent(0, existingCacheLocationVetted));
 
-                    // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
-                    WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
-                }
+                        // Send message to the DevDriveInsightsViewModel to let it refresh the Dev Drive insights UX
+                        WeakReferenceMessenger.Default.Send(new DevDriveOptimizedMessage(new DevDriveOptimizedData()));
+                    }
+                });
             }
             else
             {

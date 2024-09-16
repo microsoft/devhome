@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace FileExplorerGitIntegration.Models;
-
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -10,7 +8,10 @@ using System.Threading.Channels;
 using LibGit2Sharp;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Windows.DevHome.SDK;
+using Serilog;
 using Windows.Win32;
+
+namespace FileExplorerGitIntegration.Models;
 
 // Caches the most recently obtained repo status.
 // Use FileSystemWatcher to invalidate the cache.
@@ -24,6 +25,7 @@ internal sealed class StatusCache : IDisposable
     private readonly ReaderWriterLockSlim _statusLock = new();
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
+    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(StatusCache));
 
     private GitRepositoryStatus? _status;
     private bool _disposedValue;
@@ -182,12 +184,11 @@ internal sealed class StatusCache : IDisposable
         }
     }
 
-    private GitRepositoryStatus RetrieveStatus()
+    private string? RetrieveStatusFromDirectory(string workingDirectory)
     {
-        var repoStatus = new GitRepositoryStatus();
         if (!_gitInstalled)
         {
-            return repoStatus;
+            return null;
         }
 
         // Options fully explained at https://git-scm.com/docs/git-status
@@ -198,86 +199,81 @@ internal sealed class StatusCache : IDisposable
         //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
         //                       There could be old Git installations that predate it.
         // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
-        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
-        if (result.Status != ProviderOperationStatus.Success || result.Output == null)
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
+        if (result.Status != ProviderOperationStatus.Success)
         {
-            return repoStatus;
+            return null;
         }
 
-        var parts = result.Output.Split('\0', StringSplitOptions.RemoveEmptyEntries);
+        return result.Output;
+    }
+
+    private void EnsureSubmodules(GitRepositoryStatus repoStatus)
+    {
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "--no-optional-locks submodule status --recursive");
+        if (result.Status != ProviderOperationStatus.Success || result.Output is null)
+        {
+            return;
+        }
+
+        var parts = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in parts)
+        {
+            var pieces = line.Split(' ', 2);
+            if (pieces.Length != 2)
+            {
+                continue;
+            }
+
+            var path = pieces[1];
+            repoStatus.TryAdd(path, SubmoduleStatus.Unmodified);
+        }
+    }
+
+    private GitRepositoryStatus RetrieveStatus()
+    {
+        var repoStatus = new GitRepositoryStatus();
+        ParseStatus(RetrieveStatusFromDirectory(_workingDirectory), repoStatus);
+        return repoStatus;
+    }
+
+    private void ParseStatus(string? statusString, GitRepositoryStatus repoStatus, string relativeDir = "")
+    {
+        if (string.IsNullOrEmpty(statusString))
+        {
+            return;
+        }
+
+        var parts = statusString.Split('\0', StringSplitOptions.RemoveEmptyEntries);
         for (var i = 0; i < parts.Length; ++i)
         {
             var line = parts[i];
+            if (line.Length < 2)
+            {
+                continue;
+            }
+
             if (line.StartsWith("1 ", StringComparison.Ordinal))
             {
                 // For porcelain=v2, "ordinary" entries have the following format:
                 //   1 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <path>
-                // For now, we only care about the <XY> and <path> fields.
                 var pieces = line.Split(' ', 9);
                 var fileStatusString = pieces[1];
-                var filePath = pieces[8];
-                FileStatus statusEntry = FileStatus.Unaltered;
-                switch (fileStatusString[0])
-                {
-                    case 'M':
-                        statusEntry |= FileStatus.ModifiedInIndex;
-                        break;
-
-                    case 'T':
-                        statusEntry |= FileStatus.TypeChangeInIndex;
-                        break;
-
-                    case 'A':
-                        statusEntry |= FileStatus.NewInIndex;
-                        break;
-
-                    case 'D':
-                        statusEntry |= FileStatus.DeletedFromIndex;
-                        break;
-                }
-
-                switch (fileStatusString[1])
-                {
-                    case 'M':
-                        statusEntry |= FileStatus.ModifiedInWorkdir;
-                        break;
-
-                    case 'T':
-                        statusEntry |= FileStatus.TypeChangeInWorkdir;
-                        break;
-
-                    case 'A':
-                        statusEntry |= FileStatus.NewInWorkdir;
-                        break;
-
-                    case 'D':
-                        statusEntry |= FileStatus.DeletedFromWorkdir;
-                        break;
-                }
-
-                repoStatus.Add(filePath, new GitStatusEntry(filePath, statusEntry));
+                var submoduleStatusString = pieces[2];
+                var filePath = Path.Combine(relativeDir, pieces[8]).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var headSha = pieces[6];
+                var indexSha = pieces[7];
+                ParseOrdinaryStatusEntry(repoStatus, fileStatusString, submoduleStatusString, filePath, headSha, indexSha);
             }
             else if (line.StartsWith("2 ", StringComparison.Ordinal))
             {
                 // For porcelain=v2, "rename" entries have the following format:
                 //   2 <XY> <sub> <mH> <mI> <mW> <hH> <hI> <X><score> <path><sep><origPath>
-                // For now, we only care about the <XY>, <path>, and <origPath> fields.
                 var pieces = line.Split(' ', 10);
                 var fileStatusString = pieces[1];
-                var newPath = pieces[9];
-                var oldPath = parts[++i];
-                FileStatus statusEntry = FileStatus.Unaltered;
-                if (fileStatusString[0] == 'R')
-                {
-                    statusEntry |= FileStatus.RenamedInIndex;
-                }
-
-                if (fileStatusString[1] == 'R')
-                {
-                    statusEntry |= FileStatus.RenamedInWorkdir;
-                }
-
-                repoStatus.Add(newPath, new GitStatusEntry(newPath, statusEntry, oldPath));
+                var newPath = Path.Combine(relativeDir, pieces[9]).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var oldPath = Path.Combine(relativeDir, parts[++i]).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                ParseRenameStatusEntry(repoStatus, fileStatusString, newPath, oldPath);
             }
             else if (line.StartsWith("u ", StringComparison.Ordinal))
             {
@@ -285,7 +281,7 @@ internal sealed class StatusCache : IDisposable
                 //   u <XY> <sub> <m1> <m2> <m3> <mW> <h1> <h2> <h3> <path>
                 // For now, we only care about the <path>. (We only say that the file has a conflict, not the details)
                 var pieces = line.Split(' ', 11);
-                var filePath = pieces[10];
+                var filePath = Path.Combine(relativeDir, pieces[10]).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.Conflicted));
             }
             else if (line.StartsWith("? ", StringComparison.Ordinal))
@@ -293,12 +289,162 @@ internal sealed class StatusCache : IDisposable
                 // For porcelain=v2, "untracked" entries have the following format:
                 //   ? <path>
                 // For now, we only care about the <path>.
-                var filePath = line.Substring(2);
+                var filePath = Path.Combine(relativeDir, line.Substring(2)).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
             }
+            else
+            {
+                _log.Warning($"Encountered unexpected line in ParseStatus: {line}");
+            }
+        }
+    }
+
+    private void ParseOrdinaryStatusEntry(
+        GitRepositoryStatus repoStatus,
+        string fileStatusString,
+        string submoduleStatusString,
+        string filePath,
+        string headSha,
+        string indexSha)
+    {
+        Debug.Assert(fileStatusString.Length == 2, "File status string must be 2 characters long");
+        Debug.Assert(submoduleStatusString.Length == 4, "Submodule status string must be 4 characters long");
+
+        FileStatus statusEntry = FileStatus.Unaltered;
+        switch (fileStatusString[0])
+        {
+            case 'M':
+                statusEntry |= FileStatus.ModifiedInIndex;
+                break;
+
+            case 'T':
+                statusEntry |= FileStatus.TypeChangeInIndex;
+                break;
+
+            case 'A':
+                statusEntry |= FileStatus.NewInIndex;
+                break;
+
+            case 'D':
+                statusEntry |= FileStatus.DeletedFromIndex;
+                break;
         }
 
-        return repoStatus;
+        switch (fileStatusString[1])
+        {
+            case 'M':
+                statusEntry |= FileStatus.ModifiedInWorkdir;
+                break;
+
+            case 'T':
+                statusEntry |= FileStatus.TypeChangeInWorkdir;
+                break;
+
+            case 'A':
+                statusEntry |= FileStatus.NewInWorkdir;
+                break;
+
+            case 'D':
+                statusEntry |= FileStatus.DeletedFromWorkdir;
+                break;
+        }
+
+        repoStatus.Add(filePath, new GitStatusEntry(filePath, statusEntry));
+
+        // "N..." when the entry is not a submodule.
+        // "S<c><m><u>" when the entry is a submodule.
+        if (submoduleStatusString[0] == 'S')
+        {
+            ParseSubmoduleStatusEntry(repoStatus, statusEntry, fileStatusString, submoduleStatusString, filePath, headSha, indexSha);
+        }
+    }
+
+    private void ParseSubmoduleStatusEntry(
+        GitRepositoryStatus repoStatus,
+        FileStatus statusEntry,
+        string fileStatusString,
+        string submoduleStatusString,
+        string filePath,
+        string headSha,
+        string indexSha)
+    {
+        // "S<c><m><u>" when the entry is a submodule.
+        // <c> is "C" if the commit changed; otherwise ".".
+        // <m> is "M" if it has tracked changes; otherwise ".".
+        // <u> is "U" if there are untracked changes; otherwise ".".
+        if (submoduleStatusString[0] == 'S')
+        {
+            SubmoduleStatus submoduleStatus = SubmoduleStatus.Unmodified;
+            if (statusEntry.HasFlag(FileStatus.NewInIndex))
+            {
+                submoduleStatus |= SubmoduleStatus.IndexAdded;
+            }
+
+            if (statusEntry.HasFlag(FileStatus.NewInWorkdir))
+            {
+                submoduleStatus |= SubmoduleStatus.WorkDirAdded;
+            }
+
+            if (submoduleStatusString[1] != '.' || headSha.Equals(indexSha, StringComparison.Ordinal))
+            {
+                // The commit changed in the submodule.
+                if (statusEntry.HasFlag(FileStatus.ModifiedInIndex))
+                {
+                    submoduleStatus |= SubmoduleStatus.IndexModified;
+                }
+
+                if (statusEntry.HasFlag(FileStatus.ModifiedInWorkdir))
+                {
+                    submoduleStatus |= SubmoduleStatus.WorkDirModified;
+                }
+            }
+
+            if (submoduleStatusString[2] != '.')
+            {
+                // The submodule has modified files
+                if (statusEntry.HasFlag(FileStatus.ModifiedInIndex))
+                {
+                    submoduleStatus |= SubmoduleStatus.WorkDirFilesIndexDirty;
+                }
+
+                if (statusEntry.HasFlag(FileStatus.ModifiedInWorkdir))
+                {
+                    submoduleStatus |= SubmoduleStatus.WorkDirFilesModified;
+                }
+            }
+
+            if (submoduleStatusString[3] != '.')
+            {
+                // The submodule has untracked files
+                if (statusEntry.HasFlag(FileStatus.ModifiedInIndex))
+                {
+                    submoduleStatus |= SubmoduleStatus.WorkDirFilesIndexDirty;
+                }
+
+                if (statusEntry.HasFlag(FileStatus.ModifiedInWorkdir))
+                {
+                    submoduleStatus |= SubmoduleStatus.WorkDirFilesUntracked;
+                }
+            }
+
+            repoStatus.TryAdd(filePath, submoduleStatus);
+        }
+    }
+
+    private void ParseRenameStatusEntry(GitRepositoryStatus repoStatus, string fileStatusString, string newPath, string oldPath)
+    {
+        FileStatus statusEntry = FileStatus.Unaltered;
+        if (fileStatusString[0] == 'R')
+        {
+            statusEntry |= FileStatus.RenamedInIndex;
+        }
+
+        if (fileStatusString[1] == 'R')
+        {
+            statusEntry |= FileStatus.RenamedInWorkdir;
+        }
+
+        repoStatus.Add(newPath, new GitStatusEntry(newPath, statusEntry, oldPath));
     }
 
     private void Invalidate()

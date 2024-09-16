@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Diagnostics;
+using DevHome.Common.Helpers;
 using FileExplorerGitIntegration.Models;
 using LibGit2Sharp;
 
@@ -63,7 +64,7 @@ public class GitLocalRepositoryProviderUnitTests
                 dirInfo.Attributes = FileAttributes.Normal;
             }
 
-            Directory.Delete(RepoPath, true);
+            DirectoryHelper.DeleteDirectoryWithRetries(RepoPath, true, 5, 100, false);
         }
     }
 
@@ -186,7 +187,7 @@ public class GitLocalRepositoryProviderUnitTests
         Assert.AreEqual(result[statusProperty], string.Empty);
         Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
         result = localRepo.GetProperties(properties, relativeToPath);
-        Assert.AreEqual(result[statusProperty], "Staged rename");
+        Assert.AreEqual(result[statusProperty], "Staged, Renamed");
         Assert.AreEqual(result[lastChangeMessageProperty], "Third a/a1");
 
         // Reset

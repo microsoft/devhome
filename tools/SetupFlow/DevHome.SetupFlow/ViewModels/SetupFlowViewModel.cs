@@ -25,12 +25,13 @@ public partial class SetupFlowViewModel : ObservableObject
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupFlowViewModel));
     private readonly IHost _host;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
 
     private readonly string _creationFlowNavigationParameter = "StartCreationFlow";
-
     private readonly string _configurationFlowNavigationParameter = "StartConfigurationFlow";
+    private readonly string _quickstartNavigationParameter = "StartQuickstartPlayground";
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
@@ -38,10 +39,12 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public SetupFlowViewModel(
         IHost host,
+        ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         PackageProvider packageProvider)
     {
         _host = host;
+        _stringResource = stringResource;
         Orchestrator = orchestrator;
         _packageProvider = packageProvider;
 
@@ -117,6 +120,7 @@ public partial class SetupFlowViewModel : ObservableObject
         _packageProvider.Clear();
         EndSetupFlow(null, EventArgs.Empty);
 
+        Orchestrator.AdaptiveCardFlowNavigator.ResetFlowNavigator();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 
@@ -157,6 +161,14 @@ public partial class SetupFlowViewModel : ObservableObject
             var parameters = parameter.Split(';');
             Cancel();
             StartCreationFlow(originPage: parameters[1]);
+        }
+        else if ((!string.IsNullOrEmpty(parameter)) &&
+            parameter.Contains(_quickstartNavigationParameter, StringComparison.OrdinalIgnoreCase))
+        {
+            Cancel();
+            Orchestrator.FlowPages = [_mainPageViewModel];
+            var flowTitle = _stringResource.GetLocalized("MainPage_QuickstartPlayground/Header");
+            _mainPageViewModel.StartQuickstart(flowTitle);
         }
         else if (args.Parameter is object[] configObjs && configObjs.Length == 3)
         {

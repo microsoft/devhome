@@ -29,6 +29,8 @@
                     </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
+            <converters:EmptyObjectToObjectConverter x:Key="NonEmptyObjectToBooleanConverter" NotEmptyValue="True" EmptyValue="False"/>
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
@@ -60,6 +62,16 @@
         Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
+                <Grid
+                    Grid.Row="0"
+                    HorizontalAlignment="Stretch"
+                    Visibility="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToVisibilityConverter}}">
+                    <InfoBar
+                        IsOpen="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay, Converter={StaticResource NonEmptyObjectToBooleanConverter}}"
+                        Severity="Error"
+                        Message="{x:Bind ViewModel.InfoBarErrorMessage, Mode=OneWay}" >
+                    </InfoBar>
+                </Grid>
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
                           MinHeight="64" CornerRadius="{ThemeResource ControlCornerRadius}" Padding="24,0,24,7"

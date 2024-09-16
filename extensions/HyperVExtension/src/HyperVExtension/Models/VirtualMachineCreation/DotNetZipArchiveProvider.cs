@@ -12,6 +12,10 @@ namespace HyperVExtension.Models.VirtualMachineCreation;
 /// <see cref="ZipArchive"/> is used by Hyper-V Manager's VM Quick Create feature. This gives us parity, but in the future it is expected that faster/more efficient
 /// archive extraction libraries will be added.
 /// </summary>
+/// <remarks>
+/// .Net core's ZipFile and ZipArchive implementations for extracting large files (GBs) are slow when used in Dev Homes Debug configuration.
+/// In release they are much quicker. To experience downloads from the users point of view build with the release configuration.
+/// </remarks>
 public sealed class DotNetZipArchiveProvider : IArchiveProvider
 {
     // Same buffer size used by Hyper-V Manager's VM gallery feature.
