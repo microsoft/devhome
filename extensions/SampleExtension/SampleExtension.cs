@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using SampleExtension.Providers;
@@ -55,6 +56,8 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
+
+                // return _host.Services.GetService<SettingsProvider2>();
                 return new SettingsProvider2(new WebViewResult(_url));
             default:
                 return null;
