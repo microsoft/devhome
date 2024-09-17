@@ -333,17 +333,6 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-        <desktop6:Extension Category="windows.service" Executable="DevHome.Service.exe" EntryPoint="DevHome.Service.Service">
-          <desktop6:Service Name="DevHome.Service" StartupType="manual" StartAccount="localSystem" />
-        </desktop6:Extension>
-        <com2:Extension Category="windows.comServer">
-          <com2:ComServer>
-            <com3:ServiceServer ServiceName="DevHome.Service" LaunchAndActivationPermission="O:SYG:SYD:(A;;11;;;IU)">
-              <!-- Grant local activation rights to Interactive Users. -->
-              <com3:Class Id="E8D40232-20A1-4F3B-9C0C-AAA6538698C6" DisplayName="CLSID_DevHomeService" />
-            </com3:ServiceServer>
-          </com2:ComServer>
-        </com2:Extension>
       </Extensions>
     </Application>
     <Application Id="DevHome.DevDiagnostics" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication">
@@ -406,8 +395,6 @@
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
     <rescap:Capability Name="unvirtualizedResources" />
-    <rescap:Capability Name="packagedServices" />
-    <rescap:Capability Name="localSystemServices" />
   </Capabilities>
   <genTemplate:Metadata>
     <genTemplate:Item Name="generator" Value="Template Studio" />
