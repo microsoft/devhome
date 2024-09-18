@@ -47,6 +47,7 @@ public sealed class SampleExtension : IExtension, IDisposable
 
     public object? GetProvider(ProviderType providerType)
     {
+        _log.Debug($"GetProvider {providerType}");
         switch (providerType)
         {
             case ProviderType.DeveloperId:
@@ -56,9 +57,33 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
+                SettingsProvider2? settingsProvider;
+                try
+                {
+                    _log.Debug("Try to get SettingsProvider2");
+                    settingsProvider = _host.Services.GetService<SettingsProvider2>();
+                }
+                catch (Exception e)
+                {
+                    if (e is NotImplementedException)
+                    {
+                        _log.Debug("constructor was empty, so add URL here");
+                        return new SettingsProvider2(new WebViewResult(_url));
+                    }
 
-                // return _host.Services.GetService<SettingsProvider2>();
-                return new SettingsProvider2(new WebViewResult(_url));
+                    _log.Debug(e, "Error getting SettingsProvider2, return null");
+                    return null;
+                }
+
+                if (settingsProvider == null)
+                {
+                    settingsProvider = new SettingsProvider2(new WebViewResult(_url));
+                    _log.Debug($"SettingsProvider2 was null, now {settingsProvider}");
+                    return settingsProvider;
+                }
+
+                _log.Debug($"SettingsProvider2, not caught {settingsProvider}");
+                return settingsProvider;
             default:
                 return null;
         }

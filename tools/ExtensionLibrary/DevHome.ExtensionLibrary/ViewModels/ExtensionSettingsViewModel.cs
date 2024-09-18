@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -75,7 +76,17 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             {
                 FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
-                var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
+                var settingsProvider = default(ISettingsProvider);
+
+                try
+                {
+                    settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error getting settings provider: {ex.Message}");
+                }
+
                 ExtensionSettingsProvider = settingsProvider;
                 if (settingsProvider != null)
                 {
@@ -113,7 +124,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     internal void RenderWebView2(ISettingsProvider2 settingsProvider2)
     {
         ShowWebView2Grid();
-        var webViewResult = settingsProvider2.GetSettingsWebView();
+        var webViewResult = settingsProvider2.GetWebView();
         WebViewUrl = new Uri(webViewResult.Url);
     }
 

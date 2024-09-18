@@ -3,18 +3,21 @@
 
 using Microsoft.Windows.DevHome.SDK;
 using SampleExtension.Helpers;
+using SampleExtension.Providers;
 using Serilog;
 
-namespace SampleExtension.Providers;
+namespace SampleExtension;
 
 public class SettingsProvider2 : ISettingsProvider2
 {
-    private static readonly Lazy<ILogger> _logger = new(() => Serilog.Log.ForContext("SourceContext", nameof(SettingsProvider)));
+    private static readonly Lazy<ILogger> _logger = new(() => Serilog.Log.ForContext("SourceContext", nameof(SettingsProvider2)));
 
     private static readonly ILogger _log = _logger.Value;
     private readonly WebViewResult _webViewResult;
 
     string ISettingsProvider.DisplayName => Resources.GetResource(@"SettingsProviderDisplayName");
+
+    public DisplayType DisplayType => DisplayType.WebView2;
 
     public SettingsProvider2()
     {
@@ -30,6 +33,7 @@ public class SettingsProvider2 : ISettingsProvider2
         }
         else
         {
+            _log.Debug($"Web URL was null or empty");
             _webViewResult = new WebViewResult(new NotImplementedException(), "WebView URL was null or empty");
         }
     }
@@ -46,8 +50,9 @@ public class SettingsProvider2 : ISettingsProvider2
         GC.SuppressFinalize(this);
     }
 
-    public WebViewResult GetSettingsWebView()
+    public WebViewResult GetWebView()
     {
+        _log.Debug($"GetWebView");
         return _webViewResult;
     }
 }
