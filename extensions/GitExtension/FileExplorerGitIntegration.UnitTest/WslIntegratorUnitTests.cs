@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
 using FileExplorerGitIntegration.Models;
 
 namespace FileExplorerGitIntegration.UnitTest;
@@ -52,21 +53,21 @@ public class WslIntegratorUnitTests
     }
 
     [TestMethod]
-    [DataRow("C:\\Distribution\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("", "Value cannot be null")]
-    [DataRow("\\wsl$", "Failed to get the distribution name from the repository path")]
-    public void GetDistributionNameNegativeTest(string repositoryPath, string value)
+    [DataRow("C:\\Distribution\\home\\user\\testRepo")]
+    [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo")]
+    [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo")]
+    [DataRow("")]
+    [DataRow("\\wsl$")]
+    public void GetDistributionNameNegativeTest(string repositoryPath)
     {
-        try
+        Trace.Listeners.Clear();
+        if (string.IsNullOrEmpty(repositoryPath))
         {
-            var distributionName = WslIntegrator.GetWslDistributionName(repositoryPath);
-            Assert.AreEqual(value, distributionName);
+            Assert.ThrowsException<ArgumentNullException>(() => WslIntegrator.GetWslDistributionName(repositoryPath));
         }
-        catch (Exception ex)
+        else
         {
-            Assert.IsTrue(ex.Message.Contains(value));
+            Assert.ThrowsException<ArgumentException>(() => WslIntegrator.GetWslDistributionName(repositoryPath));
         }
     }
 
@@ -84,20 +85,20 @@ public class WslIntegratorUnitTests
     }
 
     [TestMethod]
-    [DataRow("C:\\Distribution\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("", "Value cannot be null")]
-    public void GetWorkingDirectoryNegativeTest(string repositoryPath, string value)
+    [DataRow("C:\\Distribution\\home\\user\\testRepo")]
+    [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo")]
+    [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo")]
+    [DataRow("")]
+    public void GetWorkingDirectoryNegativeTest(string repositoryPath)
     {
-        try
+        Trace.Listeners.Clear();
+        if (string.IsNullOrEmpty(repositoryPath))
         {
-            var workingDir = WslIntegrator.GetWorkingDirectory(repositoryPath);
-            Assert.AreEqual(value, workingDir);
+            Assert.ThrowsException<ArgumentNullException>(() => WslIntegrator.GetWorkingDirectory(repositoryPath));
         }
-        catch (Exception ex)
+        else
         {
-            Assert.IsTrue(ex.Message.Contains(value));
+            Assert.ThrowsException<ArgumentException>(() => WslIntegrator.GetWorkingDirectory(repositoryPath));
         }
     }
 
@@ -106,7 +107,6 @@ public class WslIntegratorUnitTests
     [DataRow("\\wsl.localhost\\Ubuntu-20.04\\home\\user\\repo", "-d Ubuntu-20.04 git ")]
     [DataRow("\\wsl$\\Debian\\home\\user\\repo", "-d Debian git ")]
     [DataRow("\\wsl.localhost\\kali-linux\\home\\user\\repo", "-d kali-linux git ")]
-    [DataRow("C:\\Users\\foo\\bar", "")]
     [DataRow("\\wsl$\\Ubuntu-18.04\\home\\user\\testRepo", "-d Ubuntu-18.04 git ")]
     [DataRow("\\wsl.localhost\\Ubuntu-18.04\\home\\user\\testRepo", "-d Ubuntu-18.04 git ")]
     [DataRow("\\wsl.localhost\\CustomDistribution\\home\\user\\testRepo", "-d CustomDistribution git ")]
@@ -117,18 +117,19 @@ public class WslIntegratorUnitTests
     }
 
     [TestMethod]
-    [DataRow("", "Value cannot be null")]
-    [DataRow("\\wsl.localhost", "Failed to get the distribution name from the repository path")]
-    public void GetArgumentPrefixForWslNegativeTest(string repositoryPath, string value)
+    [DataRow("")]
+    [DataRow("\\wsl.localhost")]
+    [DataRow("C:\\Users\\foo\\bar")]
+    public void GetArgumentPrefixForWslNegativeTest(string repositoryPath)
     {
-        try
+        Trace.Listeners.Clear();
+        if (string.IsNullOrEmpty(repositoryPath))
         {
-            var prefix = WslIntegrator.GetArgumentPrefixForWsl(repositoryPath);
-            Assert.AreEqual(value, prefix);
+            Assert.ThrowsException<ArgumentNullException>(() => WslIntegrator.GetArgumentPrefixForWsl(repositoryPath));
         }
-        catch (Exception ex)
+        else
         {
-            Assert.IsTrue(ex.Message.Contains(value));
+            Assert.ThrowsException<ArgumentException>(() => WslIntegrator.GetArgumentPrefixForWsl(repositoryPath));
         }
     }
 

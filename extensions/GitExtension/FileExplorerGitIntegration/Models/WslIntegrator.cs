@@ -49,6 +49,10 @@ public class WslIntegrator
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
+        if (!IsWSLRepo(repositoryPath))
+        {
+            throw new ArgumentException($"Not a valid WSL path: {repositoryPath}");
+        }
 
         // Parse the repository path to get the distribution name
         string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
@@ -69,6 +73,10 @@ public class WslIntegrator
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
+        if (!IsWSLRepo(repositoryPath))
+        {
+            throw new ArgumentException($"Not a valid WSL path: {repositoryPath}");
+        }
 
         string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
 
@@ -99,15 +107,17 @@ public class WslIntegrator
 
     public static string GetArgumentPrefixForWsl(string repositoryPath)
     {
-        if (!IsWSLRepo(repositoryPath))
+        if (string.IsNullOrEmpty(repositoryPath))
         {
-            _log.Debug("The repository path is not a WSL path");
-            return string.Empty;
+            throw new ArgumentNullException(nameof(repositoryPath));
         }
 
-        var distributionName = GetWslDistributionName(repositoryPath);
+        Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
+        if (!IsWSLRepo(repositoryPath))
+        {
+            throw new ArgumentException($"Not a valid WSL path: {repositoryPath}");
+        }
 
-        string argumentPrefix = $"-d {distributionName} git ";
-        return argumentPrefix;
+        return $"-d {GetWslDistributionName(repositoryPath)} git ";
     }
 }
