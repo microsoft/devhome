@@ -398,7 +398,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _log.Error(ex, string.Empty);
     }
 
-    private async Task CloneLocationNotAndFoundNotifyUserAsync()
+    private async Task ShowCloneLocationNotFoundDialogAsync()
     {
         // strings need to be localized
         var cantFindRepositoryDialog = new ContentDialog()
@@ -419,7 +419,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            SendTelemetryAndLogError(nameof(CloneLocationNotAndFoundNotifyUserAsync), ex);
+            SendTelemetryAndLogError(nameof(ShowCloneLocationNotFoundDialogAsync), ex);
         }
 
         // User will show DevHome where the repository is.
@@ -435,7 +435,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
                 return;
             }
 
-            var repository = GetRepositoryReportIfNull(nameof(CloneLocationNotAndFoundNotifyUserAsync));
+            var repository = GetRepositoryReportIfNull(nameof(ShowCloneLocationNotFoundDialogAsync));
             if (repository == null)
             {
                 return;
@@ -483,7 +483,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         if (!Directory.Exists(Path.GetFullPath(ClonePath)))
         {
             // Ask the user if they can point DevHome to the correct location
-            await CloneLocationNotAndFoundNotifyUserAsync();
+            await ShowCloneLocationNotFoundDialogAsync();
         }
     }
 }
