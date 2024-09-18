@@ -55,8 +55,8 @@ public class WslIntegratorUnitTests
     [DataRow("C:\\Distribution\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
     [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
     [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("", "")]
-    [DataRow("\\wsl$", "")]
+    [DataRow("", "Value cannot be null")]
+    [DataRow("\\wsl$", "Failed to get the distribution name from the repository path")]
     public void GetDistributionNameNegativeTest(string repositoryPath, string value)
     {
         try
@@ -87,7 +87,7 @@ public class WslIntegratorUnitTests
     [DataRow("C:\\Distribution\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
     [DataRow("\\Ubuntu-18.04\\wsl$\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
     [DataRow("wslg\\Ubuntu-18.04\\wsl.localhost\\home\\user\\testRepo", "the repository path must be a valid wsl path")]
-    [DataRow("", "")]
+    [DataRow("", "Value cannot be null")]
     public void GetWorkingDirectoryNegativeTest(string repositoryPath, string value)
     {
         try
@@ -109,12 +109,27 @@ public class WslIntegratorUnitTests
     [DataRow("C:\\Users\\foo\\bar", "")]
     [DataRow("\\wsl$\\Ubuntu-18.04\\home\\user\\testRepo", "-d Ubuntu-18.04 git ")]
     [DataRow("\\wsl.localhost\\Ubuntu-18.04\\home\\user\\testRepo", "-d Ubuntu-18.04 git ")]
-    [DataRow("", "")]
     [DataRow("\\wsl.localhost\\CustomDistribution\\home\\user\\testRepo", "-d CustomDistribution git ")]
-    public void GetArgumentPrefixForWslTest(string repositoryPath, string value)
+    public void GetArgumentPrefixForWslPositiveTest(string repositoryPath, string value)
     {
         var prefix = WslIntegrator.GetArgumentPrefixForWsl(repositoryPath);
         Assert.AreEqual(value, prefix);
+    }
+
+    [TestMethod]
+    [DataRow("", "Value cannot be null")]
+    [DataRow("\\wsl.localhost", "Failed to get the distribution name from the repository path")]
+    public void GetArgumentPrefixForWslNegativeTest(string repositoryPath, string value)
+    {
+        try
+        {
+            var prefix = WslIntegrator.GetArgumentPrefixForWsl(repositoryPath);
+            Assert.AreEqual(value, prefix);
+        }
+        catch (Exception ex)
+        {
+            Assert.IsTrue(ex.Message.Contains(value));
+        }
     }
 
     [TestMethod]

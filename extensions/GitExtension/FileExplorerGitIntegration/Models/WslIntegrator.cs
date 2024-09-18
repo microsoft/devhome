@@ -45,27 +45,27 @@ public class WslIntegrator
         if (string.IsNullOrEmpty(repositoryPath))
         {
             _log.Debug("The repository path is empty");
-            return string.Empty;
+            throw new ArgumentNullException(nameof(repositoryPath));
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
 
         // Parse the repository path to get the distribution name
         string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-        if (pathParts.Length >= 1)
+        if (pathParts.Length > 1)
         {
             return pathParts[1];
         }
 
         _log.Debug("Failed to get the distribution name from the repository path");
-        return string.Empty;
+        throw new ArgumentException("Failed to get the distribution name from the repository path");
     }
 
     public static string GetWorkingDirectory(string repositoryPath)
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
-            return string.Empty;
+            throw new ArgumentNullException(nameof(repositoryPath));
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
@@ -106,11 +106,6 @@ public class WslIntegrator
         }
 
         var distributionName = GetWslDistributionName(repositoryPath);
-        if (distributionName == string.Empty)
-        {
-            _log.Debug("Failed to get the distribution name from the repository path");
-            return string.Empty;
-        }
 
         string argumentPrefix = $"-d {distributionName} git ";
         return argumentPrefix;
