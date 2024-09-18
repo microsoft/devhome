@@ -77,9 +77,9 @@ Integrating version control protocols into File Explorer allows developers to in
 | 3.5 | To summarize, the default (**checked column items**) column view for enhanced repositories will be: | P0 |
 |     | - Name | |
 |     | - Size | |
-|     | - Version control status | |
-|     | - Last commit date | |
-|     | - Last commit message (capped at 50 characters) | |
+|     | - Version control status (`System.VersionControl.Status`, supplied by Dev Home) | |
+|     | - Last commit date (`System.VersionControl.LastChangeDate`, supplied by Dev Home) | |
+|     | - Last commit message (capped at 50 characters) (`System.VersionControl.LastChangeMessage`, supplied by Dev Home) | |
 |     | **Unchecked**: | |
 |     | - Date modified | |
 |     | - Type | |
@@ -87,11 +87,11 @@ Integrating version control protocols into File Explorer allows developers to in
 |     | - Authors | |
 |     | - Tags | |
 |     | - Title | |
-|     | - Last commit author | |
-|     | - Last commit author email | |
-|     | - Last commit ID | |
+|     | - Last commit author (`System.VersionControl.LastChangeAuthorName`, supplied by Dev Home) | |
+|     | - Last commit author email (`System.VersionControl.LastChangeAuthorEmail`, supplied by Dev Home) | |
+|     | - Last commit ID (`System.VersionControl.LastChangeID`, supplied by Dev Home) | |
 | 3.6 | For all extensions-populated data columns in File Explorer, columns can have data even when a user’s device is offline (up to the extension, for Git, data will exist in columns when offline) – otherwise columns will have blank data | P0 |
-| 4.1 | Useful repository status (provided by the extension) can be shown in the status bar (for Git, this will be used to show the current head/branch & remote) | P1 |
+| 4.1 | Useful repository status (provided by the extension) can be shown in the status bar using the `System.VersionControl.CurrentFolderStatus` property (for Git, this will be used to show the current head/branch & remote) | P1 |
 
 
 #### Settings Functional Requirements
