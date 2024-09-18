@@ -9,14 +9,18 @@ using System.Threading.Tasks;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
+using Serilog;
 using Windows.Storage.Streams;
 
 namespace DevHome.Dashboard.Services;
 
 public class WidgetScreenshotService : IWidgetScreenshotService
 {
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(WidgetScreenshotService));
+
     private readonly DispatcherQueue _dispatcherQueue;
 
     private readonly ConcurrentDictionary<string, BitmapImage> _widgetLightScreenshotCache;
@@ -36,7 +40,7 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         _widgetDarkScreenshotCache.Remove(definitionId, out _);
     }
 
-    public async Task<BitmapImage> GetScreenshotFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
+    private async Task<BitmapImage> GetScreenshotFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -69,6 +73,30 @@ public class WidgetScreenshotService : IWidgetScreenshotService
         }
 
         return bitmapImage;
+    }
+
+    public async Task<Brush> GetBrushForWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
+    {
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetScreenshotFromCacheAsync(widgetDefinition, theme);
+        }
+        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget screenshot missing for widget definition {widgetDefinition.DisplayTitle}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget screenshot for widget definition {widgetDefinition.DisplayTitle}");
+        }
+
+        var brush = new ImageBrush
+        {
+            ImageSource = image,
+        };
+
+        return brush;
     }
 
     private async Task<BitmapImage> WidgetScreenshotToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
