@@ -66,6 +66,8 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
                     var packagesOutOfProc = await _packageFinder.GetPackagesAsync(catalog, packageIds);
                     var packagesInProc = packagesOutOfProc
+                        .AsParallel()
+                        .AsOrdered()
                         .Select(p => new WinGetPackage(_logger, p, _packageFinder.IsElevationRequired(p)))
                         .ToList<IWinGetPackage>();
                     packagesInProc
