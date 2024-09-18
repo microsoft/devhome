@@ -117,7 +117,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = await BuildWidgetNavItem(widgetDef);
+                        var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
@@ -148,12 +148,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<Grid> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
-        return await BuildNavItem(widgetDefinition);
+        return await BuildNavItemAsync(widgetDefinition);
     }
 
-    private async Task<Grid> BuildNavItem(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         var itemContent = new Grid
         {
@@ -265,7 +265,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 if (widgetItem.Tag is ComSafeWidgetDefinition widgetDefinition)
                 {
-                    widgetItem.Content = await BuildNavItem(widgetDefinition);
+                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
                 }
             }
         }
