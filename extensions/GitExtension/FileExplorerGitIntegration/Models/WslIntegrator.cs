@@ -1,23 +1,27 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
+using Serilog;
+
 namespace FileExplorerGitIntegration.Models;
 
 public class WslIntegrator
 {
     private static readonly string[] _wslPathPrefixes = { "wsl$", "wsl.localhost" };
-
-    // For more information on distributions, see https://github.com/microsoft/WSL/blob/master/distributions/DistributionInfo.json
-    private static readonly string[] _wslDistributions =
-    {
-        "Ubuntu", "Debian", "kali-linux", "Ubuntu-18.04", "Ubuntu-20.04", "Ubuntu-22.04", "Ubuntu-24.04", "OracleLinux_7_9", "OracleLinux_8_7", "OracleLinux_9_1",
-        "openSUSE-Leap-15.6", "SUSE-Linux-Enterprise-15-SP5", "SUSE-Linux-Enterprise-15-SP6", "openSUSE-Tumbleweed",
-    };
+    private static readonly ILogger _log = Log.ForContext<WslIntegrator>();
 
     public static bool IsWSLRepo(string repositoryPath)
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
+            _log.Debug("The repository path is empty");
+            return false;
+        }
+
+        if (repositoryPath.Contains(Path.AltDirectorySeparatorChar))
+        {
+            _log.Debug("The repository path is not in the expected format");
             return false;
         }
 
@@ -32,6 +36,7 @@ public class WslIntegrator
             }
         }
 
+        _log.Debug(repositoryPath + " is not a WSL path");
         return false;
     }
 
@@ -39,29 +44,49 @@ public class WslIntegrator
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
+            _log.Debug("The repository path is empty");
             return string.Empty;
         }
+
+        Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
 
         // Parse the repository path to get the distribution name
         string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
         if (pathParts.Length >= 1)
         {
-            foreach (string distribution in _wslDistributions)
-            {
-                if (pathParts[1].Equals(distribution, StringComparison.OrdinalIgnoreCase))
-                {
-                    return distribution;
-                }
-            }
+            return pathParts[1];
         }
 
+        _log.Debug("Failed to get the distribution name from the repository path");
         return string.Empty;
     }
 
-    public static string GetWorkingDirectoryPath(string repositoryPath)
+    public static string GetWorkingDirectory(string repositoryPath)
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
+            return string.Empty;
+        }
+
+        Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
+
+        string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+        // Ensure the first part is replaced with "\\wsl$"
+        if (pathParts.Length > 0)
+        {
+            pathParts[0] = Path.DirectorySeparatorChar + "\\wsl$";
+        }
+
+        var workingDirPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathParts);
+        return workingDirPath;
+    }
+
+    public static string GetNormalizedLinuxPath(string repositoryPath)
+    {
+        if (string.IsNullOrEmpty(repositoryPath))
+        {
+            _log.Debug("The repository path is empty");
             return string.Empty;
         }
 
@@ -76,17 +101,18 @@ public class WslIntegrator
     {
         if (!IsWSLRepo(repositoryPath))
         {
+            _log.Debug("The repository path is not a WSL path");
             return string.Empty;
         }
 
-        if (GetWslDistributionName(repositoryPath) == string.Empty)
+        var distributionName = GetWslDistributionName(repositoryPath);
+        if (distributionName == string.Empty)
         {
+            _log.Debug("Failed to get the distribution name from the repository path");
             return string.Empty;
         }
 
-        var workingDirectoryPath = GetWorkingDirectoryPath(repositoryPath);
-
-        string argumentPrefix = $"cd {workingDirectoryPath} && git ";
+        string argumentPrefix = $"-d {distributionName} git ";
         return argumentPrefix;
     }
 }
