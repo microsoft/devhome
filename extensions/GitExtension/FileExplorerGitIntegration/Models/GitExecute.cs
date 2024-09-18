@@ -26,8 +26,10 @@ public class GitExecute
             else
             {
                 Log.Information("Wsl.exe will be invoked to obtain property information from git");
-                processStartInfo.FileName = "wsl.exe";
+                Log.Information("Working Directory: {WorkingDirectory}", WslIntegrator.GetWorkingDirectory(repositoryDirectory));
+                processStartInfo.FileName = "wsl";
                 processStartInfo.Arguments = string.Concat(wslArgument, arguments);
+                processStartInfo.WorkingDirectory = WslIntegrator.GetWorkingDirectory(repositoryDirectory);
             }
 
             processStartInfo.RedirectStandardOutput = true;

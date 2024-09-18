@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Linq;
+
 namespace FileExplorerGitIntegration.Models;
 
 public class WslIntegrator
@@ -72,6 +74,26 @@ public class WslIntegrator
         return workingDirPath;
     }
 
+    public static string GetWorkingDirectory(string repositoryPath)
+    {
+        if (string.IsNullOrEmpty(repositoryPath))
+        {
+            return string.Empty;
+        }
+
+        string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+        // Ensure the first part is replaced with "\\wsl$"
+        if (pathParts.Length > 0)
+        {
+            pathParts[0] = Path.DirectorySeparatorChar + "\\wsl$";
+        }
+
+        var workingDirPath = string.Join(Path.DirectorySeparatorChar.ToString(), pathParts);
+
+        return workingDirPath;
+    }
+
     public static string GetArgumentPrefixForWsl(string repositoryPath)
     {
         if (!IsWSLRepo(repositoryPath))
@@ -79,14 +101,13 @@ public class WslIntegrator
             return string.Empty;
         }
 
-        if (GetWslDistributionName(repositoryPath) == string.Empty)
+        var distributionName = GetWslDistributionName(repositoryPath);
+        if (distributionName == string.Empty)
         {
             return string.Empty;
         }
 
-        var workingDirectoryPath = GetWorkingDirectoryPath(repositoryPath);
-
-        string argumentPrefix = $"cd {workingDirectoryPath} && git ";
+        string argumentPrefix = $"-d {distributionName} git ";
         return argumentPrefix;
     }
 }

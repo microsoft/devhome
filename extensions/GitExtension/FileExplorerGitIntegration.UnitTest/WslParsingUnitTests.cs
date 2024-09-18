@@ -19,6 +19,7 @@ public class WslParsingUnitTests
     [DataRow("\\wsl.localhost\\Ubuntu-18.04\\home\\user\\testRepo")]
     public void IsWSLRepoPositiveTests(string repositoryPath)
     {
+        WslIntegrator.GetWorkingDirectory(repositoryPath);
         Assert.IsTrue(WslIntegrator.IsWSLRepo(repositoryPath));
     }
 
