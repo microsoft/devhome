@@ -3,8 +3,8 @@
 
 using System.Net;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using SampleExtension.Providers;
 using Serilog;
@@ -47,7 +47,6 @@ public sealed class SampleExtension : IExtension, IDisposable
 
     public object? GetProvider(ProviderType providerType)
     {
-        _log.Debug($"GetProvider {providerType}");
         switch (providerType)
         {
             case ProviderType.DeveloperId:
@@ -57,33 +56,21 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
-                SettingsProvider2? settingsProvider;
                 try
                 {
-                    _log.Debug("Try to get SettingsProvider2");
-                    settingsProvider = _host.Services.GetService<SettingsProvider2>();
-                }
-                catch (Exception e)
-                {
-                    if (e is NotImplementedException)
-                    {
-                        _log.Debug("constructor was empty, so add URL here");
-                        return new SettingsProvider2(new WebViewResult(_url));
-                    }
+                    _log.Debug("Trying to create WebViewResult");
 
-                    _log.Debug(e, "Error getting SettingsProvider2, return null");
+                    var webViewResult = GetWebViewResult(_url);
+
+                    _log.Debug("Trying to create SettingsProvider2");
+                    return new SettingsProvider2(webViewResult);
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, "Failed to create SettingsProvider2");
                     return null;
                 }
 
-                if (settingsProvider == null)
-                {
-                    settingsProvider = new SettingsProvider2(new WebViewResult(_url));
-                    _log.Debug($"SettingsProvider2 was null, now {settingsProvider}");
-                    return settingsProvider;
-                }
-
-                _log.Debug($"SettingsProvider2, not caught {settingsProvider}");
-                return settingsProvider;
             default:
                 return null;
         }
@@ -115,5 +102,11 @@ public sealed class SampleExtension : IExtension, IDisposable
     public string GetUrlFromFilePath(string index)
     {
         return Path.Combine(_webContentPath, index);
+    }
+
+    public WebViewResult GetWebViewResult(string url)
+    {
+        _log.Debug($"GetWebViewResult: {url}");
+        return new WebViewResult(url);
     }
 }

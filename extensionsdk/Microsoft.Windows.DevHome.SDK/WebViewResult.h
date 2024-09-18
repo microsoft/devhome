@@ -11,6 +11,10 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         WebViewResult(winrt::hresult const& e, hstring const& diagnosticText);
         hstring Url();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
+
+    private:
+        std::shared_ptr<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult> _Result;
+        const hstring _Url;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation

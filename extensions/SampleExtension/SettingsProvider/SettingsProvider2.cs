@@ -17,24 +17,27 @@ public class SettingsProvider2 : ISettingsProvider2
 
     string ISettingsProvider.DisplayName => Resources.GetResource(@"SettingsProviderDisplayName");
 
-    public DisplayType DisplayType => DisplayType.WebView2;
-
     public SettingsProvider2()
     {
-        _webViewResult = new WebViewResult(new NotImplementedException(), "No WebView was provided for the SettingsProvider2");
+        _log.Debug($"SettingsProvider2 constructor, no URL");
+        _webViewResult = new WebViewResult("www.microsoft.com");
     }
 
     public SettingsProvider2(WebViewResult webViewResult)
     {
         _webViewResult = webViewResult;
-        if (!string.IsNullOrEmpty(webViewResult.Url))
+        if (webViewResult != null)
         {
-            _log.Information($"SettingsProvider2 URL: {webViewResult.Url}");
+            _log.Debug($"SettingsProvider2 constructor, webview isn't null. URL: {webViewResult.Url}.");
+            if (!string.IsNullOrEmpty(webViewResult.Url))
+            {
+                _log.Information($"SettingsProvider2 URL: {webViewResult.Url}");
+            }
         }
         else
         {
             _log.Debug($"Web URL was null or empty");
-            _webViewResult = new WebViewResult(new NotImplementedException(), "WebView URL was null or empty");
+            _webViewResult = new WebViewResult("www.bing.com");
         }
     }
 
@@ -50,7 +53,7 @@ public class SettingsProvider2 : ISettingsProvider2
         GC.SuppressFinalize(this);
     }
 
-    public WebViewResult GetWebView()
+    public WebViewResult GetSettingsWebView()
     {
         _log.Debug($"GetWebView");
         return _webViewResult;
