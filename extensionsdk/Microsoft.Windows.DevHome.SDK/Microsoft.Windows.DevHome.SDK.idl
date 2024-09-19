@@ -1737,5 +1737,8 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // Webview
         WebViewResult GetWebView();
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetAdaptiveCardSession();
     };
 }
