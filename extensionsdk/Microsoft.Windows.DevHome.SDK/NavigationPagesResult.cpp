@@ -4,20 +4,22 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    NavigationPagesResult::NavigationPagesResult(array_view<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage const> navigationPages)
+    NavigationPagesResult::NavigationPagesResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> const& navigationPages)
     {
-        throw hresult_not_implemented();
+        _NavigationPages = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage>>(navigationPages);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
     NavigationPagesResult::NavigationPagesResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), diagnosticText, diagnosticText);
     }
-    com_array<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPagesResult::NavigationPages()
+    winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPagesResult::NavigationPages()
     {
-        throw hresult_not_implemented();
+        return *_NavigationPages.get();
     }
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult NavigationPagesResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }

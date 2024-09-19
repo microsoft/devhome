@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using SampleExtension.Providers;
+using SampleExtension.SettingsProvider;
 using Serilog;
 
 namespace SampleExtension;
@@ -56,21 +56,7 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
-                try
-                {
-                    _log.Debug("Trying to create WebViewResult");
-
-                    var webViewResult = GetWebViewResult(_url);
-
-                    _log.Debug("Trying to create SettingsProvider2");
-                    return new SettingsProvider2(webViewResult);
-                }
-                catch (Exception ex)
-                {
-                    _log.Error(ex, "Failed to create SettingsProvider2");
-                    return null;
-                }
-
+                return new SettingsProvider2(new WebViewResult(_url));
             default:
                 return null;
         }
@@ -102,11 +88,5 @@ public sealed class SampleExtension : IExtension, IDisposable
     public string GetUrlFromFilePath(string index)
     {
         return Path.Combine(_webContentPath, index);
-    }
-
-    public WebViewResult GetWebViewResult(string url)
-    {
-        _log.Debug($"GetWebViewResult: {url}");
-        return new WebViewResult(url);
     }
 }

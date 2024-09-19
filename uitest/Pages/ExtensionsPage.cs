@@ -22,12 +22,4 @@ public class ExtensionsPage : ApplicationPage
         : base(driver)
     {
     }
-
-    public SampleExtensionSettingsPage NavigateToSampleExtensionSettingsPage()
-    {
-        Trace.WriteLine("Navigating to SampleExtensionSettings");
-        SampleExtensionCard.Click();
-
-        return new(Driver);
-    }
 }

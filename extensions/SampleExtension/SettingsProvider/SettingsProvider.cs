@@ -3,9 +3,10 @@
 
 using Microsoft.Windows.DevHome.SDK;
 using SampleExtension.Helpers;
+using SampleExtension.Providers;
 using Serilog;
 
-namespace SampleExtension.Providers;
+namespace SampleExtension.SettingsProvider;
 
 public class SettingsProvider() : ISettingsProvider
 {

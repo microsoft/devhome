@@ -7,10 +7,14 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     {
         NavigationPagesResult() = default;
 
-        NavigationPagesResult(array_view<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage const> navigationPages);
+        NavigationPagesResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> const& navigationPages);
         NavigationPagesResult(winrt::hresult const& e, hstring const& diagnosticText);
-        com_array<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPages();
+        winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage> NavigationPages();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
+
+    private:
+        std::shared_ptr<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult> _Result;
+        std::shared_ptr<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::INavigationPage>> _NavigationPages;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation
