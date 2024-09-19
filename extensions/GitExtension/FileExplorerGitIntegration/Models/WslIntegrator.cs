@@ -8,7 +8,7 @@ namespace FileExplorerGitIntegration.Models;
 
 public class WslIntegrator
 {
-    private static readonly string[] _wslPathPrefixes = { "wsl$", "wsl.localhost" };
+    private static readonly string[] _wslPathPrefixes = { @"\\wsl$\", @"\\wsl.localhost\" };
     private static readonly ILogger _log = Log.ForContext<WslIntegrator>();
 
     public static bool IsWSLRepo(string repositoryPath)
@@ -19,24 +19,16 @@ public class WslIntegrator
             return false;
         }
 
-        if (!repositoryPath.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase))
-        {
-            _log.Debug($"The repository path is not in the expected format: {repositoryPath}");
-            return false;
-        }
-
         if (repositoryPath.Contains(Path.AltDirectorySeparatorChar))
         {
             _log.Debug($"The repository path is not in the expected format: {repositoryPath}");
             return false;
         }
 
-        string[] pathParts = repositoryPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-
         // Check if the repository path contains any of the WSL path prefixes
         foreach (string prefix in _wslPathPrefixes)
         {
-            if (pathParts[0].Equals(prefix, StringComparison.OrdinalIgnoreCase))
+            if (repositoryPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

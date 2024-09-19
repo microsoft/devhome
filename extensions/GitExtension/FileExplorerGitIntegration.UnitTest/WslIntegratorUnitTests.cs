@@ -34,6 +34,8 @@ public class WslIntegratorUnitTests
     [DataRow(@"D:\wsl.localhost\Ubuntu-20.04\home\user\repo")]
     [DataRow(@"\\wsl.test\Ubuntu\home\user\repo")]
     [DataRow("")]
+    [DataRow(@"\wsl.localhost\Ubuntu-20.04\home\user\repo")]
+    [DataRow(@"wsl$\Ubuntu-20.04\home\user\repo")]
     public void IsWslRepoNegativeTests(string repositoryPath)
     {
         Assert.IsFalse(WslIntegrator.IsWSLRepo(repositoryPath));
@@ -58,6 +60,8 @@ public class WslIntegratorUnitTests
     [DataRow(@"wslg\Ubuntu-18.04\wsl.localhost\home\user\testRepo")]
     [DataRow("")]
     [DataRow(@"\\wsl$")]
+    [DataRow(@"\wsl.localhost\Ubuntu-20.04\home\user\repo")]
+    [DataRow(@"wsl$\Ubuntu-20.04\home\user\repo")]
     public void GetDistributionNameNegativeTest(string repositoryPath)
     {
         Trace.Listeners.Clear();
@@ -82,6 +86,8 @@ public class WslIntegratorUnitTests
     [DataRow(@"\\Ubuntu-18.04\wsl$\home\user\testRepo")]
     [DataRow(@"wslg\Ubuntu-18.04\wsl.localhost\home\user\testRepo")]
     [DataRow("")]
+    [DataRow(@"\wsl.localhost\Ubuntu-20.04\home\user\repo")]
+    [DataRow(@"wsl$\Ubuntu-20.04\home\user\repo")]
     public void GetWorkingDirectoryNegativeTest(string repositoryPath)
     {
         Trace.Listeners.Clear();
@@ -106,6 +112,8 @@ public class WslIntegratorUnitTests
     [DataRow("")]
     [DataRow(@"\\wsl.localhost")]
     [DataRow(@"C:\Users\foo\bar")]
+    [DataRow(@"\wsl.localhost\Ubuntu-20.04\home\user\repo")]
+    [DataRow(@"wsl$\Ubuntu-20.04\home\user\repo")]
     public void GetArgumentPrefixForWslNegativeTest(string repositoryPath)
     {
         Trace.Listeners.Clear();
