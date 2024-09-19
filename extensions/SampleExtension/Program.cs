@@ -60,13 +60,6 @@ public class Program
             {
                 // Logging
                 services.AddLogging(builder => builder.AddSerilog(dispose: true));
-
-                // Settings
-                services.AddScoped<ISettingsProvider2>(settingsProvider =>
-                {
-                    var webViewResult = new WebViewResult("www.microsoft.com");
-                    return new SettingsProvider2(webViewResult);
-                });
             }).
         Build();
 

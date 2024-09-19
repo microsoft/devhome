@@ -17,12 +17,6 @@ public class SettingsProvider2 : ISettingsProvider2
 
     string ISettingsProvider.DisplayName => Resources.GetResource(@"SettingsProviderDisplayName");
 
-    public SettingsProvider2()
-    {
-        _log.Debug($"SettingsProvider2 constructor, no URL");
-        _webViewResult = new WebViewResult("www.microsoft.com");
-    }
-
     public SettingsProvider2(WebViewResult webViewResult)
     {
         _webViewResult = webViewResult;

@@ -29,7 +29,6 @@ namespace Microsoft.Windows.DevHome.SDK
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 7)] 
         LocalRepository = 6,
 
-        [experimental]
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
         Navigation = 7,
     };
@@ -1673,27 +1672,14 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // End of QuickStartProject APIs
 
-    // Navigation Provider
-    [experimental]
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
-    interface INavigationProvider
-    {
-        String DisplayName
-        {
-            get;
-        };
-
-        Windows.Foundation.IAsyncOperation<NavigationPagesResult> GetNavigationPagesAsync();
-    };
-
-    [experimental]
+    // Navigation Page APIs
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     runtimeclass NavigationPagesResult
     {
-        NavigationPagesResult(IIterable<INavigationPage> navigationPages);
+        NavigationPagesResult(INavigationPage[] navigationPages);
         NavigationPagesResult(HRESULT e, String diagnosticText);
 
-        IIterable<INavigationPage> NavigationPages
+        INavigationPage[] NavigationPages
         {
             get;
         };
@@ -1704,46 +1690,34 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [experimental]
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
-    interface INavigationPage
-        requires Windows.Foundation.IClosable
+    interface INavigationProvider
     {
-        // Display name for the navigation menu entry.
-        String MenuDisplayName
-        {
-            get;
-        };
-
-        // Icon for the navigation menu entry.
-        Windows.Storage.Streams.IRandomAccessStreamReference MenuIcon
-        {
-            get;
-        };
-
-        // Page display name.
         String DisplayName
         {
             get;
         };
 
-        // Whether the provider has enabled this page.
-        Boolean Enabled
+        NavigationPagesResult GetNavigationPages();
+    };
+
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    interface INavigationPage
+    {
+        // Display name for the navigation menu entry.
+        String DisplayName
         {
             get;
         };
 
-        // Display order rank relative to other pages in this provider.
-        // Lower ranked pages are displayed first.
-        UInt32 DisplayRank
+        // Icon for the navigation menu entry.
+        Windows.Foundation.Uri Icon
         {
             get;
         };
-
-        // DevHomeIntegratedCard
-        AdaptiveCardSessionResult GetNavigationAdaptiveCardSession();
 
         // Webview
-        WebViewResult GetNavigationWebView();
+        WebViewResult GetWebView();
     };
 }
