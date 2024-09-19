@@ -345,7 +345,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        WebViewResult GetSettingsWebView();
+        WebViewResult GetWebView();
     };
 
     // Settings
@@ -1712,7 +1712,6 @@ namespace Microsoft.Windows.DevHome.SDK
 
         NavigationPagesResult GetNavigationPages();
     };
-
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface INavigationPage

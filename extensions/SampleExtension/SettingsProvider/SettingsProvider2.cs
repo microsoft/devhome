@@ -49,7 +49,7 @@ public class SettingsProvider2 : ISettingsProvider2
         GC.SuppressFinalize(this);
     }
 
-    public WebViewResult GetSettingsWebView()
+    public WebViewResult GetWebView()
     {
         _log.Debug($"GetWebView");
         return _webViewResult;

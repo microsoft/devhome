@@ -124,7 +124,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     internal void RenderWebView2(ISettingsProvider2 settingsProvider2)
     {
         ShowWebView2Grid();
-        var webViewResult = settingsProvider2.GetSettingsWebView();
+        var webViewResult = settingsProvider2.GetWebView();
         WebViewUrl = new Uri(webViewResult.Url);
     }
 
