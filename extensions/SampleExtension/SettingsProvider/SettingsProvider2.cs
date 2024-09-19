@@ -17,6 +17,8 @@ public class SettingsProvider2 : ISettingsProvider2
 
     string ISettingsProvider.DisplayName => Resources.GetResource(@"SettingsProviderDisplayName");
 
+    public DisplayType DisplayType => DisplayType.WebView2;
+
     public SettingsProvider2(WebViewResult webViewResult)
     {
         _webViewResult = webViewResult;
