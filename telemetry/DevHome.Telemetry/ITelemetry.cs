@@ -27,7 +27,7 @@ public interface ITelemetry
     public bool IsTelemetryOn { get; }
 
     /// <summary>
-    /// Logs an exception at Measure level. To log at Critical level, the event name needs approval.
+    /// Logs an exception at Critical level.
     /// </summary>
     /// <param name="action">What we trying to do when the exception occurred.</param>
     /// <param name="e">Exception object</param>
@@ -43,7 +43,7 @@ public interface ITelemetry
     public void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null);
 
     /// <summary>
-    /// Log an event with no additional data.
+    /// Log a critical event with no additional data.
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
@@ -54,7 +54,7 @@ public interface ITelemetry
     /// Log an informational event. Typically used for just a single event that's only called one place in the code.
     /// If you are logging the same event multiple times, it's best to add a helper method in Telemetry
     /// </summary>
-    /// <param name="eventName">Name of the error event</param>
+    /// <param name="eventName">Name of the event</param>
     /// <param name="level">Determines whether to upload the data to our servers, and on how many machines.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
