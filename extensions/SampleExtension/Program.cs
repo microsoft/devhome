@@ -60,6 +60,9 @@ public class Program
             {
                 // Logging
                 services.AddLogging(builder => builder.AddSerilog(dispose: true));
+
+                // Settings
+                services.AddTransient<SettingsProvider>();
             }).
         Build();
 

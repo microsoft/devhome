@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using SampleExtension.SettingsProvider;
+using SampleExtension.Providers;
 using Serilog;
 
 namespace SampleExtension;
