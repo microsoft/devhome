@@ -28,7 +28,7 @@ public partial class InitialMigration : Migration
                 ConfigurationFileLocation = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
                 RepositoryUri = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
                 CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
-                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
+                UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
             },
             constraints: table =>
             {
