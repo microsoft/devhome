@@ -15,13 +15,19 @@ public class WslIntegrator
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
-            _log.Debug("The repository path is empty");
+            _log.Debug($"The repository path is empty");
+            return false;
+        }
+
+        if (!repositoryPath.StartsWith(@"\\", StringComparison.OrdinalIgnoreCase))
+        {
+            _log.Debug($"The repository path is not in the expected format: {repositoryPath}");
             return false;
         }
 
         if (repositoryPath.Contains(Path.AltDirectorySeparatorChar))
         {
-            _log.Debug("The repository path is not in the expected format");
+            _log.Debug($"The repository path is not in the expected format: {repositoryPath}");
             return false;
         }
 
@@ -45,7 +51,7 @@ public class WslIntegrator
         if (string.IsNullOrEmpty(repositoryPath))
         {
             _log.Debug("The repository path is empty");
-            throw new ArgumentNullException(nameof(repositoryPath));
+            throw new ArgumentException("Repository path is empty");
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
@@ -61,7 +67,7 @@ public class WslIntegrator
             return pathParts[1];
         }
 
-        _log.Debug("Failed to get the distribution name from the repository path");
+        _log.Debug($"Failed to get the distribution name from the repository path: {repositoryPath}");
         throw new ArgumentException("Failed to get the distribution name from the repository path");
     }
 
@@ -69,7 +75,7 @@ public class WslIntegrator
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
-            throw new ArgumentNullException(nameof(repositoryPath));
+            throw new ArgumentException("Repository path is empty");
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
@@ -109,7 +115,7 @@ public class WslIntegrator
     {
         if (string.IsNullOrEmpty(repositoryPath))
         {
-            throw new ArgumentNullException(nameof(repositoryPath));
+            throw new ArgumentException("Repository path is empty");
         }
 
         Debug.Assert(IsWSLRepo(repositoryPath), "the repository path must be a valid wsl path");
