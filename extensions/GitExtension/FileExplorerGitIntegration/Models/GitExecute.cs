@@ -15,16 +15,25 @@ public class GitExecute
     {
         try
         {
-            var processStartInfo = new ProcessStartInfo
+            var processStartInfo = new ProcessStartInfo();
+            if (!WslIntegrator.IsWSLRepo(repositoryDirectory))
             {
-                FileName = gitApplication,
-                Arguments = arguments,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WorkingDirectory = repositoryDirectory ?? string.Empty,
-                StandardOutputEncoding = System.Text.Encoding.UTF8,
-            };
+                processStartInfo.FileName = gitApplication;
+                processStartInfo.Arguments = arguments;
+                processStartInfo.WorkingDirectory = repositoryDirectory;
+            }
+            else
+            {
+                Log.Information("Wsl.exe will be invoked to obtain property information from git");
+                processStartInfo.FileName = "wsl";
+                processStartInfo.Arguments = string.Concat(WslIntegrator.GetArgumentPrefixForWsl(repositoryDirectory), arguments);
+                processStartInfo.WorkingDirectory = WslIntegrator.GetWorkingDirectory(repositoryDirectory);
+            }
+
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.CreateNoWindow = true;
+            processStartInfo.StandardOutputEncoding = System.Text.Encoding.UTF8;
 
             using var process = Process.Start(processStartInfo);
             if (process != null)
