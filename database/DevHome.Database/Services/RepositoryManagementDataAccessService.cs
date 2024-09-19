@@ -43,7 +43,7 @@ public class RepositoryManagementDataAccessService
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
         {
-            _log.Information($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
+            _log.Warning($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
             return existingRepository;
         }
 
@@ -78,7 +78,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
+                new DatabaseEvent(nameof(MakeRepository), ex));
             return new Repository();
         }
 
@@ -101,7 +101,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(GetRepositories), ex));
+                new DatabaseEvent(nameof(GetRepositories), ex));
         }
 
         return repositories;
@@ -124,7 +124,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(GetRepository), ex));
+                new DatabaseEvent(nameof(GetRepository), ex));
         }
 
         return null;
@@ -166,7 +166,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
+                new DatabaseEvent(nameof(UpdateCloneLocation), ex));
             return false;
         }
 
@@ -192,11 +192,11 @@ public class RepositoryManagementDataAccessService
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Exception when updating the clone location.");
+            _log.Error(ex, "Exception when setting repository hidden status.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
+                new DatabaseEvent(nameof(UpdateCloneLocation), ex));
             return;
         }
     }
@@ -219,11 +219,11 @@ public class RepositoryManagementDataAccessService
         }
         catch (Exception ex)
         {
-            _log.Error(ex, "Exception when updating the clone location.");
+            _log.Error(ex, "Exception when removing the repository.");
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseEvent(nameof(UpdateCloneLocation), ex));
+                new DatabaseEvent(nameof(UpdateCloneLocation), ex));
             return;
         }
     }

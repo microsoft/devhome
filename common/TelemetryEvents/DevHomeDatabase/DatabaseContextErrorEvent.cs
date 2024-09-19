@@ -9,7 +9,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Common.TelemetryEvents.DevHomeDatabase;
 
 [EventData]
-public class DevHomeDatabaseContextEvent : EventBase
+public class DatabaseContextErrorEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PartA_PrivTags.ProductAndServicePerformance;
 
@@ -19,12 +19,12 @@ public class DevHomeDatabaseContextEvent : EventBase
 
     public string ExceptionMessage { get; } = string.Empty;
 
-    public DevHomeDatabaseContextEvent(string action)
+    public DatabaseContextErrorEvent(string action)
     {
         Action = action;
     }
 
-    public DevHomeDatabaseContextEvent(string action, Exception ex)
+    public DatabaseContextErrorEvent(string action, Exception ex)
     {
         Action = action;
         HResult = ex.HResult;

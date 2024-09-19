@@ -53,7 +53,7 @@ public class DevHomeDatabaseContext : DbContext
                 repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
-                repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.RepositoryUri).HasDefaultValue(string.Empty);
                 repositoryEntity.ToTable("Repository");
             }
@@ -65,7 +65,7 @@ public class DevHomeDatabaseContext : DbContext
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_DatabaseContext_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseContextEvent("CreatingModel", ex));
+                new DatabaseContextErrorEvent("CreatingModel", ex));
         }
     }
 

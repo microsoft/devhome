@@ -18,7 +18,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
-using WinRT;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
@@ -26,8 +25,6 @@ namespace DevHome.RepositoryManagement.ViewModels;
 public partial class RepositoryManagementItemViewModel : ObservableObject
 {
     public const string EventName = "DevHome_RepositoryLineItem_Event";
-
-    public const string ErrorEventName = "DevHome_RepositoryLineItemError_Event";
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementItemViewModel));
 
@@ -120,7 +117,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         {
             _log.Error(ex, $"Cound not move repository to the selected location.");
             TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
+                "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
                 new RepositoryLineItemEvent(nameof(MoveRepository), RepositoryName));
         }
@@ -165,7 +162,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         {
             _log.Error(ex, $"Failed to open confirmation dialog.");
             TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
+                "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
                 new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync), RepositoryName));
         }
@@ -214,7 +211,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         {
             _log.Error(ex, $"Error when deleting the repository.");
             TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
+                "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
                 new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync), RepositoryName));
         }
@@ -309,7 +306,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     {
         _log.Information($"Showing {repositoryName} in File Explorer at location {cloneLocation}");
         TelemetryFactory.Get<ITelemetry>().Log(
-            EventName,
+            "DevHome_RepositoryLineItem_Event",
             LogLevel.Critical,
             new RepositoryLineItemEvent(action, repositoryName));
 
@@ -329,7 +326,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     {
         _log.Information($"Showing {repositoryName} in CMD at location {cloneLocation}");
         TelemetryFactory.Get<ITelemetry>().Log(
-            EventName,
+            "DevHome_RepositoryLineItem_Event",
             LogLevel.Critical,
             new RepositoryLineItemEvent(action, repositoryName));
 
@@ -391,7 +388,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     private void SendTelemetryAndLogError(string operation, Exception ex)
     {
         TelemetryFactory.Get<ITelemetry>().LogError(
-        ErrorEventName,
+        "DevHome_RepositoryLineItemError_Event",
         LogLevel.Critical,
         new RepositoryLineItemErrorEvent(operation, ex.HResult, ex.Message, RepositoryName));
 
@@ -468,7 +465,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         {
             _log.Warning($"The repository with name {RepositoryName} and clone location {ClonePath} is not in the database when it is expected to be there.");
             TelemetryFactory.Get<ITelemetry>().Log(
-                EventName,
+                "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
                 new RepositoryLineItemEvent(action, RepositoryName));
 
