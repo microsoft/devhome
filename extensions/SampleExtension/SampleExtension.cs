@@ -56,7 +56,7 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
-                return new SettingsProvider2(new WebViewResult(_url));
+                return new SettingsProvider2();
             default:
                 return null;
         }

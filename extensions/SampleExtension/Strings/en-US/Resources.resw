@@ -150,4 +150,7 @@
     <value>Choose an image to use</value>
     <comment>Label text for a list of cards that appear in the UI</comment>
   </data>
+  <data name="SettingsProvider2EmptyURLErrorMessage" xml:space="preserve">
+    <value>Error in SettingsProvider2.GetWebView(): WebViewResult.Url is empty</value>
+  </data>
 </root>

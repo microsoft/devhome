@@ -4,6 +4,8 @@
 using Microsoft.Windows.DevHome.SDK;
 using SampleExtension.Helpers;
 using Serilog;
+using Windows.ApplicationModel.Preview.Notes;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SampleExtension.Providers;
 
@@ -18,22 +20,14 @@ public class SettingsProvider2 : ISettingsProvider2
 
     public DisplayType DisplayType => DisplayType.WebView2;
 
+    public SettingsProvider2()
+    {
+        _webViewResult = new WebViewResult(new NotImplementedException(), "No WebView was provided for the SettingsProvider2");
+    }
+
     public SettingsProvider2(WebViewResult webViewResult)
     {
         _webViewResult = webViewResult;
-        if (webViewResult != null)
-        {
-            _log.Debug($"SettingsProvider2 constructor, webview isn't null. URL: {webViewResult.Url}.");
-            if (!string.IsNullOrEmpty(webViewResult.Url))
-            {
-                _log.Information($"SettingsProvider2 URL: {webViewResult.Url}");
-            }
-        }
-        else
-        {
-            _log.Debug($"Web URL was null or empty");
-            _webViewResult = new WebViewResult("www.bing.com");
-        }
     }
 
     public AdaptiveCardSessionResult GetSettingsAdaptiveCardSession()
@@ -50,7 +44,15 @@ public class SettingsProvider2 : ISettingsProvider2
 
     public WebViewResult GetWebView()
     {
-        _log.Debug($"GetWebView");
+        if (_webViewResult.Url == string.Empty)
+        {
+            string emptyUrlErrorMessage = "Error in SettingsProvider2.GetWebView(): WebViewResult.Url is empty";
+            _log.Error(emptyUrlErrorMessage);
+            throw new NotImplementedException(emptyUrlErrorMessage);
+        }
+
+        _log.Information($"GetWebView. URL: {_webViewResult.Url}");
+
         return _webViewResult;
     }
 }

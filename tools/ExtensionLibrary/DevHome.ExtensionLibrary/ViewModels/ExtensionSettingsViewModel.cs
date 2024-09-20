@@ -76,36 +76,30 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             {
                 FillBreadcrumbBar(extensionWrapper.ExtensionDisplayName);
 
-                var settingsProvider = default(ISettingsProvider);
-
                 try
                 {
-                    settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
-                }
-                catch (Exception ex)
-                {
-                    _log.Error(ex, $"Error getting settings provider: {ex.Message}");
-                }
+                    var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
 
-                ExtensionSettingsProvider = settingsProvider;
-                if (settingsProvider != null)
-                {
-                    if (settingsProvider is ISettingsProvider2 settingsProvider2)
+                    ExtensionSettingsProvider = settingsProvider;
+                    if (settingsProvider != null)
                     {
-                        try
+                        if (settingsProvider is ISettingsProvider2 settingsProvider2)
                         {
-                            RenderWebView2(settingsProvider2);
+                            RenderSettingsProvider2Display(settingsProvider2, extensionAdaptiveCardPanel);
                         }
-                        catch (NotImplementedException notImplementedException)
+                        else
                         {
-                            _log.Error(notImplementedException, $"Error loading WebView2: {notImplementedException.Message}");
                             RenderAdaptiveCard(settingsProvider, extensionAdaptiveCardPanel);
                         }
                     }
-                    else
-                    {
-                        RenderAdaptiveCard(settingsProvider, extensionAdaptiveCardPanel);
-                    }
+                }
+                catch (NotImplementedException notImplementedException)
+                {
+                    _log.Error(notImplementedException, $"SettingsProvider2 not implemented for {extensionWrapper.ExtensionDisplayName}");
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Error loading settings for {extensionWrapper.ExtensionDisplayName}");
                 }
             }
         }
@@ -119,6 +113,22 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs.Add(new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionLibraryViewModel).FullName!));
         Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
+    }
+
+    internal void RenderSettingsProvider2Display(ISettingsProvider2 settingsProvider2, ExtensionAdaptiveCardPanel extensionAdaptiveCardPanel)
+    {
+        if (settingsProvider2.DisplayType == DisplayType.WebView2)
+        {
+            RenderWebView2(settingsProvider2);
+        }
+        else if (settingsProvider2.DisplayType == DisplayType.AdaptiveCard)
+        {
+            RenderAdaptiveCard(settingsProvider2, extensionAdaptiveCardPanel);
+        }
+        else
+        {
+            _log.Error($"SettingsProvider2 Unknown DisplayType: {settingsProvider2.DisplayType}");
+        }
     }
 
     internal void RenderWebView2(ISettingsProvider2 settingsProvider2)
