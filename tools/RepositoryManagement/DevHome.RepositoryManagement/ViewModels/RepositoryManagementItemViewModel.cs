@@ -414,7 +414,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             SecondaryButtonText = _stringResource.GetLocalized("LocateRepositoryRemoveFromListInstead"),
             CloseButtonText = _stringResource.GetLocalized("Cancel"),
         };
-        
+
         // https://github.com/microsoft/microsoft-ui-xaml/issues/424
         // Setting MaxWidth does not change the dialog size.
         cantFindRepositoryDialog.Resources["ContentDialogMaxWidth"] = 700;

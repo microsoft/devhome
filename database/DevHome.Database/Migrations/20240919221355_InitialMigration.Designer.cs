@@ -11,11 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevHome.Database.Migrations
 {
     [DbContext(typeof(DevHomeDatabaseContext))]
-<<<<<<<< HEAD:database/DevHome.Database/Migrations/20240911232143_InitialMigration.Designer.cs
-    [Migration("20240911232143_InitialMigration")]
-========
     [Migration("20240919221355_InitialMigration")]
->>>>>>>> main:database/DevHome.Database/Migrations/20240919221355_InitialMigration.Designer.cs
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -60,14 +56,11 @@ namespace DevHome.Database.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
 
-<<<<<<<< HEAD:database/DevHome.Database/Migrations/20240911232143_InitialMigration.Designer.cs
                     b.Property<Guid?>("SourceControlClassId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValue(new Guid("00000000-0000-0000-0000-000000000000"));
 
-========
->>>>>>>> main:database/DevHome.Database/Migrations/20240919221355_InitialMigration.Designer.cs
                     b.Property<DateTime?>("UpdatedUTCDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")

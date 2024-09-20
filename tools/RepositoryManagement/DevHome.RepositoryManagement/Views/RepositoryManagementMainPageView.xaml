@@ -194,7 +194,6 @@
                                 ToolTipService.ToolTip="WinGet Configuration file found. Run it from the '...' menu to set up this repo"/>
                             <TextBlock
                                 Grid.Column="2"
-<<<<<<< HEAD
                                 Text="{x:Bind ClonePath, Mode=OneWay}"/>
                             <TextBlock
                                 x:Uid="CommitNotFound"

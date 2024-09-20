@@ -30,20 +30,23 @@ public class RepositoryManagementDataAccessService
     /// Makes a new Repository entity with the provided name and location then saves it
     /// to the database.
     /// </summary>
-    /// <param name="repositoryName">The name of the repository to add.</param>
-    /// <param name="cloneLocation">The local location the repository is cloned to.</param>
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
+    {
+        return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri, Guid.Empty);
+    }
+
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid sourceControlProviderClassId)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
         {
-            _log.Warning($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
+            _log.Information($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
             return existingRepository;
         }
 
@@ -79,7 +82,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DatabaseEvent(nameof(MakeRepository), ex));
+                new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
             return new Repository();
         }
 

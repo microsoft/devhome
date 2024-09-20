@@ -27,10 +27,7 @@ public partial class InitialMigration : Migration
                 IsHidden = table.Column<bool>(type: "INTEGER", nullable: false),
                 ConfigurationFileLocation = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
                 RepositoryUri = table.Column<string>(type: "TEXT", nullable: true, defaultValue: string.Empty),
-<<<<<<<< HEAD:database/DevHome.Database/Migrations/20240911232143_InitialMigration.cs
                 SourceControlClassId = table.Column<Guid>(type: "TEXT", nullable: true, defaultValue: new Guid("00000000-0000-0000-0000-000000000000")),
-========
->>>>>>>> main:database/DevHome.Database/Migrations/20240919221355_InitialMigration.cs
                 CreatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
                 UpdatedUTCDate = table.Column<DateTime>(type: "TEXT", nullable: true, defaultValueSql: "datetime()"),
             },
