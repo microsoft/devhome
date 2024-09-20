@@ -25,12 +25,15 @@
     <ProjectReference Include="..\..\..\database\DevHome.Database\DevHome.Database.csproj" />
     <ProjectReference Include="..\..\..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\..\Customization\DevHome.Customization\DevHome.Customization.csproj" />
-    <ProjectReference Include="..\..\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Update="Views\RepositoryManagementMainPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

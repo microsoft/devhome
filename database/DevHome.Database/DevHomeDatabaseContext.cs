@@ -3,10 +3,12 @@
 
 using System;
 using System.IO;
+using System.Linq.Expressions;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Serilog;
 
 namespace DevHome.Database;
@@ -33,44 +35,6 @@ public class DevHomeDatabaseContext : DbContext
     {
         // TODO: How to run the DevHome in VS and not have the file move to the per app location.
         DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
-        /*
-        var figuredOutTheDbPath = false;
-        if (RuntimeHelper.IsMSIX)
-        {
-            try
-            {
-                DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
-
-                _log.Information("database found in Application Data");
-                figuredOutTheDbPath = true;
-            }
-            catch
-            {
-                _log.Information("Cound not find the database in Application data.");
-            }
-        }
-
-        if (!figuredOutTheDbPath)
-        {
-            try
-            {
-                DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
-                figuredOutTheDbPath = true;
-                _log.Information("Database found in local application data.");
-            }
-            catch
-            {
-                _log.Information($"Could not find the database file in local application data.");
-            }
-        }
-
-        if (!figuredOutTheDbPath)
-        {
-            _log.Warning($"Cound not find the database file.");
-        }
-
-        DbPath = string.Empty;
-        */
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -89,7 +53,7 @@ public class DevHomeDatabaseContext : DbContext
                 repositoryEntity.Property(x => x.RepositoryClonePath).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.RepositoryName).HasDefaultValue(string.Empty).IsRequired(true);
                 repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
-                repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+                repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.RepositoryUri).HasDefaultValue(string.Empty);
                 repositoryEntity.Property(x => x.SourceControlClassId).HasDefaultValue(Guid.Empty);
                 repositoryEntity.ToTable("Repository");
@@ -102,7 +66,7 @@ public class DevHomeDatabaseContext : DbContext
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_DatabaseContext_Event",
                 LogLevel.Critical,
-                new DevHomeDatabaseContextEvent("CreatingModel", ex));
+                new DatabaseContextErrorEvent("CreatingModel", ex));
         }
     }
 

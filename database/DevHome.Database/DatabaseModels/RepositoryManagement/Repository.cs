@@ -22,11 +22,12 @@ public class Repository
 
     public bool IsHidden { get; set; }
 
-    public bool HasAConfigurationFile => string.IsNullOrEmpty(ConfigurationFileLocation) ? false : true;
+    public bool HasAConfigurationFile => !string.IsNullOrEmpty(ConfigurationFileLocation);
 
     public string? ConfigurationFileLocation { get; set; }
 
-    // Use string here.  Uri is causing too many problems during add-migration.
+    // Use string here. Add-Migration is running into an issue with the Uri class.
+    // This causes any fluent API statements to get ignored.
     public string? RepositoryUri { get; set; }
 
     public Guid? SourceControlClassId { get; set; }

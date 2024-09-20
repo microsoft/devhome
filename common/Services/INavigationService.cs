@@ -50,6 +50,6 @@ public static class KnownPageKeys
     public static readonly string Environments = "DevHome.Environments.ViewModels.LandingPageViewModel";
     public static readonly string SetupFlow = "DevHome.SetupFlow.ViewModels.SetupFlowViewModel";
 
-    // Will not work with navigation service nativly.  Used for the dictionary in SetupFlowViewModel
+    // Will not work with navigation service natively.  Used for the dictionary in SetupFlowViewModel
     public static readonly string RepositoryConfiguration = "RepositoryConfiguration";
 }

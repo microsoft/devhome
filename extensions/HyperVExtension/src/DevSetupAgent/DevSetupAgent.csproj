@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevSetupEngineProjection\DevSetupEngineProjection.csproj" />
     <ProjectReference Include="..\DevSetupEngine\DevSetupEngine.csproj" />
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />

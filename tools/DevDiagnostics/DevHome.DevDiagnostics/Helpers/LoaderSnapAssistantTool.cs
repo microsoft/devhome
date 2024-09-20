@@ -20,6 +20,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Session;
 using Microsoft.UI.Xaml;
 using Microsoft.Win32;
+using Serilog;
 
 namespace DevHome.DevDiagnostics.Helpers;
 
@@ -209,6 +210,7 @@ public class InsightPossibleLoaderIssue : Insight
 {
     private const string LoaderSnapsEnableLogsTelemetryName = "LoaderSnapsEnableLogs";
 
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExternalTool));
     private readonly InsightForMissingFileProcessTerminationControl _mycontrol = new();
     private string _text = string.Empty;
 
@@ -252,7 +254,7 @@ public class InsightPossibleLoaderIssue : Insight
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message);
+            _log.Error(ex.Message);
         }
     }
 }

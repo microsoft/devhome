@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using System.Text;
+using DevHome.Common;
 using HyperVExtension.HostGuestCommunication;
 using Microsoft.Win32;
 using Serilog;

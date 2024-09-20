@@ -969,6 +969,10 @@
     <value>Clipboard Monitor</value>
     <comment>A label for the Clipboard Monitor tool</comment>
   </data>
+  <data name="ImageOptionsName" xml:space="preserve">
+    <value>Image Options</value>
+    <comment>A label for the Image Options tool</comment>
+  </data>
   <data name="Insights.ToolTipService.ToolTip" xml:space="preserve">
     <value>See insights that Dev Diagnostics has identified</value>
     <comment>Tooltip that tells users what the Insights button will do</comment>
@@ -1165,6 +1169,10 @@
     <value>Dev Diagnostics Clipboard Monitor</value>
     <comment>Window title for the clipboard monitor tool</comment>
   </data>
+  <data name="ImageOptionsWindowTitle" xml:space="preserve">
+    <value>Dev Insights Image Options</value>
+    <comment>Window title for the image options tool</comment>
+  </data>
   <data name="WERAnalysisUnavailable" xml:space="preserve">
     <value>Analysis unavailable.</value>
     <comment>Message shown when there isn't crash analysis available.</comment>
@@ -1185,6 +1193,10 @@ Dump File creation time: {1}</value>
   <data name="OutputRegularExpressionTextBoxLabel.Text" xml:space="preserve">
     <value>Regular Expression for WER crash dump bucket</value>
     <comment>Label for a textbox that will contain the regular expression a tool uses to determine the bucketing string of a cab.</comment>
+  </data>
+  <data name="AvrfSwitch.Header" xml:space="preserve">
+    <value>Application Verifier</value>
+    <comment>Label for a checkbox that enables Application Verifier for the target app.</comment>
   </data>
   <data name="ProcessChooserButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Process list</value>
@@ -1283,7 +1295,7 @@ Dump File creation time: {1}</value>
     <comment>Title of an insight informing the user of a reason why a process exited</comment>
   </data>
   <data name="InsightProcessExitMissingDependencies" xml:space="preserve">
-    <value>Process {0} (pid: {1,6}) exited with error code {2}. Enabling loader snaps and trying to launch the process again can help diagnose why the app exited.</value>
+    <value>Process {0} (pid: {1,6}) exited with error code {2}. To help diagnose this issue, enable loader snaps and try to launch the process again.</value>
     <comment>{Locked="{0}, "{1,6}", "{2}"} Formatted string informing the user the process name {0}, the Process ID {1}, the exit code {2} of a process.</comment>
   </data>
   <data name="InsightProcessExitMissingDependenciesIdentifiedTitle" xml:space="preserve">

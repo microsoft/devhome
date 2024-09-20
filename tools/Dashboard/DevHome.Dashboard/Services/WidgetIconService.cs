@@ -38,7 +38,7 @@ public class WidgetIconService : IWidgetIconService
         _widgetDarkIconCache.TryRemove(definitionId, out _);
     }
 
-    public async Task<BitmapImage> GetIconFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
+    private async Task<BitmapImage> GetIconFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var widgetDefinitionId = widgetDefinition.Id;
         BitmapImage bitmapImage;
@@ -75,11 +75,24 @@ public class WidgetIconService : IWidgetIconService
 
     public async Task<Brush> GetBrushForWidgetIconAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        var image = await GetIconFromCacheAsync(widgetDefinition, theme);
+        var image = new BitmapImage();
+        try
+        {
+            image = await GetIconFromCacheAsync(widgetDefinition, theme);
+        }
+        catch (System.IO.FileNotFoundException fileNotFoundEx)
+        {
+            _log.Warning(fileNotFoundEx, $"Widget icon missing for widget definition {widgetDefinition.DisplayTitle}");
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Failed to get widget icon for widget definition {widgetDefinition.DisplayTitle}");
+        }
 
         var brush = new ImageBrush
         {
             ImageSource = image,
+            Stretch = Stretch.Uniform,
         };
 
         return brush;

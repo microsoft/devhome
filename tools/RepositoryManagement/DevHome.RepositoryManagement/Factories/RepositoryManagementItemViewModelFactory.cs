@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Services;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.ViewModels;
 using DevHome.SetupFlow.Services;

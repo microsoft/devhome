@@ -35,6 +35,10 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
 
     public string MakeTheChangeText { get; set; }
 
+    public List<string> RelatedEnvironmentVariablesToBeSet { get; set; }
+
+    public List<string> RelatedCacheDirectories { get; set; }
+
     /// <summary>
     /// User wants to optimize a dev drive.
     /// </summary>
@@ -48,7 +52,9 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
                 ExistingCacheLocation,
                 EnvironmentVariableToBeSet,
                 ExampleLocationOnDevDrive,
-                ExistingDevDriveLetters);
+                ExistingDevDriveLetters,
+                RelatedEnvironmentVariablesToBeSet,
+                RelatedCacheDirectories);
             var optimizeDevDriveDialog = new OptimizeDevDriveDialog(optimizeDevDriveViewModel);
             optimizeDevDriveDialog.XamlRoot = settingsCard.XamlRoot;
             optimizeDevDriveDialog.RequestedTheme = settingsCard.ActualTheme;
@@ -63,7 +69,9 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         string exampleLocationOnDevDrive,
         string environmentVariableToBeSet,
         List<string> existingDevDriveLetters,
-        bool environmentVariableHasValue)
+        bool environmentVariableHasValue,
+        List<string> relatedEnvironmentVariablesToBeSet,
+        List<string> relatedCacheDirectories)
     {
         OptimizeDevDriveDialogViewModelFactory = optimizeDevDriveDialogViewModelFactory;
         ExistingDevDriveLetters = existingDevDriveLetters;
@@ -71,6 +79,8 @@ public partial class DevDriveOptimizerCardViewModel : ObservableObject
         ExistingCacheLocation = existingCacheLocation;
         ExampleLocationOnDevDrive = exampleLocationOnDevDrive;
         EnvironmentVariableToBeSet = environmentVariableToBeSet;
+        RelatedEnvironmentVariablesToBeSet = relatedEnvironmentVariablesToBeSet;
+        RelatedCacheDirectories = relatedCacheDirectories;
         var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
 
         if (environmentVariableHasValue)

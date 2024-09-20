@@ -208,6 +208,7 @@ internal sealed class SSHWalletWidget : CoreWidget
         var options = new FileStreamOptions()
         {
             Access = FileAccess.Read,
+            Share = FileShare.ReadWrite,
         };
 
         using var reader = new StreamReader(ConfigFile, options);

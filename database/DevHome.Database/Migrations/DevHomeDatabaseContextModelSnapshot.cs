@@ -61,7 +61,7 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                 b.Property<DateTime?>("UpdatedUTCDate")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
-                    .HasDefaultValue(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+                    .HasDefaultValueSql("datetime()");
 
                 b.HasKey("RepositoryId");
 

@@ -53,7 +53,7 @@ public class RepositoryTests
         Assert.AreEqual(string.Empty, savedRepository.RepositoryName);
         Assert.AreEqual(string.Empty, savedRepository.RepositoryClonePath);
         Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
-        Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
+        Assert.IsTrue(savedRepository.UpdatedUTCDate > DateTime.MinValue);
         Assert.IsFalse(savedRepository.IsHidden);
         Assert.IsFalse(savedRepository.HasAConfigurationFile);
         Assert.AreEqual(string.Empty, savedRepository.RepositoryUri);
@@ -82,7 +82,7 @@ public class RepositoryTests
         Assert.AreEqual(RepositoryName, savedRepository.RepositoryName);
         Assert.AreEqual(CloneLocation, savedRepository.RepositoryClonePath);
         Assert.IsTrue(savedRepository.CreatedUTCDate > DateTime.MinValue);
-        Assert.AreEqual(new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc), savedRepository.UpdatedUTCDate);
+        Assert.IsTrue(savedRepository.UpdatedUTCDate > DateTime.MinValue);
         Assert.IsTrue(savedRepository.IsHidden);
         Assert.IsTrue(savedRepository.HasAConfigurationFile);
         Assert.AreEqual(RepositoryUri, savedRepository.RepositoryUri);

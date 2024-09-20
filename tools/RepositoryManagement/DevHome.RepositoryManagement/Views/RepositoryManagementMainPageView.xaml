@@ -64,20 +64,22 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-
             <TextBlock
                 x:Uid="Header"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
-
+            <Button
+                Grid.Column="1"
+                Content="Add repository"
+                Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"
+                HorizontalAlignment="Right"/>
             <Button
                 x:Uid="AddRepositoryButton"
                 Grid.Column="1"
                 Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"
                 HorizontalAlignment="Right"/>
-
             <Button
                 x:Uid="CloneRepositoriesButton"
                 Grid.Column="2"
@@ -192,6 +194,7 @@
                                 ToolTipService.ToolTip="WinGet Configuration file found. Run it from the '...' menu to set up this repo"/>
                             <TextBlock
                                 Grid.Column="2"
+<<<<<<< HEAD
                                 Text="{x:Bind ClonePath, Mode=OneWay}"/>
                             <TextBlock
                                 x:Uid="CommitNotFound"

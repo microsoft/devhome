@@ -17,6 +17,15 @@ using DevHome.RepositoryManagement.Models;
 using DevHome.RepositoryManagement.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml.Controls;
+using System.Linq;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
+using DevHome.Common.Windows.FileDialog;
+using DevHome.Database.DatabaseModels.RepositoryManagement;
+using DevHome.Database.Services;
+using DevHome.RepositoryManagement.Factories;
+using Microsoft.UI.Xaml;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -43,6 +52,8 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     private readonly EnhanceRepositoryService _enhanceRepositoryService;
 
     private readonly List<RepositoryManagementItemViewModel> _allLineItems = [];
+    
+    private readonly Window _window;
 
     private List<Repository> _allRepositoriesFromTheDatabase;
 
@@ -208,7 +219,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         lineItemsToShow.ForEach(x => LineItemsToDisplay.Add(x));
     }
 
-    private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<(Repository, Commit)> repositories)
+    private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<Repository> repositories)
     {
         _log.Information("Converting repositories from the database into view models for display");
         List<RepositoryManagementItemViewModel> items = [];
@@ -235,6 +246,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
             lineItem.HasAConfigurationFile = repository.HasAConfigurationFile;
             lineItem.MoreOptionsButtonAutomationName = _stringResource.GetLocalized("MoreOptionsAutomationName", repository.RepositoryName);
+
             items.Add(lineItem);
         }
 

@@ -173,13 +173,17 @@ public partial class WinLogsPageViewModel : ObservableObject, IDisposable
 
     private void FindPattern(string message)
     {
-        var newInsight = InsightsHelper.FindPattern(message);
-        if (newInsight is not null)
+        var newInsightTask = InsightsHelper.FindPattern(message, _dispatcher);
+        if (newInsightTask is not null)
         {
-            _dispatcher.TryEnqueue(() =>
+            var newInsight = newInsightTask.Result;
+            if (newInsight is not null)
             {
-                _insightsService.AddInsight(newInsight);
-            });
+                _dispatcher.TryEnqueue(() =>
+                {
+                    _insightsService.AddInsight(newInsight);
+                });
+            }
         }
     }
 
