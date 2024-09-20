@@ -48,9 +48,6 @@
             Grid.Row="1"
             IsTabStop="false"
             XYFocusKeyboardNavigation="Enabled">
-            <Grid.Resources>
-                <Style BasedOn="{StaticResource TextBlockButtonStyle}" TargetType="HyperlinkButton" />
-            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
@@ -59,25 +56,29 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
+                x:Uid="SummaryPage_NextSteps"
                 Grid.Row="0"
                 Padding="0,20,0,25"
                 Foreground="{ThemeResource TextFillColorSecondary}"
                 Style="{ThemeResource BodyStrongTextBlockStyle}" />
             <HyperlinkButton
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject"
+                Style="{StaticResource HyperlinkButtonWithWrappedAndUnderlinedTextStyle}"
+                x:Uid="SummaryPage_SetUpAnotherProject"
                 Grid.Row="1"
                 Command="{Binding GoToMainPageCommand}" />
             <HyperlinkButton
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings"
+                Style="{StaticResource HyperlinkButtonWithWrappedAndUnderlinedTextStyle}"
+                x:Uid="SummaryPage_ChangeDevHomeSettings"
                 Grid.Row="2"
                 Command="{Binding GoToDevHomeSettingsCommand}" />
             <HyperlinkButton
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows"
+                Style="{StaticResource HyperlinkButtonWithWrappedAndUnderlinedTextStyle}"
+                x:Uid="SummaryPage_ChangeDeveloperSettingsInWindows"
                 Grid.Row="3"
                 Command="{Binding GoToForDevelopersSettingsPageCommand}" />
             <HyperlinkButton
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome"
+                Style="{StaticResource HyperlinkButtonWithWrappedAndUnderlinedTextStyle}"
+                x:Uid="SummaryPage_LearnMoreAboutDevHome"
                 Grid.Row="4"
                 Command="{Binding LearnMoreCommand}" />
         </Grid>
