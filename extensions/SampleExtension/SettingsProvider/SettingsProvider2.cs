@@ -46,7 +46,7 @@ public class SettingsProvider2 : ISettingsProvider2
     {
         if (_webViewResult.Url == string.Empty)
         {
-            string emptyUrlErrorMessage = "Error in SettingsProvider2.GetWebView(): WebViewResult.Url is empty";
+            var emptyUrlErrorMessage = Resources.GetResource(@"SettingsProvider2EmptyURLErrorMessage");
             _log.Error(emptyUrlErrorMessage);
             throw new NotImplementedException(emptyUrlErrorMessage);
         }

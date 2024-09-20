@@ -151,6 +151,6 @@
     <comment>Label text for a list of cards that appear in the UI</comment>
   </data>
   <data name="SettingsProvider2EmptyURLErrorMessage" xml:space="preserve">
-    <value>Error in SettingsProvider2.GetWebView(): WebViewResult.Url is empty</value>
+    <value>Error in SettingsProvider2.GetWebView(): WebViewResult.Url is empty. Throwing NotImplementedException</value>
   </data>
 </root>
