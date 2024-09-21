@@ -35,12 +35,12 @@ internal sealed class WERHelper : IDisposable
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly EventLogWatcher _eventLogWatcher;
     private readonly List<FileSystemWatcher> _filesystemWatchers = [];
-    private readonly ObservableCollection<WERReport> _werReports = [];
+    private readonly ObservableCollection<WERBasicReport> _werReports = [];
 
     private List<string> _werLocations = [];
     private bool _isRunning;
 
-    public ReadOnlyObservableCollection<WERReport> WERReports { get; private set; }
+    public ReadOnlyObservableCollection<WERBasicReport> WERReports { get; private set; }
 
     public WERHelper()
     {
@@ -139,7 +139,7 @@ internal sealed class WERHelper : IDisposable
         int? pid = CommonHelper.ParseStringToInt(processId);
 
         // When adding/updating a report, we need to do it on the dispatcher thread
-        _dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue((Microsoft.UI.Dispatching.DispatcherQueueHandler)(() =>
         {
             // Do we have an entry for this item already (created from the WER files on disk)
             var werReport = FindMatchingReport(timeGenerated, executable, pid);
@@ -148,7 +148,7 @@ internal sealed class WERHelper : IDisposable
 
             if (werReport is null)
             {
-                werReport = new WERReport();
+                werReport = new WERBasicReport();
                 createdReport = true;
                 werReport.TimeStamp = timeGenerated;
                 werReport.Executable = executable;
@@ -167,7 +167,7 @@ internal sealed class WERHelper : IDisposable
             {
                 _werReports.Add(werReport);
             }
-        });
+        }));
     }
 
     private void FindOrCreateWEREntryFromLocalDumpFile(string crashDumpFile)
@@ -227,7 +227,7 @@ internal sealed class WERHelper : IDisposable
         var converter = new Int32Converter();
         var pid = (int?)converter.ConvertFromString(processID);
 
-        _dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue((Microsoft.UI.Dispatching.DispatcherQueueHandler)(() =>
         {
             // Do we have an entry for this item already (created from the event log entry)
             var werReport = FindMatchingReport(timeGenerated, fileInfo.Name, pid);
@@ -236,7 +236,7 @@ internal sealed class WERHelper : IDisposable
 
             if (werReport is null)
             {
-                werReport = new WERReport();
+                werReport = new WERBasicReport();
                 createdReport = true;
                 werReport.TimeStamp = timeGenerated;
                 werReport.Executable = fileInfo.Name;
@@ -252,12 +252,12 @@ internal sealed class WERHelper : IDisposable
             {
                 _werReports.Add(werReport);
             }
-        });
+        }));
 
         return;
     }
 
-    private WERReport? FindMatchingReport(DateTime timestamp, string executable, int? pid)
+    private WERBasicReport? FindMatchingReport(DateTime timestamp, string executable, int? pid)
     {
         Debug.Assert(_dispatcher.HasThreadAccess, "This method should only be called on the dispatcher thread");
         Debug.Assert(timestamp.Kind == DateTimeKind.Local, "TimeGenerated should be in local time");
@@ -266,7 +266,7 @@ internal sealed class WERHelper : IDisposable
         // It's a match if the timestamp is within 2 minute of the event log entry
         var ticksWindow = new TimeSpan(0, 2, 0).Ticks;
 
-        WERReport? werReport = null;
+        WERBasicReport? werReport = null;
 
         // See if we can find a matching entry in the list
         foreach (var report in _werReports)

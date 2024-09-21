@@ -124,6 +124,7 @@
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+    <ProjectReference Include="..\Utilities\DumpAnalyzer\DumpAnalyzer.csproj" />
     <ProjectReference Include="..\Utilities\EnableLoaderSnaps\EnableLoaderSnaps.csproj" />
     <ProjectReference Include="..\Utilities\EnableLocalCabCollection\EnableLocalCabCollection.csproj" />
   </ItemGroup>

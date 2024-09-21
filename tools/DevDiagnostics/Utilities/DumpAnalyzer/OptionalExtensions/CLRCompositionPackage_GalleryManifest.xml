@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPackages Version="1.0.0.0" Compression="none">
+<ExtensionPackage>
+    <Name>CLRCompositionPackage</Name>
+    <Version>$#Engine_version#$</Version>
+    <MinDebuggerSupported>10.0.18323.1000</MinDebuggerSupported>
+    <Components>
+        <BinaryComponent Name="CLRComposition" Type="Engine">
+            <Files>
+                <File Architecture="Any" Module="winext\CLRComposition.dll" FilePathKind="RepositoryRelative" />
+            </Files>
+            <LoadTriggers>
+                <TriggerSet>
+                    <ModuleTrigger Name="mscorwks.dll" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Name="coreclr.dll" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Name="mscorsvr.dll" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Name="mscoree.dll" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Name="clr.dll" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Regex="MRT[\d]{3,}_app.dll"/>
+                </TriggerSet>
+                <TriggerSet>
+                    <ModuleTrigger Name="libcoreclr.so" />
+                    <OSTrigger Name="Linux" />
+                </TriggerSet>
+                <TriggerSet>
+                    <ExceptionTrigger ExceptionCode="0x04242420" />
+                </TriggerSet>
+            </LoadTriggers>
+            <EngineCommands>
+                <EngineCommand Name="enableclrplugin">
+                    <EngineCommandItem>
+                        <Syntax>
+<![CDATA[!enableclrplugin]]>
+                        </Syntax>
+                        <Description>
+<![CDATA[Enables the target composition plug-in for the CLR.  Requires usage of the .NET Framework version 4.6.2 or higher.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>    
+            </EngineCommands>
+        </BinaryComponent>
+    </Components>
+</ExtensionPackage>
+</ExtensionPackages>

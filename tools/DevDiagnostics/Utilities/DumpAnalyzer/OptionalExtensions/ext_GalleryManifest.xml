@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPackages Version="1.0.0.0" Compression="none">
+<ExtensionPackage>
+    <Name>ext</Name>
+    <Version>1.0.0.0</Version>
+    <MinDebuggerSupported>6.13.16.2161</MinDebuggerSupported>
+    <Description><![CDATA[]]></Description>
+    <ReleaseNotes><![CDATA[]]></ReleaseNotes>
+    <Authors>BADEV</Authors>
+    <IconUri></IconUri>
+    <LicenseUri></LicenseUri>
+    <ProjectUri></ProjectUri>
+    <Tags></Tags>
+    <Copyright><![CDATA[]]></Copyright>
+    <DatePublished></DatePublished>
+    <DependOnPackages>
+    </DependOnPackages>
+    <Components>
+        <BinaryComponent Name="ext" Type="Engine">
+            <Files>
+                <File Architecture="Any" Module="winext\ext.dll" FilePathKind="RepositoryRelative" />
+            </Files>
+            <EngineCommands>
+                <EngineCommand Name="address">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!address [address]]]></Syntax>
+                        <Description><![CDATA[Displays the address space information for the region bounding the address]]></Description>
+                    </EngineCommandItem>
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!address -summary]]></Syntax>
+                        <Description><![CDATA[Displays a summary of the address space]]></Description>
+                    </EngineCommandItem>
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!address [-f:[UsageType]]]></Syntax>
+                        <Description><![CDATA[Displays the address space regions of the given type]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="analyze">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!analyze [-v[Level 1:99]] [-show] [-xml [-xmi] [-xcs]] [-hang]]]></Syntax>
+                        <Description><![CDATA[Analyzes current exception or bugcheck]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="analyzeuexception">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!analyzeuexception ...]]></Syntax>
+                        <Description><![CDATA[Same as !analyze but forces the User Mode engine to be used]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="blackboxacpi">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxacpi]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for ACPI]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxbsd">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxbsd]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for bootstat.dat (also !bootstat)]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxcrashedprocess">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxcrashedprocess]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for the Crashed Process]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxdxg">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxdxg]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for DirectX]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxntfs">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxntfs]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for NTFS]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpci">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpci]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PCI]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpdclock">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpdclock]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PDC Lock]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpnp">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpnp]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PnP]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpnpdelayedremoveworker">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpnpdelayedremoveworker]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PnP Delayed Remove Worker]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpnpdevicecompletionqueue">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpnpdevicecompletionqueue]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PnP Device Completion Queue]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpnpeventworker">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpnpeventworker]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for PnP Event Worker]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpopepworkorder">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpopepworkorder]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for Power PEP Work Order]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxpowerwatchdog">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxpowerwatchdog]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for Power Watchdog (use !daext.dabpw instead)]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxscm">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxscm]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for Service Control Manager (SCM)]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxstoremanager">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxstoremanager]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for Store Manager Page Decompression]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blackboxusb">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!blackboxusb]]></Syntax>
+                        <Description><![CDATA[Displays the Blackbox for USB (also !usbdata)]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="chksvctbl">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!chksvctbl [-v]]]></Syntax>
+                        <Description><![CDATA[Displays hooked/corrupt KiServiceTable entries]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="chkimg">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!chkimg]]></Syntax>
+                        <Description><![CDATA[Checks the integrity of the module]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="clrma">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!clrma]]></Syntax>
+                        <Description><![CDATA[Displays the CLR Exception information provided by CLR Managed Analysis (CLRMA)]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+
+                <EngineCommand Name="comment">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!comment]]></Syntax>
+                        <Description><![CDATA[Displays the ANSI and WIDE dump comments]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="commenta">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!commenta]]></Syntax>
+                        <Description><![CDATA[Displays the ANSI dump comment]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="commentw">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!commentw]]></Syntax>
+                        <Description><![CDATA[Displays the WIDE dump comment]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cppexr">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!cppexr <exraddress>]]></Syntax>
+                        <Description><![CDATA[Displays a C++ EXCEPTION_RECORD]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="cpuid">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!cpuid [processor]]]></Syntax>
+                        <Description><![CDATA[Displays CPU version info for all CPUs]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dml_proc">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!dml_proc [EPROCESS]]]></Syntax>
+                        <Description><![CDATA[Displays the list of Processes, or the threads of a specific process]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="da">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!da <addr>]]></Syntax>
+                        <Description><![CDATA[Display ANSI string.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="du">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!du <addr>]]></Syntax>
+                        <Description><![CDATA[Display UNICODE/WIDE string.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dpx">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!dpx [-da] [-du] [-dt] [-ds] [-df] [-dse] [<start> <end>] [-u] [-a]]]></Syntax>
+                        <Description><![CDATA[Equivalent of dps, dpp, dpa and dpu (combined); also class types (dt) and trap frames (kV).]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dse">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!dse]]></Syntax>
+                        <Description><![CDATA[Display Stowed Exceptions and associated CLR/MRT Exceptions.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="errhr">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!errhr [code]]]></Syntax>
+                        <Description><![CDATA[Displays HRESULT error string]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="error">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!error [code]]]></Syntax>
+                        <Description><![CDATA[Displays Win32 & NTSTATUS error string]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="exchain">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!exchain]]></Syntax>
+                        <Description><![CDATA[Displays exception chain for current thread]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_frame">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_frame <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each frame in current thread]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_function">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_function <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each function in current thread]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_local">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_local <cmd> $$<n>]]></Syntax>
+                        <Description><![CDATA[Executes command for each local variable in current frame, substituting fixed-name alias $u<n> for each occurrence of $$<n>]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_module">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_module <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each module in the current process. The command is available only for kernel debugging.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_process">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_process <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each process. The command is available only for kernel debugging.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_thread">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_thread <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each thread. The command is available only for kernel debugging.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="for_each_register">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!for_each_register <cmd>]]></Syntax>
+                        <Description><![CDATA[Executes command for each register in the current context. The command is available only for kernel debugging.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="frlo">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!frlo [-n N] [-q] [-v Verbosity] [-h|?]]]></Syntax>
+                        <Description><![CDATA[Displays frame locals]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gle">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!gle [-all]]]></Syntax>
+                        <Description><![CDATA[Displays last error & status for current thread or all threads]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gs">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!gs [-a] [-f] [-i] [-l] [-n Number] [-q] [-v Verbosity] [-h|?]]]></Syntax>
+                        <Description><![CDATA[Analyzes a Guard Segment (/GS) stack overflow]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="imggp">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!imggp <imagebase>]]></Syntax>
+                        <Description><![CDATA[Displays the Global Pointer entry for a 64-bit image]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="imgreloc">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!imgreloc <imagebase>]]></Syntax>
+                        <Description><![CDATA[Displays the Image Relocation information]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="km2um">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!km2um [filename]]]></Syntax>
+                        <Description><![CDATA[Saves the current Kernel Process as a User Mode dump]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="list">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!list [-? | parameters]]]></Syntax>
+                        <Description><![CDATA[Displays lists]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="obja">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!obja <address>]]></Syntax>
+                        <Description><![CDATA[Displays OBJECT_ATTRIBUTES[32|64] from an object header]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="owner">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!owner Module[!Symbol]]]></Syntax>
+                        <Description><![CDATA[Displays ownership information from triage.ini]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="pooltag">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!pooltag <TAG>]]></Syntax>
+                        <Description><![CDATA[Retrieves the pooltag description from pooltag.txt]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="rtlavl">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!rtlavl <address>]]></Syntax>
+                        <Description><![CDATA[Displays an RTL_AVL_TABLE]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="rtlrbtree">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!rtlrbtree <address> [cmd]]]></Syntax>
+                        <Description><![CDATA[Execute the specified command for each element in an in-order traversal of the RTL_BALANCED_NODE tree. If cmd is not specified, dump the node addresses. In the cmd string @#Node refers to the tree node.]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="show">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!show [...]]]></Syntax>
+                        <Description><![CDATA[Same as !analyze -show [...]]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="skstack">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!skstack>]]></Syntax>
+                        <Description><![CDATA[Displays the Secure Kernel stack trace]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="stackusage">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!stackusage>]]></Syntax>
+                        <Description><![CDATA[Displays the Stack Usage of each Function and Module for the context]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="std_map">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!std_map <address>]]></Syntax>
+                        <Description><![CDATA[Displays a std::map<>]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="str">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!str <address>]]></Syntax>
+                        <Description><![CDATA[Displays ANSI_STRING or OEM_STRING]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="tags">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!tags]]></Syntax>
+                        <Description><![CDATA[Displays the Secondary Tags]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="targetinfo">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!targetinfo]]></Syntax>
+                        <Description><![CDATA[Displays target information, inc. OS, Time and Processors]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="url">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!url <URL>]]></Syntax>
+                        <Description><![CDATA[Open the specified URL using the default shell handler]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                
+                <EngineCommand Name="ustr">
+                    <EngineCommandItem>
+                        <Syntax><![CDATA[!ustr <address>]]></Syntax>
+                        <Description><![CDATA[Displays UNICODE_STRING]]></Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+            </EngineCommands>
+        </BinaryComponent>
+    </Components>
+</ExtensionPackage>
+</ExtensionPackages>

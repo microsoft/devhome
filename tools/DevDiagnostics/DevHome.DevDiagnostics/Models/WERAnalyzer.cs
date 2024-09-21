@@ -6,56 +6,43 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using DevHome.Common.Extensions;
 using DevHome.DevDiagnostics.Helpers;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace DevHome.DevDiagnostics.Models;
 
 // This class monitors for WER reports and runs analysis on them
 public class WERAnalyzer : IDisposable
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(WERAnalyzer));
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+
     private readonly WERHelper _werHelper;
-    private readonly ExternalToolsHelper _externalToolsHelper;
 
-    private struct AnalysisRequest
-    {
-        public WERAnalysisReport Report;
-        public Tool Tool;
-    }
+    private readonly BlockingCollection<WERReport> _analysisRequests = new();
 
-    private readonly BlockingCollection<AnalysisRequest> _analysisRequests = new();
+    private readonly ObservableCollection<WERReport> _werReports = [];
 
-    private readonly ObservableCollection<WERAnalysisReport> _werAnalysisReports = [];
-
-    public ReadOnlyObservableCollection<WERAnalysisReport> WERAnalysisReports { get; private set; }
-
-    private readonly ObservableCollection<Tool> _registeredAnalysisTools = [];
-
-    public ReadOnlyObservableCollection<Tool> RegisteredAnalysisTools { get; private set; }
+    public ReadOnlyObservableCollection<WERReport> WERReports { get; private set; }
 
     public WERAnalyzer()
     {
-        WERAnalysisReports = new(_werAnalysisReports);
-        RegisteredAnalysisTools = new(_registeredAnalysisTools);
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        Debug.Assert(_dispatcher is not null, "Need to create this object on the UI thread");
 
-        _externalToolsHelper = Application.Current.GetService<ExternalToolsHelper>();
+        WERReports = new(_werReports);
 
         _werHelper = Application.Current.GetService<WERHelper>();
         ((INotifyCollectionChanged)_werHelper.WERReports).CollectionChanged += WER_CollectionChanged;
 
-        // Collect all of the tools used for dump analysis
-        foreach (Tool tool in _externalToolsHelper.AllExternalTools)
-        {
-            if (tool.Type.HasFlag(ToolType.DumpAnalyzer))
-            {
-                _registeredAnalysisTools.Add(tool);
-            }
-        }
-
-        ((INotifyCollectionChanged)_externalToolsHelper.AllExternalTools).CollectionChanged += AllExternalTools_CollectionChanged;
         PopulateCurrentLogs();
 
         // Create a dedicated thread to serially perform all of our crash dump analysis
@@ -63,9 +50,9 @@ public class WERAnalyzer : IDisposable
         {
             while (!_analysisRequests.IsCompleted)
             {
-                if (_analysisRequests.TryTake(out AnalysisRequest request, Timeout.Infinite))
+                if (_analysisRequests.TryTake(out var report, Timeout.Infinite))
                 {
-                    request.Report.RunToolAnalysis(request.Tool);
+                    PerformAnalysis(report);
                 }
             }
         });
@@ -73,109 +60,58 @@ public class WERAnalyzer : IDisposable
         crashDumpAnalyzerThread.Start();
     }
 
-    private void AllExternalTools_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        // If we have a new tool, we'll want to perform analysis on the crash dump
-        // with it.
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-        {
-            List<Tool> newAnalysisTools = new();
-
-            foreach (Tool tool in e.NewItems)
-            {
-                if (tool.Type.HasFlag(ToolType.DumpAnalyzer))
-                {
-                    _registeredAnalysisTools.Add(tool);
-                    newAnalysisTools.Add(tool);
-                }
-            }
-
-            foreach (var report in _werAnalysisReports)
-            {
-                RunToolAnalysis(report, newAnalysisTools);
-            }
-        }
-
-        // Or if we removed a tool, remove the analysis that it did.
-        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-        {
-            foreach (Tool tool in e.OldItems)
-            {
-                if (tool.Type.HasFlag(ToolType.DumpAnalyzer))
-                {
-                    _registeredAnalysisTools.Remove(tool);
-
-                    foreach (var report in _werAnalysisReports)
-                    {
-                        report.RemoveToolAnalysis(tool);
-                    }
-                }
-            }
-        }
-    }
-
     private void WER_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            ProcessDumpList(e.NewItems.Cast<WERReport>().ToList());
+            ProcessDumpList(e.NewItems.Cast<WERBasicReport>().ToList());
         }
     }
 
     private void PopulateCurrentLogs()
     {
-        ProcessDumpList(_werHelper.WERReports.ToList<WERReport>());
+        ProcessDumpList(_werHelper.WERReports.ToList<WERBasicReport>());
     }
 
-    private void ProcessDumpList(List<WERReport> reports)
+    private void ProcessDumpList(List<WERBasicReport> reports)
     {
-        List<WERAnalysisReport> reportsToAnalyze = new();
+        List<WERReport> reportsToAnalyze = new();
 
-        // First publish all of these reports to our listeners. Then we'll go back and perform
+        // First publish all of these basic reports to our listeners. Then we'll go back and perform
         // analysis on them.
-        foreach (var report in reports)
+        foreach (var basicReport in reports)
         {
-            var reportAnalysis = new WERAnalysisReport(report);
+            var reportAnalysis = new WERReport(basicReport);
 
-            _werAnalysisReports.Add(reportAnalysis);
+            _werReports.Add(reportAnalysis);
             reportsToAnalyze.Add(reportAnalysis);
 
             // When the crash dump path changes, we'll want to perform analysis on it.
-            report.PropertyChanged += (sender, e) =>
+            basicReport.PropertyChanged += (sender, e) =>
             {
-                if (e.PropertyName == nameof(WERReport.CrashDumpPath))
+                if (e.PropertyName == nameof(WERBasicReport.CrashDumpPath))
                 {
-                    RunToolAnalysis(reportAnalysis, RegisteredAnalysisTools.ToList<Tool>());
+                    RunToolAnalysis(reportAnalysis);
                 }
             };
         }
 
-        List<Tool> tools = RegisteredAnalysisTools.ToList<Tool>();
         foreach (var reportAnalysis in reportsToAnalyze)
         {
-            RunToolAnalysis(reportAnalysis, tools);
+            RunToolAnalysis(reportAnalysis);
         }
     }
 
-    private void RunToolAnalysis(WERAnalysisReport report, List<Tool> tools)
+    private void RunToolAnalysis(WERReport report)
     {
-        if (string.IsNullOrEmpty(report.Report.CrashDumpPath))
+        if (string.IsNullOrEmpty(report.BasicReport.CrashDumpPath))
         {
             // We need a crash dump to perform an analysis
             return;
         }
 
-        foreach (Tool tool in tools)
-        {
-            AnalysisRequest request = new()
-            {
-                Report = report,
-                Tool = tool,
-            };
-
-            // Queue the request that will be processed on a separate thread
-            _analysisRequests.Add(request);
-        }
+        // Queue the request that will be processed on a separate thread
+        _analysisRequests.Add(report);
     }
 
     public void Dispose()
@@ -183,5 +119,88 @@ public class WERAnalyzer : IDisposable
         _analysisRequests.CompleteAdding();
         _analysisRequests.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public void PerformAnalysis(WERReport report)
+    {
+        // See if we have a cached analysis
+        var analysisFilePath = GetCachedResultsFileName(report);
+
+        if (File.Exists(analysisFilePath))
+        {
+            string analysis = File.ReadAllText(analysisFilePath);
+
+            _dispatcher.TryEnqueue(() =>
+            {
+                report.SetAnalysis(analysis);
+            });
+        }
+        else
+        {
+            // Generate the analysis
+            try
+            {
+                FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+
+                var startInfo = new ProcessStartInfo()
+                {
+                    FileName = "DumpAnalyzer.exe",
+                    Arguments = string.Format(CultureInfo.InvariantCulture, "\"{0}\" \"{1}\"", report.BasicReport.CrashDumpPath, analysisFilePath),
+                    UseShellExecute = true,
+                    WorkingDirectory = fileInfo.DirectoryName,
+                };
+
+                var process = Process.Start(startInfo);
+                Debug.Assert(process != null, "If process launch fails, we should Process.Start should throw an exception");
+
+                process.WaitForExit();
+
+                if (File.Exists(analysisFilePath))
+                {
+                    string analysis = File.ReadAllText(analysisFilePath);
+
+                    _dispatcher.TryEnqueue(() =>
+                    {
+                        report.SetAnalysis(analysis);
+                    });
+                }
+                else
+                {
+                    // Our analysis failed to work. Log the error
+                    _log.Error("Error Analyzing " + report.BasicReport.CrashDumpPath);
+
+                    if (File.Exists(analysisFilePath + ".err"))
+                    {
+                        _log.Error(File.ReadAllText(analysisFilePath + ".err"));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+        }
+    }
+
+    private string GetCachedResultsFileName(WERReport report)
+    {
+        return report.BasicReport.CrashDumpPath + ".analysisresults.xml";
+    }
+
+    public void RemoveCachedResults(WERReport report)
+    {
+        var analysisFilePath = GetCachedResultsFileName(report);
+
+        if (File.Exists(analysisFilePath))
+        {
+            try
+            {
+                File.Delete(analysisFilePath);
+            }
+            catch (Exception ex)
+            {
+                _log.Warning("Failed to delete cache analysis results - " + ex.ToString());
+            }
+        }
     }
 }
