@@ -144,11 +144,8 @@ internal sealed class SSHWalletWidget : CoreWidget
         SetConfigure();
     }
 
-    /*
-     * Now that the WidgetViewModel uses the MergeJsonData function, we can
-     * expect args.Data to be a json string object with the following structure:
-     * data: "hostname"
-     */
+    // This function assumes arg.Data will be a json string object with the following structure:
+    // { "data": "hostname" }
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
         var jsonObject = JObject.Parse(args.Data);
