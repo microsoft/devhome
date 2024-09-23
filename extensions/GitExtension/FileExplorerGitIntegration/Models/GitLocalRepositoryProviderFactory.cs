@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
-using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
@@ -35,10 +34,10 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
         {
             return new GetLocalRepositoryResult(new GitLocalRepository(rootPath, _repositoryCache));
         }
-        catch (RepositoryNotFoundException libGitEx)
+        catch (ArgumentException ex)
         {
-            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", libGitEx);
-            return new GetLocalRepositoryResult(libGitEx, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {libGitEx.Message} and HRESULT: {libGitEx.HResult}");
+            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
+            return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
         }
         catch (Exception ex)
         {

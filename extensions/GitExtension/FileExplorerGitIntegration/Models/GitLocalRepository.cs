@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation.Collections;
@@ -15,7 +14,7 @@ public sealed class GitLocalRepository : ILocalRepository
 {
     private readonly RepositoryCache? _repositoryCache;
 
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(GitLocalRepository));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(GitLocalRepository));
 
     public string RootFolder
     {
