@@ -114,8 +114,6 @@ public class EnhanceRepositoryService
         StorageFolder repositoryRootFolder = null;
         try
         {
-            // TODO: Test that this method of calling telemetry works.
-            // Storing ITelemetry instead of calling TelemtryFactory.Get<ITelemetry>()
             using var folderDialog = new WindowOpenFolderDialog();
             repositoryRootFolder = await folderDialog.ShowAsync(_window);
         }
