@@ -158,6 +158,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     [RelayCommand]
     public async Task LoadRepositories()
     {
+        // TODO: Spinning progress ring when loading repositories.
         AreFilterAndSortEnabled = false;
         _allRepositoriesFromTheDatabase = _dataAccessService.GetRepositories();
         _allRepositoriesFromTheDatabase = await AssignSourceControlId(_allRepositoriesFromTheDatabase);
