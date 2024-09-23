@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ConsoleDumpAnalyzer": {
+      "commandName": "Project",
+      "commandLineArgs": "d:\\crashdump\\ProblemApp2.exe.26880.dmp d:\\crashdump\\tim.xml",
+      "nativeDebugging": true,
+      "hotReloadEnabled": true
+    }
+  }
+}

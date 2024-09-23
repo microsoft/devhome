@@ -1,0 +1,419 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfileFullPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <AnalysisNugetPlatform>x64</AnalysisNugetPlatform>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Platform)'!='x64'">
+    <AnalysisNugetPlatform>$(Platform)</AnalysisNugetPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- CLRComposition files-->
+    <None Include="CLRComposition\$(ProcessorArchitecture)\CLRComposition.dll" Link="CLRComposition\CLRComposition.dll">
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Compile Remove="definitions\**" />
+    <EmbeddedResource Remove="definitions\**" />
+    <None Remove="definitions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Debugging.Platform.DbgEng" Version="20240722.1449.0" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Debugging.Platform.SrcSrv" Version="20240722.1449.0" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Debugging.Platform.SymSrv" Version="20240722.1449.0" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Diagnostics.Analysis.Ext" Version="10.240607.233526-REL-2406-32" GeneratePathProperty="true">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Diagnostics.DbgShim.win-arm64" Version="8.0.532401" GeneratePathProperty="true">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Diagnostics.DbgShim.win-x64" Version="8.0.532401" GeneratePathProperty="true">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Diagnostics.DbgShim.win-x86" Version="8.0.532401" GeneratePathProperty="true">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.1.142101" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.NETCore.SOS" Version="8.0.0-preview.24462.1" GeneratePathProperty="true" >
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- DBGENG files-->
+    <None Include="$(PkgMicrosoft_Debugging_Platform_DbgEng)\content\$(ProcessorArchitecture)\dbgcore.dll" Link="DbgEng\dbgcore.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="$(PkgMicrosoft_Debugging_Platform_DbgEng)\content\$(ProcessorArchitecture)\dbgeng.dll" Link="DbgEng\dbgeng.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="$(PkgMicrosoft_Debugging_Platform_DbgEng)\content\$(ProcessorArchitecture)\dbghelp.dll" Link="DbgEng\dbghelp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="$(PkgMicrosoft_Debugging_Platform_DbgEng)\content\$(ProcessorArchitecture)\dbgmodel.dll" Link="DbgEng\dbgmodel.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SrcSrv files-->
+    <None Include="$(PkgMicrosoft_Debugging_Platform_SrcSrv)\content\$(ProcessorArchitecture)\srcsrv.dll" Link="SrcSrv\symsrv.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SymSrv files-->
+    <None Include="$(PkgMicrosoft_Debugging_Platform_SymSrv)\content\$(ProcessorArchitecture)\symsrv.dll" Link="SymSrv\symsrv.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+    
+  <ItemGroup>
+    <!-- Analysis (!analyze) files -->
+    <None Include="$(PkgMicrosoft_Diagnostics_Analysis_Ext)\lib\net40\$(AnalysisNugetPlatform)\Microsoft.Diagnostics.Analysis.Utilities.dll" Link="Analysis\Microsoft.Diagnostics.Analysis.Utilities.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+    </None>
+    <None Include="$(PkgMicrosoft_Diagnostics_Analysis_Ext)\lib\net40\$(AnalysisNugetPlatform)\ext.dll" Link="Analysis\ext.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='x64'">
+    <!-- DbgShim files -->
+    <None Include="$(PkgMicrosoft_Diagnostics_DbgShim_win-x64)\runtimes\win-x64\native\dbgshim.dll" Link="DbgShim\dbgshim.dll">
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='x86'">
+    <!-- DbgShim files -->
+    <None Include="$(PkgMicrosoft_Diagnostics_DbgShim_win-x86)\runtimes\win-x86\native\dbgshim.dll" Link="DbgShim\dbgshim.dll">
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='arm64'">
+    <!-- DbgShim files -->
+    <None Include="$(PkgMicrosoft_Diagnostics_DbgShim_win-arm64)\runtimes\win-arm64\native\dbgshim.dll" Link="DbgShim\dbgshim.dll">
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SymSrv files-->
+    <None Include="$(PkgMicrosoft_Diagnostics_Runtime)\lib\netstandard2.0\Microsoft.Diagnostics.Runtime.dll" Link="DiagnosticsRuntime\Microsoft.Diagnostics.Runtime.dll">
+      <TargetPath>winext\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup Condition="'$(Platform)'=='x64'">
+    <!-- SOS x64 files -->
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-x64\Microsoft.DiaSymReader.Native.amd64.dll" Link="SOS\Microsoft.DiaSymReader.Native.amd64.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-x64\sos.dll" Link="SOS\sos.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='x86'">
+    <!-- SOS x86 files -->
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-x86\Microsoft.DiaSymReader.Native.x86.dll" Link="SOS\Microsoft.DiaSymReader.Native.x86.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-x86\sos.dll" Link="SOS\sos.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)'=='arm64'">
+    <!-- SOS x64 files -->
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-arm64\Microsoft.DiaSymReader.Native.arm64.dll" Link="SOS\Microsoft.DiaSymReader.Native.arm64.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\win-arm64\sos.dll" Link="SOS\sos.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <!-- SOS architecture neutral files-->
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Azure.Core.dll" Link="SOS\Azure.Core.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Azure.Identity.dll" Link="SOS\Azure.Identity.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Bcl.AsyncInterfaces.dll" Link="SOS\Microsoft.Bcl.AsyncInterfaces.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.CSharp.dll" Link="SOS\Microsoft.CSharp.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Diagnostics.DebugServices.dll" Link="SOS\Microsoft.Diagnostics.DebugServices.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Diagnostics.DebugServices.Implementation.dll" Link="SOS\Microsoft.Diagnostics.DebugServices.Implementation.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Diagnostics.ExtensionCommands.dll" Link="SOS\Microsoft.Diagnostics.ExtensionCommands.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Diagnostics.NETCore.Client.dll" Link="SOS\Microsoft.Diagnostics.NETCore.Client.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Diagnostics.Runtime.dll" Link="SOS\Microsoft.Diagnostics.Runtime.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.DependencyInjection.Abstractions.dll" Link="SOS\Microsoft.Extensions.DependencyInjection.Abstractions.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.DependencyInjection.dll" Link="SOS\Microsoft.Extensions.DependencyInjection.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.Logging.Abstractions.dll" Link="SOS\Microsoft.Extensions.Logging.Abstractions.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.Logging.dll" Link="SOS\Microsoft.Extensions.Logging.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.Options.dll" Link="SOS\Microsoft.Extensions.Options.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Extensions.Primitives.dll" Link="SOS\Microsoft.Extensions.Primitives.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.FileFormats.dll" Link="SOS\Microsoft.FileFormats.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.FileFormats.dll" Link="SOS\Microsoft.FileFormats.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Identity.Client.dll" Link="SOS\Microsoft.Identity.Client.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.Identity.Client.Extensions.Msal.dll" Link="SOS\Microsoft.Identity.Client.Extensions.Msal.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.IdentityModel.Abstractions.dll" Link="SOS\Microsoft.IdentityModel.Abstractions.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\Microsoft.SymbolStore.dll" Link="SOS\Microsoft.SymbolStore.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\SOS.Extensions.dll" Link="SOS\SOS.Extensions.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\SOS.Hosting.dll" Link="SOS\SOS.Hosting.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\SOS.InstallHelper.dll" Link="SOS\SOS.InstallHelper.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Buffers.dll" Link="SOS\System.Buffers.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.ClientModel.dll" Link="SOS\System.ClientModel.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Collections.Immutable.dll" Link="SOS\System.Collections.Immutable.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.CommandLine.dll" Link="SOS\System.CommandLine.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.ComponentModel.Annotations.dll" Link="SOS\System.ComponentModel.Annotations.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Diagnostics.DiagnosticSource.dll" Link="SOS\System.Diagnostics.DiagnosticSource.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.IO.FileSystem.AccessControl.dll" Link="SOS\System.IO.FileSystem.AccessControl.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Memory.Data.dll" Link="SOS\System.Memory.Data.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Memory.dll" Link="SOS\System.Memory.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Numerics.Vectors.dll" Link="SOS\System.Numerics.Vectors.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Reflection.Metadata.dll" Link="SOS\System.Reflection.Metadata.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Runtime.CompilerServices.Unsafe.dll" Link="SOS\System.Runtime.CompilerServices.Unsafe.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Runtime.Loader.dll" Link="SOS\System.Runtime.Loader.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Security.AccessControl.dll" Link="SOS\System.Security.AccessControl.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Security.Cryptography.ProtectedData.dll" Link="SOS\System.Security.Cryptography.ProtectedData.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Security.Principal.Windows.dll" Link="SOS\System.Security.Principal.Windows.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Text.Encodings.Web.dll" Link="SOS\System.Text.Encodings.Web.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Text.Json.dll" Link="SOS\System.Text.Json.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(PkgMicrosoft_NETCore_SOS)\tools\lib\System.Threading.Tasks.Extensions.dll" Link="SOS\System.Threading.Tasks.Extensions.dll">
+      <TargetPath>winext\sos\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="manifest.1.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="manifestversion.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="OptionalExtensions\CLRCompositionPackage_GalleryManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="OptionalExtensions\ext_GalleryManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="OptionalExtensions\kdexts_GalleryManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="OptionalExtensions\sos_GalleryManifest.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="triage\pooltag.txt">
+      <TargetPath>triage\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="triage\triage.ini">
+      <TargetPath>triage\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

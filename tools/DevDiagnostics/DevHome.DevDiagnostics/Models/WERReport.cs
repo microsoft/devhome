@@ -6,41 +6,42 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.DevDiagnostics.Helpers;
+using Serilog;
 
 namespace DevHome.DevDiagnostics.Models;
 
 public partial class WERReport : ObservableObject
 {
-    [ObservableProperty]
-    private DateTime _timeStamp;
+    private static readonly string _noAnalysisAvailable = CommonHelper.GetLocalizedString("DumpAnalysisUnavailable");
 
-    public string TimeGenerated => TimeStamp.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.CurrentCulture);
+    public WERBasicReport BasicReport { get; }
 
-    [ObservableProperty]
-    private string _filePath = string.Empty;
+    private WERAnalysisReport? _analysisReport;
 
     [ObservableProperty]
-    private string _module = string.Empty;
+    private string _rawAnalysis = _noAnalysisAvailable;
 
     [ObservableProperty]
-    private string _executable = string.Empty;
-
-    [ObservableProperty]
-    private string _eventGuid = string.Empty;
-
-    [ObservableProperty]
-    private string _description = string.Empty;
-
-    [ObservableProperty]
-    private int _pid = 0;
-
-    [ObservableProperty]
-    private string _crashDumpPath = string.Empty;
+    private string _analysis = _noAnalysisAvailable;
 
     [ObservableProperty]
     private string _failureBucket = string.Empty;
 
-    public WERReport()
+    public WERReport(WERBasicReport report)
     {
+        this.BasicReport = report;
+        FailureBucket = report.FailureBucket;
+    }
+
+    public void SetAnalysis(string analysis)
+    {
+        RawAnalysis = analysis;
+        _analysisReport = new WERAnalysisReport(analysis);
+        if (_analysisReport is not null && !string.IsNullOrEmpty(_analysisReport.FailureBucket))
+        {
+            FailureBucket = _analysisReport.FailureBucket;
+            Analysis = _analysisReport.Analysis ?? string.Empty;
+        }
     }
 }

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPackages Version="1.0.0.0" Compression="none">
+  <ExtensionPackage>
+    <Name>SOS</Name>
+    <Version>8.0.10.10501</Version>
+    <Description>Debugging aid for .NET Core programs and runtimes</Description>
+    <Components>
+      <BinaryComponent Name="sos" Type="Engine">
+        <Files>
+          <File Architecture="Any" Module="winext\sos\sos.dll" FilePathKind="RepositoryRelative" />
+        </Files>
+        <LoadTriggers>
+          <TriggerSet>
+            <ModuleTrigger Name="coreclr.dll" />
+          </TriggerSet>
+          <TriggerSet>
+            <ModuleTrigger Name="libcoreclr.so" />
+          </TriggerSet>
+        </LoadTriggers>
+        <EngineCommands>
+          <EngineCommand Name="soshelp">
+            <EngineCommandItem>
+              <Syntax>!soshelp</Syntax>
+              <Description>Displays all available SOS commands or details about the command</Description>
+            </EngineCommandItem>
+          </EngineCommand>
+        </EngineCommands>
+      </BinaryComponent>
+    </Components>
+  </ExtensionPackage>
+</ExtensionPackages>

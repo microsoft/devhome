@@ -173,7 +173,7 @@ public class WinLogsHelper : IDisposable
     {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            foreach (WERReport report in e.NewItems)
+            foreach (WERBasicReport report in e.NewItems)
             {
                 var filePath = report.Executable ?? string.Empty;
 

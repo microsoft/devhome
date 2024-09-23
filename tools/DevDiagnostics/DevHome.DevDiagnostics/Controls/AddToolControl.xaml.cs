@@ -188,17 +188,12 @@ public sealed partial class AddToolControl : UserControl, INotifyPropertyChanged
 
         ToolType toolType = ToolType.Unknown;
 
-        if (ToolTypeMenuItemDumpAnalyzer.IsChecked)
-        {
-            toolType |= ToolType.DumpAnalyzer;
-        }
-
         return new(
             ToolNameTextBox.Text,
             ToolPathTextBox.Text,
             activationType,
             ArgumentsTextBox.Text,
-            OutputRegularExpressionTextBox.Text,
+            string.Empty,
             _selectedApp?.AppUserModelId ?? string.Empty,
             _selectedApp?.IconFilePath ?? string.Empty,
             toolType,

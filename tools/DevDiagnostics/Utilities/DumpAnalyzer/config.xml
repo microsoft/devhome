@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings Version="2">
+  <Namespace Name="Extensions">
+    <Setting Name="ExtensionRepository" Type="VT_BSTR" Value="Implicit"></Setting>
+    <Setting Name="UseExperimentalFeatureForNugetShare" Type="VT_BOOL" Value="false"></Setting>
+    <Setting Name="AllowNugetExeUpdate" Type="VT_BOOL" Value="false"></Setting>
+    <Setting Name="AllowNugetMSCredentialProviderInstall" Type="VT_BOOL" Value="false"></Setting>
+    <Setting Name="AllowParallelInitializationOfLocalRepositories" Type="VT_BOOL" Value="true"></Setting>
+    <Namespace Name="ExtensionRepositories">
+      <Namespace Name="Internal">
+        <Setting Name="IsEnabled" Type="VT_BOOL" Value="false"></Setting>
+      </Namespace>
+      <Namespace Name="UserExtensions">
+        <Setting Name="IsEnabled" Type="VT_BOOL" Value="false"></Setting>
+      </Namespace>
+      <Namespace Name="LocalInstalled">
+        <Setting Name="IsEnabled" Type="VT_BOOL" Value="true"></Setting>
+      </Namespace>
+    </Namespace>
+  </Namespace>
+  <Namespace Name="EngineInitialization">
+    <Setting Name="SecureLoadDotNetExtensions" Type="VT_BOOL" Value="false"></Setting>
+    <Setting Name="UseReptTargetSupport" Type="VT_BOOL" Value="false"></Setting>
+  </Namespace>
+  <Namespace Name="Debug">
+    <Namespace Name="Advanced">
+      <Setting Name="VadBasedModuleEnumeration" Type="VT_BOOL" Value="false"></Setting>
+    </Namespace>
+  </Namespace>
+</Settings>

@@ -1,0 +1,3021 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPackages Version="1.0.0.0" Compression="none">
+<ExtensionPackage>
+    <Name>kdexts</Name>
+    <Version>1.0.0.0</Version>
+    <MinDebuggerSupported>10.0.18320.1000</MinDebuggerSupported>
+    <Description></Description>
+    <Components>
+        <BinaryComponent Name="kdexts" Type="Engine">
+          <Files>
+              <File Architecture="Any" Module="winxp\kdexts.dll" FilePathKind="RepositoryRelative"/>
+          </Files>
+
+          <ObjectExtensionList>
+            <NamedExtension Name="Debugger.Models.Session.Attributes.Machine" Namespace="Debugger.Models.Session.Attributes.Machine.KernelObjects" Property="KernelObjects" />
+            <NamedExtension Name="Debugger.Models.Session" Namespace="Debugger.Models.Session.Devices" Property="Devices" />
+            <NamedExtension Name="Debugger.Models.Process" Namespace="Debugger.Models.Process.Devices" Property="Devices" />
+            <NamedExtension Name="Debugger.Models.Process" Namespace="Debugger.Models.Process.Io" Property="Io" />
+
+            <!-- Models parents are registered after namespaces -->
+            <NamedExtension Name="Debugger.Models.Session" />
+            <NamedExtension Name="Debugger.Models.Session.Attributes.Machine.KernelObjects" />
+          </ObjectExtensionList>
+
+          <PublishedObjectList>
+            <NamedObject Name="Debugger.Models.Session.LogicalProcessor" />
+            <NamedObject Name="Debugger.Models.Session.Attributes.Machine" Namespace="Debugger.Models.Session.Attributes.Machine.KernelObjects" Property="KernelObjects" />
+            <NamedObject Name="Debugger.Models.Session" Namespace="Debugger.Models.Session.Devices" Property="Devices" />
+            <NamedObject Name="Debugger.Models.Process" Namespace="Debugger.Models.Process.Devices" Property="Devices" />
+            <NamedObject Name="Debugger.Models.Process" Namespace="Debugger.Models.Process.Io" Property="Io" />
+          </PublishedObjectList>
+
+          <EngineCommands>
+                <EngineCommand Name="ablock">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ablock [lock] [session ID] [-v]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Use the -v flag to enable verbose output.
+This command dumps everything AutoBoost knows about the supplied lock address.
+The lock address is required. The session ID may be required for locks allocated in session memory.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpicache">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpicache [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays cached ACPI tables]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpiinf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpiinf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays ACPI Information structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpiirqarb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpiirqarb]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays ACPI IRQ Arbiter data]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpiresconflict">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpiresconflict]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays detail on resource conflicts that cause bugcheck 0xA5 (ACPI_ROOT_PCI_RESOURCE_FAILURE]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpitable">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpitable [Table Signature]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays an ACPI table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ahcache">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ahcache [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays application compatibility cache]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="alignmentfaults">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!alignmentfaults]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays all current type alignment faults by location and image, sorted by frequencies]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="alpc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!alpc /m MessageAddress]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the message at the specified address.]]>
+                        </Description>
+                    </EngineCommandItem>
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!alpc /p PortAddress]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the message at the specified address.]]>
+                        </Description>
+                    </EngineCommandItem>
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!alpc /lpc PortAddress]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the message at the specified address.]]>
+                        </Description>
+                    </EngineCommandItem>
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!alpc /lpp ProcessAddress]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the message at the specified address.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="amli">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!amli <command|?>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Use AMLI debugger extensions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="apc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!apc [[proc|thre] <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays Asynchronous Procedure Calls]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="apic">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!apic <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps local apic]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="apicerr">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!apicerr]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the local Advanced Programmable Interrupt Controller (APIC) error log.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="arbinst">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!arbinst <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[flags  100 - don't dump aliases]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="arbiter">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!arbiter [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[flags  1 - I/O port arbiters
+  2 - memory arbiters
+  4 - IRQ arbiters
+  8 - DMA arbiters
+ 10 - bus number arbiters
+100 - don't dump aliases.
+If no flags are specified, all arbiters are dumped.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="arblist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!arblist <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump set of resources being arbitrated]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="bcb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!bcb <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display the Buffer Control Block]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="biosreslist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!biosreslist <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump PnpBios/ACPI resource list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="blockeddrv">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!blockeddrv]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the list of blocked drivers in the system]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="bpid">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!bpid]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Tells winlogon to do a user-mode break into a process]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="bugdump">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!bugdump]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display bug check dump data]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="bushnd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!bushnd <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a HAL "BUS HANDLER" structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ca">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ca <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the control area of a section]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="calldata">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!calldata <table name>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump call data hash table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="callback">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!callback]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cmci">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cmci]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cmreslist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cmreslist <CM Resource List>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump CM resource list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="code12">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!code12]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cchelp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cchelp]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display Cache Manager debugger extensions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="chklowmem">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!chklowmem]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Tests if PAE system booted with /LOWMEM switch]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="combine">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!combine]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cpuinfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cpuinfo [id]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays CPU information for specified processor]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cpuquota">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cpuquota]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cshelp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cshelp]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="csrt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!csrt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="cstriage">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!cstriage]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dbgprint">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dbgprint]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays contents of DbgPrint buffer]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dblink">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dblink <address> [count] [bias]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a list via its blinks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ddripsaction">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ddripsaction]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ddripstree">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ddripstree]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="deadlock">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!deadlock [1]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display Driver Verifier deadlock detection info]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dflink">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dflink <address> [count] [bias]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a list via its flinks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="defwrites">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!defwrites]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps deferred write queue and cache write throttle analysis]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="depnode">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!depnode]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devext">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devext [<address> <type>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump device extension of specified type]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devhandles">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devhandles]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps open handles against the specified device]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devobj">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devobj]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devinst">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devinst]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the device reference table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devnode">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devnode <device node> [flags] [service]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the device node. Consider using 'dx @$cursession.Devices.PnPDevices.DeviceTree' instead]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devpowerstate">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devpowerstate [device node]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the device node with the power state and all attached devices]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="devstack">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!devstack <device>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump device stack associated with a device object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="diskrespin">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!diskrespin]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dma">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dma]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dmaguard">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dmaguard]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dmar">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dmar]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dmarla">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dmarla]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dmarpt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dmarpt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dpa">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dpa [options]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays pool allocations]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dpcs">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dpcs [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the queued DPCs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dpcwatchdog">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dpcwatchdog]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the DPC history of all processsors]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dpchistory">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dpchistory [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the stack information recorded in the DPC history of a particular processor]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="watchdoganalyze">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!watchdoganalyze [-v] [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Analyze the DPC Watchdog buffer using a LCS algorithm and show detailed results]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="drivers">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!drivers]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display info about loaded system modules]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="drvobj">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!drvobj <driver> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the driver object and related information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="driveinfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!driveinfo <drive>[:]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump drive volume information for specific drive]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="dskheap">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!dskheap]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump desktop heap]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="e820reslist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!e820reslist <List>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump an ACPI_BIOS_MULTI_NODE resource list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="errlog">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!errlog]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the error log contents]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="errpkt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!errpkt <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the contents of an error packet (WHEA_ERROR_PACKET) from a low-level hardware error handler (LLHEH)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="errrec">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!errrec <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the contents of the specified common platform error record (WHEA_ERROR_RECORD)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="expirations">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!expirations]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the processor timer expiration trace]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="exqueue">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!exqueue]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="facs">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!facs]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the Firmware ACPI Control Structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fadt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fadt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the Fixed ACPI Description Table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fan">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fan]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps one or all fans in the system]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="filelock">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!filelock <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a file lock structure. Address is either the filelock or a fileobject]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fileobj">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fileobj <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Ensure an address is a file object then dump its contents]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="filecache">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!filecache]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays memory usage by the system file cache]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="filetime">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!filetime <64-bit FILETIME>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps 64-bit FILETIME as a human-readable time]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="findautochkblockers">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!findautochkblockers]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps file handles and file-names which are preventing autochk from running]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="finddata">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!finddata <address> <offset>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Find cached data at given offset in FILE_OBJECT]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="findfilelockowner">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!findfilelockowner]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="findhandle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!findhandle <object> <process | 0>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Find handles referring to the specified object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="findthreads">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!findthreads [-v] [-t <addr>]|[-i <addr>]|[-d <addr>]|[-a <addr> [-e <addr>|-l <length>]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Find threads with stack-locations referencing a given object/memory range]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fpbnode">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fpbnode <bus extension> [Options]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the FPB node]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fpbres">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fpbres <bus extension> [Options]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the FPB resources]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fpsearch">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fpsearch <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Searches the free page lists for freed special pool allocations]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="frag">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!frag [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Kernel mode pool fragmentation]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="frozen">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!frozen]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Show processor states (Current,Frozen,Running)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="fxdevice">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!fxdevice [-v]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump all pofx registered devices]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gbl">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gbl]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the ACPI Global Lock]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gentable">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gentable <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the given rtl_generic_table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gicr_findapending">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gicr_findapending]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Search through every processor's LPI tables looking for pending LPIs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gicd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gicd]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a generic interrupt controller distributor registers]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gicc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gicc]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a generic interrupt controller CPU interface.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="gicr">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!gicr <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a generic interrupt controller CPU redistributor.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="halext">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!halext]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[This routine dumps information loaded HAL Extensions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="halpte">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!halpte]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="handle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!handle <addr> <flags> <process> <TypeName>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps handle for a process]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="help">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!help]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays help for kdexts]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="hidppd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!hidppd]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a HID Preparsed Data blob]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+<!--
+               This command collides with the same command in ntsdexts. To mitigate using those in user mode we comment out this one.
+
+                <EngineCommand Name="htrace">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!htrace]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+-->
+                <EngineCommand Name="ib">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ib <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Read a byte from an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="icpleak">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!icpleak]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Look through IoCompletion objects for the object with most queued entries and figure out which process this is for.  Only works
+if the system is set up to maintain a type list for IoCompletion objects.  This should be used if the ICP pool
+seems to have a leak]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="id">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!id <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Read a double-word from an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="idt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!idt <vector>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump ISRs referenced by each IDT entry]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="intstats">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!intstats]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="intsteer">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!intsteer]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ioapic">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ioapic [base]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump io apic]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ioctldecode">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ioctldecode <ioctl>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Tries to see if the specified IOCTL code can be decoded]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ioresdes">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ioresdes <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display IO_RESOURCE_DESCRIPTOR structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ioreslist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ioreslist <IO Resource List>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump IO resource requirements list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="iort">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!iort]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="iovdrv">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!iovdrv]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="iovirp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!iovirp]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a driver object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ipi">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ipi]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump IPI processors state]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ipmi">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ipmi]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Prints usage for IPMI driver debugger extension]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="irp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!irp <address> <dumplevel>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump IRP at specified address]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="irpfind">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!irpfind [pooltype] [restart addr] [<irpsearch> <address>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Search pool for active IRPs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="irql">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!irql [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display current IRQL for processor]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="irt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!irt [first index to dump]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps 100 IRT entries]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="isainfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!isainfo <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display ISA Bus and Card info]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="its">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!its <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps a generic interrupt controller CPU interface]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ivrs">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ivrs]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[This function dumps the AMD IVRS ACPI tables related to IOMMU functionality]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="iw">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!iw <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Read a word from an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="job">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!job <address> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump JobObject at address, processes in job]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="joblist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!joblist [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays all active job objects]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="jobtree">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!jobtree]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[prints the global job tree containing all job objects in the system.]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="kwmi">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!kwmi]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays kernel WMI data. It displays information for all currently registered providers]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="lbt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!lbt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump legacy bus information table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="loadermemorylist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!loadermemorylist <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display OSLOADER memory allocation list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+<!--
+               This command collides with the same command in ntsdexts. To mitigate using those in user mode we comment out this one.
+
+                <EngineCommand Name="locks">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!locks]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+-->
+                <EngineCommand Name="lockedpages">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!lockedpages]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the driver-locked pages]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="logonsession">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!logonsession [<LUID> [level]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display logon sessions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="lookaside">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!lookaside <address> <options> <depth>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump lookaside lists]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="lpc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!lpc]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump lpc ports and messages]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="lpit">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!lpit]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the LPIT table content from the target]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="mapic">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!mapic]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the ACPI Multiple APIC Table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="mca">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!mca]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="memoryblock">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!memoryblock]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="memusage">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!memusage]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the page frame database table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="memlist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!memlist]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Scans physical memory lists for consistency]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="mps">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!mps]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the MPS (Multi Processor Specification) BIOS Tables]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="msct">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!msct]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the maximum system characteristics table (MSCT)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="mtrr">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!mtrr]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps processors mtrr]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="npcb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!npcb]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="npx">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!npx [base]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps NPX save area]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="nsobj">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!nsobj <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps an ACPI Namespace Object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="nstree">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!nstree [<address>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps an ACPI Namespace Object tree]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="numa">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!numa]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display Non-Uniform Memory Access nodes]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="numa_hal">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!numa_hal]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display HAL NUMA info]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ob">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ob <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Write a byte to an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="object">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!object <-r | Path | address | 0 TypeName>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps an object manager object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="obsdcache">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!obsdcache]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the contents of the security descriptor deduplication cache]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="obtrace">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!obtrace <address|object>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display object trace information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="od">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!od <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Write a double-word to an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="openmaps">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!openmaps <shared cache map>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the active views for a shared cache map]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ow">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ow <port>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Write a word to an I/O port]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pagefile">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pagefile]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps pagefile information and related device stacks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="partition">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!partition]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pat">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pat]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps processors pat]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pcitree">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pcitree]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump the PCI tree structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pcm">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pcm <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Detects valid address for Private Cache Map]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pcmcia">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pcmcia [1]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays PCMCIA devices and their states]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pcr">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pcr [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the Processor Control Registers]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pdcclient">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pdcclient]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pdcclients">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pdcclients]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the current state of the power dependency coordinator]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pdclog">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pdclog]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the power dependency coordinator's in-memory log]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pdctriage">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pdctriage]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the current state and activity of the power dependency coordinator]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pfn">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pfn]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the page frame database entry for the physical page]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pfnperf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pfnperf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the PFN spinlock duration list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pic">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pic]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps PIC(8259) information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="platformidle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!platformidle]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management platform idle states]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="platformidleaccounting">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!platformidleaccounting]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management platform idle state accounting information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="platformidlecontrol">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!platformidlecontrol]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Configures processors to disable or enable individual idle states for testing]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnpaction">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnpaction]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnpcompletion">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnpcompletion]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnpevent">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnpevent]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump PNP action queue]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnplocks">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnplocks]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump PNP locks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnpthreads">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnpthreads]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump active PNP thread if any]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pnptriage">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pnptriage]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA['x' command for Pnp - dumps basic info useful for triage]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poaction">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poaction]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the current power action structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poagg">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poagg]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poagglogentry">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poagglogentry]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poaggstate">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poaggstate]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poaggtarget">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poaggtarget]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pocaps">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pocaps]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps System Power Capabilities]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="podev">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!podev <devobj>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps power relevent data in device object]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poidle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poidle]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="polist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!polist [<devobj>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps power Irp serial list entries]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ponode">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ponode]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps power Device Node stack (devnodes in power order)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poperf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poperf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poreqlist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poreqlist]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="porequests">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!porequests]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="posetting">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!posetting]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="posettings">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!posettings]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the power settings database]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pool">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pool [<0|-1|address> [detail]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump kernel mode heap]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poolfind">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poolfind Tag [pooltype]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Finds occurrences of the specified Tag]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poolused">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poolused [flags [TAG]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump usage by pool tag]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poolval">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poolval]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Provide in-depth heap diagnosis]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pobatt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pobatt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="popoldev">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!popoldev]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="popolicy">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!popolicy [<address> [flags]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps System Power Policy]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poproc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poproc [<address> [flags]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power State]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="poprocpolicy">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!poprocpolicy [<address> [flags]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Policy]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="potrigger">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!potrigger <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps POP_ACTION_TRIGGER]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="powertriage">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!powertriage]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps basic information useful for triage of power related issues]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pplookaside">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pplookaside [processor] [lookasidelist]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps PerProcessor LookasideLists]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppm">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppm]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps basic Processor Power Management information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmcheck">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmcheck]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the current PPM check engine and core parking state]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmhelp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmhelp]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display help for ppm debugger commands]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmidle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmidle]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management processor idle states]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmidleaccounting">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmidleaccounting [type] <cpu>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management processor idle state accounting information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmidlecontrol">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmidlecontrol <state index> <0|1>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Enable or disable a processor idle state on the current processor. Note: requires RS5 or later, and a microPEP or ACPI LPI based idle states]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmidlepolicy">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmidlepolicy]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management idle state policies]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmlpscenarios">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmlpscenarios <option>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management low power scenario information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmperf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmperf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management performance states]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmperfpolicy">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmperfpolicy]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management performance and throttle state policies]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmsettings">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmsettings]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management settings currently active on the current processor]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ppmstate">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ppmstate]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Processor Power Management state information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="prcb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!prcb [processor]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the Processor Control Block]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="process">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!process [<address>] [flags] [image name]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps process at specified address]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="processirps">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!processirps]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps all IRPs associated with threads of a process]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="providerinfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!providerinfo]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="psci">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!psci]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pte">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pte <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump PDE and PTE for the entered address]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="pte2va">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!pte2va <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the corresponding VA]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ptetree">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ptetree]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ptex">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ptex]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ptov">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ptov PhysicalPageNumber]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump all valid physical<->virtual mappings for the given page directory]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="qlockperf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!qlockperf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays queued spin lock performance data (if present)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="qlocks">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!qlocks]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps state of all queued spin locks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="quota">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!quota]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="range">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!range <RtlRangeList>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump RTL_RANGE_LIST]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="rawrange">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!rawrange <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps an RTL_RANGE_LIST]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ready">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ready]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps state of all READY system threads]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="reg">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!reg [<command> [params]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Registry extensions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="rellist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!rellist <relation list> [flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump PNP relation lists]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="remlock">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!remlock]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a remove lock structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="rsdt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!rsdt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the ACPI Root System Description Table]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="running">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!running [-t] [-i]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the running threads in the system]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="scm">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!scm <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Detects valid address for Shared Cache Map]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="schedgroup">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!schedgroup]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[This function dumps information about all scheduling groups on the system]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="search">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!search]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="searchpte">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!searchpte <PFN> [Flags]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="sendnmi">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!sendnmi <processor>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Send an IPI to the given processor. (Used for debugging when a processor is spinning with interrupts disabled)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="session">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!session [-?] [-s] <id> [flags] [image name]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps sessions]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="silo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!silo]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="smt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!smt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display Simultaneous Multi-Threading processor]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="socket">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!socket <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a socket]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="spmaccounting">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!spmaccounting]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the accounting stats managed by SPM]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="spmpolicies">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!spmpolicies]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the power policy settings of scenario(s) managed by SPM]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="spmscenarios">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!spmscenarios]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the definitions of scenario(s) managed by SPM]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="sprocess">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!sprocess [<id|-1> [flags]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays session processes]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="srat">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!srat]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="srb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!srb <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the specified SCSI request block]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="stacks">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!stacks <detail-level>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump summary of current kernel stacks]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="swd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!swd]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump Software Watchdog state]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="sysinfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!sysinfo]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump SMBios, ACPI, and CPU info]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="sysptes">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!sysptes]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the system PTEs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="acpiinf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!acpiinf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays ACPI Information structure]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="thread">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!thread[<address> [flags]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump current thread, specified thread, or stack]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ticks">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ticks]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="timer">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!timer]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps timer tree]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="tokenleak">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!tokenleak [<0>|<1> <ProcessCid> <BreakCount> <MethodWatch>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Activates token leak tracking]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="translator">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!translator]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps all the translators in the system]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="traplog">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!traplog]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays a formatted view of the trap frame log (if supported by the target architecture and kernel)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="tunnel">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!tunnel <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dump a file property tunneling cache]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="tz">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!tz [<address> <flags>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Thermal Zones. No Args dumps All TZs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="tzinfo">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!tzinfo <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps Thermal Zone Information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ubp">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ubp <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Sets a user-space breakpoint]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ubl">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ubl]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Lists all user-space breakpoint]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ubc">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ubc [*|<bpid>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Clears a user-space breakpoint]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ube">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ube [*|<bpid>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Enables a user-space breakpoint]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="ubd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!ubd [*|<bpid>]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Disables a user-space breakpoint]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vad">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vad]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps VADs]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vad_reload">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vad_reload]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Attempts to populate the user-mode module list from VAD mapped image file information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="verifier">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!verifier]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays Driver Verifier settings and status]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="verifyavl">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!verifyavl <tree> [detail level]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Verifies an AVL tree]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="version">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!version]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Displays the version number of kdexts]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="validatelist">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!validatelist <address>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Validate a doubly linked list]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vhd">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vhd]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vm">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vm]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vpb">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vpb <address of vpb>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Print out the fields in the vpb (Volume Parameter Block)]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="vtop">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!vtop DirBase address]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps physical page for virtual address]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="whattime">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!whattime <ticks>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Converts ticks to HH:MM:SS.mmm]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="whatperftime">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!whatperftime <perf>]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Converts performance time to HH:MM:SS.mmm]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="whea">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!whea]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="wheapfa">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!wheapfa]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="wnf">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!wnf]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="wsle">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!wsle[<flags> [address]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Display Working Set List Entries]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="wpbt">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!wpbt]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[TBD]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+
+                <EngineCommand Name="xsave">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!xsave]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Dumps the specified XSAVE Information]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+                <EngineCommand Name="zombies">
+                    <EngineCommandItem>
+                        <Syntax>
+                            <![CDATA[!zombies [<flags> [address]]]]>
+                        </Syntax>
+                        <Description>
+                            <![CDATA[Find all zombie processes]]>
+                        </Description>
+                    </EngineCommandItem>
+                </EngineCommand>
+            </EngineCommands>
+        </BinaryComponent>
+    </Components>
+</ExtensionPackage>
+</ExtensionPackages>

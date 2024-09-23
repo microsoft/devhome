@@ -50,8 +50,6 @@
         <controls:DataGrid
             x:Name="WERDataGrid" Grid.Row="1" Margin="0,6,0,0"
             VerticalScrollBarVisibility="Visible"
-            AlternatingRowBackground="Transparent"
-            AlternatingRowForeground="Gray"
             AreRowDetailsFrozen="False"
             AreRowGroupHeadersFrozen="True"
             AutoGenerateColumns="False"
@@ -66,35 +64,34 @@
             Sorting="{x:Bind ViewModel.SortReports}"
             ItemsSource="{x:Bind ViewModel.ReportsView, Mode=OneWay}">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Tag="DateTime" x:Uid="WERTimeGeneratedColumn" Binding="{Binding Report.TimeGenerated}" Width="180" IsReadOnly="True" AutomationProperties.AutomationId="WERTimeGeneratedColumn"/>
-                <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WERFaultingExecutableColumn" Binding="{Binding Report.Executable}" Width="180" IsReadOnly="True" AutomationProperties.AutomationId="WERFaultingExecutableColumn"/>
+                <controls:DataGridTextColumn Tag="DateTime" x:Uid="WERTimeGeneratedColumn" Binding="{Binding BasicReport.TimeGenerated}" Width="180" IsReadOnly="True" AutomationProperties.AutomationId="WERTimeGeneratedColumn"/>
+                <controls:DataGridTextColumn Tag="FaultingExecutable" x:Uid="WERFaultingExecutableColumn" Binding="{Binding BasicReport.Executable}" Width="180" IsReadOnly="True" AutomationProperties.AutomationId="WERFaultingExecutableColumn"/>
                 <controls:DataGridTextColumn Tag="WERBucket" x:Uid="WERBucketColumn" Binding="{Binding FailureBucket, Mode=OneWay}" Width="240" IsReadOnly="True" AutomationProperties.AutomationId="WERBucketColumn"/>
                 <controls:DataGridTemplateColumn Tag="CrashDumpPath" x:Uid="WERDumpColumn" Width="*">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <HyperlinkButton Content="{Binding Report.CrashDumpPath, Mode=OneWay}" Click="HyperlinkButton_Click" Tag="{Binding}" AutomationProperties.AutomationId="CrashDumpPathHyperlinkButton"/>
+                            <HyperlinkButton Content="{Binding BasicReport.CrashDumpPath, Mode=OneWay}" Click="HyperlinkButton_Click" Tag="{Binding}" AutomationProperties.AutomationId="CrashDumpPathHyperlinkButton"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="10">
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
             <SelectorBar x:Name="InfoSelector" SelectionChanged="SelectorBar_SelectionChanged">
-                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True">
-                    <SelectorBarItem.ContextFlyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem x:Uid="BucketUsingThisToolStringDefault" Command="{x:Bind ViewModel.ResetBucketingToolCommand}" AutomationProperties.AutomationId="BucketUsingThisToolMenuItem"/>
-                        </MenuFlyout>
-                    </SelectorBarItem.ContextFlyout>
-                </SelectorBarItem>
+                <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).BasicReport.Description, Mode=OneWay}"/>
+                <SelectorBarItem Text="Analysis" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).Analysis, Mode=OneWay}"/>
+                <SelectorBarItem Text="Raw Analysis" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).RawAnalysis, Mode=OneWay}"/>
             </SelectorBar>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <TextBox
-                    x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True"
-                    Text="{x:Bind ((models:WERAnalysisReport)WERDataGrid.SelectedItem).Report.Description, Mode=OneWay}"
-                    HorizontalAlignment="Stretch" Height="640" TextWrapping="Wrap" AutomationProperties.AutomationId="WERInfoTextBox"/>
-            </ScrollViewer>
-        </StackPanel>
+            <TextBox
+                    x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True" Grid.Row="1"
+                    Text="{x:Bind InfoSelector.SelectedItem.Tag, Mode=OneWay}"
+                    HorizontalAlignment="Stretch" TextWrapping="Wrap" AutomationProperties.AutomationId="WERInfoTextBox" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Grid>
     </Grid>
 </Page>
