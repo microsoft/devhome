@@ -21,7 +21,8 @@ public class RepositoryManagementDataAccessService
 
     private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
 
-    public RepositoryManagementDataAccessService(DevHomeDatabaseContextFactory databaseContextFactory)
+    public RepositoryManagementDataAccessService(
+        DevHomeDatabaseContextFactory databaseContextFactory)
     {
         _databaseContextFactory = databaseContextFactory;
     }
@@ -38,7 +39,7 @@ public class RepositoryManagementDataAccessService
 
     public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
     {
-        return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri, Guid.Empty);
+        return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, Guid.Empty);
     }
 
     public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid sourceControlProviderClassId)

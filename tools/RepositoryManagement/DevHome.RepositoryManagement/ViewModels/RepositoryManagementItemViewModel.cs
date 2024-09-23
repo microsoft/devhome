@@ -102,7 +102,9 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public async Task MoveRepository()
     {
-        // TODO: Save to the database before moving the folder.
+        // This action is not enabled due to a bug in FileExploreGitIntegration.
+        // FileExplorerGitIntegration holds a lock on a file in this repository and it can not
+        // be moved.
         var newLocation = await PickNewLocationForRepositoryAsync();
 
         if (string.IsNullOrEmpty(newLocation))
@@ -152,8 +154,11 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     [RelayCommand]
     public async Task DeleteRepositoryAsync()
     {
-        // TODO:  Add repository name and the location to the dialog.
-        // Ask user to type in the repository name before removing.
+        // TODO: Add repository name and the location to the dialog.
+        // TODO: Ask user to type in the repository name before removing.
+        // This action is not enabled due to a bug in FileExploreGitIntegration.
+        // FileExplorerGitIntegration holds a lock on a file in this repository and it can not
+        // be moved.
         var cantFindRepositoryDialog = new ContentDialog()
         {
             XamlRoot = _window.Content.XamlRoot,
