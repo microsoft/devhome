@@ -312,6 +312,11 @@ public partial class WidgetViewModel : ObservableObject
         return grid;
     }
 
+    private JObject WrapJsonString(string jsonString)
+    {
+        return new JObject { ["data"] = jsonString };
+    }
+
     private string MergeJsonData(string jsonStringA, string jsonStringB)
     {
         if (string.IsNullOrEmpty(jsonStringA))
@@ -333,8 +338,7 @@ public partial class WidgetViewModel : ObservableObject
         }
         catch (JsonReaderException)
         {
-            // If jsonStringA is not a valid JSON object, wrap it in an object
-            objA = new JObject { ["data"] = jsonStringA };
+            objA = WrapJsonString(jsonStringA);
         }
 
         try
@@ -343,8 +347,7 @@ public partial class WidgetViewModel : ObservableObject
         }
         catch (JsonReaderException)
         {
-            // If jsonStringB is not a valid JSON object, wrap it in an object
-            objB = new JObject { ["data"] = jsonStringB };
+            objB = WrapJsonString(jsonStringB);
         }
 
         objA.Merge(objB);
