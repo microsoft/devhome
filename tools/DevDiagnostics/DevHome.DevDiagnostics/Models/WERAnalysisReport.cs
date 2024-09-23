@@ -64,7 +64,7 @@ public class WERAnalysisReport
                 analysisText.AppendLine(string.Format(CultureInfo.InvariantCulture, CommonHelper.GetLocalizedString("DumpAnalysisFailingFileLabel"), failureSourceFile.InnerText));
                 if (!string.IsNullOrEmpty(failureSourceFileLineNumber?.InnerText))
                 {
-                    analysisText.AppendLine(string.Format(CultureInfo.InvariantCulture, CommonHelper.GetLocalizedString("DumpAnalysisLineNumber"), failureSourceFileLineNumber.InnerText)));
+                    analysisText.AppendLine(string.Format(CultureInfo.InvariantCulture, CommonHelper.GetLocalizedString("DumpAnalysisLineNumber"), failureSourceFileLineNumber.InnerText));
                 }
 
                 analysisText.AppendLine();
