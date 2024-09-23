@@ -171,12 +171,11 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
 
                     // Only show dot operations when there are items in the list.
                     ShouldShowDotOperations = DotOperations.Count > 0;
-
-                    // Only show Launch split button with operations when there are items in the list.
-                    ShouldShowSplitButton = LaunchOperations.Count > 0;
                 });
             });
 
+            // Only show Launch split button with operations when there are items in the list.
+            ShouldShowSplitButton = LaunchOperations.Count > 0;
             SetPropertiesAsync();
         }
         finally
@@ -185,7 +184,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
     }
 
-    private async Task RefreshOperationDataAsync()
+    private async Task RefreshOperationDataAsync(ComputeSystemState newState)
     {
         ComputeSystem.ResetSupportedOperations();
         var supportedOperations = ComputeSystem.SupportedOperations?.Value ?? ComputeSystemOperations.None;
@@ -201,7 +200,12 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
         }
 
         ComputeSystem.ResetComputeSystemProperties();
-        await InitializeOperationDataAsync();
+        ShouldShowDotOperations = false;
+
+        if (newState != ComputeSystemState.Saving)
+        {
+            await InitializeOperationDataAsync();
+        }
     }
 
     private async Task InitializeStateAsync()
@@ -246,7 +250,7 @@ public partial class ComputeSystemViewModel : ComputeSystemCardBase, IRecipient<
                 // So we need to rebuild the dot and launch operations that appear in the UI based on the current
                 // supported operations of the compute system. InitializeOperationDataAsync will take care of this for us, by using
                 // the DataExtractor helper.
-                await RefreshOperationDataAsync();
+                await RefreshOperationDataAsync(newState);
             }
         });
     }
