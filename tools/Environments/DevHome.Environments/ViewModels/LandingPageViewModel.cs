@@ -409,10 +409,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                var providerName = computeSystemViewModel.ProviderDisplayName;
-                if (providerName != _selectedProvider)
+                if (_selectedProvider.ToString().Length > 0)
                 {
-                    return false;
+                    var providerName = computeSystemViewModel.ProviderDisplayName;
+                    if (providerName != _selectedProvider)
+                    {
+                        return false;
+                    }
                 }
 
                 var systemName = computeSystemViewModel.ComputeSystem!.DisplayName.Value;
