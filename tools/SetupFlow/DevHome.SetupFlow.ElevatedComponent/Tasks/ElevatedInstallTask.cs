@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Runtime.InteropServices.WindowsRuntime;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Management.Deployment;
 using Serilog;
 using Windows.Foundation;
 
@@ -34,15 +36,24 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
+    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, Progress> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<ElevatedInstallTaskResult, Progress>(async (token, progress) =>
         {
             var result = new ElevatedInstallTaskResult();
             try
             {
                 var winget = ElevatedComponentOperation.Host.Services.GetRequiredService<IWinGet>();
-                var installResult = await winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)), activityId);
+                var install = winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)), activityId);
+                install.Progress += (_, p) =>
+                {
+                    progress.Report(new Progress
+                    {
+                        Current = p.DownloadProgress,
+                    });
+                };
+
+                var installResult = await install;
                 result.TaskAttempted = true;
                 result.RebootRequired = installResult.RebootRequired;
 
@@ -65,6 +76,11 @@ public sealed class ElevatedInstallTask
             }
 
             return result;
-        }).AsAsyncOperation();
+        });
     }
+}
+
+public sealed class Progress
+{
+    public double Current { get; set; }
 }

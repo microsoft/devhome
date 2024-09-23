@@ -5,6 +5,7 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -385,9 +386,9 @@ public class ConfigureTargetTask : ISetupTask
         });
     }
 
-    public IAsyncOperation<TaskFinishedState> Execute()
+    public IAsyncOperationWithProgress<TaskFinishedState, int> Execute()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             try
             {
@@ -460,10 +461,10 @@ public class ConfigureTargetTask : ISetupTask
 
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        });
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
 
     TaskMessages ISetupTask.GetLoadingMessages()
     {

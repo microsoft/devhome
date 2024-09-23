@@ -2,10 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
+using Microsoft.Management.Deployment;
+using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services.Operations;
 
@@ -32,12 +35,21 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
     {
-        return await _recovery.DoWithRecoveryAsync(async () =>
+        return AsyncInfo.Run<IWinGetInstallPackageResult, InstallProgress>(async (token, progress) =>
         {
-            var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
+            progress.Report(new InstallProgress(PackageInstallProgressState.Installing, 0, 0, 0, 10));
+            return await _recovery.DoWithRecoveryAsync(async () =>
+            {
+                var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
+                var install = _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
+                install.Progress += (sender, p) =>
+                {
+                    progress.Report(p);
+                };
+                return await install;
+            });
         });
     }
 }

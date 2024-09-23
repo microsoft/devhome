@@ -4,6 +4,7 @@
 extern alias Projection;
 
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
@@ -128,16 +129,21 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             try
             {
                 _log.Information($"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
-                var installResult = await _winget.InstallPackageAsync(packageUri, _activityId);
+                var install = _winget.InstallPackageAsync(packageUri, _activityId);
+                install.Progress += (_, p) =>
+                {
+                    progress.Report((int)(p.DownloadProgress * 100));
+                };
+                var installResult = await install;
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
@@ -159,18 +165,23 @@ public class InstallPackageTask : ISetupTask
                 _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        });
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             try
             {
                 _log.Information($"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
-                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
+                var elevated = elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
+                elevated.Progress += (_, p) =>
+                {
+                    progress.Report((int)(p.Current * 100));
+                };
+                var elevatedResult = await elevated;
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
@@ -183,7 +194,7 @@ public class InstallPackageTask : ISetupTask
                 _log.Error(e, $"Exception thrown while installing package.");
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        });
     }
 
     private string GetInstallResultMessage()

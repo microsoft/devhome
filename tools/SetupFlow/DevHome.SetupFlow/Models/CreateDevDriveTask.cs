@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -97,18 +98,19 @@ internal sealed class CreateDevDriveTask : ISetupTask
     /// <summary>
     /// Not used, as Dev Drive creation requires elevation
     /// </summary>
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
     {
-        return Task.Run(() =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
+            await Task.CompletedTask;
             AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError), MessageSeverityKind.Error);
             return TaskFinishedState.Failure;
-        }).AsAsyncOperation();
+        });
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             Stopwatch timer = Stopwatch.StartNew();
             var result = 0;
@@ -146,6 +148,6 @@ internal sealed class CreateDevDriveTask : ISetupTask
                 // Critical level approved by subhasan
                 TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result), _activityId);
             }
-        }).AsAsyncOperation();
+        });
     }
 }

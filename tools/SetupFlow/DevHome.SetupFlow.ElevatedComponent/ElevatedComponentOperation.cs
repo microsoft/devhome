@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Runtime.InteropServices.WindowsRuntime;
 using DevHome.Services.Core.Extensions;
 using DevHome.Services.DesiredStateConfiguration.Extensions;
 using DevHome.Services.WindowsPackageManager.Extensions;
@@ -63,18 +64,26 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Console.WriteLine(value);
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
+    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, Progress> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
     {
         var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName, version);
-        return ValidateAndExecuteAsync(
-            taskArguments,
-            async () =>
-            {
-                _logger.LogInformation($"Installing package elevated: '{packageId}' from '{catalogName}'");
-                var task = new ElevatedInstallTask();
-                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
-            },
-            result => result.TaskSucceeded).AsAsyncOperation();
+        return AsyncInfo.Run<ElevatedInstallTaskResult, Progress>(async (token, progress) =>
+        {
+            return await ValidateAndExecuteAsync(
+                taskArguments,
+                async () =>
+                {
+                    _logger.LogInformation($"Installing package elevated: '{packageId}' from '{catalogName}'");
+                    var task = new ElevatedInstallTask();
+                    var install = task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
+                    install.Progress += (_, p) =>
+                    {
+                        progress.Report(p);
+                    };
+                    return await install;
+                },
+                result => result.TaskSucceeded).AsAsyncOperation();
+        });
     }
 
     public IAsyncOperation<int> CreateDevDriveAsync()

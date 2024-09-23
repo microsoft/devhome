@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
@@ -22,6 +23,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
+using Windows.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -592,17 +594,26 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 _numberOfExecutingTasks++;
             });
 
-            TaskFinishedState taskFinishedState;
+            IAsyncOperationWithProgress<TaskFinishedState, int> result;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 _log.Information("Starting task as admin");
-                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
+                result = taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
             {
-                taskFinishedState = await taskInformation.TaskToExecute.Execute();
+                result = taskInformation.TaskToExecute.Execute();
             }
 
+            result.Progress += (o, progress) =>
+            {
+                dispatcherQueue.TryEnqueue(() =>
+                {
+                    loadingMessage.MessageToShow = $"{taskInformation.MessageToShow} ({progress}%)";
+                });
+            };
+
+            var taskFinishedState = await result;
             dispatcherQueue.TryEnqueue(() =>
             {
                 PerformPostTaskTasks(taskInformation, loadingMessage, taskFinishedState);

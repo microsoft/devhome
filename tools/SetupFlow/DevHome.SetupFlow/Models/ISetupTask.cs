@@ -70,7 +70,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> Execute();
+    public IAsyncOperationWithProgress<TaskFinishedState, int> Execute();
 
     /// <summary>
     /// Executes this setup task as admin.
@@ -79,7 +79,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation);
+    public IAsyncOperationWithProgress<TaskFinishedState, int> ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.

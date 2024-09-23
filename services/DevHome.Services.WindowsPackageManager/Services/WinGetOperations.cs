@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
+using Microsoft.Management.Deployment;
+using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services;
 
@@ -27,7 +29,7 @@ internal sealed class WinGetOperations : IWinGetOperations
     }
 
     /// <inheritdoc />
-    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId) => await _installOperation.InstallPackageAsync(packageUri, activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId) => _installOperation.InstallPackageAsync(packageUri, activityId);
 
     /// <inheritdoc />
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris) => await _getPackageOperation.GetPackagesAsync(packageUris);

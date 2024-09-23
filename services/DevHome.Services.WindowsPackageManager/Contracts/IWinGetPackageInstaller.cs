@@ -4,6 +4,8 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Models;
+using Microsoft.Management.Deployment;
+using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts;
 
@@ -17,5 +19,5 @@ internal interface IWinGetPackageInstaller
     /// <param name="version">Version of the package to install</param>
     /// <param name="activityId">Activity id for telemetry</param>
     /// <returns>Result of the installation</returns>
-    public Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId);
 }

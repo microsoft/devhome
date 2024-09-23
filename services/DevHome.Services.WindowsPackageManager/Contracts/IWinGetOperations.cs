@@ -5,13 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Models;
+using Microsoft.Management.Deployment;
+using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts.Operations;
 
 internal interface IWinGetOperations
 {
     /// <inheritdoc cref="IWinGetInstallOperation.InstallPackageAsync"/>"
-    public Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId);
 
     /// <inheritdoc cref="IWinGetGetPackageOperation.GetPackagesAsync"/>"
     public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);

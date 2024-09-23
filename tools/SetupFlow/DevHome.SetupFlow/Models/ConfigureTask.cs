@@ -6,6 +6,7 @@ extern alias Projection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.SetupFlow.Common.Contracts;
@@ -91,9 +92,9 @@ public class ConfigureTask : ISetupTask
         };
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             try
             {
@@ -115,14 +116,14 @@ public class ConfigureTask : ISetupTask
                 _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        });
     }
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
         {
             _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
@@ -137,7 +138,7 @@ public class ConfigureTask : ISetupTask
             }
 
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
-        }).AsAsyncOperation();
+        });
     }
 
     /// <summary>
