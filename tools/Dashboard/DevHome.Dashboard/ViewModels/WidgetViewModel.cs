@@ -25,6 +25,7 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -323,8 +324,28 @@ public partial class WidgetViewModel : ObservableObject
             return jsonStringA;
         }
 
-        var objA = JObject.Parse(jsonStringA);
-        var objB = JObject.Parse(jsonStringB);
+        JObject objA;
+        JObject objB;
+
+        try
+        {
+            objA = JObject.Parse(jsonStringA);
+        }
+        catch (JsonReaderException)
+        {
+            // If jsonStringA is not a valid JSON object, wrap it in an object
+            objA = new JObject { ["data"] = jsonStringA };
+        }
+
+        try
+        {
+            objB = JObject.Parse(jsonStringB);
+        }
+        catch (JsonReaderException)
+        {
+            // If jsonStringB is not a valid JSON object, wrap it in an object
+            objB = new JObject { ["data"] = jsonStringB };
+        }
 
         objA.Merge(objB);
 
