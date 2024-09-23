@@ -1,21 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using DevHome.Common.Contracts;
-using DevHome.Common.Extensions;
-using DevHome.Common.Services;
-using DevHome.Customization.ViewModels;
 using DevHome.Database;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
-using DevHome.Database.Factories;
-using DevHome.Database.Services;
-using DevHome.RepositoryManagement.Services;
-using DevHome.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
-using Moq;
 
 namespace DevHome.Test.Database;
 
