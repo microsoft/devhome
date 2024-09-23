@@ -108,6 +108,8 @@ public static class StringResourceKey
     public static readonly string SummaryConfigurationErrorsCountText = nameof(SummaryConfigurationErrorsCountText);
     public static readonly string SummaryPageTargetMachineFailedTaskText = nameof(SummaryPageTargetMachineFailedTaskText);
     public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
+    public static readonly string NoInternetConnectionTitle = nameof(NoInternetConnectionTitle);
+    public static readonly string NoInternetConnectionDescription = nameof(NoInternetConnectionDescription);
 
     // Repository loading screen messages
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);

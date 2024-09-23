@@ -28,6 +28,11 @@ public class AppManagementViewSelector : DataTemplateSelector
     /// </summary>
     public DataTemplate SearchTemplate { get; set; }
 
+    /// <summary>
+    /// Gets or sets the search message template displayed when an error or a message is shown
+    /// </summary>
+    public DataTemplate SearchMessageTemplate { get; set; }
+
     protected override DataTemplate SelectTemplateCore(object item)
     {
         return ResolveDataTemplate(item);
@@ -44,6 +49,7 @@ public class AppManagementViewSelector : DataTemplateSelector
         {
             SearchViewModel => SearchTemplate,
             ShimmerSearchViewModel => ShimmerSearchTemplate,
+            SearchMessageViewModel => SearchMessageTemplate,
             _ => MainTemplate,
         };
     }
