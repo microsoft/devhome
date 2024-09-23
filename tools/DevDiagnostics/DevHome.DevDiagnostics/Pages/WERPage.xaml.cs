@@ -52,17 +52,6 @@ public sealed partial class WERPage : Page
             WERInfo.Text = string.Empty;
             return;
         }
-
-        SelectorBarItem selectedItem = InfoSelector.SelectedItem;
-
-        if (selectedItem is not null && selectedItem.Tag is string displaystring)
-        {
-            WERInfo.Text = displaystring;
-        }
-        else
-        {
-            WERInfo.Text = CommonHelper.GetLocalizedString("WERAnalysisUnavailable");
-        }
     }
 
     private void HyperlinkButton_Click(object sender, RoutedEventArgs e)

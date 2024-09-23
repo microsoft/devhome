@@ -12,15 +12,17 @@ namespace DevHome.DevDiagnostics.Models;
 
 public partial class WERReport : ObservableObject
 {
+    private static readonly string _noAnalysisAvailable = "No Analysis available";
+
     public WERBasicReport BasicReport { get; }
 
     private WERAnalysisReport? _analysisReport;
 
     [ObservableProperty]
-    private string _rawAnalysis = string.Empty;
+    private string _rawAnalysis = _noAnalysisAvailable;
 
     [ObservableProperty]
-    private string _analysis = string.Empty;
+    private string _analysis = _noAnalysisAvailable;
 
     [ObservableProperty]
     private string _failureBucket = string.Empty;

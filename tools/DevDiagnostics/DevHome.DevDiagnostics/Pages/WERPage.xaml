@@ -77,18 +77,21 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="10">
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
             <SelectorBar x:Name="InfoSelector" SelectionChanged="SelectorBar_SelectionChanged">
                 <SelectorBarItem x:Uid="DumpInfoSelectorItem" IsSelected="True" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).BasicReport.Description, Mode=OneWay}"/>
                 <SelectorBarItem Text="Analysis" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).Analysis, Mode=OneWay}"/>
                 <SelectorBarItem Text="Raw Analysis" Tag="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).RawAnalysis, Mode=OneWay}"/>
             </SelectorBar>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <TextBox
-                    x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True"
-                    Text="{x:Bind ((models:WERReport)WERDataGrid.SelectedItem).BasicReport.Description, Mode=OneWay}"
-                    HorizontalAlignment="Stretch" Height="640" TextWrapping="Wrap" AutomationProperties.AutomationId="WERInfoTextBox" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-            </ScrollViewer>
-        </StackPanel>
+            <TextBox
+                    x:Uid="WERInfoTextBox" x:Name="WERInfo" IsReadOnly="True" Grid.Row="1"
+                    Text="{x:Bind InfoSelector.SelectedItem.Tag, Mode=OneWay}"
+                    HorizontalAlignment="Stretch" TextWrapping="Wrap" AutomationProperties.AutomationId="WERInfoTextBox" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Grid>
     </Grid>
 </Page>
