@@ -144,13 +144,27 @@ internal sealed class SSHWalletWidget : CoreWidget
         SetConfigure();
     }
 
+    /*
+     * Now that the WidgetViewModel uses the MergeJsonData function, we can
+     * expect args.Data to be a json string object with the following structure:
+     * data: "hostname"
+     */
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
+        var jsonObject = JObject.Parse(args.Data);
+        var host = jsonObject["data"]?.ToString();
+
+        if (string.IsNullOrEmpty(host))
+        {
+            Log.Error("Invalid data received for HandleConnect.");
+            return;
+        }
+
         var cmd = new Process();
         cmd.StartInfo = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = $"/k \"ssh {args.Data}\"",
+            Arguments = $"/k \"ssh {host}\"",
             UseShellExecute = true,
         };
 
