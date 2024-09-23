@@ -158,16 +158,16 @@
     <comment>Label text to display in front of the users current checkpoint name. </comment>
   </data>
   <data name="DownloadFileFound" xml:space="preserve">
-    <value>File {0} already exists. We'll use this file to create the virtual machine.</value>
-    <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously download file. We show the file name in {0}.</comment>
+    <value>File {0} already exists. This file will be used to create the virtual machine.</value>
+    <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously downloaded file. We show the file name in {0}.</comment>
   </data>
   <data name="DownloadInProgress" xml:space="preserve">
     <value>Downloading {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we are downloading a file from the web. {0} is the file we're downloading. {1} the progress in the form of  "bytes received / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="DownloadOperationCancelled" xml:space="preserve">
-    <value>Unable to download disk image file because the operation was cancelled.</value>
-    <comment>Error text to tell the user that we weren't able to download the disk file because it was cancelled.</comment>
+    <value>Unable to download disk image file because the operation was canceled.</value>
+    <comment>Error text to tell the user that we weren't able to download the disk file because it was canceled.</comment>
   </data>
   <data name="DownloadOperationFailed" xml:space="preserve">
     <value>Downloading the disk image file failed. Check the Hyper-V extension logs for more information.</value>
@@ -230,7 +230,7 @@
     <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialDescriptionAfterLastAttempt" xml:space="preserve">
-    <value>Failed to provide validate credentials for the Hyper-V setup. We are terminating the setup request</value>
+    <value>Failed to validate credentials for the Hyper-V setup. We are terminating the setup request.</value>
     <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialText" xml:space="preserve">
