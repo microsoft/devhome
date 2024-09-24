@@ -158,19 +158,19 @@
     <comment>Label text to display in front of the users current checkpoint name. </comment>
   </data>
   <data name="DownloadFileFound" xml:space="preserve">
-    <value>File {0} already exists. We'll use this file to create the virtual machine</value>
-    <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously download file. We show the file name in {0}.</comment>
+    <value>File {0} already exists. This file will be used to create the virtual machine.</value>
+    <comment>Locked="{0}" text to tell the user that a file exists and we do not need to download it again. {0} is a previously downloaded file. We show the file name in {0}.</comment>
   </data>
   <data name="DownloadInProgress" xml:space="preserve">
     <value>Downloading {0} {1}</value>
     <comment>Locked="{0}" text to tell the user that we are downloading a file from the web. {0} is the file we're downloading. {1} the progress in the form of  "bytes received / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="DownloadOperationCancelled" xml:space="preserve">
-    <value>Unable to download disk image file because the operation was cancelled</value>
-    <comment>Error text to tell the user that we weren't able to download the disk file because it was cancelled.</comment>
+    <value>Unable to download disk image file because the operation was canceled.</value>
+    <comment>Error text to tell the user that we weren't able to download the disk file because it was canceled.</comment>
   </data>
   <data name="DownloadOperationFailed" xml:space="preserve">
-    <value>Downloading the disk image file failed. Check the Hyper-V extension logs for more information</value>
+    <value>Downloading the disk image file failed. Check the Hyper-V extension logs for more information.</value>
     <comment>Error text for when we fail to download the disk image file the user selected from the internet</comment>
   </data>
   <data name="DownloadOperationFailedCheckingHash" xml:space="preserve">
@@ -194,11 +194,11 @@
     <comment>Locked="{0}" text to tell the user that we're extracting a zip file into a location on their computer. {0} is the zip file we're extracting. {1} the progress in the form of  "bytes extracted / total bytes needed". E.g "10 Mb / 400 Mb"</comment>
   </data>
   <data name="NoImagesFoundError" xml:space="preserve">
-    <value>Unable to find any disk images in the Hyper-V virtual machine gallery</value>
+    <value>Unable to find any disk images in the Hyper-V virtual machine gallery.</value>
     <comment>Error text to tell the user there was an issue retrieving the virtual machine disk images from the VM gallery. </comment>
   </data>
   <data name="OperationInProgressError" xml:space="preserve">
-    <value>Unable to start the operation because it is already in progress</value>
+    <value>Unable to start the operation because it is already in progress.</value>
     <comment>Error text to tell the user that the process to create the virtual machine is already in progress.</comment>
   </data>
   <data name="FailedToReadGuestOsProperties" xml:space="preserve">
@@ -218,7 +218,7 @@
     <comment>Cancel button text in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.Description" xml:space="preserve">
-    <value>In order to run setup on hyper-v machines we need admin credentials</value>
+    <value>In order to run setup on hyper-v machines we need admin credentials.</value>
     <comment>Text describing the purpose of the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.DismissText" xml:space="preserve">
@@ -226,15 +226,15 @@
     <comment>Dismiss button text in the dialog to enter Hyper-V VM admin credential.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialDescription" xml:space="preserve">
-    <value>Credential you entered didn't work. Please try again</value>
+    <value>The credentials you entered didn't work. Please try again.</value>
     <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialDescriptionAfterLastAttempt" xml:space="preserve">
-    <value>Failed to provide validate credential for the Hyper-V setup. We are terminating the setup request</value>
+    <value>Failed to validate credentials for the Hyper-V setup. We are terminating the setup request.</value>
     <comment>Error description text shown in the dialog to enter Hyper-V VM admin credential after the last attempt.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialText" xml:space="preserve">
-    <value>Invalid credential</value>
+    <value>Invalid credentials</value>
     <comment>Error text shown in the dialog to enter Hyper-V VM admin credential if the entered credential didn't work.</comment>
   </data>
   <data name="VmCredentialRequest.InvalidCredentialTextAfterLastAttempt" xml:space="preserve">
@@ -270,7 +270,7 @@
     <comment>Cancel button text in the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.Description" xml:space="preserve">
-    <value>Complete the action items to continue</value>
+    <value>Complete the action items to continue.</value>
     <comment>Text describing the purpose of the dialog asking to log in to Hyper-V VM.</comment>
   </data>
   <data name="WaitForLoginRequest.DismissText" xml:space="preserve">
