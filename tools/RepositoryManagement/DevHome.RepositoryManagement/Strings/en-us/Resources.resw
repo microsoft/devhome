@@ -142,7 +142,7 @@
     <comment>Cancel</comment>
   </data>
   <data name="LocateRepositoryDialogTitle" xml:space="preserve">
-    <value>Can not find {0}</value>
+    <value>Cannot find {0}</value>
     <comment>{Locked="{0}"} {0} name of the repository.  Title for not able to find a repository.</comment>
   </data>
   <data name="LocateRepositoryDialogContent" xml:space="preserve">
