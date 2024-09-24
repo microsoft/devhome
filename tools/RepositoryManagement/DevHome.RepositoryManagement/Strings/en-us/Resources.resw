@@ -142,11 +142,11 @@
     <comment>Cancel</comment>
   </data>
   <data name="LocateRepositoryDialogTitle" xml:space="preserve">
-    <value>Can not find {0}</value>
+    <value>Cannot find {0}</value>
     <comment>{Locked="{0}"} {0} name of the repository.  Title for not able to find a repository.</comment>
   </data>
   <data name="LocateRepositoryDialogContent" xml:space="preserve">
-    <value>Can not find {0} at {1}.  Do you know where it is?</value>
+    <value>Cannot find {0} at {1}.  Do you know where it is?</value>
     <comment>{Locked="{0},{1}"} {0} Repository name. {1} Local clone path. Message asking if the user knows where this repository is located.</comment>
   </data>
   <data name="LocateRepositoryDialogFindWithFileExplorer" xml:space="preserve">
@@ -202,7 +202,7 @@
     <comment>Branch header</comment>
   </data>
   <data name="ConfigurationIcon.ToolTipService.ToolTip" xml:space="preserve">
-    <value>WinGet Configuration file found. Run it from the '...' menu to set up this repo</value>
+    <value>WinGet configuration file found. Run it from the '...' menu to set up this repo</value>
     <comment>Tooltip telling users to use "..." to run the configuration file.</comment>
   </data>
   <data name="OpenInFileExplorer.Text" xml:space="preserve">
