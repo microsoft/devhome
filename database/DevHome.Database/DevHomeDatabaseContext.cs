@@ -3,13 +3,13 @@
 
 using System;
 using System.IO;
-using System.Linq.Expressions;
+using DevHome.Common.Helpers;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Serilog;
+using Windows.Storage;
 
 namespace DevHome.Database;
 
@@ -18,12 +18,13 @@ namespace DevHome.Database;
 /// Update-Database -StartupProject DevHome.Database -Project DevHome.Database
 ///
 /// TODO: Remove this comment after database migration is implemeneted.
-/// TODO: Set up Github detection for files in this project.
 /// TODO: Add documentation around migration and Entity Framework in DevHome.
 /// </summary>
 public class DevHomeDatabaseContext : DbContext
 {
-    private const string DatabaseFileName = "DevHome.db";
+    private const uint SchemaVersion = 1;
+
+    private const string DatabaseFileName = "DevHome";
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevHomeDatabaseContext));
 
@@ -31,10 +32,44 @@ public class DevHomeDatabaseContext : DbContext
 
     public string DbPath { get; }
 
+#if CANARY_BUILD
+    private const string DevHomeNameExtension = "_canary.db";
+#elif STABLE_BUILD
+    private const string DevHomeNameExtension = "_stable.db";
+#else
+    private const string DevHomeNameExtension = "_dev.db";
+#endif
+
     public DevHomeDatabaseContext()
     {
-        // TODO: How to run the DevHome in VS and not have the file move to the per app location.
-        DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
+        if (RuntimeHelper.IsMSIX)
+        {
+            DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName + DevHomeNameExtension);
+        }
+        else
+        {
+            DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName + DevHomeNameExtension);
+        }
+    }
+
+    public void MigrateDatabaseIfNeeded()
+    {
+        if (!File.Exists(DbPath))
+        {
+            if (RuntimeHelper.IsMSIX)
+            {
+                // Database does not exist.  Make the most recent version
+                Uri uri = new Uri($"ms-appx:///Assets/MigrationScripts/0To{SchemaVersion}.sql");
+                var migrationStorageFile = StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().Result;
+                var createScript = FileIO.ReadTextAsync(migrationStorageFile).AsTask().Result.ToString();
+                this.Database.ExecuteSqlRaw(createScript);
+            }
+            else
+            {
+                var query = File.ReadAllText($"Assets/MigrationScripts/0To{SchemaVersion}.sql");
+                this.Database.ExecuteSqlRaw(query);
+            }
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

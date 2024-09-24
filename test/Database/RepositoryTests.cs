@@ -32,7 +32,7 @@ public class RepositoryTests
             .ForEach(e => e.State = EntityState.Detached);
 
         dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
+        dbContext.MigrateDatabaseIfNeeded();
     }
 
     [TestMethod]

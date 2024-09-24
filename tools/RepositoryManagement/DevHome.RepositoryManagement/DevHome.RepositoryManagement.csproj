@@ -8,6 +8,14 @@
     <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Services\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Services\**" />
+    <Page Remove="Services\**" />
+    <PRIResource Remove="Services\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Views\RepositoriesPageView.xaml" />
   </ItemGroup>
 
@@ -29,9 +37,5 @@
     <Page Update="Views\RepositoryManagementMainPageView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

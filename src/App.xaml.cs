@@ -12,7 +12,9 @@ using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
+using DevHome.Database;
 using DevHome.Database.Extensions;
+using DevHome.Database.Factories;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.RepositoryManagement.Extensions;
@@ -192,6 +194,8 @@ public partial class App : Application, IApp
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
+
+        Host.GetService<DevHomeDatabaseContextFactory>().GetNewContext().MigrateDatabaseIfNeeded();
 
         TelemetryFactory.Get<ITelemetry>().Log("DevHome_Started_Event", LogLevel.Critical, new DevHomeStartedEvent());
         Log.Information("Dev Home Started.");
