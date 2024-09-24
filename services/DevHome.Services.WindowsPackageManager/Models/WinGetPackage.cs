@@ -94,6 +94,7 @@ internal sealed class WinGetPackage : IWinGetPackage
         IWinGetPackageFinder packageFinder,
         IList<CatalogPackage> packagesOutOfProc)
     {
+        // Copy packages from out-of-process in parallel to enhance the performance
         var perfTimer = Stopwatch.StartNew();
         logger.LogDebug($"Copying {packagesOutOfProc.Count} packages from out-of-proc to in-proc");
         var packagesInProc = packagesOutOfProc
