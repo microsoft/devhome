@@ -79,12 +79,6 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         }
 
         var sortOrder = selectedItem.Tag.ToString();
-        if (string.IsNullOrEmpty(sortOrder))
-        {
-            _log.Warning($"selectedItem.Tag in {nameof(ChangeSortOrder)} can not be converted to a string.  Not changing order.");
-            return;
-        }
-
         if (sortOrder.Equals(SortOrder.NameAscending.ToString(), StringComparison.OrdinalIgnoreCase))
         {
             _sortTag = SortOrder.NameAscending;

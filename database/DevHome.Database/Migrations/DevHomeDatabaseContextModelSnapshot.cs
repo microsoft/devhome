@@ -56,7 +56,7 @@ public partial class DevHomeDatabaseContextModelSnapshot : ModelSnapshot
                 b.Property<Guid?>("SourceControlClassId")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("TEXT")
-                    .HasDefaultValue(new Guid("00000000-0000-0000-0000-000000000000"));
+                    .HasDefaultValue(Guid.Empty);
 
                 b.Property<DateTime?>("UpdatedUTCDate")
                     .ValueGeneratedOnAdd()

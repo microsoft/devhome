@@ -150,7 +150,7 @@
     <comment>{Locked="{0},{1}"} {0} Repository name. {1} Local clone path. Message asking if the user knows where this repository is located.</comment>
   </data>
   <data name="LocateRepositoryDialogFindWithFileExplorer" xml:space="preserve">
-    <value>Locate with File Explorer</value>
+    <value>Select repository root directory</value>
     <comment>Option to find the repository via the File Explorer.</comment>
   </data>
   <data name="LocateRepositoryRemoveFromListInstead" xml:space="preserve">

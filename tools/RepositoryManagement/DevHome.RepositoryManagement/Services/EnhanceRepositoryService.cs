@@ -127,13 +127,13 @@ public class EnhanceRepositoryService
             return string.Empty;
         }
 
-        if (repositoryRootFolder == null || repositoryRootFolder.Path.Length == 0)
+        if (repositoryRootFolder == null || string.IsNullOrEmpty(repositoryRootFolder.Path))
         {
-            _log.Information("Didn't select a location to register");
+            _log.Information("User did not select a location to register");
             return string.Empty;
         }
 
-        _log.Information($"Selected '{repositoryRootFolder.Path}' as location to register");
+        _log.Information($"User selected '{repositoryRootFolder.Path}' as location to register");
         return repositoryRootFolder.Path;
     }
 
@@ -152,8 +152,8 @@ public class EnhanceRepositoryService
 
         foreach (var extension in _repositorySourceControlProviders)
         {
-            var didAdd = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, maybeRepositoryPath);
-            if (didAdd.Result == Customization.Helpers.ResultType.Success)
+            var assignSourceControlResult = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, maybeRepositoryPath);
+            if (assignSourceControlResult.Result == Customization.Helpers.ResultType.Success)
             {
                 _log.Information($"Source control {extension.ExtensionDisplayName} is assigned to repository {maybeRepositoryPath}");
                 if (Guid.TryParse(extension.ExtensionClassId, out Guid id))
