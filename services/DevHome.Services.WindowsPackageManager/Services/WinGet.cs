@@ -48,7 +48,7 @@ internal sealed class WinGet : IWinGet
     }
 
     /// <inheritdoc/>
-    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId) => _operations.InstallPackageAsync(packageUri, activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId) => _operations.InstallPackageAsync(packageUri, activityId);
 
     /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris) => await _operations.GetPackagesAsync(packageUris);

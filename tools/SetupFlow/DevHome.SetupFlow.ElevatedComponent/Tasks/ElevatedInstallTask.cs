@@ -7,7 +7,6 @@ using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Management.Deployment;
 using Serilog;
 using Windows.Foundation;
 
@@ -36,9 +35,9 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, Progress> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
+    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, ElevatedInstallTaskProgress> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
     {
-        return AsyncInfo.Run<ElevatedInstallTaskResult, Progress>(async (token, progress) =>
+        return AsyncInfo.Run<ElevatedInstallTaskResult, ElevatedInstallTaskProgress>(async (token, progress) =>
         {
             var result = new ElevatedInstallTaskResult();
             try
@@ -47,10 +46,12 @@ public sealed class ElevatedInstallTask
                 var install = winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)), activityId);
                 install.Progress += (_, p) =>
                 {
-                    progress.Report(new Progress
-                    {
-                        Current = p.DownloadProgress,
-                    });
+                    progress.Report(new(
+                        (int)p.State,
+                        p.BytesDownloaded,
+                        p.BytesRequired,
+                        p.DownloadProgress,
+                        p.InstallationProgress));
                 };
 
                 var installResult = await install;
@@ -80,7 +81,29 @@ public sealed class ElevatedInstallTask
     }
 }
 
-public sealed class Progress
+public sealed class ElevatedInstallTaskProgress
 {
-    public double Current { get; set; }
+    public ElevatedInstallTaskProgress(
+        int state,
+        ulong bytesDownloaded,
+        ulong bytesRequired,
+        double downloadProgress,
+        double installationProgress)
+    {
+        State = state;
+        BytesDownloaded = bytesDownloaded;
+        BytesRequired = bytesRequired;
+        DownloadProgress = downloadProgress;
+        InstallationProgress = installationProgress;
+    }
+
+    public int State { get; }
+
+    public ulong BytesDownloaded { get; }
+
+    public ulong BytesRequired { get; }
+
+    public double DownloadProgress { get; }
+
+    public double InstallationProgress { get; }
 }

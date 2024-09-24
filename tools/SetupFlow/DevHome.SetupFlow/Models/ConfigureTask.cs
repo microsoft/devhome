@@ -92,9 +92,9 @@ public class ConfigureTask : ISetupTask
         };
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             try
             {
@@ -121,9 +121,9 @@ public class ConfigureTask : ISetupTask
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);

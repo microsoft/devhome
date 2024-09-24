@@ -594,7 +594,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 _numberOfExecutingTasks++;
             });
 
-            IAsyncOperationWithProgress<TaskFinishedState, int> result;
+            IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> result;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 _log.Information("Starting task as admin");
@@ -605,11 +605,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 result = taskInformation.TaskToExecute.Execute();
             }
 
-            result.Progress += (o, progress) =>
+            result.Progress += (_, progress) =>
             {
                 dispatcherQueue.TryEnqueue(() =>
                 {
-                    loadingMessage.MessageToShow = $"{taskInformation.MessageToShow} ({progress}%)";
+                    if (!string.IsNullOrEmpty(progress.Message))
+                    {
+                        loadingMessage.MessageToShow = $"{taskInformation.MessageToShow} ({progress.Message})";
+                    }
                 });
             };
 

@@ -137,9 +137,9 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             await Task.CompletedTask;
             _log.Information("Executing the operation. Waiting to be signalled that the adaptive card session has ended");
@@ -199,9 +199,9 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         });
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             // No admin rights required for this task. This shouldn't ever be invoked since the RequiresAdmin property is always false.
             await Task.CompletedTask;

@@ -5,11 +5,12 @@ extern alias Projection;
 
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.ElevatedComponent.Tasks;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Management.Deployment;
@@ -129,9 +130,9 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             try
             {
@@ -139,10 +140,7 @@ public class InstallPackageTask : ISetupTask
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
                 var install = _winget.InstallPackageAsync(packageUri, _activityId);
-                install.Progress += (_, p) =>
-                {
-                    progress.Report((int)(p.DownloadProgress * 100));
-                };
+                install.Progress += (_, p) => progress.Report(new(GetProgressMessage(p)));
                 var installResult = await install;
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
@@ -168,19 +166,16 @@ public class InstallPackageTask : ISetupTask
         });
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             try
             {
                 _log.Information($"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var elevated = elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
-                elevated.Progress += (_, p) =>
-                {
-                    progress.Report((int)(p.Current * 100));
-                };
+                elevated.Progress += (_, p) => progress.Report(new(GetProgressMessage(p)));
                 var elevatedResult = await elevated;
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
@@ -195,6 +190,31 @@ public class InstallPackageTask : ISetupTask
                 return TaskFinishedState.Failure;
             }
         });
+    }
+
+    private string GetProgressMessage(Projection.DevHome.SetupFlow.ElevatedComponent.Tasks.ElevatedInstallTaskProgress progress)
+    {
+        return GetProgressMessage(new WinGetInstallPackageProgress(
+            (WinGetInstallPackageProgressState)progress.State,
+            progress.BytesDownloaded,
+            progress.BytesRequired,
+            progress.DownloadProgress,
+            progress.InstallationProgress));
+    }
+
+    private string GetProgressMessage(WinGetInstallPackageProgress progress)
+    {
+        if (progress.State == WinGetInstallPackageProgressState.Installing)
+        {
+            return $"Installing {(int)(progress.InstallationProgress * 100)}%";
+        }
+
+        if (progress.State == WinGetInstallPackageProgressState.Downloading)
+        {
+            return $"Downloading {(int)(progress.DownloadProgress * 100)}%";
+        }
+
+        return null;
     }
 
     private string GetInstallResultMessage()

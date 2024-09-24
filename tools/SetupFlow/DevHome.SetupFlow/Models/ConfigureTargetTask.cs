@@ -386,9 +386,9 @@ public class ConfigureTargetTask : ISetupTask
         });
     }
 
-    public IAsyncOperationWithProgress<TaskFinishedState, int> Execute()
+    public IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             try
             {
@@ -464,7 +464,7 @@ public class ConfigureTargetTask : ISetupTask
         });
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
 
     TaskMessages ISetupTask.GetLoadingMessages()
     {

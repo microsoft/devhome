@@ -42,7 +42,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
     }
 
     /// <inheritdoc />
-    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId)
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId)
     {
         if (catalog == null)
         {
@@ -54,7 +54,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
 
         try
         {
-            return AsyncInfo.Run<IWinGetInstallPackageResult, InstallProgress>(async (token, progress) =>
+            return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (token, progress) =>
             {
                 // 1. Find package
                 var package = await FindPackageOrThrowAsync(catalog, packageId);
@@ -62,10 +62,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
                 // 2. Install package
                 _logger.LogInformation($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
                 var install = InstallPackageInternalAsync(package, version, activityId);
-                install.Progress += (_, p) =>
-                {
-                    progress.Report(p);
-                };
+                install.Progress += (_, p) => progress.Report(new(p));
                 var installResult = await install;
                 var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
                 var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4

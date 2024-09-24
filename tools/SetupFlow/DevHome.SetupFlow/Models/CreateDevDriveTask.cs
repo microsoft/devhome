@@ -98,9 +98,9 @@ internal sealed class CreateDevDriveTask : ISetupTask
     /// <summary>
     /// Not used, as Dev Drive creation requires elevation
     /// </summary>
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             await Task.CompletedTask;
             AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError), MessageSeverityKind.Error);
@@ -108,9 +108,9 @@ internal sealed class CreateDevDriveTask : ISetupTask
         });
     }
 
-    IAsyncOperationWithProgress<TaskFinishedState, int> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return AsyncInfo.Run<TaskFinishedState, int>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             Stopwatch timer = Stopwatch.StartNew();
             var result = 0;

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Services.WindowsPackageManager.Services;
-using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Contracts;
@@ -26,7 +25,7 @@ public interface IWinGet
     public Task InitializeAsync();
 
     /// <inheritdoc cref="IWinGetOperations.InstallPackageAsync"/>
-    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId);
 
     /// <inheritdoc cref="IWinGetOperations.GetPackagesAsync"/>
     public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris);

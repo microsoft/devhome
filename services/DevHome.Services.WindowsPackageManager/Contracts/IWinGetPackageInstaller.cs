@@ -19,5 +19,5 @@ internal interface IWinGetPackageInstaller
     /// <param name="version">Version of the package to install</param>
     /// <param name="activityId">Activity id for telemetry</param>
     /// <returns>Result of the installation</returns>
-    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId);
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId);
 }

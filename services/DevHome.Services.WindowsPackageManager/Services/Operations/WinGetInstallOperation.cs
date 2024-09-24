@@ -35,19 +35,15 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, InstallProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
     {
-        return AsyncInfo.Run<IWinGetInstallPackageResult, InstallProgress>(async (token, progress) =>
+        return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (token, progress) =>
         {
-            progress.Report(new InstallProgress(PackageInstallProgressState.Installing, 0, 0, 0, 10));
             return await _recovery.DoWithRecoveryAsync(async () =>
             {
                 var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
                 var install = _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
-                install.Progress += (sender, p) =>
-                {
-                    progress.Report(p);
-                };
+                install.Progress += (_, p) => progress.Report(p);
                 return await install;
             });
         });
