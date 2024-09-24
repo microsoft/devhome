@@ -202,7 +202,7 @@
     <comment>Branch header</comment>
   </data>
   <data name="ConfigurationIcon.ToolTipService.ToolTip" xml:space="preserve">
-    <value>WinGet Configuration file found. Run it from the '...' menu to set up this repo</value>
+    <value>WinGet configuration file found. Run it from the '...' menu to set up this repo</value>
     <comment>Tooltip telling users to use "..." to run the configuration file.</comment>
   </data>
   <data name="OpenInFileExplorer.Text" xml:space="preserve">
