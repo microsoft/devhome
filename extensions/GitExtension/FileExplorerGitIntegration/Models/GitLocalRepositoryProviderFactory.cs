@@ -36,12 +36,12 @@ public class GitLocalRepositoryProviderFactory : ILocalRepositoryProvider
         }
         catch (ArgumentException ex)
         {
-            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
+            _log.Error(ex, "GitLocalRepositoryProviderFactory: Failed to create GitLocalRepository");
             return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotFound"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");
         }
         catch (Exception ex)
         {
-            _log.Error("GitLocalRepositoryProviderFactory", "Failed to create GitLocalRepository", ex);
+            _log.Error(ex, "GitLocalRepositoryProviderFactory: Failed to create GitLocalRepository");
             if (ex.Message.Contains("not owned by current user") || ex.Message.Contains("detected dubious ownership in repository"))
             {
                 return new GetLocalRepositoryResult(ex, _stringResource.GetLocalized("RepositoryNotOwnedByCurrentUser"), $"Message: {ex.Message} and HRESULT: {ex.HResult}");

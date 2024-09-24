@@ -312,7 +312,7 @@ internal sealed class StatusCache : IDisposable
                 // For porcelain=v2, the branch status line has the following format:
                 //   # branch.oid <sha>
                 // For now, we only care about the <sha>.
-                repoStatus.Sha = line.Substring(13);
+                repoStatus.Sha = line.Split(' ')[2];
             }
             else if (line.StartsWith("# branch.ab ", StringComparison.Ordinal))
             {
@@ -330,7 +330,7 @@ internal sealed class StatusCache : IDisposable
                 // For porcelain=v2, the branch status line has the following format:
                 //   # branch.upstream <upstream>
                 // For now, we only care about the <upstream>.
-                repoStatus.UpstreamBranch = line.Substring(17);
+                repoStatus.UpstreamBranch = line.Split(' ')[2];
             }
             else
             {

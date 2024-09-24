@@ -47,7 +47,7 @@ internal sealed class RepositoryWrapper : IDisposable
     public RepositoryWrapper(string rootFolder)
     {
         _gitDetect.DetectGit();
-        IsValidGitRepository(rootFolder);
+        ValidateGitRepositoryRootPath(rootFolder);
         _workingDirectory = string.Concat(rootFolder, Path.DirectorySeparatorChar.ToString());
         _statusCache = new StatusCache(rootFolder);
 
@@ -70,7 +70,7 @@ internal sealed class RepositoryWrapper : IDisposable
         _submoduleStatusUntracked = _stringResource.GetLocalized("SubmoduleStatusUntracked");
     }
 
-    public void IsValidGitRepository(string rootFolder)
+    public void ValidateGitRepositoryRootPath(string rootFolder)
     {
         var validateGitRootRepo = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), rootFolder, "rev-parse --show-toplevel");
         if (validateGitRootRepo.Status != ProviderOperationStatus.Success)
@@ -124,9 +124,9 @@ internal sealed class RepositoryWrapper : IDisposable
         }
 
         string? head = result.Output?.Trim();
-        if (head == null)
+        if (string.IsNullOrEmpty(head))
         {
-            throw new InvalidOperationException("Git command output is null.");
+            throw new InvalidOperationException("Git command output is null and/or the repository has no commits");
         }
 
         if (_head != null && _commits != null)
