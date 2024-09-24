@@ -40,9 +40,7 @@ internal sealed class WinGetSearchOperation : IWinGetSearchOperation
         {
             var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
             var results = await _packageFinder.SearchAsync(searchCatalog, query, limit);
-            return results
-                .Select(p => new WinGetPackage(_logger, p, _packageFinder.IsElevationRequired(p)))
-                .ToList<IWinGetPackage>();
+            return WinGetPackage.FromOutOfProc(_logger, _packageFinder, results);
         });
     }
 }
