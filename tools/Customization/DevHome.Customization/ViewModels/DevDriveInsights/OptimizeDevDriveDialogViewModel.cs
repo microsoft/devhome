@@ -224,6 +224,14 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     {
         try
         {
+            if (string.Equals(variableName, "MAVEN_OPTS", StringComparison.OrdinalIgnoreCase))
+            {
+                var existingValue = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+                var newValue = (!string.IsNullOrEmpty(existingValue) ? existingValue + " " : string.Empty) + "-Dmaven.repo.local = " + value;
+                Environment.SetEnvironmentVariable(variableName, newValue, EnvironmentVariableTarget.User);
+                return;
+            }
+
             Environment.SetEnvironmentVariable(variableName, value, EnvironmentVariableTarget.User);
 
             if (string.Equals(variableName, "CARGO_HOME", StringComparison.OrdinalIgnoreCase))
