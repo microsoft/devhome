@@ -148,8 +148,8 @@ internal sealed class SSHWalletWidget : CoreWidget
     // { "data": "hostname" }
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
-        var jsonObject = JObject.Parse(args.Data);
-        var host = jsonObject["data"]?.ToString();
+        var jsonObject = JsonDocument.Parse(args.Data).RootElement;
+        var host = jsonObject.GetProperty("data").GetString();
 
         if (string.IsNullOrEmpty(host))
         {
