@@ -19,7 +19,6 @@ namespace DevHome.Services.Core.Services;
 public class MicrosoftStoreService : IMicrosoftStoreService
 {
     private readonly AppInstallManager _appInstallManager;
-    private readonly TimeSpan _storeInstallTimeout = TimeSpan.FromMinutes(1);
     private readonly ILogger _logger;
 
     public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
@@ -82,17 +81,11 @@ public class MicrosoftStoreService : IMicrosoftStoreService
         {
             var installTask = InstallPackageAsync(packageId);
 
-            // Wait for a maximum of StoreInstallTimeout (60 seconds).
-            var completedTask = await Task.WhenAny(installTask, Task.Delay(_storeInstallTimeout));
+            await installTask;
 
-            if (completedTask.Exception != null)
+            if (installTask.Exception != null)
             {
-                throw completedTask.Exception;
-            }
-
-            if (completedTask != installTask)
-            {
-                throw new TimeoutException("Store Install task did not finish in time.");
+                throw installTask.Exception;
             }
 
             return true;
