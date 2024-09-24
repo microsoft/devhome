@@ -12,6 +12,9 @@
       <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\MigrationScripts\0To1 - Copy.sql" />
+  </ItemGroup>
+  <ItemGroup>
       <Content Include="Assets\MigrationScripts\0To1.sql">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
@@ -28,5 +31,10 @@
     <ItemGroup>
         <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
         <ProjectReference Include="..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Update="Assets\SchemaVersion.txt">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@ using System.IO;
 using DevHome.Common.Helpers;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
+using DevHome.Database.Services;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -27,6 +28,10 @@ public class DevHomeDatabaseContext : DbContext
     private const string DatabaseFileName = "DevHome";
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevHomeDatabaseContext));
+
+    private readonly ISchemaValidator _schemaValidator;
+
+    private uint _previousSchemaVersion;
 
     public DbSet<Repository> Repositories { get; set; }
 
@@ -50,25 +55,52 @@ public class DevHomeDatabaseContext : DbContext
         {
             DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName + DevHomeNameExtension);
         }
+
+        _schemaValidator = SchemaValidatorFactory.MakeValidator();
+    }
+
+    public bool ShouldPerformDatabaseMigration()
+    {
+        if (!File.Exists(DbPath) || !_schemaValidator.DoesPreviousSchemaExist())
+        {
+            // previous version will stay at 0.
+            // causing a migration from 0 to SchemaVersion.
+            return true;
+        }
+
+        var contents = _schemaValidator.GetPreviousSchemaVersion(_schemaValidator.GetPreviousSchema());
+        if (contents != SchemaVersion)
+        {
+            _previousSchemaVersion = contents;
+            return true;
+        }
+
+        return false;
     }
 
     public void MigrateDatabaseIfNeeded()
     {
-        if (!File.Exists(DbPath))
+        if (!ShouldPerformDatabaseMigration())
         {
-            if (RuntimeHelper.IsMSIX)
-            {
-                // Database does not exist.  Make the most recent version
-                Uri uri = new Uri($"ms-appx:///Assets/MigrationScripts/0To{SchemaVersion}.sql");
-                var migrationStorageFile = StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().Result;
-                var createScript = FileIO.ReadTextAsync(migrationStorageFile).AsTask().Result.ToString();
-                this.Database.ExecuteSqlRaw(createScript);
-            }
-            else
-            {
-                var query = File.ReadAllText($"Assets/MigrationScripts/0To{SchemaVersion}.sql");
-                this.Database.ExecuteSqlRaw(query);
-            }
+            return;
+        }
+
+        string createDatabaseQuery;
+        if (RuntimeHelper.IsMSIX)
+        {
+            // Database does not exist.  Make the most recent version
+            Uri uri = new Uri($"ms-appx:///Assets/MigrationScripts/{_previousSchemaVersion}To{SchemaVersion}.sql");
+            var migrationStorageFile = StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().Result;
+            createDatabaseQuery = FileIO.ReadTextAsync(migrationStorageFile).AsTask().Result.ToString();
+        }
+        else
+        {
+            createDatabaseQuery = File.ReadAllText($"Assets/MigrationScripts/{_previousSchemaVersion}To{SchemaVersion}.sql");
+        }
+
+        if (!string.IsNullOrEmpty(createDatabaseQuery))
+        {
+            Database.ExecuteSqlRaw(createDatabaseQuery);
         }
     }
 
