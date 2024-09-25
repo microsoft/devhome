@@ -76,7 +76,7 @@ internal sealed class RepositoryWrapper : IDisposable
         if (validateGitRootRepo.Status != ProviderOperationStatus.Success)
         {
             _log.Error(validateGitRootRepo.Ex, "Failed to validate the git root repository using GitExecute");
-            throw validateGitRootRepo.Ex ?? new InvalidOperationException();
+            throw validateGitRootRepo.Ex ?? new InvalidOperationException(validateGitRootRepo.ProcessExitCode?.ToString(CultureInfo.InvariantCulture) ?? "Unknown error encountered during validation of git repository");
         }
 
         var output = validateGitRootRepo.Output;
@@ -120,13 +120,13 @@ internal sealed class RepositoryWrapper : IDisposable
         var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "rev-parse HEAD");
         if (result.Status != ProviderOperationStatus.Success)
         {
-            throw result.Ex ?? new InvalidOperationException();
+            throw result.Ex ?? new InvalidOperationException(result.ProcessExitCode?.ToString(CultureInfo.InvariantCulture) ?? "Unknown error while obtaining HEAD commit");
         }
 
         string? head = result.Output?.Trim();
         if (string.IsNullOrEmpty(head))
         {
-            throw new InvalidOperationException("Git command output is null and/or the repository has no commits");
+            throw new InvalidOperationException("Git command output is null or the repository has no commits");
         }
 
         if (_head != null && _commits != null)
