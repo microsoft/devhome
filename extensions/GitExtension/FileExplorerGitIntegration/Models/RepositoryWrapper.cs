@@ -73,17 +73,11 @@ internal sealed class RepositoryWrapper : IDisposable
     public void ValidateGitRepositoryRootPath(string rootFolder)
     {
         var validateGitRootRepo = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), rootFolder, "rev-parse --show-toplevel");
-        if (validateGitRootRepo.Status != ProviderOperationStatus.Success)
-        {
-            _log.Error(validateGitRootRepo.Ex, "Failed to validate the git root repository using GitExecute");
-            throw validateGitRootRepo.Ex ?? new InvalidOperationException(validateGitRootRepo.ProcessExitCode?.ToString(CultureInfo.InvariantCulture) ?? "Unknown error encountered during validation of git repository");
-        }
-
         var output = validateGitRootRepo.Output;
-        if (output is null || output.Contains("fatal: not a git repository"))
+        if (validateGitRootRepo.Status != ProviderOperationStatus.Success || output is null || output.Contains("fatal: not a git repository"))
         {
-            _log.Error("Not a valid git repository root path: {rootFolder}");
-            throw new ArgumentException($"Not a valid git repository root path: {rootFolder}");
+            _log.Error(validateGitRootRepo.Ex, $"Failed to validate the git root repository using GitExecute. RootFolder: {rootFolder} Git output: {output} Process Error Code: {validateGitRootRepo.ProcessExitCode}");
+            throw validateGitRootRepo.Ex ?? new ArgumentException($"Not a valid git repository root path:  RootFolder: {rootFolder} Git output: {output}");
         }
 
         if (WslIntegrator.IsWSLRepo(rootFolder))

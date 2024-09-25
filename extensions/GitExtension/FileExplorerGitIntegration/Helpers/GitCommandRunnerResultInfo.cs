@@ -27,9 +27,10 @@ public class GitCommandRunnerResultInfo
         Output = output;
     }
 
-    public GitCommandRunnerResultInfo(ProviderOperationStatus status, string? displayMessage, string? diagnosticText, Exception? ex, string? args, int? processExitCode)
+    public GitCommandRunnerResultInfo(ProviderOperationStatus status, string? output, string? displayMessage, string? diagnosticText, Exception? ex, string? args, int? processExitCode)
     {
         Status = status;
+        Output = output;
         DisplayMessage = displayMessage;
         DiagnosticText = diagnosticText;
         Ex = ex;
