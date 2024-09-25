@@ -84,6 +84,7 @@ public partial class App : Application, IApp
 
     public App()
     {
+        // TODO: Add database migration.
         InitializeComponent();
 #if DEBUG_FAILFAST
         DebugSettings.FailFastOnErrors = true;
@@ -100,10 +101,13 @@ public partial class App : Application, IApp
         ConfigureServices((context, services) =>
         {
             // Add databse connection
-            services.AddDatabaseContext(context);
+            services.AddDatabase(context);
 
             // Add Serilog logging for ILogger.
             services.AddLogging(lb => lb.AddSerilog(dispose: true));
+
+            // Add databse connection
+            services.AddDatabase(context);
 
             // Default Activation Handler
             services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();

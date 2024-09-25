@@ -13,7 +13,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using WinUIEx;
 
-namespace DevHome.DevDiagnostics.Controls;
+namespace DevHome.Common.Windows;
 
 /* This class encapsulates the theme-awareness logic, including support for custom chrome buttons.
  * The main BarWindow derives from ThemeAwareWindow. All internal tool windows and any other owned windows
@@ -39,9 +39,9 @@ public class ThemeAwareWindow : WindowEx
 
     private List<ThemeAwareWindow> RelatedWindows { get; set; } = [];
 
-    internal List<Button> CustomTitleBarButtons { get; private set; } = [];
+    protected List<Button> CustomTitleBarButtons { get; private set; } = [];
 
-    internal ElementTheme Theme { get; set; }
+    protected ElementTheme Theme { get; set; }
 
     public ThemeAwareWindow()
     {
@@ -80,7 +80,7 @@ public class ThemeAwareWindow : WindowEx
         _uiSettings.ColorValuesChanged -= UiSettings_ColorValuesChanged;
     }
 
-    internal void Window_Activated(object sender, WindowActivatedEventArgs args)
+    protected void Window_Activated(object sender, WindowActivatedEventArgs args)
     {
         // This follows the design guidance of dimming our title bar elements when the window isn't activated.
         // https://learn.microsoft.com/en-us/windows/apps/develop/title-bar#dim-the-title-bar-when-the-window-is-inactive
@@ -93,7 +93,7 @@ public class ThemeAwareWindow : WindowEx
     }
 
     // Invoked when the user changes theme preference in this app's settings.
-    internal void SetRequestedTheme(ElementTheme theme)
+    protected void SetRequestedTheme(ElementTheme theme)
     {
         Theme = theme;
 
@@ -170,13 +170,13 @@ public class ThemeAwareWindow : WindowEx
         }
     }
 
-    internal void AddRelatedWindow(ThemeAwareWindow window)
+    public void AddRelatedWindow(ThemeAwareWindow window)
     {
         RelatedWindows.Add(window);
         window.SetRequestedTheme(Theme);
     }
 
-    internal void RemoveRelatedWindow(ThemeAwareWindow window)
+    public void RemoveRelatedWindow(ThemeAwareWindow window)
     {
         RelatedWindows.Remove(window);
     }

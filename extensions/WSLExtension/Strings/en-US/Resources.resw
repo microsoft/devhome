@@ -168,7 +168,7 @@
   </data>
   <data name="VirtualMachinePlatformNotInstalled" xml:space="preserve">
     <value>The Virtual Machine Platform feature is needed for the WSL extension to function properly. The feature can be enabled in Dev Home's Windows customization page, under the virtualization feature management option. Enabling the feature will require a reboot. For more information on WSL requirements visit aka.ms/wslinstall</value>
-    <comment>{Locked="Windows", "WSL", "aka.ms/wslinstall", "Dev Home"} Text message to display when the virtual machine platform Windows optional component is not enabled.</comment>
+    <comment>{Locked="Windows", "WSL", "aka.ms/wslinstall"} Text message to display when the virtual machine platform Windows optional component is not enabled.</comment>
   </data>
   <data name="AppInstallPending" xml:space="preserve">
     <value>Installation of the {0} package is pending</value>

@@ -20,27 +20,27 @@ public class HotKeyHelper// : IDisposable
     internal ushort HotkeyID { get; private set; }
 
     private const string NoWindowHandleException = "Cannot get window handle: are you doing this too early?";
-    private readonly HWND windowHandle;
-    private readonly Action<int> onHotKeyPressed;
-    private readonly WindowMessageMonitor windowMessageMonitor;
+    private readonly HWND _windowHandle;
+    private readonly Action<int> _onHotKeyPressed;
+    private readonly WindowMessageMonitor _windowMessageMonitor;
 
     public HotKeyHelper(Window handlerWindow, Action<int> hotKeyHandler)
     {
-        onHotKeyPressed = hotKeyHandler;
+        _onHotKeyPressed = hotKeyHandler;
 
         // Create a unique Id for this class in this instance.
         var atomName = $"{Environment.CurrentManagedThreadId:X8}{GetType().FullName}";
         HotkeyID = PInvoke.GlobalAddAtom(atomName);
 
         // Set up the window message hook to listen for hot keys.
-        windowHandle = (HWND)WinRT.Interop.WindowNative.GetWindowHandle(handlerWindow);
-        if (windowHandle.IsNull)
+        _windowHandle = (HWND)WinRT.Interop.WindowNative.GetWindowHandle(handlerWindow);
+        if (_windowHandle.IsNull)
         {
             throw new InvalidOperationException(NoWindowHandleException);
         }
 
-        windowMessageMonitor = new WindowMessageMonitor(windowHandle);
-        windowMessageMonitor.WindowMessageReceived += OnWindowMessageReceived;
+        _windowMessageMonitor = new WindowMessageMonitor(_windowHandle);
+        _windowMessageMonitor.WindowMessageReceived += OnWindowMessageReceived;
     }
 
     private void OnWindowMessageReceived(object? sender, WindowMessageEventArgs e)
@@ -50,7 +50,7 @@ public class HotKeyHelper// : IDisposable
             var keyId = (int)e.Message.WParam;
             if (keyId == HotkeyID)
             {
-                onHotKeyPressed?.Invoke((int)e.Message.LParam);
+                _onHotKeyPressed?.Invoke((int)e.Message.LParam);
                 e.Handled = true;
             }
         }
@@ -58,16 +58,16 @@ public class HotKeyHelper// : IDisposable
 
     internal void RegisterHotKey(VirtualKey key, HOT_KEY_MODIFIERS modifiers)
     {
-        PInvoke.RegisterHotKey(windowHandle, HotkeyID, modifiers, (uint)key);
+        PInvoke.RegisterHotKey(_windowHandle, HotkeyID, modifiers, (uint)key);
     }
 
     internal void UnregisterHotKey()
     {
         if (HotkeyID != 0)
         {
-            _ = PInvoke.UnregisterHotKey(windowHandle, HotkeyID);
+            _ = PInvoke.UnregisterHotKey(_windowHandle, HotkeyID);
             PInvoke.GlobalDeleteAtom(HotkeyID);
-            windowMessageMonitor.Dispose();
+            _windowMessageMonitor.Dispose();
             HotkeyID = 0;
         }
     }

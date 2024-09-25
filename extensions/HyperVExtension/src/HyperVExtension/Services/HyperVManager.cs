@@ -9,6 +9,7 @@ using HyperVExtension.Helpers;
 using HyperVExtension.Models;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Windows.Win32.Foundation;
 
 namespace HyperVExtension.Services;
 
@@ -136,7 +137,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to get VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to get VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // If we found the VM there should only be one psObject in the list.
@@ -146,7 +149,9 @@ public class HyperVManager : IHyperVManager, IDisposable
                 return _hyperVVirtualMachineFactory(psObject);
             }
 
-            throw new HyperVManagerException($"Unable to get VM with Id {vmId} due to PowerShell returning a null PsObject");
+            throw new HyperVManagerException(
+                $"Unable to get VM with Id {vmId} due to PowerShell returning a null PsObject",
+                HRESULT.E_UNEXPECTED);
         }
         finally
         {
@@ -188,7 +193,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to stop VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to stop VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -229,7 +236,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to start VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to start VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -270,7 +279,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to pause VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to pause VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -313,7 +324,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to resume VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to resume VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -356,7 +369,9 @@ public class HyperVManager : IHyperVManager, IDisposable
             var result = _powerShellService.Execute(commandLineStatements, PipeType.PipeOutput);
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to remove VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to remove VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -544,7 +559,7 @@ public class HyperVManager : IHyperVManager, IDisposable
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
                 throw new HyperVManagerException(
-                    $"Unable to create a new checkpoint for VM with Id: {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                    $"Unable to create a new checkpoint for VM with Id: {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}", result.CommandOutputErrorFirstHResult);
             }
 
             var newCheckpoint = result.PsObjects.FirstOrDefault();
@@ -587,7 +602,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
             if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
             {
-                throw new HyperVManagerException($"Unable to start VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}");
+                throw new HyperVManagerException(
+                    $"Unable to start VM with Id {vmId} due to PowerShell error: {result.CommandOutputErrorMessage}",
+                    result.CommandOutputErrorFirstHResult);
             }
 
             // The VM will be the returned object since we used the "PassThru" parameter.
@@ -644,7 +661,9 @@ public class HyperVManager : IHyperVManager, IDisposable
 
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            throw new HyperVManagerException($"Unable to get Local Hyper-V host: {result.CommandOutputErrorMessage}");
+            throw new HyperVManagerException(
+                $"Unable to get Local Hyper-V host: {result.CommandOutputErrorMessage}",
+                result.CommandOutputErrorFirstHResult);
         }
 
         // return the host object. It should be the only object in the list.
@@ -668,7 +687,9 @@ public class HyperVManager : IHyperVManager, IDisposable
         var result = _powerShellService.Execute(statementBuilderForNewVm, PipeType.None);
         if (!string.IsNullOrEmpty(result.CommandOutputErrorMessage))
         {
-            throw new HyperVManagerException($"Unable to create the virtual machine: {result.CommandOutputErrorMessage}");
+            throw new HyperVManagerException(
+                $"Unable to create the virtual machine: {result.CommandOutputErrorMessage}",
+                result.CommandOutputErrorFirstHResult);
         }
 
         var returnedPsObject = result.PsObjects.First();

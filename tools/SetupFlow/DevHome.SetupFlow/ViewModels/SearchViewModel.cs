@@ -7,11 +7,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Exceptions;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Serilog;
@@ -87,12 +87,12 @@ public partial class SearchViewModel : ObservableObject
     /// <param name="text">Text search query</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Search status and result</returns>
-    public async Task<(SearchResultStatus, List<PackageViewModel>)> SearchAsync(string text, CancellationToken cancellationToken)
+    public async Task<SearchResultStatus> SearchAsync(string text, CancellationToken cancellationToken)
     {
         // Skip search if text is empty
         if (string.IsNullOrWhiteSpace(text))
         {
-            return (SearchResultStatus.EmptySearchQuery, null);
+            return SearchResultStatus.EmptySearchQuery;
         }
 
         try
@@ -104,7 +104,7 @@ public partial class SearchViewModel : ObservableObject
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)
             {
-                return (SearchResultStatus.Canceled, null);
+                return SearchResultStatus.Canceled;
             }
 
             // Update the UI only if the operation was successful
@@ -123,20 +123,20 @@ public partial class SearchViewModel : ObservableObject
                 _screenReaderService.Announce(NoSearchResultsText);
             }
 
-            return (SearchResultStatus.Ok, ResultPackages);
+            return SearchResultStatus.Ok;
         }
         catch (WindowsPackageManagerRecoveryException)
         {
-            return (SearchResultStatus.CatalogNotConnect, null);
+            return SearchResultStatus.CatalogNotConnect;
         }
         catch (OperationCanceledException)
         {
-            return (SearchResultStatus.Canceled, null);
+            return SearchResultStatus.Canceled;
         }
         catch (Exception e)
         {
             _log.Error(e, $"Search error.");
-            return (SearchResultStatus.ExceptionThrown, null);
+            return SearchResultStatus.ExceptionThrown;
         }
     }
 }

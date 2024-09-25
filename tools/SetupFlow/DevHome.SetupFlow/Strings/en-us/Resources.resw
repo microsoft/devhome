@@ -414,8 +414,8 @@
     <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageCancelledByUser" xml:space="preserve">
-    <value>{0} couldn't be installed because the installation was cancelled by the user.</value>
-    <comment>{Locked="{0}"}Label displayed when a package installation fails because the user cancelled the installation. {0} is replaced by the package name.</comment>
+    <value>{0} couldn't be installed because the installation was canceled by the user.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the user canceled the installation. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageAlreadyInstalled" xml:space="preserve">
     <value>{0} couldn't be installed because another version of this application is already installed.</value>
@@ -2026,5 +2026,13 @@
   <data name="GenerateConfigInfoButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Generate configuration file info</value>
 	<comment>Narration for the informational icon next to the "Generate Configuration file" button</comment>
+  </data>
+  <data name="NoInternetConnectionTitle" xml:space="preserve">
+    <value>No internet connection</value>
+    <comment>Title displayed when there is no internet connection</comment>
+  </data>
+  <data name="NoInternetConnectionDescription" xml:space="preserve">
+    <value>Please check your network settings and try again.</value>
+    <comment>Text displayed when there is no internet connection</comment>
   </data>
 </root>

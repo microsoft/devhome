@@ -312,6 +312,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
             CacheName = "Cargo cache (Rust)",
             EnvironmentVariable = "CARGO_HOME",
             CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".cargo") },
+            RelatedEnvironmentVariables = new List<string> { "RUSTUP_HOME" },
+            RelatedCacheDirectories = new List<string> { Path.Join(_userProfilePath, ".rustup") },
             ExampleSubDirectory = Path.Join(PackagesStr, "cargo"),
         },
         new DevDriveCacheData
@@ -395,7 +397,9 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
                 exampleDirectory!, // example location on dev drive to move cache to
                 cache.EnvironmentVariable!, // environmentVariableToBeSet
                 existingDevDriveLetters,
-                !string.IsNullOrEmpty(environmentVariablePath));
+                !string.IsNullOrEmpty(environmentVariablePath),
+                cache.RelatedEnvironmentVariables!,
+                cache.RelatedCacheDirectories!);
             DevDriveOptimizerCardCollection.Add(card);
         }
 

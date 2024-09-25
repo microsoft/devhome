@@ -170,6 +170,9 @@
                                     <Hyperlink NavigateUri="https://aka.ms/dsc.yaml">
                                         <Run x:Uid="MainPage_ConfigurationFile_Description_Link" />
                                     </Hyperlink>
+                                    <!-- Empty Run to workaround Hyperlink's wide clickable area issue:
+                                        https://github.com/microsoft/microsoft-ui-xaml/issues/2618 -->
+                                    <Run />
                                 </TextBlock>
                             </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>

@@ -20,11 +20,17 @@ public class Repository
 
     public string? RepositoryClonePath { get; set; }
 
+    public bool IsHidden { get; set; }
+
+    public bool HasAConfigurationFile => !string.IsNullOrEmpty(ConfigurationFileLocation);
+
+    public string? ConfigurationFileLocation { get; set; }
+
+    // Use string here. Add-Migration is running into an issue with the Uri class.
+    // This causes any fluent API statements to get ignored.
+    public string? RepositoryUri { get; set; }
+
     public DateTime? CreatedUTCDate { get; set; }
 
     public DateTime? UpdatedUTCDate { get; set; }
-
-    // 1:1 relationship.  Repository is the parent and needs only
-    // the object of the dependant.
-    public RepositoryMetadata? RepositoryMetadata { get; set; }
 }

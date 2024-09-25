@@ -192,7 +192,7 @@ public sealed class ApplyConfigurationOperation : IApplyConfigurationOperation, 
                 return new SDK.ApplyConfigurationResult(sdkOpenConfigurationSetResult, sdkApplyConfigurationSetResult);
             }
 
-            var hresultException = new HResultException(completionStatus.ResultCode);
+            var hresultException = new HResultException(completionStatus.ResultCode, completionStatus.ResultDiagnosticText);
 
             return new SDK.ApplyConfigurationResult(hresultException, completionStatus.ResultDescription, hresultException.Message);
         }

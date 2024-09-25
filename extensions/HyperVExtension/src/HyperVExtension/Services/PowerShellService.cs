@@ -49,11 +49,13 @@ public class PowerShellService : IPowerShellService, IDisposable
                 _powerShellSession.ClearSession();
                 var psObjectList = ExecuteStatements(commandLineStatements, pipeType);
                 var commandOutputErrorMessage = _powerShellSession.GetErrorMessages();
+                var hresult = _powerShellSession.GetErrorFirstHResult();
 
                 return new PowerShellResult
                 {
                     PsObjects = psObjectList,
                     CommandOutputErrorMessage = commandOutputErrorMessage,
+                    CommandOutputErrorFirstHResult = hresult,
                 };
             }
         }

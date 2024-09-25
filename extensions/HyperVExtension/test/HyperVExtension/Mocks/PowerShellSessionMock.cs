@@ -45,4 +45,10 @@ public class PowerShellSessionMock : IPowerShellSession
     {
         return ErrorText;
     }
+
+    /// <inheritdoc cref="IPowerShellSession.GetErrorFirstHResult"/>
+    public int GetErrorFirstHResult()
+    {
+        return 0;
+    }
 }

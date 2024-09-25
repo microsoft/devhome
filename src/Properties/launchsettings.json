@@ -12,6 +12,11 @@
       "commandName": "MsixPackage",
       "commandLineArgs": "--utilitylaunch DevHome.DevDiagnostics.Exe ",
       "nativeDebugging": true
+    },
+    "IfeoTool (Packaged)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "--utilitylaunch DevHome.IfeoTool.Exe ",
+      "nativeDebugging": true
     }
   }
 }

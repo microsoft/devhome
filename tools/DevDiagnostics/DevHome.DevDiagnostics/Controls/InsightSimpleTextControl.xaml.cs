@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.DevDiagnostics.Controls;
 
-public sealed partial class InsightSimpleTextControl : UserControl
+public sealed partial class InsightSimpleTextControl : UserControl, INotifyPropertyChanged
 {
     private string _description = string.Empty;
 

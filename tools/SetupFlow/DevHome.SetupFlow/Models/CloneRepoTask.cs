@@ -14,7 +14,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.RepositoryManagement.Services;
+using DevHome.Database.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -281,10 +281,16 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 }
             }
 
-            // TODO: Is this the best place to add the repository to the database?
-            // Maybe a "PostExecutionStep" would be nice.
-            _host.GetService<RepositoryManagementDataAccessService>()
-            .AddRepository(RepositoryName, CloneLocation.FullName);
+            var experimentationService = _host.GetService<IExperimentationService>();
+            var canUseTheDatabase = experimentationService.IsFeatureEnabled("RepositoryManagementExperiment");
+
+            if (canUseTheDatabase)
+            {
+                // TODO: Is this the best place to add the repository to the database?
+                // Maybe a "PostExecutionStep" would be nice.
+                _host.GetService<RepositoryManagementDataAccessService>()
+                .MakeRepository(RepositoryName, CloneLocation.FullName, RepositoryToClone.RepoUri);
+            }
 
             WasCloningSuccessful = true;
 
