@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using DevHome.Common.Helpers;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
@@ -61,10 +62,36 @@ public class DevHomeDatabaseContext : DbContext
 
     public bool ShouldPerformDatabaseMigration()
     {
-        if (!File.Exists(DbPath) || !_schemaValidator.DoesPreviousSchemaExist())
+        // If no database or schema, migrate from version 0.
+        if (!File.Exists(DbPath) && !_schemaValidator.DoesPreviousSchemaExist())
         {
-            // previous version will stay at 0.
-            // causing a migration from 0 to SchemaVersion.
+            _previousSchemaVersion = 0;
+            return true;
+        }
+
+        // Database file exists but the schema file does not.
+        // Migrate if the schema versions are not equal.
+        if (File.Exists(DbPath) && !_schemaValidator.DoesPreviousSchemaExist())
+        {
+            // Read the schema version saved in the database.
+            var databaseSchema = Database.SqlQueryRaw<long>("PRAGMA user_version").Single();
+            if (databaseSchema < 0)
+            {
+                databaseSchema = 0;
+            }
+
+            if (databaseSchema != SchemaVersion)
+            {
+                _previousSchemaVersion = (uint)databaseSchema;
+                return true;
+            }
+        }
+
+        // Database file does not exist, but the schema file does.
+        // Migrate from version 0.
+        if (!File.Exists(DbPath) && _schemaValidator.DoesPreviousSchemaExist())
+        {
+            _previousSchemaVersion = 0;
             return true;
         }
 
@@ -101,6 +128,8 @@ public class DevHomeDatabaseContext : DbContext
         if (!string.IsNullOrEmpty(createDatabaseQuery))
         {
             Database.ExecuteSqlRaw(createDatabaseQuery);
+            Database.ExecuteSqlRaw($"PRAGMA user_version = {SchemaVersion}");
+            _schemaValidator.WriteSchemaVersion(SchemaVersion);
         }
     }
 

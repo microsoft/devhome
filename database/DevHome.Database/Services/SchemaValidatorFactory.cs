@@ -5,7 +5,7 @@ using DevHome.Common.Helpers;
 
 namespace DevHome.Database.Services;
 
-internal class SchemaValidatorFactory
+internal sealed class SchemaValidatorFactory
 {
     internal static ISchemaValidator MakeValidator()
     {

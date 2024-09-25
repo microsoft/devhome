@@ -12,6 +12,4 @@ internal interface ISchemaValidator
     void WriteSchemaVersion(uint schemaVersion);
 
     uint GetPreviousSchemaVersion(string schemaFileContents);
-
-    bool NeedMigration();
 }

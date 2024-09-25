@@ -6,7 +6,7 @@ using System.IO;
 
 namespace DevHome.Database.Services;
 
-internal class WinExeSchemaValidator : ISchemaValidator
+internal sealed class WinExeSchemaValidator : ISchemaValidator
 {
     private readonly string _schemaPath = Path.Join(SchemaHelper.SchemaVersionDirectoryPath, SchemaHelper.SchemaVersionFileName);
 

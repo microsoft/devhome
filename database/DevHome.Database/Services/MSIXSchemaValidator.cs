@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace DevHome.Database.Services;
 
-internal class MSIXSchemaValidator : ISchemaValidator
+internal sealed class MSIXSchemaValidator : ISchemaValidator
 {
     public bool DoesPreviousSchemaExist()
     {
@@ -36,7 +36,11 @@ internal class MSIXSchemaValidator : ISchemaValidator
 
     public void WriteSchemaVersion(uint schemaVersion)
     {
-        FileIO.WriteTextAsync(GetPreviousSchemaFile() as StorageFile, schemaVersion.ToString(CultureInfo.InvariantCulture)).AsTask().Wait();
+        var assetsFolderPath = GetPathToSchemaFile();
+        var assetsFolder = StorageFolder.GetFolderFromPathAsync(assetsFolderPath).AsTask().Result;
+        var schemaVersionFile = assetsFolder.CreateFileAsync(SchemaHelper.SchemaVersionFileName, CreationCollisionOption.OpenIfExists).AsTask().Result;
+
+        FileIO.WriteTextAsync(schemaVersionFile, schemaVersion.ToString(CultureInfo.InvariantCulture)).AsTask().Wait();
     }
 
     public uint GetPreviousSchemaVersion(string schemaFileContents)
