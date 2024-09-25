@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
+using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
@@ -317,32 +318,30 @@ public partial class WidgetViewModel : ObservableObject
 
     private string MergeJsonData(Windows.Data.Json.JsonValue actionValue, Windows.Data.Json.JsonObject inputsObject)
     {
-        if (actionValue == null)
+        Newtonsoft.Json.Linq.JObject objA = [];
+        Newtonsoft.Json.Linq.JObject objB = [];
+
+        if (actionValue != null)
         {
-            return inputsObject.Stringify();
+            var dataType = actionValue.ValueType;
+            if (dataType == Windows.Data.Json.JsonValueType.Object)
+            {
+                objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
+            }
+            else if (dataType == Windows.Data.Json.JsonValueType.String)
+            {
+                objA = WrapJsonString(actionValue.Stringify());
+            }
         }
 
-        if (inputsObject == null)
+        if (inputsObject != null)
         {
-            return actionValue.Stringify();
+            var inputType = inputsObject.ValueType;
+            if (inputType != Windows.Data.Json.JsonValueType.Null)
+            {
+                objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
+            }
         }
-
-        Newtonsoft.Json.Linq.JObject objA;
-        var dataType = actionValue.ValueType;
-        if (dataType == Windows.Data.Json.JsonValueType.Object)
-        {
-            objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
-        }
-        else if (dataType == Windows.Data.Json.JsonValueType.String)
-        {
-            objA = WrapJsonString(actionValue.Stringify());
-        }
-        else
-        {
-            objA = [];
-        }
-
-        var objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
 
         objA.Merge(objB);
 
@@ -359,20 +358,8 @@ public partial class WidgetViewModel : ObservableObject
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            Windows.Data.Json.JsonValue actionValue = null;
-            Windows.Data.Json.JsonObject inputsObject = [];
-
-            var dataType = executeAction.DataJson.ValueType;
-            if (dataType != Windows.Data.Json.JsonValueType.Null)
-            {
-                actionValue = executeAction.DataJson;
-            }
-
-            var inputType = args.Inputs.AsJson().ValueType;
-            if (inputType != Windows.Data.Json.JsonValueType.Null)
-            {
-                inputsObject = args.Inputs.AsJson();
-            }
+            Windows.Data.Json.JsonValue actionValue = executeAction.DataJson;
+            Windows.Data.Json.JsonObject inputsObject = args.Inputs.AsJson();
 
             var dataToSend = MergeJsonData(actionValue, inputsObject);
 
