@@ -25,8 +25,6 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -312,43 +310,39 @@ public partial class WidgetViewModel : ObservableObject
         return grid;
     }
 
-    private JObject WrapJsonString(string jsonString)
+    private Newtonsoft.Json.Linq.JObject WrapJsonString(string jsonString)
     {
-        return new JObject { ["data"] = jsonString };
+        return new Newtonsoft.Json.Linq.JObject { ["data"] = jsonString };
     }
 
-    private string MergeJsonData(string jsonStringA, string jsonStringB)
+    private string MergeJsonData(Windows.Data.Json.JsonValue actionValue, Windows.Data.Json.JsonObject inputsObject)
     {
-        if (string.IsNullOrEmpty(jsonStringA))
+        if (actionValue == null)
         {
-            return jsonStringB;
+            return inputsObject.Stringify();
         }
 
-        if (string.IsNullOrEmpty(jsonStringB))
+        if (inputsObject == null)
         {
-            return jsonStringA;
+            return actionValue.Stringify();
         }
 
-        JObject objA;
-        JObject objB;
+        Newtonsoft.Json.Linq.JObject objA;
+        var dataType = actionValue.ValueType;
+        if (dataType == Windows.Data.Json.JsonValueType.Object)
+        {
+            objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
+        }
+        else if (dataType == Windows.Data.Json.JsonValueType.String)
+        {
+            objA = WrapJsonString(actionValue.Stringify());
+        }
+        else
+        {
+            objA = [];
+        }
 
-        try
-        {
-            objA = JObject.Parse(jsonStringA);
-        }
-        catch (JsonReaderException)
-        {
-            objA = WrapJsonString(jsonStringA);
-        }
-
-        try
-        {
-            objB = JObject.Parse(jsonStringB);
-        }
-        catch (JsonReaderException)
-        {
-            objB = WrapJsonString(jsonStringB);
-        }
+        var objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
 
         objA.Merge(objB);
 
@@ -365,22 +359,22 @@ public partial class WidgetViewModel : ObservableObject
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            var actionData = string.Empty;
-            var inputsData = string.Empty;
+            Windows.Data.Json.JsonValue actionValue = null;
+            Windows.Data.Json.JsonObject inputsObject = [];
 
             var dataType = executeAction.DataJson.ValueType;
             if (dataType != Windows.Data.Json.JsonValueType.Null)
             {
-                actionData = executeAction.DataJson.Stringify();
+                actionValue = executeAction.DataJson;
             }
 
             var inputType = args.Inputs.AsJson().ValueType;
             if (inputType != Windows.Data.Json.JsonValueType.Null)
             {
-                inputsData = args.Inputs.AsJson().Stringify();
+                inputsObject = args.Inputs.AsJson();
             }
 
-            var dataToSend = MergeJsonData(actionData, inputsData);
+            var dataToSend = MergeJsonData(actionValue, inputsObject);
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
