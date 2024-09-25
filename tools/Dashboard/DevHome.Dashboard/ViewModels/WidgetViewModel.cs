@@ -320,26 +320,18 @@ public partial class WidgetViewModel : ObservableObject
         Newtonsoft.Json.Linq.JObject objA = [];
         Newtonsoft.Json.Linq.JObject objB = [];
 
-        if (actionValue != null)
+        if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.Object)
         {
-            var dataType = actionValue.ValueType;
-            if (dataType == Windows.Data.Json.JsonValueType.Object)
-            {
-                objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
-            }
-            else if (dataType == Windows.Data.Json.JsonValueType.String)
-            {
-                objA = WrapJsonString(actionValue.Stringify());
-            }
+            objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
+        }
+        else if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.String)
+        {
+            objA = WrapJsonString(actionValue.Stringify());
         }
 
-        if (inputsObject != null)
+        if (inputsObject?.ValueType != Windows.Data.Json.JsonValueType.Null)
         {
-            var inputType = inputsObject.ValueType;
-            if (inputType != Windows.Data.Json.JsonValueType.Null)
-            {
-                objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
-            }
+            objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
         }
 
         objA.Merge(objB);
