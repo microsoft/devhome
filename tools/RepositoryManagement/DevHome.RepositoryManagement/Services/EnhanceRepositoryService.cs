@@ -68,7 +68,7 @@ public class EnhanceRepositoryService
     {
         try
         {
-            var repository = new LibGit2Sharp.Repository(repositoryLocation);
+            using var repository = new LibGit2Sharp.Repository(repositoryLocation);
             return repository.Head.FriendlyName;
         }
         catch (Exception ex)
@@ -83,7 +83,7 @@ public class EnhanceRepositoryService
     {
         try
         {
-            var repository = new LibGit2Sharp.Repository(repositoryLocation);
+            using var repository = new LibGit2Sharp.Repository(repositoryLocation);
             return repository.Network.Remotes.First().Url;
         }
         catch (Exception ex)

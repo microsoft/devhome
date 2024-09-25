@@ -226,7 +226,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
                 lineItem.HasCommitInformation = true;
                 lineItem.LatestCommitAuthor = commit.Author;
                 lineItem.LatestCommitSHA = commit.SHA;
-                lineItem.MinutesSinceLatestCommit = Convert.ToInt32(commit.TimeSinceCommit.TotalMinutes);
+                lineItem.MinutesSinceLatestCommit = Convert.ToInt32((DateTime.Now - commit.CommitDateTime).TotalMinutes);
             }
 
             lineItem.HasAConfigurationFile = repository.HasAConfigurationFile;
@@ -351,18 +351,16 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return Commit.DefaultCommit;
         }
 
-        TimeSpan timeElapsed = DateTime.UtcNow - DateTime.UnixEpoch;
-
         DateTime latestCommitDateTime;
 
         // latestCommitDateTime can be in the future causing diff(now - latestCommitDateTime)
         // to be negative.  Show the negative value.  Be transparent.
-        // also, the future date might have been on purpose.
-        if (DateTime.TryParse(latestCommitChangedDate.ToString(), out latestCommitDateTime))
+        // The future date might have been on purpose.
+        if (!DateTime.TryParse(latestCommitChangedDate.ToString(), out latestCommitDateTime))
         {
-            timeElapsed = DateTime.UtcNow - latestCommitDateTime;
+            latestCommitAuthorName = DateTime.MinValue;
         }
 
-        return new(latestCommitAuthorName.ToString(), timeElapsed, latestCommitSHA.ToString());
+        return new(latestCommitAuthorName.ToString(), latestCommitDateTime, latestCommitSHA.ToString());
     }
 }

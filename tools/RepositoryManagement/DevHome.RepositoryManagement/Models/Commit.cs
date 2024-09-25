@@ -7,18 +7,18 @@ namespace DevHome.RepositoryManagement.Models;
 
 public class Commit
 {
-    public static readonly Commit DefaultCommit = new(string.Empty, TimeSpan.FromMinutes(0), string.Empty);
+    public static readonly Commit DefaultCommit = new(string.Empty, DateTime.MinValue, string.Empty);
 
     public string Author { get; }
 
-    public TimeSpan TimeSinceCommit { get; }
+    public DateTime CommitDateTime { get; }
 
     public string SHA { get; }
 
-    public Commit(string author, TimeSpan timeSinceCommit, string sHA)
+    public Commit(string author, DateTime commitDateTime, string sHA)
     {
         Author = author;
-        TimeSinceCommit = timeSinceCommit;
+        CommitDateTime = commitDateTime;
         SHA = sHA;
     }
 }
