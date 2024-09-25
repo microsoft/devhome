@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
-using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
