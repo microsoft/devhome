@@ -19,12 +19,9 @@ public class RepositoryLineItemEvent : EventBase
 
     public string Action { get; } = string.Empty;
 
-    public string RepositoryName { get; } = string.Empty;
-
-    public RepositoryLineItemEvent(string action, string repositoryName)
+    public RepositoryLineItemEvent(string action)
     {
         Action = action;
-        RepositoryName = repositoryName;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

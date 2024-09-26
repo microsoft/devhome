@@ -12,9 +12,15 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, HostBuilderContext context)
     {
-        services.AddSingleton<DevHomeDatabaseContextFactory>();
+        services.AddSingleton<IDevHomeDatabaseContextFactory, DevHomeDatabaseContextFactory>();
 
         services.AddSingleton<RepositoryManagementDataAccessService>();
+
+        services.AddSingleton<ISchemaAccessFactory, SchemaAccessorFactory>();
+
+        services.AddSingleton<ICustomMigrationHandlerFactory, CustomMigrationHandlerFactory>();
+
+        services.AddSingleton<DatabaseMigrationService>();
 
         return services;
     }

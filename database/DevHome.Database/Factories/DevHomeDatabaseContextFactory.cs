@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Database.Services;
 using Serilog;
 
 namespace DevHome.Database.Factories;
 
-public class DevHomeDatabaseContextFactory
+public class DevHomeDatabaseContextFactory : IDevHomeDatabaseContextFactory
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevHomeDatabaseContextFactory));
 
-    public DevHomeDatabaseContext GetNewContext()
+    public IDevHomeDatabaseContext GetNewContext()
     {
         _log.Information("Making a new DevHome Database Context");
 

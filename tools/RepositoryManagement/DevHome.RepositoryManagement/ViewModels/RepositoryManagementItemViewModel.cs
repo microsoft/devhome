@@ -119,7 +119,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(MoveRepository), RepositoryName));
+                new RepositoryLineItemEvent(nameof(MoveRepository)));
         }
 
         var repository = GetRepositoryReportIfNull(nameof(MoveRepository));
@@ -164,7 +164,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync), RepositoryName));
+                new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync)));
         }
 
         if (dialogResult != ContentDialogResult.Primary)
@@ -213,7 +213,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
-                new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync), RepositoryName));
+                new RepositoryLineItemEvent(nameof(DeleteRepositoryAsync)));
         }
     }
 
@@ -308,7 +308,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log(
             "DevHome_RepositoryLineItem_Event",
             LogLevel.Critical,
-            new RepositoryLineItemEvent(action, repositoryName));
+            new RepositoryLineItemEvent(action));
 
         var processStartInfo = new ProcessStartInfo
         {
@@ -328,7 +328,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log(
             "DevHome_RepositoryLineItem_Event",
             LogLevel.Critical,
-            new RepositoryLineItemEvent(action, repositoryName));
+            new RepositoryLineItemEvent(action));
 
         var processStartInfo = new ProcessStartInfo
         {
@@ -390,7 +390,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().LogError(
         "DevHome_RepositoryLineItemError_Event",
         LogLevel.Critical,
-        new RepositoryLineItemErrorEvent(operation, ex.HResult, ex.Message, RepositoryName));
+        new RepositoryLineItemErrorEvent(operation, ex.HResult, ex.Message));
 
         _log.Error(ex, string.Empty);
     }
@@ -467,7 +467,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_RepositoryLineItem_Event",
                 LogLevel.Critical,
-                new RepositoryLineItemEvent(action, RepositoryName));
+                new RepositoryLineItemEvent(action));
 
             return null;
         }

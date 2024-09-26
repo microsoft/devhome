@@ -13,6 +13,9 @@ using Serilog;
 
 namespace DevHome.Database.Services;
 
+/// <summary>
+/// Provides actions to CRUD <see cref="Repository"/>'s.  This will update UpdatedUTCDate.
+/// </summary>
 public class RepositoryManagementDataAccessService
 {
     private const string EventName = "DevHome_RepositoryData_Event";
@@ -27,17 +30,27 @@ public class RepositoryManagementDataAccessService
     }
 
     /// <summary>
-    /// Makes a new Repository entity with the provided name and location then saves it
-    /// to the database.
+    /// Makes a new <see cref="Repository"/>.
     /// </summary>
-    /// <param name="repositoryName">The name of the repository to add.</param>
-    /// <param name="cloneLocation">The local location the repository is cloned to.</param>
-    /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
+    /// <param name="repositoryName">The name of the repository.</param>
+    /// <param name="cloneLocation">The full path to the root of the repository.</param>
+    /// <param name="repositoryUri">The uri used to clone the repository.</param>
+    /// <returns>The newly made Repository.  Null if an exception occured.  Can return a repository
+    /// from the database if it already exists.</returns>
     public Repository? MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
+    /// <summary>
+    /// Makes a new repository and incudes information about the configuration file.
+    /// </summary>
+    /// <param name="repositoryName">The name of the repository.</param>
+    /// <param name="cloneLocation">The full path to the root of the repository.</param>
+    /// <param name="configurationFileLocationAndName">Full path, including the file name, of the configuration file.</param>
+    /// <param name="repositoryUri">The uri used to clone the repository.</param>
+    /// <returns>The newly made Repository.  Null if an exception occured.  Can return a repository
+    /// from the database if it already exists.</returns>
     public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
@@ -85,6 +98,10 @@ public class RepositoryManagementDataAccessService
         return newRepo;
     }
 
+    /// <summary>
+    /// Gets all repositories stored in the database.
+    /// </summary>
+    /// <returns>A list of all repositories found in the database.</returns>
     public List<Repository> GetRepositories()
     {
         _log.Information("Getting repositories");
@@ -107,6 +124,12 @@ public class RepositoryManagementDataAccessService
         return repositories;
     }
 
+    /// <summary>
+    /// Retrives a single <see cref="Repository"/> from the database.
+    /// </summary>
+    /// <param name="repositoryName">The name of the repository.</param>
+    /// <param name="cloneLocation">The full path to the root of the repository.</param>
+    /// <returns>If found, the <see cref="Repository"/>.  Otherwise null.</returns>
     public Repository? GetRepository(string repositoryName, string cloneLocation)
     {
         _log.Information("Getting a repository");
@@ -114,6 +137,7 @@ public class RepositoryManagementDataAccessService
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
 #pragma warning disable CA1309 // Use ordinal string comparison
+            // https://learn.microsoft.com/ef/core/miscellaneous/collations-and-case-sensitivity#translation-of-built-in-net-string-operations
             return dbContext.Repositories.FirstOrDefault(x => x.RepositoryName!.Equals(repositoryName)
             && string.Equals(x.RepositoryClonePath, Path.GetFullPath(cloneLocation)));
 #pragma warning restore CA1309 // Use ordinal string comparison
@@ -130,24 +154,17 @@ public class RepositoryManagementDataAccessService
         return null;
     }
 
+    /// <summary>
+    /// Updates the clone location of a <see cref="Repository"/>
+    /// </summary>
+    /// <param name="repository">The repository to update.</param>
+    /// <param name="newLocation">The new clone location</param>
+    /// <returns>True if the update was successful.  Otherwise false.</returns>
     public bool UpdateCloneLocation(Repository repository, string newLocation)
     {
         try
         {
-            using var dbContext = _databaseContextFactory.GetNewContext();
-            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
-            if (repositoryToUpdate == null)
-            {
-                _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
-                return false;
-            }
-
-            // TODO: Figure out a method to update the entity in the database and
-            // the entity in memory.
-            // Maybe update the tracking information on repository.  This way
-            // EF will catch the change.
             repository.RepositoryClonePath = newLocation;
-            repositoryToUpdate.RepositoryClonePath = newLocation;
 
             if (repository.HasAConfigurationFile)
             {
@@ -155,9 +172,12 @@ public class RepositoryManagementDataAccessService
                 var configurationFileName = Path.GetFileName(configurationFolder);
 
                 repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
-                repositoryToUpdate.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
             }
 
+            repository.UpdatedUTCDate = DateTime.UtcNow;
+
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            dbContext.Repositories.Update(repository);
             dbContext.SaveChanges();
         }
         catch (Exception ex)
@@ -173,21 +193,20 @@ public class RepositoryManagementDataAccessService
         return true;
     }
 
+    /// <summary>
+    /// Sets the IsHidden property of the <see cref="Repository"/>.
+    /// </summary>
+    /// <param name="repository">The repository to update.</param>
+    /// <param name="isHidden">The value to put into the database.</param>
     public void SetIsHidden(Repository repository, bool isHidden)
     {
         try
         {
-            using var dbContext = _databaseContextFactory.GetNewContext();
-            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
-            if (repositoryToUpdate == null)
-            {
-                _log.Warning($"{nameof(SetIsHidden)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
-                return;
-            }
-
-            repositoryToUpdate.IsHidden = isHidden;
             repository.IsHidden = isHidden;
+            repository.UpdatedUTCDate = DateTime.UtcNow;
 
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            dbContext.Repositories.Update(repository);
             dbContext.SaveChanges();
         }
         catch (Exception ex)
@@ -201,20 +220,16 @@ public class RepositoryManagementDataAccessService
         }
     }
 
+    /// <summary>
+    /// Removes the <see cref="Repository"/> from the database.
+    /// </summary>
+    /// <param name="repository">The repository to remove.</param>
     public void RemoveRepository(Repository repository)
     {
         try
         {
             using var dbContext = _databaseContextFactory.GetNewContext();
-            var repositoryToRemove = dbContext.Repositories.Find(repository.RepositoryId);
-            if (repositoryToRemove == null)
-            {
-                _log.Warning($"{nameof(RemoveRepository)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
-                return;
-            }
-
-            dbContext.Repositories.Remove(repositoryToRemove);
-
+            dbContext.Repositories.Remove(repository);
             dbContext.SaveChanges();
         }
         catch (Exception ex)
