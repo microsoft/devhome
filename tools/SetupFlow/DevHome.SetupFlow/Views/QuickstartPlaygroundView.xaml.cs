@@ -12,8 +12,10 @@ using DevHome.Contracts.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.System;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -322,6 +324,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     private void CustomPrompt_TextChanged(object sender, TextChangedEventArgs e)
     {
         PromptCharacterCount.Text = $"{CustomPrompt.Text.Length} / {CustomPrompt.MaxLength}";
+        ViewModel.IsPromptGuidanceVisible = true;
     }
 
     private void CustomPrompt_GotFocus(object sender, RoutedEventArgs e)
@@ -330,6 +333,29 @@ public sealed partial class QuickstartPlaygroundView : UserControl
         if (promptTextBox != null)
         {
             promptTextBox.SelectionStart = promptTextBox.Text.Length;
+        }
+    }
+
+    private async void CustomPrompt_KeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Enter)
+        {
+            ViewModel.ShowExamplePrompts = false;
+
+            var textBox = sender as TextBox;
+
+            if (textBox != null)
+            {
+                var message = textBox.Text;
+
+                ViewModel.ChatMessages.Add(new ChatStyleMessage
+                {
+                    Name = message,
+                    Type = ChatStyleMessage.ChatMessageItemType.Request,
+                });
+
+                await ViewModel.GenerateChatStyleCompetions(message);
+            }
         }
     }
 }

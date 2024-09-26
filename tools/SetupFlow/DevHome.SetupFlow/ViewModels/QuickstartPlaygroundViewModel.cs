@@ -53,11 +53,15 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     private readonly ObservableCollection<ExplorerItem> _dataSource = new();
 
+    private readonly ObservableCollection<ChatStyleMessage> _chatMessages = new();
+
     private readonly IExperimentationService _experimentationService;
 
     public Guid ActivityId { get; }
 
     private IQuickStartProjectGenerationOperation _quickStartProjectGenerationOperation = null!;
+
+    private IQuickStartChatStyleGenerationOperation _quickStartChatStyleGeneration = null!;
 
     private QuickStartProjectResult _quickStartProject = null!;
 
@@ -86,6 +90,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private string _launchButtonText = string.Empty;
 
     public ObservableCollection<ExplorerItem> DataSource => _dataSource;
+
+    public ObservableCollection<ChatStyleMessage> ChatMessages => _chatMessages;
 
     public ObservableCollection<QuickStartProjectProvider> QuickstartProviders { get; private set; } = [];
 
@@ -139,6 +145,9 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private bool _isErrorViewVisible = false;
 
     [ObservableProperty]
+    private bool _isPromptGuidanceVisible = true;
+
+    [ObservableProperty]
     private string _errorMessage = string.Empty;
 
     [ObservableProperty]
@@ -173,6 +182,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(LaunchProjectHostCommand), nameof(SaveProjectCommand))]
     private bool _enableProjectButtons = false;
+
+    private int _stepCounter;
 
     public QuickstartPlaygroundViewModel(
         ISetupFlowStringResource stringResource,
@@ -435,6 +446,9 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     {
         try
         {
+            // Hide prompt guidance once generating project
+            IsPromptGuidanceVisible = false;
+
             var userPrompt = CustomPrompt;
 
             // TODO: Replace this (and throughout) with proper diagnostics / logging
@@ -464,6 +478,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             EnableQuickstartProjectCombobox = false;
             IsPromptTextBoxReadOnly = true;
             EnableProjectButtons = false;
+            SetupChat();
 
             IProgress<QuickStartProjectProgress> progress = new Progress<QuickStartProjectProgress>(UpdateProgress);
 
@@ -556,6 +571,26 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         CustomPrompt = selectedPrompt;
     }
 
+    public async Task GenerateChatStyleCompetions(string message)
+    {
+        _stepCounter++;
+        if (ActiveQuickstartSelection != null)
+        {
+            _quickStartChatStyleGeneration = ActiveQuickstartSelection.CreateChatStyleGenerationOperation(message);
+            var result = await _quickStartChatStyleGeneration.GenerateChatStyleResponse();
+            ChatMessages.Add(new ChatStyleMessage
+            {
+                Name = result.ChatResponse.ToString(),
+                Type = ChatStyleMessage.ChatMessageItemType.Response,
+            });
+
+            if (result.ChatResponse.ToString().Contains("great prompt"))
+            {
+                CustomPrompt = message;
+            }
+        }
+    }
+
     [RelayCommand]
     public void OnQuickstartSelectionChanged()
     {
@@ -594,6 +629,10 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             IsQuickstartProjectComboboxExpanded = false;
             PromptTextBoxPlaceholder = StringResource.GetLocalized("QuickstartPlaygroundGenerationPromptPlaceholder");
             ReferenceSampleUri = null;
+            ChatMessages.Clear();
+            _stepCounter = 0;
+
+            SetupChat();
 
             // Update our setting to indicate the user preference
             _localSettingsService.SaveSettingAsync("QuickstartPlaygroundSelectedProvider", ActiveQuickstartSelection.DisplayName);
@@ -609,6 +648,23 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             IsLaunchButtonVisible = false;
             ConfigureForProviderSelection();
         }
+    }
+
+    private void SetupChat()
+    {
+        ChatMessages.Clear();
+
+        ChatMessages.Add(new ChatStyleMessage
+        {
+            Name = "Hello! What kind of project would you like to create? Try a sample prompt or write one of your own.",
+            Type = ChatStyleMessage.ChatMessageItemType.Response,
+        });
+
+        ChatMessages.Add(new ChatStyleMessage
+        {
+            Name = "If you would like to help us guide you to a good prompt, hit the Enter/Return key on your keyboard after typing in your prompt. Otherwise, simply click on Generate to ignore prompt guidance.",
+            Type = ChatStyleMessage.ChatMessageItemType.Response,
+        });
     }
 
     [RelayCommand]
@@ -697,5 +753,82 @@ public class ExplorerItemTemplateSelector : DataTemplateSelector
     {
         var explorerItem = (ExplorerItem)item;
         return explorerItem.Type == ExplorerItem.ExplorerItemType.Folder ? FolderTemplate : FileTemplate;
+    }
+}
+
+public class ChatStyleMessage : INotifyPropertyChanged
+{
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public enum ChatMessageItemType
+    {
+        Request,
+        Response,
+    }
+
+    public string? Name
+    {
+        get; set;
+    }
+
+    public ChatMessageItemType Type
+    {
+        get; set;
+    }
+
+    public string? FullPath
+    {
+        get; set;
+    }
+
+    private ObservableCollection<ChatMessageItemType>? _children;
+
+    public ObservableCollection<ChatMessageItemType> Children
+    {
+        get
+        {
+            _children ??= new ObservableCollection<ChatMessageItemType>();
+            return _children;
+        }
+        set => _children = value;
+    }
+
+    private bool _isExpanded;
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded != value)
+            {
+                _isExpanded = value;
+                NotifyPropertyChanged(nameof(IsExpanded));
+            }
+        }
+    }
+
+    private void NotifyPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
+
+public class ChatMessageTemplateSelector : DataTemplateSelector
+{
+    public DataTemplate? ChatRequestMessageTemplate
+    {
+        get; set;
+    }
+
+    public DataTemplate? ChatResponseMessageTemplate
+    {
+        get; set;
+    }
+
+    protected override DataTemplate? SelectTemplateCore(object item)
+    {
+        var explorerItem = (ChatStyleMessage)item;
+        return explorerItem.Type == ChatStyleMessage.ChatMessageItemType.Request ? ChatRequestMessageTemplate : ChatResponseMessageTemplate;
     }
 }
