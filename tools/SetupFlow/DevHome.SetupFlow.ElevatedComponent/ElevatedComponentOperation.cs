@@ -67,7 +67,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     public IAsyncOperationWithProgress<ElevatedInstallTaskResult, ElevatedInstallTaskProgress> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
     {
         var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName, version);
-        return AsyncInfo.Run<ElevatedInstallTaskResult, ElevatedInstallTaskProgress>(async (token, progress) =>
+        return AsyncInfo.Run<ElevatedInstallTaskResult, ElevatedInstallTaskProgress>(async (_, progress) =>
         {
             return await ValidateAndExecuteAsync(
                 taskArguments,
@@ -75,7 +75,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
                 {
                     _logger.LogInformation($"Installing package elevated: '{packageId}' from '{catalogName}'");
                     var task = new ElevatedInstallTask();
-                    var install = task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
+                    var install = task.InstallPackageAsync(taskArguments.PackageId, taskArguments.CatalogName, version, activityId);
                     install.Progress += (_, p) => progress.Report(p);
                     return await install;
                 },

@@ -218,7 +218,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <returns>An awaitable operation.</returns>
     IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             try
             {

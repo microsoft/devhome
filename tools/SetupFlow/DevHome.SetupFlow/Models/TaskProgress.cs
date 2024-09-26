@@ -3,8 +3,15 @@
 
 namespace DevHome.SetupFlow.Models;
 
-public class TaskProgress
+/// <summary>
+/// Represents the progress of a setup task.
+/// </summary>
+public sealed class TaskProgress
 {
+    public TaskProgress()
+    {
+    }
+
     public TaskProgress(string message)
     {
         Message = message;

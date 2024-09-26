@@ -35,7 +35,7 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, ElevatedInstallTaskProgress> InstallPackage(string packageId, string catalogName, string version, Guid activityId)
+    public IAsyncOperationWithProgress<ElevatedInstallTaskResult, ElevatedInstallTaskProgress> InstallPackageAsync(string packageId, string catalogName, string version, Guid activityId)
     {
         return AsyncInfo.Run<ElevatedInstallTaskResult, ElevatedInstallTaskProgress>(async (token, progress) =>
         {
@@ -44,16 +44,7 @@ public sealed class ElevatedInstallTask
             {
                 var winget = ElevatedComponentOperation.Host.Services.GetRequiredService<IWinGet>();
                 var install = winget.InstallPackageAsync(new WinGetPackageUri(catalogName, packageId, new(version)), activityId);
-                install.Progress += (_, p) =>
-                {
-                    progress.Report(new(
-                        (int)p.State,
-                        p.BytesDownloaded,
-                        p.BytesRequired,
-                        p.DownloadProgress,
-                        p.InstallationProgress));
-                };
-
+                install.Progress += (_, p) => progress.Report(new(p));
                 var installResult = await install;
                 result.TaskAttempted = true;
                 result.RebootRequired = installResult.RebootRequired;
@@ -79,31 +70,4 @@ public sealed class ElevatedInstallTask
             return result;
         });
     }
-}
-
-public sealed class ElevatedInstallTaskProgress
-{
-    public ElevatedInstallTaskProgress(
-        int state,
-        ulong bytesDownloaded,
-        ulong bytesRequired,
-        double downloadProgress,
-        double installationProgress)
-    {
-        State = state;
-        BytesDownloaded = bytesDownloaded;
-        BytesRequired = bytesRequired;
-        DownloadProgress = downloadProgress;
-        InstallationProgress = installationProgress;
-    }
-
-    public int State { get; }
-
-    public ulong BytesDownloaded { get; }
-
-    public ulong BytesRequired { get; }
-
-    public double DownloadProgress { get; }
-
-    public double InstallationProgress { get; }
 }

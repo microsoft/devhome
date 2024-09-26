@@ -59,7 +59,9 @@ public static class StringResourceKey
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
+    public static readonly string PrepareInstallPackage = nameof(PrepareInstallPackage);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
+    public static readonly string DownloadingPackage = nameof(DownloadingPackage);
     public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
     public static readonly string MainPageEnvironmentSetupGroup = nameof(MainPageEnvironmentSetupGroup);
     public static readonly string MainPageQuickConfigurationGroup = nameof(MainPageQuickConfigurationGroup);

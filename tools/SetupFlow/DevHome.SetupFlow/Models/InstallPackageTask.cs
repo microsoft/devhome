@@ -10,7 +10,6 @@ using DevHome.Services.WindowsPackageManager.Exceptions;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.ElevatedComponent.Tasks;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Management.Deployment;
@@ -24,7 +23,7 @@ namespace DevHome.SetupFlow.Models;
 public class InstallPackageTask : ISetupTask
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(InstallPackageTask));
-    private static readonly string MSStoreCatalogId = "StoreEdgeFD";
+    private const string MSStoreCatalogId = "StoreEdgeFD";
 
     private readonly IWinGet _winget;
     private readonly IWinGetPackage _package;
@@ -90,7 +89,7 @@ public class InstallPackageTask : ISetupTask
     {
         return new TaskMessages
         {
-            Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
+            Executing = _stringResource.GetLocalized(StringResourceKey.PrepareInstallPackage, _package.Name),
             Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
             Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
             NeedsReboot = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
@@ -140,7 +139,7 @@ public class InstallPackageTask : ISetupTask
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
                 var packageUri = _package.GetUri(_installVersion);
                 var install = _winget.InstallPackageAsync(packageUri, _activityId);
-                install.Progress += (_, p) => progress.Report(new(GetProgressMessage(p)));
+                install.Progress += (_, p) => progress.Report(GetProgress(p));
                 var installResult = await install;
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
@@ -174,15 +173,15 @@ public class InstallPackageTask : ISetupTask
             {
                 _log.Information($"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id), MessageSeverityKind.Info);
-                var elevated = elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
-                elevated.Progress += (_, p) => progress.Report(new(GetProgressMessage(p)));
-                var elevatedResult = await elevated;
-                WasInstallSuccessful = elevatedResult.TaskSucceeded;
-                RequiresReboot = elevatedResult.RebootRequired;
-                _installResultStatus = (InstallResultStatus)elevatedResult.Status;
-                _extendedErrorCode = elevatedResult.ExtendedErrorCode;
-                _installerErrorCode = elevatedResult.InstallerErrorCode;
-                return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+                var install = elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion, _activityId);
+                install.Progress += (_, p) => progress.Report(GetProgress(p));
+                var installResult = await install;
+                WasInstallSuccessful = installResult.TaskSucceeded;
+                RequiresReboot = installResult.RebootRequired;
+                _installResultStatus = (InstallResultStatus)installResult.Status;
+                _extendedErrorCode = installResult.ExtendedErrorCode;
+                _installerErrorCode = installResult.InstallerErrorCode;
+                return installResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
@@ -192,29 +191,32 @@ public class InstallPackageTask : ISetupTask
         });
     }
 
-    private string GetProgressMessage(Projection.DevHome.SetupFlow.ElevatedComponent.Tasks.ElevatedInstallTaskProgress progress)
+    private TaskProgress GetProgress(Projection.DevHome.SetupFlow.ElevatedComponent.Helpers.ElevatedInstallTaskProgress progress)
     {
-        return GetProgressMessage(new WinGetInstallPackageProgress(
+        return GetProgress(new WinGetInstallPackageProgress(
             (WinGetInstallPackageProgressState)progress.State,
-            progress.BytesDownloaded,
-            progress.BytesRequired,
             progress.DownloadProgress,
             progress.InstallationProgress));
     }
 
-    private string GetProgressMessage(WinGetInstallPackageProgress progress)
+    private TaskProgress GetProgress(WinGetInstallPackageProgress progress)
     {
+        // Package installing
         if (progress.State == WinGetInstallPackageProgressState.Installing)
         {
-            return $"Installing {(int)(progress.InstallationProgress * 100)}%";
+            var percentage = Math.Round(progress.InstallationProgress * 100);
+            return new(_stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name, percentage));
         }
 
+        // Package downloading
         if (progress.State == WinGetInstallPackageProgressState.Downloading)
         {
-            return $"Downloading {(int)(progress.DownloadProgress * 100)}%";
+            var percentage = Math.Round(progress.DownloadProgress * 100);
+            return new(_stringResource.GetLocalized(StringResourceKey.DownloadingPackage, _package.Name, percentage));
         }
 
-        return null;
+        // Empty progress
+        return new();
     }
 
     private string GetInstallResultMessage()

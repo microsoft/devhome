@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
-using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services;

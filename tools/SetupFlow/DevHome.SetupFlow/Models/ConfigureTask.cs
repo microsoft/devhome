@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
@@ -15,7 +14,6 @@ using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -94,7 +92,7 @@ public class ConfigureTask : ISetupTask
 
     IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             try
             {
@@ -123,7 +121,7 @@ public class ConfigureTask : ISetupTask
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
     IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);

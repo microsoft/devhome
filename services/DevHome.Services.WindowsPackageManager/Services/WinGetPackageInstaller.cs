@@ -5,7 +5,6 @@ using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
-using ABI.Windows.Foundation;
 using DevHome.Services.Core.Extensions;
 using DevHome.Services.WindowsPackageManager.COM;
 using DevHome.Services.WindowsPackageManager.Contracts;
@@ -54,7 +53,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
 
         try
         {
-            return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (token, progress) =>
+            return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (_, progress) =>
             {
                 // 1. Find package
                 var package = await FindPackageOrThrowAsync(catalog, packageId);

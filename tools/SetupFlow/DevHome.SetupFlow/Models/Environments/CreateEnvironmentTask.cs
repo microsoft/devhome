@@ -139,9 +139,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
 
     IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
-            await Task.CompletedTask;
             _log.Information("Executing the operation. Waiting to be signalled that the adaptive card session has ended");
 
             // Either wait until we're signaled to continue execution or we times out after 1 minute. If this task is initiated
@@ -195,6 +194,7 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             CreationOperationStarted = true;
 
             _log.Information("Successfully started the creation operation");
+            await Task.CompletedTask;
             return TaskFinishedState.Success;
         });
     }
@@ -204,8 +204,8 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             // No admin rights required for this task. This shouldn't ever be invoked since the RequiresAdmin property is always false.
-            await Task.CompletedTask;
             _log.Error("Admin execution is not required for the create environment task");
+            await Task.CompletedTask;
             return TaskFinishedState.Failure;
         });
     }

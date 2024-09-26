@@ -5,18 +5,18 @@ using Microsoft.Management.Deployment;
 
 namespace DevHome.Services.WindowsPackageManager.Models;
 
+/// <summary>
+/// Represents the progress of a Windows Package Manager installation
+/// operation.
+/// </summary>
 public sealed class WinGetInstallPackageProgress
 {
     public WinGetInstallPackageProgress(
         WinGetInstallPackageProgressState state,
-        ulong bytesDownloaded,
-        ulong bytesRequired,
         double downloadProgress,
         double installationProgress)
     {
         State = state;
-        BytesDownloaded = bytesDownloaded;
-        BytesRequired = bytesRequired;
         DownloadProgress = downloadProgress;
         InstallationProgress = installationProgress;
     }
@@ -24,19 +24,22 @@ public sealed class WinGetInstallPackageProgress
     internal WinGetInstallPackageProgress(InstallProgress progress)
     {
         State = (WinGetInstallPackageProgressState)progress.State;
-        BytesDownloaded = progress.BytesDownloaded;
-        BytesRequired = progress.BytesRequired;
         DownloadProgress = progress.DownloadProgress;
         InstallationProgress = progress.InstallationProgress;
     }
 
+    /// <summary>
+    /// Gets the current state of the installation operation.
+    /// </summary>
     public WinGetInstallPackageProgressState State { get; }
 
-    public ulong BytesDownloaded { get; }
-
-    public ulong BytesRequired { get; }
-
+    /// <summary>
+    /// Gets the download percentage complete.
+    /// </summary>
     public double DownloadProgress { get; }
 
+    /// <summary>
+    /// Gets the installation percentage complete.
+    /// </summary>
     public double InstallationProgress { get; }
 }

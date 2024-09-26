@@ -388,7 +388,7 @@ public class ConfigureTargetTask : ISetupTask
 
     public IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> Execute()
     {
-        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             try
             {

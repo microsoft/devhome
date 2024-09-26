@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
@@ -605,15 +604,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 result = taskInformation.TaskToExecute.Execute();
             }
 
+            // Update the message as new progress is reported.
             result.Progress += (_, progress) =>
             {
-                dispatcherQueue.TryEnqueue(() =>
+                if (!string.IsNullOrEmpty(progress?.Message))
                 {
-                    if (!string.IsNullOrEmpty(progress.Message))
-                    {
-                        loadingMessage.MessageToShow = $"{taskInformation.MessageToShow} ({progress.Message})";
-                    }
-                });
+                    dispatcherQueue.TryEnqueue(() => loadingMessage.MessageToShow = progress.Message);
+                }
             };
 
             var taskFinishedState = await result;

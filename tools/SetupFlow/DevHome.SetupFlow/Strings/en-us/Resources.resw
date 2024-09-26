@@ -353,9 +353,17 @@
     <value>Installed {0} (restart required)</value>
     <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
   </data>
+  <data name="PrepareInstallPackage" xml:space="preserve">
+    <value>Preparing to install {0} ...</value>
+    <comment>{Locked="{0}"} Label displayed when a package is being prepared to be installed. {0} is replaced by the package name.</comment>
+  </data>
   <data name="InstallingPackage" xml:space="preserve">
-    <value>Installing {0} ...</value>
-    <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
+    <value>Installing {0} {1}%</value>
+    <comment>{Locked="{0}","{1}"} Label displayed when a package is being installed. {0} is replaced by the package name. {1} is replaced by a percentage value between 0 and 100.</comment>
+  </data>
+  <data name="DownloadingPackage" xml:space="preserve">
+    <value>Downloading {0} {1}%</value>
+    <comment>{Locked="{0}","{1}"} Label displayed when a package is being downloaded. {0} is replaced by the package name. {1} is replaced by a percentage value between 0 and 100.</comment>
   </data>
   <data name="InstallPackageError" xml:space="preserve">
     <value>Couldn't install {0}</value>

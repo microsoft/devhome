@@ -3,11 +3,8 @@
 
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.Contracts;
-using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
-using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services.Operations;
@@ -37,8 +34,10 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     /// <inheritdoc />
     public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
     {
-        return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (token, progress) =>
+        return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (_, progress) =>
         {
+            // If recovery was initiated due to RPC failure, we need to
+            // re-attempt the operation and restart the progress reporting.
             return await _recovery.DoWithRecoveryAsync(async () =>
             {
                 var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
