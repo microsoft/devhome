@@ -10,10 +10,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
 using Serilog;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
+using Windows.Win32.System.Threading;
 
 namespace DevHome.DevDiagnostics.Models;
 
@@ -119,7 +124,15 @@ public class WERAnalyzer : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void PerformAnalysis(WERReport report)
+    private uint ProcThreadAttributeValue(int number, bool thread, bool input, bool additive)
+    {
+        return (uint)(number & 0x0000FFFF | // PROC_THREAD_ATTRIBUTE_NUMBER
+                     (thread ? 0x00010000 : 0) | // PROC_THREAD_ATTRIBUTE_THREAD
+                     (input ? 0x00020000 : 0) | // PROC_THREAD_ATTRIBUTE_INPUT
+                     (additive ? 0x00040000 : 0)); // PROC_THREAD_ATTRIBUTE_ADDITIVE
+    }
+
+    public unsafe void PerformAnalysis(WERReport report)
     {
         // See if we have a cached analysis
         var analysisFilePath = GetCachedResultsFileName(report);
@@ -138,6 +151,33 @@ public class WERAnalyzer : IDisposable
             // Generate the analysis
             try
             {
+                LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList = default(LPPROC_THREAD_ATTRIBUTE_LIST);
+                nuint size = 0;
+
+                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size))
+                {
+                    throw new InvalidOperationException();
+                }
+
+                lpAttributeList = new LPPROC_THREAD_ATTRIBUTE_LIST((void*)Marshal.AllocHGlobal((int)size));
+
+                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size))
+                {
+                    throw new InvalidOperationException();
+                }
+
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
+                uint PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES = ProcThreadAttributeValue(9, false, true, false); // 9 - ProcThreadAttributeSecurityCapabilities
+                uint PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY = ProcThreadAttributeValue(15, false, true, false); // 15 - ProcThreadAttributeAllApplicationPackagesPolicy
+#pragma warning restore SA1312 // Variable names should begin with lower-case letter
+
+                SID_AND_ATTRIBUTES[] sidAndAttributes = new SID_AND_ATTRIBUTES[1];
+
+                PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, (void*)&sidAndAttributes, 1, null, (nuint*)null);
+
+                // Add LPAC
+                uint allApplicationPackagesPolicy = 1; //  PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
+                PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY, &allApplicationPackagesPolicy, sizeof(uint), null, (nuint*)null);
                 FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
 
                 var startInfo = new ProcessStartInfo()

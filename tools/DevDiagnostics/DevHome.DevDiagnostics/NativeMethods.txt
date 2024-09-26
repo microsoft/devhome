@@ -4,6 +4,7 @@ CloseClipboard
 CoCreateInstance
 CombineRgn
 CreateEllipticRgn
+CreateProcess
 CreateRectRgn
 CreateRoundRectRgn
 DefSubclassProc
@@ -41,6 +42,7 @@ GlobalAddAtom
 GlobalDeleteAtom
 GlobalLock
 GlobalUnlock
+InitializeProcThreadAttributeList
 IsIconic
 IsImmersiveProcess
 IsWindow
@@ -76,6 +78,7 @@ ShowWindow
 SystemParametersInfo
 UnhookWinEvent
 UnregisterHotKey
+UpdateProcThreadAttribute
 WaitForSingleObject
 WindowFromPoint
 CF_*
@@ -102,11 +105,13 @@ MOD_*
 PROCESS_BASIC_INFORMATION
 PROCESS_INFORMATION_CLASS
 PROCESS_MACHINE_INFORMATION
+PROC_THREAD_ATTRIBUTE_*
 RM_APP_TYPE
 RM_UNIQUE_PROCESS
 RM_PROCESS_INFO
 RM_REBOOT_REASON
 SECTION_FLAGS
+SID_AND_ATTRIBUTES
 SUBCLASSPROC
 SW_*
 VIRTUAL_KEY
