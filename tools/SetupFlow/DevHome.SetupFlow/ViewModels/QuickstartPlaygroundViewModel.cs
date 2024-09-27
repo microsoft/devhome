@@ -613,6 +613,10 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
                 IsPromptValid = true;
                 CustomPrompt = message;
             }
+            else
+            {
+                IsPromptValid = false;
+            }
         }
     }
 
@@ -657,6 +661,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             ReferenceSampleUri = null;
             ChatMessages.Clear();
             _stepCounter = 0;
+            _initialMsgCount = 0;
 
             SetupChat();
 
@@ -679,6 +684,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private void SetupChat()
     {
         ChatMessages.Clear();
+        _initialMsgCount = 0;
 
         ChatMessages.Add(new ChatStyleMessage
         {
@@ -692,7 +698,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             Type = ChatStyleMessage.ChatMessageItemType.Response,
         });
 
-        _initialMsgCount = ChatMessages.Count();
+        _initialMsgCount = ChatMessages.Count;
     }
 
     [RelayCommand]
