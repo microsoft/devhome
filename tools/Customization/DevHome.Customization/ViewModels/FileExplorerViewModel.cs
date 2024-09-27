@@ -70,9 +70,11 @@ public partial class FileExplorerViewModel : ObservableObject
         {
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
+            var position = 0;
             foreach (KeyValuePair<string, string> data in repoCollection)
             {
-                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value));
+                position++;
+                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, position, repoCollection.Count));
             }
         }
     }

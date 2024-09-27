@@ -17,7 +17,7 @@
             x:Uid="AddRepositoriesCard"
             Grid.Column="1">
             <Button 
-                x:Uid="AddFolderButton" 
+                x:Uid="AddFolderButton"
                 Style="{ThemeResource AccentButtonStyle}" 
                 Command="{x:Bind ViewModel.AddFolderClickCommand}" />
         </ctControls:SettingsCard>
@@ -40,7 +40,10 @@
                             Orientation="Horizontal">
                             <DropDownButton 
                                 Content="{Binding SourceControlProviderDisplayName}"
-                                ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}">
+                                AutomationProperties.Name="{Binding RepoPathMapping}"
+                                ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}"
+                                AutomationProperties.PositionInSet="{Binding Position}"
+                                AutomationProperties.SizeOfSet="{Binding Size}">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout 
                                         Opening="SourceControlProviderMenuFlyout_Opening"
@@ -48,7 +51,9 @@
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>
-                            <Button 
+                            <Button
+                                AutomationProperties.PositionInSet="{Binding Position}"
+                                AutomationProperties.SizeOfSet="{Binding Size}"
                                 x:Uid="MoreOptionsButton"
                                 Content="&#xe712;"
                                 Height="36" 
