@@ -132,6 +132,7 @@ extends:
             targetPath: DevHomeStub\DevHomeStubPackage\AppxPackages
 
     - stage: Build_DevHome
+      dependsOn: []
       jobs:
       - ${{ each configuration in parameters.Configurations }}:
         - ${{ each platform in parameters.Platforms }}:
@@ -374,7 +375,7 @@ extends:
 
     - stage: Test
       dependsOn: [Build_DevHome]
-      condition: ${{ containsValue(parameters.Configurations, 'release') }}
+      condition: and(in(dependencies.Build_DevHome.result, 'Succeeded'), ${{ containsValue(parameters.Configurations, 'release') }})
       jobs:
       - job: DevHomeWin11x64Test
         pool: server
@@ -550,8 +551,7 @@ extends:
             targetPath: AppxBundles\Debug
 
     - stage: Store_Publish
-      dependsOn:
-      - Build_MsixBundle
+      dependsOn: [Build_MsixBundle, Test]
       condition: |
         and
         (
