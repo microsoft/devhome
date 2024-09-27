@@ -88,6 +88,7 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         // Setup event handlers
         comboBox.SelectionChanged += RefreshCardOnSelectionChanged;
         comboBox.Unloaded += RemoveEventHandler;
+        comboBox.Loaded += AddEventHandlers;
 
         // Use the choiceSets Id as the name of the combo box.
         comboBox.Name = choiceSet.Id;
@@ -230,11 +231,15 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         {
             parentComboBox.SelectionChanged -= RefreshCardOnSelectionChanged;
             parentComboBox.Unloaded -= RemoveEventHandler;
-            _childChoiceSetDataForOnParentSelectionChanged.Remove(parentComboBox);
-            if (_choiceSetParentIdToChildIdMap.TryGetValue(parentComboBox.Name, out var childComboBoxId))
-            {
-                _choiceSetIdToUIElementMap.Remove(childComboBoxId);
-            }
+        }
+    }
+
+    private void AddEventHandlers(object sender, object args)
+    {
+        if (sender is ComboBox parentComboBox)
+        {
+            parentComboBox.SelectionChanged += RefreshCardOnSelectionChanged;
+            parentComboBox.Unloaded += RemoveEventHandler;
         }
     }
 

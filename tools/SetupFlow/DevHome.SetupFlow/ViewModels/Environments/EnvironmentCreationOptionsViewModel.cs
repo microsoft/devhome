@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
@@ -19,10 +21,21 @@ using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
+
+public enum CreationPageStateKind
+{
+    AccountSelection,
+    InitialPageAdaptiveCardError,
+    InitialPageAdaptiveCardLoaded,
+    InitialPageAdaptiveCardLoading,
+    OtherPageAdaptiveCardLoading,
+    OtherPageAdaptiveCardLoaded,
+}
 
 /// <summary>
 /// View model for the Configure Environment page in the setup flow. This page will display an adaptive card that is provided by the selected
@@ -59,17 +72,22 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
 
     private AdaptiveInputs _userInputsFromAdaptiveCard;
 
-    private bool _isFirstTimeLoadingNewFlow;
-
-    [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
-    [ObservableProperty]
-    private bool _isAdaptiveCardSessionLoaded;
-
     [ObservableProperty]
     private string _sessionErrorMessage;
 
     [ObservableProperty]
     private string _sessionErrorTitle;
+
+    [NotifyPropertyChangedFor(nameof(DeveloperIdWrappers))]
+    [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
+    [ObservableProperty]
+    private CreationPageStateKind _creationPageState;
+
+    [ObservableProperty]
+    private ObservableCollection<DeveloperIdWrapper> _developerIdWrappers = new();
+
+    [ObservableProperty]
+    private DeveloperIdWrapper _selectedDeveloperId;
 
     [ObservableProperty]
     private string _adaptiveCardLoadingMessage;
@@ -105,7 +123,6 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         _elementRegistration.Set(DevHomeContentDialogContent.AdaptiveElementType, new DevHomeContentDialogContentParser());
         _adaptiveCardRenderingService = renderingService;
         Orchestrator.CurrentSetupFlowKind = SetupFlowKind.CreateEnvironment;
-        _isFirstTimeLoadingNewFlow = true;
     }
 
     /// <summary>
@@ -139,11 +156,13 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     /// </summary>
     protected async override Task OnEachNavigateToAsync()
     {
+        ResetErrorUI();
+
         // Don't get a new adaptive card session if we went from review page back to
         // configure environment creation page.
         if (Orchestrator.IsNavigatingBackward)
         {
-            ResetErrorUI();
+            CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardLoading;
             Orchestrator.AdaptiveCardFlowNavigator.GoToPreviousPage();
             return;
         }
@@ -153,21 +172,45 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
         CanGoToNextPage = false;
         var curSelectedProviderId = _curProviderDetails?.ComputeSystemProvider?.Id ?? string.Empty;
         var upcomingSelectedProviderId = _upcomingProviderDetails?.ComputeSystemProvider?.Id;
-        _isFirstTimeLoadingNewFlow = true;
 
         // Selected compute system provider changed so we need to update the adaptive card in the UI
         // with a new adaptive card from the new provider.
         _curProviderDetails = _upcomingProviderDetails;
-
-        IsAdaptiveCardSessionLoaded = false;
+        SelectedDeveloperId = new DeveloperIdWrapper(new EmptyDeveloperId());
         AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationUILoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
+        DeveloperIdWrappers.Clear();
+        CreationPageState = CreationPageStateKind.AccountSelection;
+
+        // The DeveloperId count will always be at least one for every provider. If there is only one,
+        // then the select account combo box will not be shown and the adaptive card for this provider will be shown.
+        if (_curProviderDetails.DeveloperIds.Count == 1)
+        {
+            PopulateAdaptiveCardSectionAsync(_curProviderDetails.DeveloperIds[0].DeveloperId);
+            return;
+        }
+
+        // If execution ends here, the view will only show a combo box with a list of developerIds.
+        DeveloperIdWrappers = new(_curProviderDetails.DeveloperIds.OrderBy(wrapper => wrapper.LoginId));
+    }
+
+    [RelayCommand]
+    public void DeveloperIdSelected(DeveloperIdWrapper wrapper)
+    {
+        PopulateAdaptiveCardSectionAsync(wrapper.DeveloperId);
+    }
+
+    private void PopulateAdaptiveCardSectionAsync(IDeveloperId developerId)
+    {
+        CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardLoading;
 
         // Its possible that an extension could take a long time to load the adaptive card session.
         // So we run this on a background thread to prevent the UI from freezing.
         _ = Task.Run(() =>
         {
-            var developerIdWrapper = _curProviderDetails.DeveloperIds.First();
-            var result = _curProviderDetails.ComputeSystemProvider.CreateAdaptiveCardSessionForDeveloperId(developerIdWrapper.DeveloperId, ComputeSystemAdaptiveCardKind.CreateComputeSystem);
+            var result = _curProviderDetails.ComputeSystemProvider.CreateAdaptiveCardSessionForDeveloperId(
+                developerId,
+                ComputeSystemAdaptiveCardKind.CreateComputeSystem);
+
             UpdateExtensionAdaptiveCard(result);
         });
     }
@@ -211,6 +254,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                     SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUITitle", _curProviderDetails.ComputeSystemProvider.DisplayName);
                     SessionErrorMessage = result.DisplayMessage;
                     CanGoToNextPage = false;
+                    CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardError;
                 }
                 else
                 {
@@ -220,8 +264,10 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             catch (Exception ex)
             {
                 _log.Error(ex, $"Failed to get creation options adaptive card from provider {_curProviderDetails.ComputeSystemProvider.Id}.");
-                SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUITitle", _curProviderDetails.ComputeSystemProvider.DisplayName);
+                var displayName = _curProviderDetails.ComputeSystemProvider.DisplayName;
+                SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUIForDeveloperId", displayName, SelectedDeveloperId.LoginId);
                 SessionErrorMessage = ex.Message;
+                CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardError;
             }
         });
     }
@@ -240,16 +286,15 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             _renderedAdaptiveCard.Action += OnRenderedAdaptiveCardAction;
             _userInputsFromAdaptiveCard = _renderedAdaptiveCard.UserInputs;
 
-            // Only send the adaptive card to the creation options view when the user moves
-            // from the extension selection page to the environment creation options page.
-            // All other times after that will happen when the user clicks the "Previous"
-            // button in the setup flow, in which case sending the adaptive card to the creation
-            // options view will be done in the OnRenderedAdaptiveCardAction method below.
-            if (_isFirstTimeLoadingNewFlow)
+            if (ShouldAdaptiveCardAppearOnInitialPage())
             {
                 SendAdaptiveCardToCurrentView();
-                StopShowingLoadingUI();
-                _isFirstTimeLoadingNewFlow = false;
+                CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardLoaded;
+                CanGoToNextPage = true;
+            }
+            else
+            {
+                CreationPageState = CreationPageStateKind.OtherPageAdaptiveCardLoaded;
             }
         });
     }
@@ -265,7 +310,6 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     {
         _dispatcherQueue.TryEnqueue(async () =>
         {
-            IsAdaptiveCardSessionLoaded = false;
             ResetErrorUI();
             AdaptiveCardLoadingMessage = StringResource.GetLocalized(StringResourceKey.EnvironmentCreationUILoadingMessage, _curProviderDetails.ComputeSystemProvider.DisplayName);
 
@@ -277,6 +321,12 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
             {
                 _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
                 SessionErrorMessage = result.DisplayMessage;
+
+                if (IsCurrentPage)
+                {
+                    // Make the current adaptive card in the session visible again since there was an error.
+                    CreationPageState = CreationPageStateKind.InitialPageAdaptiveCardLoaded;
+                }
             }
 
             if (IsCurrentPage && !actionFailed)
@@ -288,8 +338,10 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 }
             }
 
-            SendAdaptiveCardToCurrentView(SessionErrorMessage);
-            StopShowingLoadingUI();
+            if (!ShouldAdaptiveCardAppearOnInitialPage())
+            {
+                SendAdaptiveCardToCurrentView(SessionErrorMessage);
+            }
         });
     }
 
@@ -334,7 +386,8 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     {
         // Only send the adaptive card if the session has loaded. If the session hasn't loaded yet, we'll send an empty response. The review page should be sent the adaptive card
         // once the session has loaded in the OnAdaptiveCardUpdated method.
-        if (!IsAdaptiveCardSessionLoaded && Orchestrator?.CurrentPageViewModel is not SummaryViewModel)
+        var otherPageAdaptiveCardLoaded = CreationPageState == CreationPageStateKind.OtherPageAdaptiveCardLoaded;
+        if (!otherPageAdaptiveCardLoaded && Orchestrator?.CurrentPageViewModel is not SummaryViewModel)
         {
             return;
         }
@@ -378,13 +431,12 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     public void GoToNextPage()
     {
         ResetErrorUI();
-        Orchestrator.AdaptiveCardFlowNavigator.GoToNextPageWithValidation(_userInputsFromAdaptiveCard);
-    }
+        var validationSuccessful = Orchestrator.AdaptiveCardFlowNavigator.GoToNextPageWithValidation(_userInputsFromAdaptiveCard);
 
-    private void StopShowingLoadingUI()
-    {
-        CanGoToNextPage = true;
-        IsAdaptiveCardSessionLoaded = true;
+        if (validationSuccessful)
+        {
+            CreationPageState = CreationPageStateKind.OtherPageAdaptiveCardLoading;
+        }
     }
 
     private void ResetErrorUI()
@@ -397,5 +449,15 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
     {
         WeakReferenceMessenger.Default.Send(new NewAdaptiveCardAvailableMessage(
             new RenderedAdaptiveCardData(Orchestrator.CurrentPageViewModel, _renderedAdaptiveCard, errorMessage)));
+    }
+
+    private bool ShouldAdaptiveCardAppearOnInitialPage()
+    {
+        return CreationPageState switch
+        {
+            CreationPageStateKind.OtherPageAdaptiveCardLoaded => false,
+            CreationPageStateKind.OtherPageAdaptiveCardLoading => false,
+            _ => true,
+        };
     }
 }
