@@ -275,21 +275,12 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
 
             // Search for a configuration file.
-            var configurationDirectory = Path.Join(_cloneLocation.FullName, DscHelpers.ConfigurationFolderName);
-            if (Directory.Exists(configurationDirectory))
+            var configurationFile = DscHelpers.GetConfigurationFileIfExists(_cloneLocation.FullName);
+            if (!configurationFile.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
             {
-                var fileToUse = Directory.EnumerateFiles(configurationDirectory)
-                .Where(file => file.EndsWith(DscHelpers.ConfigurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
-                               file.EndsWith(DscHelpers.ConfigurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(configurationFile => File.GetLastWriteTime(configurationFile))
-                .FirstOrDefault();
-
-                if (fileToUse != null)
-                {
-                    _summaryScreenInformation.FilePathAndName = fileToUse;
-                    _summaryScreenInformation.RepoName = RepositoryName;
-                    _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
-                }
+                _summaryScreenInformation.FilePathAndName = configurationFile;
+                _summaryScreenInformation.RepoName = RepositoryName;
+                _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
             }
 
             var experimentationService = _host.GetService<IExperimentationService>();

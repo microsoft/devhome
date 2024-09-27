@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
+using DevHome.Common.Windows.FileDialog;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Factories;
@@ -19,6 +20,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using Windows.Storage;
 
 namespace DevHome.RepositoryManagement.ViewModels;
 
@@ -41,13 +43,16 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
     private readonly StringResource _stringResource = new("DevHome.RepositoryManagement.pri", "DevHome.RepositoryManagement/Resources");
 
-    private readonly EnhanceRepositoryService _enhanceRepositoryService;
+    private readonly RepositoryEnhancerService _enhanceRepositoryService;
 
-    private readonly List<RepositoryManagementItemViewModel> _allLineItems = [];
+    private readonly Window _window;
+
+    private List<RepositoryManagementItemViewModel> _allLineItems = [];
 
     private List<Repository> _allRepositoriesFromTheDatabase;
 
-    public ObservableCollection<RepositoryManagementItemViewModel> LineItemsToDisplay { get; private set; }
+    [ObservableProperty]
+    private ObservableCollection<RepositoryManagementItemViewModel> _lineItemsToDisplay;
 
     [ObservableProperty]
     private string _filterText = string.Empty;
@@ -106,27 +111,31 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     {
         AreFilterAndSortEnabled = false;
 
-        var repositorySourceControlInformation = await _enhanceRepositoryService.SelectRepositoryAndMakeItEnhanced();
-
-        if (string.IsNullOrEmpty(repositorySourceControlInformation.RepositoryLocation))
+        var existingRepositoryLocation = await GetRepositoryLocationFromUser();
+        if (existingRepositoryLocation.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            _log.Warning($"Repository in {nameof(AddExistingRepository)} is either null or empty.");
-
-            // set to empty to prevent null refrence exceptions
-            repositorySourceControlInformation.RepositoryLocation = string.Empty;
+            _log.Warning($"Repository in {nameof(AddExistingRepository)} is either empty.");
+            return;
         }
 
-        if (repositorySourceControlInformation.sourceControlClassId == Guid.Empty)
+        var sourceControlForThisRepository = await _enhanceRepositoryService.MakeRepositoryEnhanced(existingRepositoryLocation);
+        if (sourceControlForThisRepository == Guid.Empty)
         {
-            _log.Warning($"A Source Control extension could not be determined for the repository at {repositorySourceControlInformation.RepositoryLocation}.");
+            _log.Warning($"A Source Control extension could not be determined for the repository at {existingRepositoryLocation}.");
         }
 
-        var repositoryUrl = _enhanceRepositoryService.GetRepositoryUrl(repositorySourceControlInformation.RepositoryLocation);
-        var configurationFileLocation = GetConfigurationFileIfExists(repositorySourceControlInformation.RepositoryLocation);
-        var newRepository = _dataAccessService.MakeRepository(Path.GetFileName(repositorySourceControlInformation.RepositoryLocation), repositorySourceControlInformation.RepositoryLocation, configurationFileLocation, repositoryUrl, repositorySourceControlInformation.sourceControlClassId);
+        var repositoryUrl = _enhanceRepositoryService.GetRepositoryUrl(existingRepositoryLocation);
+        var configurationFileLocation = DscHelpers.GetConfigurationFileIfExists(existingRepositoryLocation);
+        var newRepository = _dataAccessService.MakeRepository(
+            Path.GetFileName(existingRepositoryLocation),
+            existingRepositoryLocation,
+            configurationFileLocation,
+            repositoryUrl,
+            sourceControlForThisRepository);
+
         _allRepositoriesFromTheDatabase.Add(newRepository);
 
-        var repositoryWithCommit = AssignCommitToRepository(new List<Repository> { newRepository });
+        var repositoryWithCommit = GetRepositoryAndLatestCommitPairs(new List<Repository> { newRepository });
         var newLineItem = ConvertToLineItems(repositoryWithCommit);
 
         if (newLineItem.Count > 0)
@@ -157,12 +166,13 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         _allRepositoriesFromTheDatabase = _dataAccessService.GetRepositories();
         _allRepositoriesFromTheDatabase = await AssignSourceControlId(_allRepositoriesFromTheDatabase);
 
-        var repositoriesWithCommits = AssignCommitToRepository(_allRepositoriesFromTheDatabase);
+        var repositoriesWithCommits = GetRepositoryAndLatestCommitPairs(_allRepositoriesFromTheDatabase);
 
         _allLineItems.Clear();
         LineItemsToDisplay.Clear();
-        ConvertToLineItems(repositoriesWithCommits).ForEach(x => _allLineItems.Add(x));
-        HideFilterAndSort(_allLineItems).Where(x => x.IsHiddenFromPage == false).ToList().ForEach(x => LineItemsToDisplay.Add(x));
+
+        _allLineItems = ConvertToLineItems(repositoriesWithCommits);
+        LineItemsToDisplay = new(HideFilterAndSort(_allLineItems).Where(x => x.IsHiddenFromPage == false).ToList());
 
         AreFilterAndSortEnabled = true;
     }
@@ -188,13 +198,15 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         RepositoryManagementItemViewModelFactory factory,
         RepositoryManagementDataAccessService dataAccessService,
         INavigationService navigationService,
-        EnhanceRepositoryService enchanceRepositoryService)
+        RepositoryEnhancerService enchanceRepositoryService,
+        Window window)
     {
         _dataAccessService = dataAccessService;
         _factory = factory;
         LineItemsToDisplay = [];
         _navigationService = navigationService;
         _enhanceRepositoryService = enchanceRepositoryService;
+        _window = window;
     }
 
     private void UpdateDisplayedRepositories()
@@ -274,27 +286,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         return filteredAndSortedRepositories.ToList();
     }
 
-    private string GetConfigurationFileIfExists(string repositoryPath)
-    {
-        var configurationDirectory = Path.Join(repositoryPath, DscHelpers.ConfigurationFolderName);
-        if (Directory.Exists(configurationDirectory))
-        {
-            var fileToUse = Directory.EnumerateFiles(configurationDirectory)
-            .Where(file => file.EndsWith(DscHelpers.ConfigurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
-                           file.EndsWith(DscHelpers.ConfigurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(configurationFile => File.GetLastWriteTime(configurationFile))
-            .FirstOrDefault();
-
-            if (fileToUse != null)
-            {
-                return fileToUse;
-            }
-        }
-
-        return string.Empty;
-    }
-
-    private List<(Repository, Commit)> AssignCommitToRepository(List<Repository> repositories)
+    private List<(Repository, Commit)> GetRepositoryAndLatestCommitPairs(List<Repository> repositories)
     {
         var repositoriesButWithCommits = new List<(Repository, Commit)>();
 
@@ -317,26 +309,21 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return Commit.DefaultCommit;
         }
 
-        // This call does check the settings for file explorer and souce control integration.
+        // The call to GetProperties does check the settings for file explorer and souce control integration.
         var repositoryProperties = _enhanceRepositoryService.GetProperties(_commitProperties, repositoryLocation);
-
-        var isAPropertyMissing = false;
         if (!repositoryProperties.TryGetValue("System.VersionControl.LastChangeAuthorName", out var latestCommitAuthorName))
         {
-            latestCommitAuthorName = string.Empty;
-            isAPropertyMissing = true;
+            return Commit.DefaultCommit;
         }
 
         if (!repositoryProperties.TryGetValue("System.VersionControl.LastChangeDate", out var latestCommitChangedDate))
         {
-            latestCommitChangedDate = DateTime.UnixEpoch;
-            isAPropertyMissing = true;
+            return Commit.DefaultCommit;
         }
 
         if (!repositoryProperties.TryGetValue("System.VersionControl.LastChangeID", out var latestCommitSHA))
         {
-            latestCommitSHA = string.Empty;
-            isAPropertyMissing = true;
+            return Commit.DefaultCommit;
         }
         else
         {
@@ -344,11 +331,6 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             {
                 latestCommitSHA = latestCommitSHA.ToString().Substring(0, 6);
             }
-        }
-
-        if (isAPropertyMissing)
-        {
-            return Commit.DefaultCommit;
         }
 
         DateTime latestCommitDateTime;
@@ -362,5 +344,29 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         }
 
         return new(latestCommitAuthorName.ToString(), latestCommitDateTime, latestCommitSHA.ToString());
+    }
+
+    private async Task<string> GetRepositoryLocationFromUser()
+    {
+        StorageFolder repositoryRootFolder = null;
+        try
+        {
+            using var folderDialog = new WindowOpenFolderDialog();
+            repositoryRootFolder = await folderDialog.ShowAsync(_window);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error occurred when selecting a folder for adding a repository.");
+            return string.Empty;
+        }
+
+        if (repositoryRootFolder == null || string.IsNullOrEmpty(repositoryRootFolder.Path))
+        {
+            _log.Information("User did not select a location to register");
+            return string.Empty;
+        }
+
+        _log.Information($"User selected '{repositoryRootFolder.Path}' as location to register");
+        return repositoryRootFolder.Path;
     }
 }

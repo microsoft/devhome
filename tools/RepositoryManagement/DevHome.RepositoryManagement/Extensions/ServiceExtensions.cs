@@ -15,7 +15,7 @@ public static class ServiceExtensions
     {
         services.AddSingleton<RepositoryManagementMainPageViewModel>();
         services.AddSingleton<RepositoryManagementItemViewModelFactory>();
-        services.AddSingleton<EnhanceRepositoryService>();
+        services.AddSingleton<RepositoryEnhancerService>();
 
         return services;
     }

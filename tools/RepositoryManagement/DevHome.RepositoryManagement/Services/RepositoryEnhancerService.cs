@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents.RepositoryManagement;
-using DevHome.Common.Windows.FileDialog;
 using DevHome.Customization.ViewModels;
 using DevHome.Telemetry;
 using FileExplorerSourceControlIntegration;
@@ -16,15 +14,17 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Foundation.Collections;
-using Windows.Storage;
 
 namespace DevHome.RepositoryManagement.Services;
 
-public class EnhanceRepositoryService
+/// <summary>
+/// Service for associating a local repository path with a source control extension.
+/// </summary>
+public class RepositoryEnhancerService
 {
     private const string ErrorEventName = "DevHome_EnhanceRepositoryError_Event";
 
-    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(EnhanceRepositoryService));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryEnhancerService));
 
     private readonly FileExplorerViewModel _sourceControlRegistrar;
 
@@ -34,7 +34,7 @@ public class EnhanceRepositoryService
 
     private readonly List<IExtensionWrapper> _repositorySourceControlProviders;
 
-    public EnhanceRepositoryService(
+    public RepositoryEnhancerService(
         FileExplorerViewModel sourceControlRegistrar,
         Window window,
         IExtensionService extensionService)
@@ -46,17 +46,10 @@ public class EnhanceRepositoryService
     }
 
     /// <summary>
-    /// Gets the location of an existing repository and hook up the path to both
-    /// the source control provider and file explorer.
+    /// associates a source control provider with a local repository.
     /// </summary>
-    /// <returns>Path to the new repository.  String.Empty for any errors</returns>
-    public async Task<(string RepositoryLocation, Guid sourceControlClassId)> SelectRepositoryAndMakeItEnhanced()
-    {
-        var maybeRepositoryPath = await GetRepositoryLocationFromUser();
-        var sourceControlId = await MakeRepositoryEnhanced(maybeRepositoryPath);
-        return (maybeRepositoryPath, sourceControlId);
-    }
-
+    /// <param name="repositoryLocation">The full path to the repositories root.</param>
+    /// <returns>The guid of the class.  Otherwise Guid.Empty.</returns>
     public async Task<Guid> MakeRepositoryEnhanced(string repositoryLocation)
     {
         _sourceControlRegistrar.AddRepositoryAlreadyOnMachine(repositoryLocation);
@@ -107,34 +100,6 @@ public class EnhanceRepositoryService
 
         // This call does check the settings for file explorer and souce control integration.
         return provider.GetProperties(propertiesToReturn, string.Empty);
-    }
-
-    private async Task<string> GetRepositoryLocationFromUser()
-    {
-        StorageFolder repositoryRootFolder = null;
-        try
-        {
-            using var folderDialog = new WindowOpenFolderDialog();
-            repositoryRootFolder = await folderDialog.ShowAsync(_window);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Error occurred when selecting a folder for adding a repository.");
-            _telemetry.LogError(
-                ErrorEventName,
-                LogLevel.Critical,
-                new EnhanceRepositoryErrorEvent(nameof(SelectRepositoryAndMakeItEnhanced), ex.HResult, ex.Message, string.Empty));
-            return string.Empty;
-        }
-
-        if (repositoryRootFolder == null || string.IsNullOrEmpty(repositoryRootFolder.Path))
-        {
-            _log.Information("User did not select a location to register");
-            return string.Empty;
-        }
-
-        _log.Information($"User selected '{repositoryRootFolder.Path}' as location to register");
-        return repositoryRootFolder.Path;
     }
 
     private async Task<Guid> AssignSourceControlToPath(string maybeRepositoryPath)
