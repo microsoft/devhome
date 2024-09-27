@@ -66,6 +66,9 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private QuickStartProjectResult _quickStartProject = null!;
 
     [ObservableProperty]
+    private bool _isPromptValid = false;
+
+    [ObservableProperty]
     private bool _showExamplePrompts = false;
 
     [ObservableProperty]
@@ -184,6 +187,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private bool _enableProjectButtons = false;
 
     private int _stepCounter;
+
+    private int _initialMsgCount;
 
     public QuickstartPlaygroundViewModel(
         ISetupFlowStringResource stringResource,
@@ -441,13 +446,32 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
         }
     }
 
+    [RelayCommand]
+    public async Task SubmitChat()
+    {
+        ShowExamplePrompts = false;
+
+        var message = CustomPrompt;
+
+        if (message != null && message != string.Empty)
+        {
+            ChatMessages.Add(new ChatStyleMessage
+            {
+                Name = message,
+                Type = ChatStyleMessage.ChatMessageItemType.Request,
+            });
+
+            await GenerateChatStyleCompetions(message);
+        }
+    }
+
     [RelayCommand(CanExecute = nameof(CanGenerateCodespace))]
     public async Task GenerateCodespace()
     {
         try
         {
-            // Hide prompt guidance once generating project
-            IsPromptGuidanceVisible = false;
+            // Clear chat
+            ChatMessages.Clear();
 
             var userPrompt = CustomPrompt;
 
@@ -562,7 +586,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     public bool CanGenerateCodespace()
     {
-        return !string.IsNullOrEmpty(CustomPrompt) && ActiveQuickstartSelection != null;
+        return !string.IsNullOrEmpty(CustomPrompt) && ActiveQuickstartSelection != null && ChatMessages.Count > _initialMsgCount;
     }
 
     [RelayCommand]
@@ -586,6 +610,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             if (result.ChatResponse.ToString().Contains("great prompt"))
             {
+                IsPromptValid = true;
                 CustomPrompt = message;
             }
         }
@@ -617,6 +642,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
             // Reset state
             ShowExamplePrompts = true;
+            IsPromptValid = false;
             CustomPrompt = string.Empty;
             IsPromptTextBoxReadOnly = false;
             ShowPrivacyAndTermsLink = true;
@@ -665,6 +691,8 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             Name = "If you would like to help us guide you to a good prompt, hit the Enter/Return key on your keyboard after typing in your prompt. Otherwise, simply click on Generate to ignore prompt guidance.",
             Type = ChatStyleMessage.ChatMessageItemType.Response,
         });
+
+        _initialMsgCount = ChatMessages.Count();
     }
 
     [RelayCommand]

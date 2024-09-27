@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:ctcontrols="using:CommunityToolkit.WinUI.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -123,6 +124,8 @@
                     </StackPanel>
                 </Grid>
             </DataTemplate>
+            <devEnvConverters:PromptStatusToSubmitButtonStyle x:Key="PromptStatusToSubmitButtonStyle"/>
+            <devEnvConverters:PromptStatusToGenerateButtonStyle x:Key="PromptStatusToGenerateButtonStyle"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}">
@@ -256,10 +259,21 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 0">
-                                    <Button x:Uid="QuickstartPlaygroundGenerateButton"
-                                            x:Name="GenerateButton" 
+                                    <Button x:Uid="QuickstartPlaygroundSubmitButton"
+                                            x:Name="SubmitButton" 
                                             Margin="10 0 0 0"
-                                            Style="{ThemeResource AccentButtonStyle}"
+                                            Style="{x:Bind ViewModel.IsPromptValid, Converter={StaticResource PromptStatusToSubmitButtonStyle}, Mode=OneWay}"
+                                            Command="{x:Bind ViewModel.SubmitChatCommand}"
+                                            VerticalAlignment="Center"
+                                            TabIndex="6">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip x:Uid="QuickstartPlaygroundGenerateButtonTooltip"/>
+                                        </ToolTipService.ToolTip>
+                                    </Button>
+                                    <Button x:Uid="QuickstartPlaygroundGenerateButton"
+                                            x:Name="GenerateButton"
+                                            Margin="10 0 0 0"
+                                            Style="{x:Bind ViewModel.IsPromptValid, Converter={StaticResource PromptStatusToGenerateButtonStyle}, Mode=OneWay}"
                                             Command="{x:Bind ViewModel.GenerateCodespaceCommand}"
                                             VerticalAlignment="Center"
                                             TabIndex="6">

@@ -1919,6 +1919,14 @@
     <value>Generate project</value>
     <comment>Tooltip for the generate button on the QuickstartPlayground page</comment>
   </data>
+  <data name="QuickstartPlaygroundSubmitButton.Content" xml:space="preserve">
+    <value>Submit</value>
+    <comment>Label for the submit button on the QuickstartPlayground page</comment>
+  </data>
+  <data name="QuickstartPlaygroundSubmitButtonTooltip.Content" xml:space="preserve">
+    <value>Submit prompt</value>
+    <comment>Tooltip for the submit button on the QuickstartPlayground page</comment>
+  </data>
   <data name="QuickstartPlaygroundLaunchDropDownButton.Content" xml:space="preserve">
     <value>Open in Editor</value>
     <comment>Drop down button to launch QuickstartPlayground project</comment>

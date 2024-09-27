@@ -324,7 +324,7 @@ public sealed partial class QuickstartPlaygroundView : UserControl
     private void CustomPrompt_TextChanged(object sender, TextChangedEventArgs e)
     {
         PromptCharacterCount.Text = $"{CustomPrompt.Text.Length} / {CustomPrompt.MaxLength}";
-        ViewModel.IsPromptGuidanceVisible = true;
+        ViewModel.IsPromptValid = false;
     }
 
     private void CustomPrompt_GotFocus(object sender, RoutedEventArgs e)
