@@ -39,10 +39,10 @@ public class RepositoryManagementDataAccessService
 
     public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
     {
-        return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, Guid.Empty);
+        return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, null);
     }
 
-    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid sourceControlProviderClassId)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid? sourceControlProviderClassId)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
@@ -55,7 +55,7 @@ public class RepositoryManagementDataAccessService
         {
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
-            RepositoryUri = repositoryUri.ToString(),
+            RepositoryUri = repositoryUri,
             SourceControlClassId = sourceControlProviderClassId,
         };
 

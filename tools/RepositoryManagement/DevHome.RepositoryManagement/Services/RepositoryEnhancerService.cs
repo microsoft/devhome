@@ -32,7 +32,7 @@ public class RepositoryEnhancerService
 
     private readonly ITelemetry _telemetry;
 
-    private readonly List<IExtensionWrapper> _repositorySourceControlProviders;
+    private readonly IExtensionService _extensionService;
 
     public RepositoryEnhancerService(
         FileExplorerViewModel sourceControlRegistrar,
@@ -42,7 +42,7 @@ public class RepositoryEnhancerService
         _sourceControlRegistrar = sourceControlRegistrar;
         _telemetry = TelemetryFactory.Get<ITelemetry>();
         _window = window;
-        _repositorySourceControlProviders = extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList();
+        _extensionService = extensionService;
     }
 
     /// <summary>
@@ -104,18 +104,9 @@ public class RepositoryEnhancerService
 
     private async Task<Guid> AssignSourceControlToPath(string maybeRepositoryPath)
     {
-        if (string.IsNullOrEmpty(maybeRepositoryPath))
-        {
-            _log.Information("maybeRepositoryPath is null or empty.  Not assigning a source control provider");
-            return Guid.Empty;
-        }
+        Directory.CreateDirectory(maybeRepositoryPath);
 
-        if (!Directory.Exists(maybeRepositoryPath))
-        {
-            Directory.CreateDirectory(maybeRepositoryPath);
-        }
-
-        foreach (var extension in _repositorySourceControlProviders)
+        foreach (var extension in _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList())
         {
             var assignSourceControlResult = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, maybeRepositoryPath);
             if (assignSourceControlResult.Result == Customization.Helpers.ResultType.Success)

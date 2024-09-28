@@ -146,7 +146,7 @@
     <comment>{Locked="{0}"} {0} name of the repository.  Title for not able to find a repository.</comment>
   </data>
   <data name="LocateRepositoryDialogContent" xml:space="preserve">
-    <value>Cannot find {0} at {1}.  Do you know where it is?</value>
+    <value>Cannot find {0} at {1}.  Can you provide the path to this repository?</value>
     <comment>{Locked="{0},{1}"} {0} Repository name. {1} Local clone path. Message asking if the user knows where this repository is located.</comment>
   </data>
   <data name="LocateRepositoryDialogFindWithFileExplorer" xml:space="preserve">
