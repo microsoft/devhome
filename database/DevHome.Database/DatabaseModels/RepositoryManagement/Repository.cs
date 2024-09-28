@@ -32,7 +32,7 @@ public class Repository
 
     public Guid? SourceControlClassId { get; set; }
 
-    public bool HasAssignedSourceControlProvider => SourceControlClassId == null ? false : SourceControlClassId.Value != Guid.Empty;
+    public bool HasAssignedSourceControlProvider => SourceControlClassId.GetValueOrDefault() != Guid.Empty;
 
     public DateTime? CreatedUTCDate { get; set; }
 
