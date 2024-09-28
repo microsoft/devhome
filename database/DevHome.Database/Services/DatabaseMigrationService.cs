@@ -48,7 +48,6 @@ public class DatabaseMigrationService
     /// <exception cref="InvalidOperationException">If the migration was ran more than once per session.</exception>
     public void MigrateDatabase()
     {
-        // TODO: Make sure DevHome can still run even if the migration is not performed.
         // Check here even if ShouldMigrateDatabase was called already.
         // Just to be sure.
         if (!ShouldMigrateDatabase())
