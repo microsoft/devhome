@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevHome.Test.Database;
 
+// TODO: use DatabaseTestHelper after PR 3896
+// https://github.com/microsoft/devhome/pull/3896 is complete.
 [TestClass]
 public class RepositoryTests
 {
