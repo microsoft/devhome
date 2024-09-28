@@ -1,85 +1,129 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.Helpers;
 using DevHome.Database;
 using DevHome.Database.Factories;
 using DevHome.Database.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Windows.Storage;
 
 namespace DevHome.Test.Database;
 
 [TestClass]
 public class MigrationTests
 {
+    private readonly DatabaseTestHelper _databaseTestHelper = new();
+
     [TestInitialize]
-    public void ResetDatabase()
+    public void SetupTestAssets()
     {
-        var dbContext = new DevHomeDatabaseContext();
+        _databaseTestHelper.SetupTestAssets();
+    }
 
-        // Reset the database
-        // TODO: Do not test on a production database.
-        dbContext.ChangeTracker
-            .Entries()
-            .ToList()
-            .ForEach(e => e.State = EntityState.Detached);
-
-        dbContext.Database.EnsureDeleted();
+    [TestCleanup]
+    public void CleanupTestAssets()
+    {
+        _databaseTestHelper.RemoveTestAssets();
     }
 
     [TestMethod]
     [TestCategory("Unit")]
     public void TestShouldMigrateDatabase()
     {
-        var schemaAccessor = new Mock<ISchemaAccessor>();
-        schemaAccessor.Setup(x => x.GetPreviousSchemaVersion()).Returns(0);
+        _databaseTestHelper.DatabaseContextfactory.Object.GetNewContext().Database.EnsureCreated();
+        var migrator = _databaseTestHelper.MakeMigrator();
 
-        var schemaAccessorFactory = new Mock<ISchemaAccessFactory>();
-        schemaAccessorFactory.Setup(x => x.GenerateSchemaAccessor()).Returns(schemaAccessor.Object);
+        // versions are the same.
+        _databaseTestHelper.SetPreviousSchemaVersion(1);
+        _databaseTestHelper.SetCurrentSchemaVersion(1);
+        Assert.IsFalse(migrator.ShouldMigrateDatabase());
 
-        var databaseContext = new Mock<IDevHomeDatabaseContext>();
-        databaseContext.Setup(x => x.SchemaVersion).Returns(1);
-
-        var databaseContextfactory = new Mock<IDevHomeDatabaseContextFactory>();
-        databaseContextfactory.Setup(x => x.GetNewContext()).Returns(databaseContext.Object);
-
-        var migrator = new DatabaseMigrationService(
-            schemaAccessorFactory.Object,
-            databaseContextfactory.Object,
-            new CustomMigrationHandlerFactory());
-
+        // Migrate to a new version.
+        _databaseTestHelper.SetPreviousSchemaVersion(1);
+        _databaseTestHelper.SetCurrentSchemaVersion(2);
         Assert.IsTrue(migrator.ShouldMigrateDatabase());
 
-        schemaAccessor.Setup(x => x.GetPreviousSchemaVersion()).Returns(1);
-
+        // Migrate to an older version
+        // Moving to a lower version is no-opt because the old schema version
+        // should have all the tables as the upgraded version.
+        // a.k.a no tables were dropped going from v2->v3
+        _databaseTestHelper.SetPreviousSchemaVersion(3);
+        _databaseTestHelper.SetCurrentSchemaVersion(2);
         Assert.IsFalse(migrator.ShouldMigrateDatabase());
+
+        // Test getting previous version from the user_version pragma
+        _databaseTestHelper.SetPreviousSchemaVersion(0);
+        _databaseTestHelper.SchemaAccessTester.DeleteFile();
+
+        // Test with the same version
+        var userVersionQuery = $"PRAGMA user_version = {2}";
+        _databaseTestHelper.DatabaseContextfactory.Object.GetNewContext().Database.ExecuteSqlRaw(userVersionQuery);
+        Assert.IsFalse(migrator.ShouldMigrateDatabase());
+
+        // Test with a higher previous version.
+        userVersionQuery = $"PRAGMA user_version = {3}";
+        _databaseTestHelper.DatabaseContextfactory.Object.GetNewContext().Database.ExecuteSqlRaw(userVersionQuery);
+        Assert.IsFalse(migrator.ShouldMigrateDatabase());
+
+        // Test with a lower previous version.
+        userVersionQuery = $"PRAGMA user_version = {1}";
+        _databaseTestHelper.DatabaseContextfactory.Object.GetNewContext().Database.ExecuteSqlRaw(userVersionQuery);
+        Assert.IsTrue(migrator.ShouldMigrateDatabase());
+
+        // Always migrate if the database file does not exist.
+        // Migrator will not use the file regardless if it exists.
+        _databaseTestHelper.RemoveTestAssets();
+        _databaseTestHelper.SchemaAccessTester.DeleteFile();
+
+        // Test same version
+        _databaseTestHelper.SetPreviousSchemaVersion(1);
+        _databaseTestHelper.SetCurrentSchemaVersion(1);
+        Assert.IsTrue(migrator.ShouldMigrateDatabase());
+
+        // Test a lower previous version
+        _databaseTestHelper.SetPreviousSchemaVersion(1);
+        _databaseTestHelper.SetCurrentSchemaVersion(2);
+        Assert.IsTrue(migrator.ShouldMigrateDatabase());
+
+        // Test a higher previous version
+        _databaseTestHelper.SetPreviousSchemaVersion(2);
+        _databaseTestHelper.SetCurrentSchemaVersion(1);
+        Assert.IsTrue(migrator.ShouldMigrateDatabase());
     }
 
     [TestMethod]
     [TestCategory("Unit")]
-    public void TestMigrateDatabase()
+    public void TestMigrate0To1()
     {
-        // Setup so migration will not occur.
-        var schemaAccessor = new Mock<ISchemaAccessor>();
-        schemaAccessor.Setup(x => x.GetPreviousSchemaVersion()).Returns(1);
+        RemoveAndMigrateDatabase(0, 1);
+        var tableNames = _databaseTestHelper.DatabaseContext.Object.Database
+            .SqlQueryRaw<string>("SELECT name FROM sqlite_master WHERE type='table'")
+            .ToList();
 
-        var schemaAccessorFactory = new Mock<ISchemaAccessFactory>();
-        schemaAccessorFactory.Setup(x => x.GenerateSchemaAccessor()).Returns(schemaAccessor.Object);
+        Assert.IsTrue(tableNames.Any(x => x.Equals("Repository", StringComparison.OrdinalIgnoreCase)));
+    }
 
-        var databaseContext = new Mock<IDevHomeDatabaseContext>();
-        databaseContext.Setup(x => x.SchemaVersion).Returns(1);
+    [TestMethod]
+    [TestCategory("Unit")]
+    public void TestMigrateDatabaseWithNonExistentScript()
+    {
+        RemoveAndMigrateDatabase(0, 1);
 
-        var databaseContextfactory = new Mock<IDevHomeDatabaseContextFactory>();
-        databaseContextfactory.Setup(x => x.GetNewContext()).Returns(databaseContext.Object);
+        _databaseTestHelper.SetPreviousSchemaVersion(1);
+        _databaseTestHelper.SetCurrentSchemaVersion(uint.MaxValue);
+        _databaseTestHelper.MakeMigrator().MigrateDatabase();
+        Assert.AreEqual(1U, _databaseTestHelper.SchemaAccessTester.GetPreviousSchemaVersion());
+    }
 
-        var migrator = new DatabaseMigrationService(
-            schemaAccessorFactory.Object,
-            databaseContextfactory.Object,
-            new CustomMigrationHandlerFactory());
-
-        migrator.MigrateDatabase();
-
-        var dbContext = new DevHomeDatabaseContext();
-        Assert.IsFalse(dbContext.Database.EnsureDeleted());
+    private void RemoveAndMigrateDatabase(uint previousVersion, uint currentVersion)
+    {
+        _databaseTestHelper.RemoveTestAssets();
+        _databaseTestHelper.SetPreviousSchemaVersion(previousVersion);
+        _databaseTestHelper.SetCurrentSchemaVersion(currentVersion);
+        _databaseTestHelper.MakeMigrator().MigrateDatabase();
+        Assert.IsFalse(_databaseTestHelper.DatabaseContextfactory.Object.GetNewContext().Database.EnsureCreated());
+        Assert.AreEqual(currentVersion, _databaseTestHelper.SchemaAccessTester.GetPreviousSchemaVersion());
     }
 }

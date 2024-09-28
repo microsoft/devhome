@@ -10,7 +10,7 @@ internal sealed class SchemaAccessTester : ISchemaAccessor
 {
     public uint Version { get; set; }
 
-    private readonly string _schemaPath = Path.Join("SchemaVersionForText.txt");
+    private readonly string _schemaPath = Path.Join("SchemaVersionForTest.txt");
 
     public uint GetPreviousSchemaVersion()
     {
@@ -23,11 +23,19 @@ internal sealed class SchemaAccessTester : ISchemaAccessor
 
     private string GetPreviousSchema()
     {
-        return File.Exists(_schemaPath) ? _schemaPath : string.Empty;
+        return File.Exists(_schemaPath) ? File.ReadAllText(_schemaPath) : string.Empty;
     }
 
     public void WriteSchemaVersion(uint schemaVersion)
     {
         File.WriteAllText(_schemaPath, schemaVersion.ToString(CultureInfo.InvariantCulture));
+    }
+
+    public void DeleteFile()
+    {
+        if (File.Exists(_schemaPath))
+        {
+            File.Delete(_schemaPath);
+        }
     }
 }

@@ -22,9 +22,9 @@ public class RepositoryManagementDataAccessService
 
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryManagementDataAccessService));
 
-    private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
+    private readonly IDevHomeDatabaseContextFactory _databaseContextFactory;
 
-    public RepositoryManagementDataAccessService(DevHomeDatabaseContextFactory databaseContextFactory)
+    public RepositoryManagementDataAccessService(IDevHomeDatabaseContextFactory databaseContextFactory)
     {
         _databaseContextFactory = databaseContextFactory;
     }

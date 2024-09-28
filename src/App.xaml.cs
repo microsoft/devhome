@@ -99,9 +99,6 @@ public partial class App : Application, IApp
         }).
         ConfigureServices((context, services) =>
         {
-            // Add databse connection
-            services.AddDatabase(context);
-
             // Add Serilog logging for ILogger.
             services.AddLogging(lb => lb.AddSerilog(dispose: true));
 

@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using DevHome.Common.Helpers;
 using DevHome.Common.TelemetryEvents.DevHomeDatabase;
-using DevHome.Database.Factories;
 using DevHome.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -15,8 +16,6 @@ namespace DevHome.Database.Services;
 
 public class DatabaseMigrationService
 {
-    private static bool _hasMigrationRan;
-
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DatabaseMigrationService));
 
     private readonly ISchemaAccessFactory _schemaAccessFactory;
@@ -37,11 +36,10 @@ public class DatabaseMigrationService
 
     public bool ShouldMigrateDatabase()
     {
-        var schemaAccessor = _schemaAccessFactory.GenerateSchemaAccessor();
-        var previousVersion = schemaAccessor.GetPreviousSchemaVersion();
+        var previousVersion = GetPreviousVersion();
         var currentVersion = _databaseContextFactory.GetNewContext().SchemaVersion;
 
-        return previousVersion != currentVersion;
+        return previousVersion < currentVersion;
     }
 
     /// <summary>
@@ -58,19 +56,8 @@ public class DatabaseMigrationService
             return;
         }
 
-        if (_hasMigrationRan)
-        {
-            _log.Error($"Migration should not run more than once.");
-            throw new InvalidOperationException($"Migration should not run more than once per session.");
-        }
-
-        // Set here to prevent multiple runs if the previous migration failed.
-        _hasMigrationRan = true;
-
-        var schemaAccessor = _schemaAccessFactory.GenerateSchemaAccessor();
-        var previousVersion = schemaAccessor.GetPreviousSchemaVersion();
+        var previousVersion = GetPreviousVersion();
         var currentVersion = _databaseContextFactory.GetNewContext().SchemaVersion;
-
         var migrateDatabaseScript = GetMigrationQuery(previousVersion, currentVersion);
 
         if (string.IsNullOrEmpty(migrateDatabaseScript))
@@ -90,7 +77,7 @@ public class DatabaseMigrationService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_DatabaseContext_Event",
                 LogLevel.Critical,
-                new DatabaseContextErrorEvent("MigratingDatabase", ex));
+                new DatabaseMigrationErrorEvent(ex, previousVersion, currentVersion));
             return;
         }
 
@@ -113,8 +100,6 @@ public class DatabaseMigrationService
                     Log.Warning($"Prepare for {nameof(migration)} returned false.  Not running Execute");
                 }
             }
-
-            schemaAccessor.WriteSchemaVersion(currentVersion);
         }
         catch (Exception ex)
         {
@@ -122,8 +107,15 @@ public class DatabaseMigrationService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_DatabaseContext_Event",
                 LogLevel.Critical,
-                new DatabaseContextErrorEvent("MigratingDatabase", ex));
+                new DatabaseMigrationErrorEvent(ex, previousVersion, currentVersion));
         }
+
+        // Migration was successful.
+        var schemaAccessor = _schemaAccessFactory.GenerateSchemaAccessor();
+        schemaAccessor.WriteSchemaVersion(currentVersion);
+
+        var userVersionQuery = $"PRAGMA user_version = {currentVersion}";
+        _databaseContextFactory.GetNewContext().Database.ExecuteSqlRaw(userVersionQuery);
     }
 
     /// <summary>
@@ -161,5 +153,56 @@ public class DatabaseMigrationService
                 return string.Empty;
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the previous datrabase schema.
+    /// </summary>
+    /// <returns>The schema version the database is using.</returns>
+    /// <remarks>This does dip into the database to get user_version.  Will throw an exception
+    /// if the previous version can't be determined.</remarks>
+    private uint GetPreviousVersion()
+    {
+        var previousFromSchemaFile = _schemaAccessFactory.GenerateSchemaAccessor().GetPreviousSchemaVersion();
+
+        var canConnectToTheDatabase = _databaseContextFactory.GetNewContext().Database.CanConnect();
+        if (canConnectToTheDatabase)
+        {
+            if (previousFromSchemaFile >= 1)
+            {
+                return previousFromSchemaFile;
+            }
+            else
+            {
+                try
+                {
+                    // The database file exists but no schema was saved.  Check user version.
+                    var databaseUserVersion = _databaseContextFactory
+                        .GetNewContext()
+                        .Database
+                        .SqlQueryRaw<long>("PRAGMA user_version")
+                        .AsEnumerable()
+                        .First();
+
+                    if (databaseUserVersion < 0)
+                    {
+                        return 0;
+                    }
+
+                    return (uint)databaseUserVersion;
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, $"Could not get user_version from the database.");
+                    TelemetryFactory.Get<ITelemetry>().Log("DevHome_DatabaseMigration_Event", LogLevel.Critical, new DatabaseMigrationErrorEvent(ex, 0, 0));
+
+                    // Assume the database is up to date.
+                    return _databaseContextFactory.GetNewContext().SchemaVersion;
+                }
+            }
+        }
+
+        // The database does not exist.  Migrate from version 0 (a new database) to current.
+        return 0;
     }
 }

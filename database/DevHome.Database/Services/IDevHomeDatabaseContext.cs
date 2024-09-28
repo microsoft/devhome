@@ -6,7 +6,6 @@ using DevHome.Database.DatabaseModels.RepositoryManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Windows.ApplicationModel.Appointments.AppointmentsProvider;
 
 namespace DevHome.Database.Services;
 

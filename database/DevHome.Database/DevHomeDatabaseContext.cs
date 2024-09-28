@@ -47,6 +47,11 @@ public class DevHomeDatabaseContext : DbContext, IDevHomeDatabaseContext
         }
     }
 
+    public DevHomeDatabaseContext(string dbPath)
+    {
+        DbPath = dbPath;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         try
