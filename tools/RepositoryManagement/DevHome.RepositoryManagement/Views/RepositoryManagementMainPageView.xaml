@@ -223,6 +223,7 @@
                                     FontSize="8"
                                     VerticalAlignment="Top"
                                     Margin="0, 5, 5, 0"/>
+                                <!-- Need to add the time componenet e.g. 'min'-->
                                 <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
                                 <ToolTipService.ToolTip>
                                     <StackPanel
