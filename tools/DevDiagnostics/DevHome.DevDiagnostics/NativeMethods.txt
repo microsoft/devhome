@@ -3,6 +3,7 @@ CallWindowProc
 CloseClipboard
 CoCreateInstance
 CombineRgn
+ConvertStringSidToSid
 CreateEllipticRgn
 CreateProcess
 CreateRectRgn
@@ -29,6 +30,7 @@ GetOpenFileName
 GetParent
 GetProcessInformation
 GetScaleFactorForMonitor
+GetTokenInformation
 GetTopWindow
 GetWindowInfo
 GetWindowLong
@@ -111,9 +113,12 @@ RM_UNIQUE_PROCESS
 RM_PROCESS_INFO
 RM_REBOOT_REASON
 SECTION_FLAGS
+SECURITY_CAPABILITIES
 SID_AND_ATTRIBUTES
+STARTUPINFOEXW
 SUBCLASSPROC
 SW_*
+TOKEN_APPCONTAINER_INFORMATION
 VIRTUAL_KEY
 WIN32_ERROR
 WINEVENT_*

@@ -11,6 +11,8 @@ internal sealed class Program
 {
     public static int Main(string[] args)
     {
+        Thread.Sleep(10 * 1000);
+
         DebuggerCallbacks callbacks = new DebuggerCallbacks();
         bool success = false;
 
@@ -82,6 +84,7 @@ internal sealed class Program
             Console.WriteLine(xmlString);
 
             File.WriteAllText(args[1], xmlString);
+            File.WriteAllText(args[1] + ".err", callbacks.Log);
 
             success = true;
             return 0;

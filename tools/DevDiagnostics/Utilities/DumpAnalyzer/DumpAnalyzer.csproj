@@ -50,7 +50,7 @@
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.1.142101" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.NETCore.SOS" Version="8.0.0-preview.24462.1" GeneratePathProperty="true" >
+    <PackageReference Include="Microsoft.NETCore.SOS" Version="8.0.0-preview.24462.1" GeneratePathProperty="true">
       <IncludeAssets>none</IncludeAssets>
     </PackageReference>
 

@@ -11,9 +11,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security.Principal;
 using System.Threading;
 using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32.SafeHandles;
 using Serilog;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -154,14 +157,16 @@ public class WERAnalyzer : IDisposable
                 LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList = default(LPPROC_THREAD_ATTRIBUTE_LIST);
                 nuint size = 0;
 
-                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size))
+                PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 1, ref size);
+
+                if (size == 0)
                 {
                     throw new InvalidOperationException();
                 }
 
                 lpAttributeList = new LPPROC_THREAD_ATTRIBUTE_LIST((void*)Marshal.AllocHGlobal((int)size));
 
-                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size))
+                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 1, ref size))
                 {
                     throw new InvalidOperationException();
                 }
@@ -171,28 +176,77 @@ public class WERAnalyzer : IDisposable
                 uint PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY = ProcThreadAttributeValue(15, false, true, false); // 15 - ProcThreadAttributeAllApplicationPackagesPolicy
 #pragma warning restore SA1312 // Variable names should begin with lower-case letter
 
+                SECURITY_CAPABILITIES securityCapabilities = default(SECURITY_CAPABILITIES);
                 SID_AND_ATTRIBUTES[] sidAndAttributes = new SID_AND_ATTRIBUTES[1];
+                FreeSidSafeHandle registryReadSid;
+                FreeSidSafeHandle currentPackageSid;
 
-                PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, (void*)&sidAndAttributes, 1, null, (nuint*)null);
+                string sid1 = "S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204";
 
-                // Add LPAC
-                uint allApplicationPackagesPolicy = 1; //  PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
-                PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY, &allApplicationPackagesPolicy, sizeof(uint), null, (nuint*)null);
-                FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+                // string sid2 = "S-1-15-3-789131091-3979119899-1741130944-2054218997-3508611414-1387502353-284405581";
+                // TOKEN_APPCONTAINER_INFORMATION tokenACInfo;
+                PInvoke.OpenProcessToken(Process.GetCurrentProcess().SafeHandle, TOKEN_ACCESS_MASK.TOKEN_QUERY, out SafeFileHandle processToken);
 
-                var startInfo = new ProcessStartInfo()
+                PInvoke.GetTokenInformation(processToken, TOKEN_INFORMATION_CLASS.TokenAppContainerSid, null, 0, out uint requiredLength);
+                Span<char> tokenACSid = new char[requiredLength];
+                fixed (char* pTokenACSid = tokenACSid)
                 {
-                    FileName = "DumpAnalyzer.exe",
-                    Arguments = string.Format(CultureInfo.InvariantCulture, "\"{0}\" \"{1}\"", report.BasicReport.CrashDumpPath, analysisFilePath),
-                    UseShellExecute = true,
-                    WorkingDirectory = fileInfo.DirectoryName,
-                };
+                    bool ret = PInvoke.GetTokenInformation(processToken, TOKEN_INFORMATION_CLASS.TokenAppContainerSid, pTokenACSid, requiredLength, out requiredLength);
+                    int error = Marshal.GetLastWin32Error();
+                }
 
-                var process = Process.Start(startInfo);
-                Debug.Assert(process != null, "If process launch fails, Process.Start should throw an exception");
+                PInvoke.ConvertStringSidToSid(sid1, out currentPackageSid);
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681", out registryReadSid);
+                sidAndAttributes[0] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[0].Sid = (PSID)registryReadSid.DangerousGetHandle();
+                sidAndAttributes[0].Attributes = 4; // SE_GROUP_ENABLED
 
-                process.WaitForExit();
+                securityCapabilities.CapabilityCount = 1;
+                securityCapabilities.AppContainerSid = (PSID)currentPackageSid.DangerousGetHandle();
+                securityCapabilities.Reserved = 0;
 
+                FileInfo fileInfo = new FileInfo(Environment.ProcessPath ?? string.Empty);
+                PROCESS_INFORMATION pi;
+
+                fixed (SID_AND_ATTRIBUTES* sids = sidAndAttributes)
+                {
+                    securityCapabilities.Capabilities = sids;
+                    PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, sids, (nuint)sizeof(SECURITY_CAPABILITIES), null, (nuint*)null);
+
+                    // Add LPAC
+                    uint allApplicationPackagesPolicy = 1; //  PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
+                    PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY, &allApplicationPackagesPolicy, sizeof(uint), null, (nuint*)null);
+
+                    string commandLineString = "DumpAnalyzer.exe " + string.Format(CultureInfo.InvariantCulture, "\"{0}\" \"{1}\"\0", report.BasicReport.CrashDumpPath, analysisFilePath);
+                    Span<char> commandLine = new char[commandLineString.Length];
+                    commandLineString.TryCopyTo(commandLine);
+
+                    STARTUPINFOEXW startupex = default(STARTUPINFOEXW);
+                    startupex.StartupInfo.cb = (uint)sizeof(STARTUPINFOEXW);
+                    startupex.lpAttributeList = lpAttributeList;
+
+                    bool f = CreateProcessEx(
+                                          @"D:\devhome\src\bin\x64\Debug\net8.0-windows10.0.22621.0\AppX\DumpAnalyzer.exe",
+                                          ref commandLine,
+                                          null,
+                                          null,
+                                          false,
+                                          PROCESS_CREATION_FLAGS.EXTENDED_STARTUPINFO_PRESENT,
+                                          null,
+                                          fileInfo.DirectoryName ?? string.Empty,
+                                          startupex,
+                                          out pi);
+                    int lasterror = Marshal.GetLastWin32Error();
+                }
+
+                Process p = Process.GetProcessById((int)pi.dwProcessId);
+
+                if (p is null)
+                {
+                    throw new InvalidProgramException();
+                }
+
+                p.WaitForExit();
                 if (File.Exists(analysisFilePath))
                 {
                     string analysis = File.ReadAllText(analysisFilePath);
@@ -219,6 +273,40 @@ public class WERAnalyzer : IDisposable
             }
         }
     }
+
+    internal static unsafe BOOL CreateProcessEx(string lpApplicationName, ref Span<char> lpCommandLine, SECURITY_ATTRIBUTES? lpProcessAttributes, SECURITY_ATTRIBUTES? lpThreadAttributes, BOOL bInheritHandles, PROCESS_CREATION_FLAGS dwCreationFlags, void* lpEnvironment, string lpCurrentDirectory, in STARTUPINFOEXW lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation)
+    {
+        if (lpCommandLine != null && lpCommandLine.LastIndexOf('\0') == -1)
+        {
+            throw new ArgumentException("Required null terminator missing.", nameof(lpCommandLine));
+        }
+
+        fixed (PROCESS_INFORMATION* lpProcessInformationLocal = &lpProcessInformation)
+        {
+            fixed (STARTUPINFOEXW* lpStartupInfoLocal = &lpStartupInfo)
+            {
+                fixed (char* lpCurrentDirectoryLocal = lpCurrentDirectory)
+                {
+                    fixed (char* plpCommandLine = lpCommandLine)
+                    {
+                        fixed (char* lpApplicationNameLocal = lpApplicationName)
+                        {
+                            PWSTR wstrlpCommandLine = plpCommandLine;
+                            SECURITY_ATTRIBUTES lpProcessAttributesLocal = lpProcessAttributes ?? default(SECURITY_ATTRIBUTES);
+                            SECURITY_ATTRIBUTES lpThreadAttributesLocal = lpThreadAttributes ?? default(SECURITY_ATTRIBUTES);
+                            BOOL result = CreateProcessEx(lpApplicationNameLocal, wstrlpCommandLine, lpProcessAttributes.HasValue ? &lpProcessAttributesLocal : null, lpThreadAttributes.HasValue ? &lpThreadAttributesLocal : null, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectoryLocal, lpStartupInfoLocal, lpProcessInformationLocal);
+                            lpCommandLine = lpCommandLine.Slice(0, wstrlpCommandLine.Length);
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    [DllImport("KERNEL32.dll", ExactSpelling = true, EntryPoint = "CreateProcessW", SetLastError = true)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    internal static extern unsafe BOOL CreateProcessEx(PCWSTR lpApplicationName, PWSTR lpCommandLine, [Optional] SECURITY_ATTRIBUTES* lpProcessAttributes, [Optional] SECURITY_ATTRIBUTES* lpThreadAttributes, BOOL bInheritHandles, PROCESS_CREATION_FLAGS dwCreationFlags, [Optional] void* lpEnvironment, PCWSTR lpCurrentDirectory, STARTUPINFOEXW* lpStartupInfo, PROCESS_INFORMATION* lpProcessInformation);
 
     private string GetCachedResultsFileName(WERReport report)
     {
