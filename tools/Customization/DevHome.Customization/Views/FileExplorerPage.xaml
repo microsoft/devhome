@@ -13,7 +13,6 @@
             <StackPanel MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <views:FileExplorerView />
                 <views:VersionControlIntegrationSettingsView Visibility="{x:Bind ViewModel.IsFeatureEnabled}"/>
-                <views:AddRepositoriesView Visibility="{x:Bind ViewModel.IsFeatureEnabled}"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>

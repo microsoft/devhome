@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\AddRepositoriesView.xaml" />
     <None Remove="Views\FileExplorerPage.xaml" />
     <None Remove="Views\FileExplorerView.xaml" />
     <None Remove="Views\DevDriveInsightsPage.xaml" />
@@ -70,10 +69,6 @@
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Remove="Views\AddRepositoriesView.xaml" />
   </ItemGroup>
 
 </Project>
