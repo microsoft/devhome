@@ -1521,6 +1521,17 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
+    // Used by the extension to provide information on the chat style generation
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    runtimeclass QuickStartChatStyleResult
+    {
+        QuickStartChatStyleResult(String chatResponse);
+
+        // Allows extensions to provide intermediary status for the operation e.g "Generating project".
+        String ChatResponse { get; };
+    }
+
     // Passed back to Dev Home to provide the progress in generating a quick start project.
     // This is used by Dev Home to show progress to the user while the project is being generated.
     [experimental]
@@ -1590,6 +1601,20 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperationWithProgress<QuickStartProjectResult, QuickStartProjectProgress> GenerateAsync();
     }
 
+    // Extensions implement this and is provided to Dev Home when CreateChatStyleGenerationOperation is called.
+    // This allows to have an async operation can be started but also additional context reported back to Dev Home
+    // as progress is being made such as a detailed log out output through the adaptive card session.
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    interface IQuickStartChatStyleGenerationOperation
+    {
+        // Starts the operation which generates a project based on a given prompt by the user in the
+        // given output folder. The generated content in the output folder can be anything that is needed
+        // for the project based on the technology it uses.  Dev Home just displays the generated content
+        // in a file viewer.
+        Windows.Foundation.IAsyncOperation<QuickStartChatStyleResult> GenerateChatStyleResponse();
+    }
+
     // Extensions can implement this provider to provide a way to
     // create a project based on a prompt as part of the Dev Home 
     // quick start project feature.
@@ -1641,6 +1666,17 @@ namespace Microsoft.Windows.DevHome.SDK
         // is needed for the project based on the technology it uses.  Dev Home just displays the generated content
         // in a file viewer.
         IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(String prompt, Windows.Storage.StorageFolder outputFolder);
+    }
+
+    // Extensions can implement this provider to provide a way to
+    // create a project based on a prompt as part of the Dev Home 
+    // quick start project feature.
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    interface IQuickStartProjectProvider2 requires IQuickStartProjectProvider
+    {
+        // Pass additional flag to allow the ability to ignore prompt guidance / errors
+        IQuickStartChatStyleGenerationOperation CreateChatStyleGenerationOperation(String prompt);
     }
 
     // End of QuickStartProject APIs
