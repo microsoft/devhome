@@ -131,6 +131,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        await LoadModelAsync();
+    }
+
+    [RelayCommand]
     public async Task SyncButton()
     {
         // Reset the sort and filter
