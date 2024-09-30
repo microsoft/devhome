@@ -323,10 +323,10 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     runtimeclass WebViewResult
     {
-        WebViewResult(String url);
+        WebViewResult(Windows.Foundation.Uri uri);
         WebViewResult(HRESULT e, String diagnosticText);
 
-        String Url
+        Windows.Foundation.Uri Uri
         {
             get;
         };

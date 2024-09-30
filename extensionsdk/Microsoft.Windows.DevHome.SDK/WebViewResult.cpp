@@ -4,20 +4,25 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    WebViewResult::WebViewResult(hstring const& url)
+    WebViewResult::WebViewResult(winrt::Windows::Foundation::Uri const& uri) :
+        _Uri(uri)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<ProviderOperationResult>(ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
-    WebViewResult::WebViewResult(winrt::hresult const& e, hstring const& diagnosticText)
+
+    WebViewResult::WebViewResult(winrt::hresult const& e, winrt::hstring const& diagnosticText) :
+        _Uri(winrt::Windows::Foundation::Uri(L"about:blank"))
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<ProviderOperationResult>(ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
     }
-    hstring WebViewResult::Url()
+
+    Uri WebViewResult::Uri()
     {
-        throw hresult_not_implemented();
+        return _Uri;
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult WebViewResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }
