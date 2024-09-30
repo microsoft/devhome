@@ -19,4 +19,7 @@ public partial class InfoBarModel : ObservableObject
 
     [ObservableProperty]
     private bool _isOpen = false;
+
+    [ObservableProperty]
+    private bool _isClosable = true;
 }

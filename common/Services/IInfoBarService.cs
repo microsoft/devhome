@@ -7,9 +7,19 @@ namespace DevHome.Common.Services;
 
 public interface IInfoBarService
 {
-    void ShowAppLevelInfoBar(InfoBarSeverity infoBarSeverity, string title, string message);
+    public enum PageScope
+    {
+        App,
+        MachineConfiguration,
+        Environments,
+        ExperimentalFeatures,
+    }
+
+    void ShowAppLevelInfoBar(InfoBarSeverity infoBarSeverity, string title, string message, bool isClosable, PageScope pageScope = PageScope.App);
 
     void HideAppLevelInfoBar();
 
     bool IsAppLevelInfoBarVisible();
+
+    PageScope GetInfoBarPageScope();
 }
