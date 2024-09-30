@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.QuietBackgroundProcesses;
@@ -19,15 +21,22 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
 
     public List<ExperimentalFeature> ExperimentalFeatures { get; } = new();
 
-    public ExperimentalFeaturesViewModel(IExperimentationService experimentationService)
+    private readonly IInfoBarService _infoBarService;
+
+    private readonly StringResource _stringResource = new("DevHome.Settings.pri", "DevHome.Settings/Resources");
+
+    [ObservableProperty]
+    private bool _isExperimentalFeaturesGPOEnabled;
+
+    public ExperimentalFeaturesViewModel(IExperimentationService experimentationService, IInfoBarService infoBarService)
     {
         ExperimentalFeatures = experimentationService!.ExperimentalFeatures.Where(x => x.IsVisible && (!x.NeedsFeaturePresenceCheck || IsFeaturePresent(x))).OrderBy(x => x.Id).ToList();
+        _infoBarService = infoBarService;
 
-        var stringResource = new StringResource("DevHome.Settings.pri", "DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new(stringResource.GetLocalized("Settings_ExperimentalFeatures_Header"), typeof(ExperimentalFeaturesViewModel).FullName!),
+            new(_stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(_stringResource.GetLocalized("Settings_ExperimentalFeatures_Header"), typeof(ExperimentalFeaturesViewModel).FullName!),
         };
     }
 
@@ -64,5 +73,35 @@ public partial class ExperimentalFeaturesViewModel : ObservableObject
         }
 
         throw new NotImplementedException();
+    }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        IsExperimentalFeaturesGPOEnabled = GPOHelper.GetConfiguredEnabledExperimentalFeaturesValue();
+        if (!IsExperimentalFeaturesGPOEnabled)
+        {
+            // Turn off all experimental features
+            foreach (var feature in ExperimentalFeatures)
+            {
+                feature.IsEnabled = false;
+            }
+
+            _infoBarService.ShowAppLevelInfoBar(
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Warning,
+                _stringResource.GetLocalized("DevHomeFeatureIsBlocked"),
+                string.Empty,
+                false,
+                IInfoBarService.PageScope.ExperimentalFeatures);
+        }
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        if (_infoBarService.IsAppLevelInfoBarVisible() && _infoBarService.GetInfoBarPageScope() == IInfoBarService.PageScope.ExperimentalFeatures)
+        {
+            _infoBarService.HideAppLevelInfoBar();
+        }
     }
 }

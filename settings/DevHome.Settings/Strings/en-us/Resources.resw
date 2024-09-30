@@ -583,4 +583,7 @@
   <data name="RepositoryManagementExperiment_Name" xml:space="preserve">
     <value>Repository Management</value>
   </data>
+  <data name="DevHomeFeatureIsBlocked" xml:space="preserve">
+    <value>Disabled by policy, contact your system administrator for support.</value>
+  </data>
 </root>

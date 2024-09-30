@@ -18,8 +18,18 @@
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
     </Page.Resources>
 
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
     <ScrollViewer
-        VerticalAlignment="Top">
+        VerticalAlignment="Top"
+        IsEnabled="{x:Bind ViewModel.IsExperimentalFeaturesGPOEnabled, Mode=OneWay}">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.ExperimentalFeatures}">
