@@ -15,8 +15,8 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.Environments.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -37,6 +37,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     private readonly IComputeSystemManager _computeSystemManager;
 
     private readonly INavigationService _navigationService;
+
+    private readonly IInfoBarService _infoBarService;
 
     private readonly StringResource _stringResource;
 
@@ -84,6 +86,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _shouldShowCreationHeader;
 
+    [ObservableProperty]
+    private bool _isEnvironmentsGPOEnabled;
+
     private enum SortOptions
     {
         Alphabetical,
@@ -101,11 +106,13 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         INavigationService navigationService,
         IComputeSystemManager manager,
         IExtensionService extensionService,
+        IInfoBarService infoBarService,
         Window mainWindow)
     {
         _computeSystemManager = manager;
         _mainWindow = mainWindow;
         _navigationService = navigationService;
+        _infoBarService = infoBarService;
 
         _stringResource = new StringResource("DevHome.Environments.pri", "DevHome.Environments/Resources");
 
@@ -133,7 +140,29 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
-        await LoadModelAsync();
+        IsEnvironmentsGPOEnabled = GPOHelper.GetConfiguredEnabledEnvironmentsValue();
+        if (!IsEnvironmentsGPOEnabled)
+        {
+            _infoBarService.ShowAppLevelInfoBar(
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Warning,
+                _stringResource.GetLocalized("DevHomeFeatureIsBlocked"),
+                string.Empty,
+                false,
+                IInfoBarService.PageScope.Environments);
+        }
+        else
+        {
+            await LoadModelAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        if (_infoBarService.IsAppLevelInfoBarVisible() && _infoBarService.GetInfoBarPageScope() == IInfoBarService.PageScope.Environments)
+        {
+            _infoBarService.HideAppLevelInfoBar();
+        }
     }
 
     [RelayCommand]

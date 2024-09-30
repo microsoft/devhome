@@ -24,6 +24,9 @@
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
         </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
     <Grid>
@@ -224,12 +227,14 @@
                 Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                 HorizontalAlignment="Right"
                 x:Uid="CreateEnvironmentButton"
+                IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}"
                 Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
             <Button
                 Grid.Column="3"
                 Visibility="{x:Bind ViewModel.ShouldNavigateToExtensionsPage, Mode=OneWay}"
                 HorizontalAlignment="Right"
                 x:Uid="GoToExtensionsLibrary"
+                IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}"
                 Command="{x:Bind ViewModel.CallToActionInvokeButtonCommand}" />
         </Grid>
 
@@ -247,7 +252,8 @@
                 x:Name="SearchTextBox"
                 Width="230"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center"
+                IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="TextChanged">
                         <ic:InvokeCommandAction
@@ -264,7 +270,8 @@
                           Margin="0 3 0 0"
                           MinWidth="150"
                           ItemsSource="{x:Bind ViewModel.Providers, Mode=OneWay}"
-                          SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}">
+                          SelectedIndex="{x:Bind ViewModel.SelectedProviderIndex, Mode=TwoWay}"
+                          IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="SelectionChanged">
                             <ic:InvokeCommandAction
@@ -279,7 +286,8 @@
                           x:Name="SortSelectionComboBox"
                           Margin="0 3 0 0"
                           MinWidth="165"
-                          SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}">
+                          SelectedIndex="{x:Bind ViewModel.SelectedSortIndex, Mode=TwoWay}"
+                          IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}">
                     <ComboBoxItem x:Uid="SortByName"/>
                     <ComboBoxItem x:Uid="SortByNameDesc"/>
                     <ComboBoxItem x:Uid="SortByLastConnected"/>
@@ -294,7 +302,8 @@
                     x:Uid="SyncEnvironmentsButton"
                     Command="{x:Bind ViewModel.SyncButtonCommand}"
                     Margin="0 3 0 0"
-                    Width="110">
+                    Width="110"
+                    IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />
@@ -318,7 +327,8 @@
 
         <!-- Per VM/Compute System card -->
         <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}"
-            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+                      MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}"
+                      IsEnabled="{x:Bind ViewModel.IsEnvironmentsGPOEnabled, Mode=OneWay}">
             <Grid>
                 <StackPanel>
                     <ListView

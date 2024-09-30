@@ -363,4 +363,7 @@
     <value>More options</value>
     <comment>Name for MoreOptionsButton. It's listed as an additional string here because ComputeSystemCardBase can't access MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name (reason unknown)</comment>
   </data>
+  <data name="DevHomeFeatureIsBlocked" xml:space="preserve">
+    <value>Disabled by policy, contact your system administrator for support.</value>
+  </data>
 </root>
