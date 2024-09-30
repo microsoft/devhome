@@ -11,12 +11,15 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.RepositoryManagement;
 using DevHome.Common.Windows.FileDialog;
+using DevHome.Customization.Helpers;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.Database.Services;
+using DevHome.RepositoryManagement.Services;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -36,6 +39,10 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     private readonly StringResource _stringResource = new("DevHome.RepositoryManagement.pri", "DevHome.RepositoryManagement/Resources");
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
+
+    private readonly RepositoryEnhancerService _repositoryEnhancerService;
+
+    private readonly IExtensionService _extensionService;
 
     /// <summary>
     /// Gets the name of the repository.
@@ -79,11 +86,60 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
     public string LatestCommitAuthor { get; set; }
 
-    public int MinutesSinceLatestCommit { get; set; }
+    public string MinutesSinceLatestCommit { get; set; }
 
     public bool HasCommitInformation { get; set; }
 
     public string MoreOptionsButtonAutomationName { get; set; }
+
+    [ObservableProperty]
+    private string _sourceControlProviderDisplayName;
+
+    [ObservableProperty]
+    private string _sourceControlProviderPackageDisplayName;
+
+    public string SourceControlExtensionClassId { get; set; }
+
+    [ObservableProperty]
+    private MenuFlyout _allSourceControlProviderNames;
+
+    [RelayCommand]
+    public void UpdateSourceControlProviderNames()
+    {
+        AllSourceControlProviderNames.Items.Clear();
+        foreach (var extension in _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList())
+        {
+            var menuItem = new MenuFlyoutItem
+            {
+                Text = extension.ExtensionDisplayName,
+                Tag = extension,
+            };
+
+            menuItem.Command = AssignRepositoryANewSourceControlProviderCommand;
+            menuItem.CommandParameter = extension;
+
+            ToolTipService.SetToolTip(menuItem, _stringResource.GetLocalized("PrefixForDevHomeVersion", extension.PackageDisplayName));
+            AllSourceControlProviderNames.Items.Add(menuItem);
+        }
+    }
+
+    [RelayCommand]
+    public async Task AssignRepositoryANewSourceControlProvider(IExtensionWrapper extensionWrapper)
+    {
+        if (!string.Equals(extensionWrapper.ExtensionClassId, SourceControlExtensionClassId, StringComparison.OrdinalIgnoreCase))
+        {
+            var result = await _repositoryEnhancerService.ReAssignSourceControl(ClonePath, extensionWrapper);
+            if (result.Result != ResultType.Success)
+            {
+                ShowErrorContentDialog(result);
+            }
+            else
+            {
+                var repository = GetRepositoryReportIfNull(nameof(AssignRepositoryANewSourceControlProvider));
+                _dataAccess.SetSourceControlId(repository, Guid.Parse(extensionWrapper.ExtensionClassId));
+            }
+        }
+    }
 
     [RelayCommand]
     public async Task OpenInFileExplorer()
@@ -293,6 +349,8 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         Window window,
         RepositoryManagementDataAccessService dataAccess,
         ConfigurationFileBuilder configurationFileBuilder,
+        IExtensionService extensionService,
+        RepositoryEnhancerService repositoryEnhancerService,
         string repositoryName,
         string cloneLocation)
     {
@@ -301,6 +359,9 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _configurationFileBuilder = configurationFileBuilder;
         RepositoryName = repositoryName;
         _clonePath = cloneLocation;
+        _extensionService = extensionService;
+        _allSourceControlProviderNames = new MenuFlyout();
+        _repositoryEnhancerService = repositoryEnhancerService;
     }
 
     public void RemoveThisRepositoryFromTheList()
@@ -499,5 +560,17 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
             // Ask the user if they can point DevHome to the correct location
             await ShowCloneLocationNotFoundDialogAsync();
         }
+    }
+
+    public async void ShowErrorContentDialog(SourceControlValidationResult result)
+    {
+        var errorDialog = new ContentDialog
+        {
+            Title = _stringResource.GetLocalized("ErrorAssigningSourceControlProvider"),
+            Content = result.DisplayMessage,
+            CloseButtonText = _stringResource.GetLocalized("CloseButtonText"),
+            XamlRoot = _window.Content.XamlRoot,
+        };
+        _ = await errorDialog.ShowAsync();
     }
 }

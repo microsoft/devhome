@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.Customization.Helpers;
 using DevHome.Customization.ViewModels;
 using DevHome.Telemetry;
 using FileExplorerSourceControlIntegration;
@@ -45,16 +46,20 @@ public class RepositoryEnhancerService
         _extensionService = extensionService;
     }
 
+    public List<IExtensionWrapper> GetAllSourceControlProviders()
+    {
+        return _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList();
+    }
+
     /// <summary>
-    /// associates a source control provider with a local repository.
+    /// Associates a source control provider with a local repository.
     /// </summary>
     /// <param name="repositoryLocation">The full path to the repositories root.</param>
-    /// <returns>The guid of the class.  Otherwise Guid.Empty.</returns>
-    public async Task<Guid> MakeRepositoryEnhanced(string repositoryLocation)
+    /// <returns>True if the association is made.  False otherwise</returns>
+    public async Task<bool> MakeRepositoryEnhanced(string repositoryLocation, IExtensionWrapper sourceControlId)
     {
         _sourceControlRegistrar.AddRepositoryAlreadyOnMachine(repositoryLocation);
-        var sourceControlId = await AssignSourceControlToPath(repositoryLocation);
-        return sourceControlId;
+        return await AssignSourceControlToPath(repositoryLocation, sourceControlId);
     }
 
     public string GetLocalBranchName(string repositoryLocation)
@@ -102,25 +107,22 @@ public class RepositoryEnhancerService
         return provider.GetProperties(propertiesToReturn, string.Empty);
     }
 
-    private async Task<Guid> AssignSourceControlToPath(string maybeRepositoryPath)
+    public async Task<SourceControlValidationResult> ReAssignSourceControl(string repositoryPath, IExtensionWrapper extensionWrapper)
+    {
+        return await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extensionWrapper, repositoryPath);
+    }
+
+    private async Task<bool> AssignSourceControlToPath(string maybeRepositoryPath, IExtensionWrapper extension)
     {
         Directory.CreateDirectory(maybeRepositoryPath);
 
-        foreach (var extension in _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList())
+        var assignSourceControlResult = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, maybeRepositoryPath);
+        if (assignSourceControlResult.Result == Customization.Helpers.ResultType.Success)
         {
-            var assignSourceControlResult = await _sourceControlRegistrar.AssignSourceControlProviderToRepository(extension, maybeRepositoryPath);
-            if (assignSourceControlResult.Result == Customization.Helpers.ResultType.Success)
-            {
-                _log.Information($"Source control {extension.ExtensionDisplayName} is assigned to repository {maybeRepositoryPath}");
-                if (Guid.TryParse(extension.ExtensionClassId, out Guid id))
-                {
-                    _log.Information($"Successfully assigned the extension class Id of {extension.ExtensionClassId}");
-                    return id;
-                }
-            }
+            _log.Information($"Source control {extension.ExtensionDisplayName} is assigned to repository {maybeRepositoryPath}");
+            return true;
         }
 
-        _log.Information($"Did not find any source extensions for repository {maybeRepositoryPath}");
-        return Guid.Empty;
+        return false;
     }
 }

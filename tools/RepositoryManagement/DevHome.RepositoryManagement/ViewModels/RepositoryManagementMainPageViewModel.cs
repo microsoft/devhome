@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +18,11 @@ using DevHome.RepositoryManagement.Factories;
 using DevHome.RepositoryManagement.Models;
 using DevHome.RepositoryManagement.Services;
 using DevHome.SetupFlow.Common.Helpers;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
+using Windows.Foundation.Collections;
 using Windows.Storage;
 
 namespace DevHome.RepositoryManagement.ViewModels;
@@ -118,10 +121,24 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return;
         }
 
-        var sourceControlForThisRepository = await _enhanceRepositoryService.MakeRepositoryEnhanced(existingRepositoryLocation);
-        if (sourceControlForThisRepository == Guid.Empty)
+        var foundProvider = false;
+        var sourceControlProviderGuid = Guid.Empty;
+        foreach (var sourceControlProvider in _enhanceRepositoryService.GetAllSourceControlProviders())
         {
-            _log.Warning($"A Source Control extension could not be determined for the repository at {existingRepositoryLocation}.");
+            foundProvider = await _enhanceRepositoryService.MakeRepositoryEnhanced(existingRepositoryLocation, sourceControlProvider);
+            if (foundProvider)
+            {
+                // sourceControlProviderGuid already set to Guid.Empty in case this fails.
+                if (Guid.TryParse(sourceControlProvider.ExtensionClassId, out sourceControlProviderGuid))
+                {
+                    break;
+                }
+                else
+                {
+                    _log.Warning($"The valid source control provider id {sourceControlProvider.ExtensionClassId} could not be parsed into a string.");
+                    foundProvider = false;
+                }
+            }
         }
 
         var repositoryUrl = _enhanceRepositoryService.GetRepositoryUrl(existingRepositoryLocation);
@@ -131,7 +148,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             existingRepositoryLocation,
             configurationFileLocation,
             repositoryUrl,
-            sourceControlForThisRepository);
+            sourceControlProviderGuid);
 
         _allRepositoriesFromTheDatabase.Add(newRepository);
 
@@ -218,6 +235,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
     private List<RepositoryManagementItemViewModel> ConvertToLineItems(List<(Repository, Commit)> repositories)
     {
+        var sourceControlProviders = _enhanceRepositoryService.GetAllSourceControlProviders();
         _log.Information("Converting repositories from the database into view models for display");
         List<RepositoryManagementItemViewModel> items = [];
 
@@ -238,7 +256,24 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
                 lineItem.HasCommitInformation = true;
                 lineItem.LatestCommitAuthor = commit.Author;
                 lineItem.LatestCommitSHA = commit.SHA;
-                lineItem.MinutesSinceLatestCommit = Convert.ToInt32((DateTime.Now - commit.CommitDateTime).TotalMinutes);
+
+                var commitInMinutes = Convert.ToInt32((DateTime.Now - commit.CommitDateTime).TotalMinutes);
+                var minutString = _stringResource.GetLocalized("MinuteAbbreviation");
+                lineItem.MinutesSinceLatestCommit = $"{commitInMinutes} {minutString}";
+            }
+
+            var sourceControlProvider = sourceControlProviders.SingleOrDefault(x => Guid.Parse(x.ExtensionClassId) == repository.SourceControlClassId);
+            if (sourceControlProvider != null)
+            {
+                lineItem.SourceControlExtensionClassId = sourceControlProvider.ExtensionClassId;
+                lineItem.SourceControlProviderDisplayName = sourceControlProvider.ExtensionDisplayName;
+                lineItem.SourceControlProviderPackageDisplayName = sourceControlProvider.PackageFullName;
+            }
+            else
+            {
+                lineItem.SourceControlExtensionClassId = Guid.Empty.ToString();
+                lineItem.SourceControlProviderDisplayName = _stringResource.GetLocalized("UnassignedSourceControlProvider");
+                lineItem.SourceControlProviderPackageDisplayName = _stringResource.GetLocalized("UnassignedSourceControlProvider");
             }
 
             lineItem.HasAConfigurationFile = repository.HasAConfigurationFile;
@@ -252,13 +287,26 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
     private async Task<List<Repository>> AssignSourceControlId(List<Repository> repositories)
     {
+        var sourceControlProviders = _enhanceRepositoryService.GetAllSourceControlProviders();
+
         foreach (var repository in repositories)
         {
-            Guid sourceControlGuid;
             if (!repository.HasAssignedSourceControlProvider)
             {
-                sourceControlGuid = await _enhanceRepositoryService.MakeRepositoryEnhanced(repository.RepositoryClonePath);
-                _dataAccessService.SetSourceControlId(repository, sourceControlGuid);
+                var foundExtension = false;
+                foreach (var extension in sourceControlProviders)
+                {
+                    foundExtension = await _enhanceRepositoryService.MakeRepositoryEnhanced(repository.RepositoryClonePath, extension);
+                    var sourceControlExtensionId = Guid.Empty;
+                    if (foundExtension && Guid.TryParse(extension.ExtensionClassId, out sourceControlExtensionId))
+                    {
+                        _dataAccessService.SetSourceControlId(repository, sourceControlExtensionId);
+                    }
+                    else
+                    {
+                        _log.Warning($"Could not assign source control {extension.ExtensionDisplayName} to the repository");
+                    }
+                }
             }
         }
 
@@ -309,8 +357,17 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return Commit.DefaultCommit;
         }
 
-        // The call to GetProperties does check the settings for file explorer and souce control integration.
-        var repositoryProperties = _enhanceRepositoryService.GetProperties(_commitProperties, repositoryLocation);
+        IPropertySet repositoryProperties = new PropertySet();
+
+        try
+        {
+            repositoryProperties = _enhanceRepositoryService.GetProperties(_commitProperties, repositoryLocation);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error with getting properties from the repository");
+        }
+
         if (!repositoryProperties.TryGetValue("System.VersionControl.LastChangeAuthorName", out var latestCommitAuthorName))
         {
             return Commit.DefaultCommit;

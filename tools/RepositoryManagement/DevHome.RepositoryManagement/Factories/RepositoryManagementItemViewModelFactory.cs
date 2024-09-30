@@ -3,6 +3,7 @@
 
 using DevHome.Common.Services;
 using DevHome.Database.Services;
+using DevHome.RepositoryManagement.Services;
 using DevHome.RepositoryManagement.ViewModels;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
@@ -20,14 +21,22 @@ public class RepositoryManagementItemViewModelFactory
 
     private readonly ConfigurationFileBuilder _configurationFileBuilder;
 
+    private readonly IExtensionService _extensionService;
+
+    private readonly RepositoryEnhancerService _repositoryEnhancerService;
+
     public RepositoryManagementItemViewModelFactory(
         Window window,
         RepositoryManagementDataAccessService dataAccess,
-        ConfigurationFileBuilder configurationFileBuilder)
+        ConfigurationFileBuilder configurationFileBuilder,
+        IExtensionService extensionService,
+        RepositoryEnhancerService repositoryEnhancerService)
     {
         _window = window;
         _dataAccessService = dataAccess;
         _configurationFileBuilder = configurationFileBuilder;
+        _extensionService = extensionService;
+        _repositoryEnhancerService = repositoryEnhancerService;
     }
 
     public RepositoryManagementItemViewModel MakeViewModel(string repositoryName, string cloneLocation, bool isHidden)
@@ -49,7 +58,14 @@ public class RepositoryManagementItemViewModelFactory
             localIsHidden = true;
         }
 
-        var newViewModel = new RepositoryManagementItemViewModel(_window, _dataAccessService, _configurationFileBuilder, localRepositoryName, localCloneLocation);
+        var newViewModel = new RepositoryManagementItemViewModel(
+            _window,
+            _dataAccessService,
+            _configurationFileBuilder,
+            _extensionService,
+            _repositoryEnhancerService,
+            localRepositoryName,
+            localCloneLocation);
 
         newViewModel.IsHiddenFromPage = localIsHidden;
 

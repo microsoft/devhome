@@ -241,4 +241,24 @@
     <value>More options for repository {0}</value>
     <comment>{Locked="{0}"} {0} name of the repository.  Automation name for the ... menu</comment>
   </data>
+  <data name="MinuteAbbreviation" xml:space="preserve">
+    <value>min</value>
+    <comment>The shorthand name for minute.</comment>
+  </data>
+  <data name="PrefixForDevHomeVersion" xml:space="preserve">
+    <value>Provided by {0}</value>
+    <comment>Prefix for Dev Home version that appears on the ToolTip for source control extension drop down</comment>
+  </data>
+  <data name="UnassignedSourceControlProvider" xml:space="preserve">
+    <value>unassigned</value>
+    <comment>Label when a repository does not have an assigned source control provider.</comment>
+  </data>
+  <data name="CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Button text for the close button.</comment>
+  </data>
+  <data name="ErrorAssigningSourceControlProvider" xml:space="preserve">
+    <value>Error assigning source control provider</value>
+    <comment>Title of the source control error dialog.</comment>
+  </data>
 </root>
