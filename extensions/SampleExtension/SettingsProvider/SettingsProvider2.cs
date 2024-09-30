@@ -13,7 +13,7 @@ public class SettingsProvider2 : ISettingsProvider2
     private static readonly Lazy<ILogger> _logger = new(() => Serilog.Log.ForContext("SourceContext", nameof(SettingsProvider2)));
 
     private static readonly ILogger _log = _logger.Value;
-    private readonly string _url;
+    private readonly Uri _uri;
     private readonly string _webContentPath = Path.Combine(AppContext.BaseDirectory, "WebContent");
     private WebServer.WebServer? _extensionWebServer;
 
@@ -24,13 +24,13 @@ public class SettingsProvider2 : ISettingsProvider2
     public SettingsProvider2()
     {
         // select a method to get the URL
-        // _url = GetUrlFromFilePath("ExtensionSettingsPage.html");
+        // _uri = GetUrlFromFilePath("ExtensionSettingsPage.html");
 
         // use the web server to serve the page
-        _url = GetUrlFromWebServer("ExtensionSettingsPage.html");
+        _uri = GetUrlFromWebServer("ExtensionSettingsPage.html");
 
         // use a public website
-        // _url = "https://github.com/login";
+        // _uri = new Uri("https://github.com/login");
     }
 
     public AdaptiveCardSessionResult GetSettingsAdaptiveCardSession()
@@ -42,12 +42,12 @@ public class SettingsProvider2 : ISettingsProvider2
 
     public WebViewResult GetWebView()
     {
-        if (!string.IsNullOrEmpty(_url))
+        if (_uri == null || string.IsNullOrEmpty(_uri.ToString()))
         {
-            return new WebViewResult(_url);
+            return new WebViewResult(new NotImplementedException(), "Failed to get the URL for the settings page.");
         }
 
-        return new WebViewResult(new NotImplementedException(), "Failed to get the URL for the settings page.");
+        return new WebViewResult(_uri);
     }
 
     public bool HandleRequest(HttpListenerRequest request, HttpListenerResponse response)
@@ -56,17 +56,17 @@ public class SettingsProvider2 : ISettingsProvider2
         return true;
     }
 
-    public string GetUrlFromWebServer(string index)
+    public Uri GetUrlFromWebServer(string index)
     {
         _extensionWebServer = new WebServer.WebServer(_webContentPath);
         _extensionWebServer.RegisterRouteHandler("/api/test", HandleRequest);
 
-        return $"http://localhost:{_extensionWebServer.Port}/{index}";
+        return new Uri($"http://localhost:{_extensionWebServer.Port}/{index}");
     }
 
-    public string GetUrlFromFilePath(string index)
+    public Uri GetUrlFromFilePath(string index)
     {
-        return Path.Combine(_webContentPath, index);
+        return new Uri(Path.Combine(_webContentPath, index));
     }
 
     public void Dispose()

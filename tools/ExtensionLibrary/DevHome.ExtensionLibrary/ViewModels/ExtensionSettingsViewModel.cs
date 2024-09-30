@@ -135,7 +135,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     {
         ShowWebView2Grid();
         var webViewResult = settingsProvider2.GetWebView();
-        WebViewUrl = new Uri(webViewResult.Url);
+        WebViewUrl = webViewResult.Uri;
     }
 
     // Only called if the WebView2 receives a message from the web page
