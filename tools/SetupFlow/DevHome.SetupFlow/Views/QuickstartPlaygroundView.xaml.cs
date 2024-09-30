@@ -347,13 +347,16 @@ public sealed partial class QuickstartPlaygroundView : UserControl
             {
                 var message = textBox.Text;
 
-                ViewModel.ChatMessages.Add(new ChatStyleMessage
+                if (message != null && message != string.Empty)
                 {
-                    Name = message,
-                    Type = ChatStyleMessage.ChatMessageItemType.Request,
-                });
+                    ViewModel.ChatMessages.Add(new ChatStyleMessage
+                    {
+                        Name = message,
+                        Type = ChatStyleMessage.ChatMessageItemType.Request,
+                    });
 
-                await ViewModel.GenerateChatStyleCompetions(message);
+                    await ViewModel.GenerateChatStyleCompetions(message);
+                }
             }
         }
     }

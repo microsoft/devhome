@@ -158,6 +158,10 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private bool _areDependenciesPresent = false;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GenerateCodespaceCommand))]
+    private bool _canGenerateCodespace = false;
+
+    [ObservableProperty]
     private string? _progressMessage;
 
     [ObservableProperty]
@@ -449,12 +453,11 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async Task SubmitChat()
     {
-        ShowExamplePrompts = false;
-
         var message = CustomPrompt;
 
         if (message != null && message != string.Empty)
         {
+            ShowExamplePrompts = false;
             ChatMessages.Add(new ChatStyleMessage
             {
                 Name = message,
@@ -462,79 +465,86 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             });
 
             await GenerateChatStyleCompetions(message);
+
+            CanGenerateCodespace = true;
         }
     }
 
     [RelayCommand(CanExecute = nameof(CanGenerateCodespace))]
     public async Task GenerateCodespace()
     {
-        try
+        if (CustomPrompt != null && CustomPrompt != string.Empty && ActiveQuickstartSelection != null)
         {
-            // Clear chat
-            ChatMessages.Clear();
-
-            var userPrompt = CustomPrompt;
-
-            // TODO: Replace this (and throughout) with proper diagnostics / logging
-            ArgumentNullException.ThrowIfNullOrEmpty(userPrompt);
-            ArgumentNullException.ThrowIfNull(ActiveQuickstartSelection);
-
-            TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateButtonClicked", LogLevel.Critical, new GenerateButtonClicked(userPrompt), ActivityId);
-
-            // Ensure file view isn't visible (in the case where the user has previously run a Generate command)
-            IsFileViewVisible = false;
-            IsErrorViewVisible = false;
-
-            // Ensure that the launch buttons are in their default state. This is important for scenarios where
-            // the extension has more than one project host and the user is doing multiple generate attempts in sequence.
-            // It makes sure that the code in the code-behind for populating the dropdown button gets re-run to pick up
-            // the new project host objects.
-            IsLaunchButtonVisible = true;
-            IsLaunchDropDownVisible = false;
-
-            // Without this, when the user generates two projects in sequence, the text box
-            // will contain any text from last-opened file in the previous project (which is
-            // confusing as this project may not have anything to do with the current one). This
-            // ensures that the file view is back to a known, clean state.
-            GeneratedFileContent = string.Empty;
-
-            // Temporarily turn off the provider combobox and ensure user cannot edit the prompt for the moment
-            EnableQuickstartProjectCombobox = false;
-            IsPromptTextBoxReadOnly = true;
-            EnableProjectButtons = false;
-            SetupChat();
-
-            IProgress<QuickStartProjectProgress> progress = new Progress<QuickStartProjectProgress>(UpdateProgress);
-
-            var outputFolder = await GetOutputFolder();
-            _outputFolderForCurrentPrompt = outputFolder.Path;
-
-            _quickStartProjectGenerationOperation = ActiveQuickstartSelection.CreateProjectGenerationOperation(userPrompt, outputFolder, ActivityId);
-            _quickStartProject = await _quickStartProjectGenerationOperation.GenerateAsync().AsTask(progress);
-            _quickStartProjectGenerationOperation = null!;
-            if (_quickStartProject.Result.Status == ProviderOperationStatus.Success)
+            try
             {
-                SetUpFileView();
-                SetupLaunchButton();
-                EnableProjectButtons = true;
-                TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundGenerateSuccceded", relatedActivityId: ActivityId);
+                // Clear chat
+                ChatMessages.Clear();
+
+                var userPrompt = CustomPrompt;
+
+                // TODO: Replace this (and throughout) with proper diagnostics / logging
+                ArgumentNullException.ThrowIfNullOrEmpty(userPrompt);
+                ArgumentNullException.ThrowIfNull(ActiveQuickstartSelection);
+
+                TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundGenerateButtonClicked", LogLevel.Critical, new GenerateButtonClicked(userPrompt), ActivityId);
+
+                // Ensure file view isn't visible (in the case where the user has previously run a Generate command)
+                IsFileViewVisible = false;
+                IsErrorViewVisible = false;
+
+                // Ensure that the launch buttons are in their default state. This is important for scenarios where
+                // the extension has more than one project host and the user is doing multiple generate attempts in sequence.
+                // It makes sure that the code in the code-behind for populating the dropdown button gets re-run to pick up
+                // the new project host objects.
+                IsLaunchButtonVisible = true;
+                IsLaunchDropDownVisible = false;
+
+                // Without this, when the user generates two projects in sequence, the text box
+                // will contain any text from last-opened file in the previous project (which is
+                // confusing as this project may not have anything to do with the current one). This
+                // ensures that the file view is back to a known, clean state.
+                GeneratedFileContent = string.Empty;
+
+                // Temporarily turn off the provider combobox and ensure user cannot edit the prompt for the moment
+                EnableQuickstartProjectCombobox = false;
+                IsPromptTextBoxReadOnly = true;
+                EnableProjectButtons = false;
+                SetupChat();
+
+                IProgress<QuickStartProjectProgress> progress = new Progress<QuickStartProjectProgress>(UpdateProgress);
+
+                var outputFolder = await GetOutputFolder();
+                _outputFolderForCurrentPrompt = outputFolder.Path;
+
+                _quickStartProjectGenerationOperation = ActiveQuickstartSelection.CreateProjectGenerationOperation(userPrompt, outputFolder, ActivityId);
+                _quickStartProject = await _quickStartProjectGenerationOperation.GenerateAsync().AsTask(progress);
+                _quickStartProjectGenerationOperation = null!;
+                if (_quickStartProject.Result.Status == ProviderOperationStatus.Success)
+                {
+                    SetUpFileView();
+                    SetupLaunchButton();
+                    EnableProjectButtons = true;
+                    TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundGenerateSuccceded", relatedActivityId: ActivityId);
+                }
+                else
+                {
+                    IsErrorViewVisible = true;
+                    ErrorMessage = StringResource.GetLocalized("QuickstartPlaygroundGenerationFailedDetails", _quickStartProject.Result.DisplayMessage);
+                    TelemetryFactory.Get<ITelemetry>().Log(
+                        "QuickstartPlaygroundGenerateFailed",
+                        LogLevel.Critical,
+                        new ProjectGenerationErrorInfo(_quickStartProject.Result.DisplayMessage, _quickStartProject.Result.ExtendedError, _quickStartProject.Result.DiagnosticText),
+                        ActivityId);
+                }
             }
-            else
+            finally
             {
-                IsErrorViewVisible = true;
-                ErrorMessage = StringResource.GetLocalized("QuickstartPlaygroundGenerationFailedDetails", _quickStartProject.Result.DisplayMessage);
-                TelemetryFactory.Get<ITelemetry>().Log(
-                    "QuickstartPlaygroundGenerateFailed",
-                    LogLevel.Critical,
-                    new ProjectGenerationErrorInfo(_quickStartProject.Result.DisplayMessage, _quickStartProject.Result.ExtendedError, _quickStartProject.Result.DiagnosticText),
-                    ActivityId);
+                // Re-enable the provider combobox and prompt textbox
+                EnableQuickstartProjectCombobox = true;
+                IsPromptTextBoxReadOnly = false;
+                CanGenerateCodespace = false;
+                IsPromptValid = false;
             }
-        }
-        finally
-        {
-            // Re-enable the provider combobox and prompt textbox
-            EnableQuickstartProjectCombobox = true;
-            IsPromptTextBoxReadOnly = false;
         }
     }
 
@@ -582,11 +592,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     {
         TelemetryFactory.Get<ITelemetry>().Log("QuickstartPlaygroundFeedbackSubmitted", LogLevel.Critical, new FeedbackSubmitted(isPositive, feedback), ActivityId);
         _quickStartProject?.FeedbackHandler?.ProvideFeedback(isPositive, feedback);
-    }
-
-    public bool CanGenerateCodespace()
-    {
-        return !string.IsNullOrEmpty(CustomPrompt) && ActiveQuickstartSelection != null && ChatMessages.Count > _initialMsgCount;
     }
 
     [RelayCommand]
@@ -694,7 +699,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
         ChatMessages.Add(new ChatStyleMessage
         {
-            Name = "If you would like to help us guide you to a good prompt, hit the Enter/Return key on your keyboard after typing in your prompt. Otherwise, simply click on Generate to ignore prompt guidance.",
+            Name = "If you would like to help us guide you to a good prompt, hit the Enter/Return key on your keyboard or press Submit after typing in your prompt. Otherwise, simply click on Generate to ignore prompt guidance.",
             Type = ChatStyleMessage.ChatMessageItemType.Response,
         });
 
