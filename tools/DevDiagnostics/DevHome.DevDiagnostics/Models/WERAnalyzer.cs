@@ -157,7 +157,7 @@ public class WERAnalyzer : IDisposable
                 LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList = default(LPPROC_THREAD_ATTRIBUTE_LIST);
                 nuint size = 0;
 
-                PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 1, ref size);
+                PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size);
 
                 if (size == 0)
                 {
@@ -166,7 +166,7 @@ public class WERAnalyzer : IDisposable
 
                 lpAttributeList = new LPPROC_THREAD_ATTRIBUTE_LIST((void*)Marshal.AllocHGlobal((int)size));
 
-                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 1, ref size))
+                if (!PInvoke.InitializeProcThreadAttributeList(lpAttributeList, 2, ref size))
                 {
                     throw new InvalidOperationException();
                 }
@@ -177,31 +177,48 @@ public class WERAnalyzer : IDisposable
 #pragma warning restore SA1312 // Variable names should begin with lower-case letter
 
                 SECURITY_CAPABILITIES securityCapabilities = default(SECURITY_CAPABILITIES);
-                SID_AND_ATTRIBUTES[] sidAndAttributes = new SID_AND_ATTRIBUTES[1];
-                FreeSidSafeHandle registryReadSid;
+                SID_AND_ATTRIBUTES[] sidAndAttributes = new SID_AND_ATTRIBUTES[6];
                 FreeSidSafeHandle currentPackageSid;
+                FreeSidSafeHandle lpacAppSid;
+                FreeSidSafeHandle lpacComSid;
+                FreeSidSafeHandle lpacInstrumentationSid;
+                FreeSidSafeHandle registryReadSid;
+                FreeSidSafeHandle lpacIdentityServicesSid;
+                FreeSidSafeHandle fileSystemSid;
 
-                string sid1 = "S-1-15-3-1024-3635283841-2530182609-996808640-1887759898-3848208603-3313616867-983405619-2501854204";
+                PInvoke.DeriveAppContainerSidFromAppContainerName("Microsoft.Windows.DevHome_8wekyb3d8bbwe", out currentPackageSid);
 
-                // string sid2 = "S-1-15-3-789131091-3979119899-1741130944-2054218997-3508611414-1387502353-284405581";
-                // TOKEN_APPCONTAINER_INFORMATION tokenACInfo;
-                PInvoke.OpenProcessToken(Process.GetCurrentProcess().SafeHandle, TOKEN_ACCESS_MASK.TOKEN_QUERY, out SafeFileHandle processToken);
-
-                PInvoke.GetTokenInformation(processToken, TOKEN_INFORMATION_CLASS.TokenAppContainerSid, null, 0, out uint requiredLength);
-                Span<char> tokenACSid = new char[requiredLength];
-                fixed (char* pTokenACSid = tokenACSid)
-                {
-                    bool ret = PInvoke.GetTokenInformation(processToken, TOKEN_INFORMATION_CLASS.TokenAppContainerSid, pTokenACSid, requiredLength, out requiredLength);
-                    int error = Marshal.GetLastWin32Error();
-                }
-
-                PInvoke.ConvertStringSidToSid(sid1, out currentPackageSid);
                 PInvoke.ConvertStringSidToSid("S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681", out registryReadSid);
                 sidAndAttributes[0] = default(SID_AND_ATTRIBUTES);
                 sidAndAttributes[0].Sid = (PSID)registryReadSid.DangerousGetHandle();
                 sidAndAttributes[0].Attributes = 4; // SE_GROUP_ENABLED
 
-                securityCapabilities.CapabilityCount = 1;
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-1502825166-1963708345-2616377461-2562897074-4192028372-3968301570-1997628692-1435953622", out lpacAppSid);
+                sidAndAttributes[1] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[1].Sid = (PSID)lpacAppSid.DangerousGetHandle();
+                sidAndAttributes[1].Attributes = 4; // SE_GROUP_ENABLED
+
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-2405443489-874036122-4286035555-1823921565-1746547431-2453885448-3625952902-991631256", out lpacComSid);
+                sidAndAttributes[2] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[2].Sid = (PSID)lpacComSid.DangerousGetHandle();
+                sidAndAttributes[2].Attributes = 4; // SE_GROUP_ENABLED
+
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-3153509613-960666767-3724611135-2725662640-12138253-543910227-1950414635-4190290187", out lpacInstrumentationSid);
+                sidAndAttributes[3] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[3].Sid = (PSID)lpacInstrumentationSid.DangerousGetHandle();
+                sidAndAttributes[3].Attributes = 4; // SE_GROUP_ENABLED
+
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-1788129303-2183208577-3999474272-3147359985-1757322193-3815756386-151582180-1888101193", out lpacIdentityServicesSid);
+                sidAndAttributes[4] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[4].Sid = (PSID)lpacIdentityServicesSid.DangerousGetHandle();
+                sidAndAttributes[4].Attributes = 4; // SE_GROUP_ENABLED
+
+                PInvoke.ConvertStringSidToSid("S-1-15-3-1024-3777909873-1799880613-452196415-3098254733-3833254313-651931560-4017485463-3376623984", out fileSystemSid);
+                sidAndAttributes[5] = default(SID_AND_ATTRIBUTES);
+                sidAndAttributes[5].Sid = (PSID)fileSystemSid.DangerousGetHandle();
+                sidAndAttributes[5].Attributes = 4; // SE_GROUP_ENABLED
+
+                securityCapabilities.CapabilityCount = 6;
                 securityCapabilities.AppContainerSid = (PSID)currentPackageSid.DangerousGetHandle();
                 securityCapabilities.Reserved = 0;
 
@@ -211,11 +228,11 @@ public class WERAnalyzer : IDisposable
                 fixed (SID_AND_ATTRIBUTES* sids = sidAndAttributes)
                 {
                     securityCapabilities.Capabilities = sids;
-                    PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, sids, (nuint)sizeof(SECURITY_CAPABILITIES), null, (nuint*)null);
+                    bool f = PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, sids, (nuint)sizeof(SECURITY_CAPABILITIES), null, (nuint*)null);
 
                     // Add LPAC
                     uint allApplicationPackagesPolicy = 1; //  PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
-                    PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY, &allApplicationPackagesPolicy, sizeof(uint), null, (nuint*)null);
+                    f = PInvoke.UpdateProcThreadAttribute(lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY, &allApplicationPackagesPolicy, sizeof(uint), null, (nuint*)null);
 
                     string commandLineString = "DumpAnalyzer.exe " + string.Format(CultureInfo.InvariantCulture, "\"{0}\" \"{1}\"\0", report.BasicReport.CrashDumpPath, analysisFilePath);
                     Span<char> commandLine = new char[commandLineString.Length];
@@ -225,7 +242,7 @@ public class WERAnalyzer : IDisposable
                     startupex.StartupInfo.cb = (uint)sizeof(STARTUPINFOEXW);
                     startupex.lpAttributeList = lpAttributeList;
 
-                    bool f = CreateProcessEx(
+                    f = CreateProcessEx(
                                           @"D:\devhome\src\bin\x64\Debug\net8.0-windows10.0.22621.0\AppX\DumpAnalyzer.exe",
                                           ref commandLine,
                                           null,
