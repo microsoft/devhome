@@ -26,23 +26,10 @@ public sealed class SampleExtension : IExtension, IDisposable
     private readonly IHost _host;
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SampleExtension));
 
-    private readonly string _url;
-    private readonly string _webContentPath = Path.Combine(AppContext.BaseDirectory, "WebContent");
-    private WebServer.WebServer? _extensionWebServer;
-
     public SampleExtension(ManualResetEvent extensionDisposedEvent, IHost host)
     {
         _extensionDisposedEvent = extensionDisposedEvent;
         _host = host;
-
-        // select a method to get the URL
-        // _url = GetUrlFromFilePath("ExtensionSettingsPage.html");
-
-        // use the web server to serve the page
-        _url = GetUrlFromWebServer("ExtensionSettingsPage.html");
-
-        // use a public website
-        // _url = "https://github.com/login";
     }
 
     public object? GetProvider(ProviderType providerType)
@@ -56,7 +43,7 @@ public sealed class SampleExtension : IExtension, IDisposable
             case ProviderType.FeaturedApplications:
                 return new FeaturedApplicationsProvider();
             case ProviderType.Settings:
-                return new SettingsProvider2(new WebViewResult(_url));
+                return new SettingsProvider2();
             default:
                 return null;
         }
@@ -65,28 +52,5 @@ public sealed class SampleExtension : IExtension, IDisposable
     public void Dispose()
     {
         _extensionDisposedEvent.Set();
-        if (_extensionWebServer != null)
-        {
-            _extensionWebServer.Dispose();
-        }
-    }
-
-    public bool HandleRequest(HttpListenerRequest request, HttpListenerResponse response)
-    {
-        Console.WriteLine("Received request for /api/test");
-        return true;
-    }
-
-    public string GetUrlFromWebServer(string index)
-    {
-        _extensionWebServer = new WebServer.WebServer(_webContentPath);
-        _extensionWebServer.RegisterRouteHandler("/api/test", HandleRequest);
-
-        return $"http://localhost:{_extensionWebServer.Port}/{index}";
-    }
-
-    public string GetUrlFromFilePath(string index)
-    {
-        return Path.Combine(_webContentPath, index);
     }
 }
