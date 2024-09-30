@@ -104,16 +104,16 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <!-- InfoBar's Top margin is set conditionally in ShellPage.xaml.cs file on NavigationViewControl_DisplayModeChanged-->
-                <InfoBar 
-                    Grid.Row="0" 
-                    x:Name="ShellInfoBar" 
-                    Margin="50 0 50 0" 
-                    Severity="{x:Bind ViewModel.ShellInfoBarModel.Severity, Mode=TwoWay}" 
-                    Title="{x:Bind ViewModel.ShellInfoBarModel.Title, Mode=TwoWay}" 
-                    Visibility="Visible" 
-                    Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
-                    IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
-                    MaxWidth="{ThemeResource MaxPageContentWidth}" />
+                <InfoBar
+                    Grid.Row="0"
+                    x:Name="ShellInfoBar"
+                    Severity="{x:Bind ViewModel.ShellInfoBarModel.Severity, Mode=OneWay}"
+                    Title="{x:Bind ViewModel.ShellInfoBarModel.Title, Mode=OneWay}"
+                    Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=OneWay}"
+                    IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=OneWay}"
+                    IsClosable="{x:Bind ViewModel.ShellInfoBarModel.IsClosable, Mode=OneWay}"
+                    MaxWidth="{ThemeResource MaxPageContentWidth}"
+                    Margin="{ThemeResource HeaderMargin}"/>
                 <Frame
                     Grid.Row="1"
                     x:Name="NavigationFrame"
