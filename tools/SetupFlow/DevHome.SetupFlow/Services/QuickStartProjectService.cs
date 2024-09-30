@@ -33,7 +33,7 @@ public sealed class QuickStartProjectService : IQuickStartProjectService
         {
             try
             {
-                var quickStartProjectProviders = (await extension.GetListOfProvidersAsync<IQuickStartProjectProvider>()).ToList();
+                var quickStartProjectProviders = (await extension.GetListOfProvidersAsync<IQuickStartProjectProvider2>()).ToList();
                 foreach (var quickStartProjectProvider in quickStartProjectProviders)
                 {
                     if (quickStartProjectProvider != null)
@@ -44,7 +44,7 @@ public sealed class QuickStartProjectService : IQuickStartProjectService
             }
             catch (Exception ex)
             {
-                _log.Error(ex, $"Failed to get {nameof(IQuickStartProjectProvider)} provider from '{extension.PackageFullName}'");
+                _log.Error(ex, $"Failed to get {nameof(IQuickStartProjectProvider2)} provider from '{extension.PackageFullName}'");
             }
         }
 

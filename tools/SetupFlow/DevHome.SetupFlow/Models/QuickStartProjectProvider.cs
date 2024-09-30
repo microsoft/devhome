@@ -11,7 +11,7 @@ using Windows.Storage;
 namespace DevHome.SetupFlow.Models;
 
 /// <summary>
-/// Wrapper class for the IQuickStartProjectProvider interface that can be used throughout the application.
+/// Wrapper class for the IQuickStartProjectProvider2 interface that can be used throughout the application.
 /// Note: Additional methods added to this class should be wrapped in try/catch blocks to ensure that
 /// exceptions don't bubble up to the caller as the methods are cross proc COM calls.
 /// </summary>
@@ -21,7 +21,7 @@ public sealed class QuickStartProjectProvider
 
     private readonly string _errorString;
 
-    private readonly IQuickStartProjectProvider _quickStartProjectProvider;
+    private readonly IQuickStartProjectProvider2 _quickStartProjectProvider;
 
     public string PackageFullName { get; }
 
@@ -34,7 +34,7 @@ public sealed class QuickStartProjectProvider
     public string[] SamplePrompts { get; }
 
     public QuickStartProjectProvider(
-        IQuickStartProjectProvider quickStartProjectProvider,
+        IQuickStartProjectProvider2 quickStartProjectProvider,
         ISetupFlowStringResource setupFlowStringResource,
         string packageFullName)
     {
@@ -72,6 +72,21 @@ public sealed class QuickStartProjectProvider
         catch (Exception ex)
         {
             TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundProjectGenerationOperation", ex, activityId);
+            _log.Error(ex, $"CreateProjectGenerationOperation for: {this} failed due to exception");
+            return null;
+        }
+    }
+
+    public IQuickStartChatStyleGenerationOperation CreateChatStyleGenerationOperation(string prompt)
+    {
+        try
+        {
+            TelemetryFactory.Get<ITelemetry>().LogCritical("QuickstartPlaygroundCreateChatStyleGenerationOperation");
+            return _quickStartProjectProvider.CreateChatStyleGenerationOperation(prompt);
+        }
+        catch (Exception ex)
+        {
+            TelemetryFactory.Get<ITelemetry>().LogException("QuickstartPlaygroundCreateChatStyleGenerationOperation", ex);
             _log.Error(ex, $"CreateProjectGenerationOperation for: {this} failed due to exception");
             return null;
         }
