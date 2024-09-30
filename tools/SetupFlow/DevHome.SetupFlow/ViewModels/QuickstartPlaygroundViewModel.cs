@@ -192,8 +192,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     private int _stepCounter;
 
-    private int _initialMsgCount;
-
     public QuickstartPlaygroundViewModel(
         ISetupFlowStringResource stringResource,
         IQuickStartProjectService quickStartProjectService,
@@ -666,7 +664,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             ReferenceSampleUri = null;
             ChatMessages.Clear();
             _stepCounter = 0;
-            _initialMsgCount = 0;
 
             SetupChat();
 
@@ -689,7 +686,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     private void SetupChat()
     {
         ChatMessages.Clear();
-        _initialMsgCount = 0;
 
         ChatMessages.Add(new ChatStyleMessage
         {
@@ -702,8 +698,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             Name = "If you would like to help us guide you to a good prompt, hit the Enter/Return key on your keyboard or press Submit after typing in your prompt. Otherwise, simply click on Generate to ignore prompt guidance.",
             Type = ChatStyleMessage.ChatMessageItemType.Response,
         });
-
-        _initialMsgCount = ChatMessages.Count;
     }
 
     [RelayCommand]
