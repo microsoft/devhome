@@ -2035,4 +2035,7 @@
     <value>Please check your network settings and try again.</value>
     <comment>Text displayed when there is no internet connection</comment>
   </data>
+  <data name="DevHomeFeatureIsBlocked" xml:space="preserve">
+    <value>Disabled by policy, contact your system administrator for support.</value>
+  </data>
 </root>

@@ -51,6 +51,9 @@
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
         </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="Unloaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.UnloadedCommand}" />
+        </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
 
     <Grid>
@@ -103,7 +106,8 @@
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <ListView
                             ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
-                            SelectionMode="Single">
+                            SelectionMode="Single"
+                            IsEnabled="{x:Bind ViewModel.IsMachineConfigurationGPOEnabled, Mode=OneWay}">
                             <Grid Background="Transparent">
                                 <ctControls:SettingsCard
                                     x:Uid="MainPage_SetupFlow"
@@ -209,7 +213,8 @@
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="MainPage_QuickConfiguration" />
                         <ListView
                             ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
-                            SelectionMode="Single">
+                            SelectionMode="Single"
+                            IsEnabled="{x:Bind ViewModel.IsMachineConfigurationGPOEnabled, Mode=OneWay}">
                             <!-- settings card for creating an environment -->
                             <ctControls:SettingsCard 
                                 x:Uid="MainPageCreateEnvironment"

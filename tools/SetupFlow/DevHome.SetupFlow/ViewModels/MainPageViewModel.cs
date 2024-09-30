@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
@@ -62,6 +63,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 
     [ObservableProperty]
     private bool _enableQuickstartPlayground;
+
+    [ObservableProperty]
+    private bool _isMachineConfigurationGPOEnabled;
 
     private bool _disposedValue;
 
@@ -374,7 +378,29 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
+        IsMachineConfigurationGPOEnabled = GPOHelper.GetConfiguredEnabledMachineConfigurationValue();
+        if (!IsMachineConfigurationGPOEnabled)
+        {
+            var infoBarService = _host.GetService<IInfoBarService>();
+            infoBarService.ShowAppLevelInfoBar(
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Warning,
+                StringResource.GetLocalized("DevHomeFeatureIsBlocked"),
+                string.Empty,
+                false,
+                IInfoBarService.PageScope.MachineConfiguration);
+        }
+
         await Task.WhenAll(ValidateAppInstallerAsync(), ValidateConfigurationFileAsync());
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        var infoBarService = _host.GetService<IInfoBarService>();
+        if (infoBarService.IsAppLevelInfoBarVisible() && infoBarService.GetInfoBarPageScope() == IInfoBarService.PageScope.MachineConfiguration)
+        {
+            infoBarService.HideAppLevelInfoBar();
+        }
     }
 
     private async Task<bool> ValidateConfigurationFileAsync()
