@@ -190,8 +190,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [NotifyCanExecuteChangedFor(nameof(LaunchProjectHostCommand), nameof(SaveProjectCommand))]
     private bool _enableProjectButtons = false;
 
-    private int _stepCounter;
-
     public QuickstartPlaygroundViewModel(
         ISetupFlowStringResource stringResource,
         IQuickStartProjectService quickStartProjectService,
@@ -471,7 +469,7 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(CanGenerateCodespace))]
     public async Task GenerateCodespace()
     {
-        if (CustomPrompt != null && CustomPrompt != string.Empty && ActiveQuickstartSelection != null)
+        if (!string.IsNullOrEmpty(CustomPrompt) && ActiveQuickstartSelection != null)
         {
             try
             {
@@ -600,7 +598,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
 
     public async Task GenerateChatStyleCompetions(string message)
     {
-        _stepCounter++;
         if (ActiveQuickstartSelection != null)
         {
             _quickStartChatStyleGeneration = ActiveQuickstartSelection.CreateChatStyleGenerationOperation(message);
@@ -663,7 +660,6 @@ public partial class QuickstartPlaygroundViewModel : SetupPageViewModelBase
             PromptTextBoxPlaceholder = StringResource.GetLocalized("QuickstartPlaygroundGenerationPromptPlaceholder");
             ReferenceSampleUri = null;
             ChatMessages.Clear();
-            _stepCounter = 0;
 
             SetupChat();
 
