@@ -349,4 +349,10 @@
   <data name="WidgetScreenshotAltDisplaySSKeychain" xml:space="preserve">
     <value>SSH Keychain widget preview image</value>
   </data>
+  <data name="GPODisabledDevHomeHeader.Text" xml:space="preserve">
+    <value>Dev Home is blocked!</value>
+  </data>
+  <data name="GPODisabledDevHomeDescription.Text" xml:space="preserve">
+    <value>Check with your IT or System Administrator for support</value>
+  </data>
 </root>
