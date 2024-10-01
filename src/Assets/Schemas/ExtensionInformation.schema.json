@@ -1,0 +1,98 @@
+{
+  "$id": "",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Required schema to allow users to discover non-installed extensions within Dev Home.",
+  "type": "object",
+  "properties": {
+    "Products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ProductId": { "type": "string" },
+          "Properties": {
+            "type": "object",
+            "properties": {
+              "PackageFamilyName": { "type": "string" },
+              "ResourceProperties": {
+                "type": "object",
+                "properties": {
+                  "DisplayNameKey": { "type": "string" },
+                  "PublisherDisplayNameKey": { "type": "string" },
+                  "ShortDescriptionKey": { "type": "string" },
+                  "LongDescriptionKey": { "type": "string" }
+                },
+                "required": [ "DisplayNameKey", "PublisherDisplayNameKey", "ShortDescriptionKey", "LongDescriptionKey" ]
+              },
+              "DevHomeExtensions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ResourceProperties": {
+                      "type": "object",
+                      "properties": {
+                        "DisplayNameKey": { "type": "string" },
+                        "ShortDescriptionKey": { "type": "string" }
+                      },
+                      "required": [ "DisplayNameKey", "ShortDescriptionKey" ]
+                    },
+                    "SupportedProviderTypes": {
+                      "type": "array",
+                      "items": {
+                        "enum": [
+                          "ComputeSystem",
+                          "DeveloperId",
+                          "FeaturedApplications",
+                          "LocalRepository",
+                          "QuickStartProject",
+                          "Repository",
+                          "Settings"
+                        ]
+                      }
+                    },
+                    "ProviderSpecificProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ResourceProperties": {
+                            "type": "object",
+                            "properties": {
+                              "DisplayNameKey": { "type": "string" },
+                              "ShortDescriptionKey": { "type": "string" }
+                            },
+                            "required": [ "DisplayNameKey", "ShortDescriptionKey" ]
+                          },
+                          "ProviderType": {
+                            "type": "string",
+                            "enum": [
+                              "ComputeSystem",
+                              "DeveloperId",
+                              "FeaturedApplications",
+                              "LocalRepository",
+                              "QuickStartProject",
+                              "Repository",
+                              "Settings"
+                            ]
+                          }
+                        },
+                        "required": [ "ResourceProperties", "ProviderType" ]
+                      }
+                    }
+                  },
+                  "required": [ "ResourceProperties", "SupportedProviderTypes", "ProviderSpecificProperties" ]
+                }
+              },
+              "SupportsWidgets": { "type": "boolean" }
+            },
+            "required": [ "PackageFamilyName", "ResourceProperties", "DevHomeExtensions", "SupportsWidgets" ]
+          }
+        },
+        "required": [ "ProductId", "Properties" ]
+      }
+    }
+  },
+  "required": [ "Products" ],
+  "additionalProperties": false
+} 

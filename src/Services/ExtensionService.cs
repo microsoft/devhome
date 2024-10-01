@@ -1,12 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
+using DevHome.ExtensionLibrary.ViewModels;
 using DevHome.Models;
 using DevHome.Telemetry;
+using FastSerialization;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -14,6 +19,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
@@ -30,6 +36,15 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly object _lock = new();
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
     private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
+
+    private readonly Uri _localExtensionJsonFilePath;
+
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        TypeInfoResolver = new JsonSourceGenerationContext(),
+    };
 
     private readonly ILocalSettingsService _localSettingsService;
 
@@ -48,6 +63,7 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
+        _localExtensionJsonFilePath = new($@"ms-appx:///DevHome/Assets/ExtensionInformation.json");
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -403,5 +419,22 @@ public class ExtensionService : IExtensionService, IDisposable
         await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
 
         return true;
+    }
+
+    public async Task<DevHomeExtensionJsonData?> GetExtensionJsonDataAsync()
+    {
+        try
+        {
+            _log.Information($"Get packages file '{_localExtensionJsonFilePath}'");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonFilePath);
+            var extensionJson = await FileIO.ReadTextAsync(file);
+            return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, _jsonSerializerOptions);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving extension json information");
+        }
+
+        return null;
     }
 }

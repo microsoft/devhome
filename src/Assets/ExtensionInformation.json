@@ -1,0 +1,116 @@
+{
+  "Products": [
+    {
+      "ProductId": "9MV8F79FGXTR",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "ResourceProperties": {
+          "DisplayNameKey": "DevHomeAzureDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher",
+          "ShortDescriptionKey": "",
+          "LongDescriptionKey": "DevHomeAzureLongDescription"
+        },
+        "DevHomeExtensions": [
+          {
+            "ResourceProperties": {
+              "DisplayNameKey": "DevHomeAzureDisplayName",
+              "ShortDescriptionKey": ""
+            },
+            "SupportedProviderTypes": [
+              "ComputeSystem",
+              "DeveloperId",
+              "QuickStartProject",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": [
+              {
+                "ResourceProperties": {
+                  "DisplayNameKey": "DevBoxProviderDisplayName",
+                  "ShortDescriptionKey": "DevBoxProviderShortDescription"
+                },
+                "ProviderType": "ComputeSystem"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZCC27PR6N6",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "ResourceProperties": {
+          "DisplayNameKey": "DevHomeGitHubDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher",
+          "ShortDescriptionKey": "",
+          "LongDescriptionKey": "DevHomeGitHubLongDescription"
+        },
+        "DevHomeExtensions": [
+          {
+            "ResourceProperties": {
+              "DisplayNameKey": "DevHomeGitHubDisplayName",
+              "ShortDescriptionKey": ""
+            },
+            "SupportedProviderTypes": [
+              "DeveloperId",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZ845RW19RW",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.DevHomeMicrosoftGameDevExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "ResourceProperties": {
+          "DisplayNameKey": "DevHomeGameDevDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher",
+          "ShortDescriptionKey": "",
+          "LongDescriptionKey": "DevHomeGameDevLongDescription"
+        },
+        "DevHomeExtensions": [
+          {
+            "ResourceProperties": {
+              "DisplayNameKey": "DevHomeGameDevDisplayName",
+              "ShortDescriptionKey": ""
+            },
+            "SupportedProviderTypes": [
+              "FeaturedApplications"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NB9M5KZ8SLX",
+      "Properties": {
+        "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g",
+        "SupportsWidgets": true,
+        "ResourceProperties": {
+          "DisplayNameKey": "WidgetsForUniGetUIDisplayName",
+          "PublisherDisplayNameKey": "WidgetsForUniGetUIPublisher",
+          "ShortDescriptionKey": "",
+          "LongDescriptionKey": "WidgetsForUniGetUILongDescription"
+        },
+        "DevHomeExtensions": [
+          {
+            "ResourceProperties": {
+              "DisplayNameKey": "WidgetsForUniGetUIDisplayName",
+              "ShortDescriptionKey": ""
+            },
+            "SupportedProviderTypes": [],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    }
+  ]
+} 

@@ -57,6 +57,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="assets\ExtensionInformation.json" />
+    <Content Remove="Assets\Schemas\ExtensionInformation.schema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
     <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />

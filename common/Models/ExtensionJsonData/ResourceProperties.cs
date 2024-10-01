@@ -1,0 +1,27 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using DevHome.Common.Services;
+
+namespace DevHome.Common.Models.ExtensionJsonData;
+
+public class ResourceProperties
+{
+    private readonly StringResource _stringResource = new("DevHome.Common.pri", "DevHome.Common/Resources");
+
+    public required string DisplayNameKey { get; set; } = string.Empty;
+
+    public required string PublisherDisplayNameKey { get; set; } = string.Empty;
+
+    public required string ShortDescriptionKey { get; set; } = string.Empty;
+
+    public required string LongDescriptionKey { get; set; } = string.Empty;
+
+    public string LocalizedDisplayName => _stringResource.GetLocalized(DisplayNameKey);
+
+    public string LocalizedPublisherDisplayName => _stringResource.GetLocalized(PublisherDisplayNameKey);
+
+    public string LocalizedShortDescription => _stringResource.GetLocalized(ShortDescriptionKey);
+
+    public string LocalizedLongDescription => _stringResource.GetLocalized(LongDescriptionKey);
+}

@@ -359,4 +359,52 @@
     <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>
+  <data name="DevHomeAzureDisplayName" xml:space="preserve">
+    <value>Microsoft Dev Home Azure Extension (Preview)</value>
+    <comment>{Locked="Microsoft", "Azure"} Display name for the Azure extension.</comment>
+  </data>
+  <data name="MicrosoftPublisher" xml:space="preserve">
+    <value>Microsoft Corporation</value>
+    <comment>{Locked="Microsoft"} Display name for the Microsoft publisher.</comment>
+  </data>
+  <data name="DevHomeAzureLongDescription" xml:space="preserve">
+    <value>Dev Home Azure Extension provides Azure integration into the Dev Home experience. This extension provides repository recommendations for Dev Home's machine configuration tool as well as Azure widgets for the dashboard. You will need Dev Home installed in order to use this extension. This is an open source project and we welcome community participation. To participate, please visit https://github.com/microsoft/devhomeazureextension.</value>
+    <comment>{Locked="https://github.com/microsoft/devhomeazureextension", "Azure"} Description for the Azure extension.</comment>
+  </data>
+  <data name="DevBoxProviderDisplayName" xml:space="preserve">
+    <value>Microsoft Dev Box</value>
+    <comment>{Locked="Microsoft Dev Box"} Display name for the Dev Box provider.</comment>
+  </data>
+  <data name="DevBoxProviderShortDescription" xml:space="preserve">
+    <value>Create, view and manager your Microsoft Dev Box cloud machines.</value>
+    <comment>{Locked="Microsoft Dev Box"} short description for the Dev Box provider.</comment>
+  </data>
+  <data name="DevHomeGitHubDisplayName" xml:space="preserve">
+    <value>Microsoft Dev Home GitHub Extension (Preview)</value>
+    <comment>{Locked="Microsoft", "Azure"} Display name for the Azure extension.</comment>
+  </data>
+  <data name="DevHomeGitHubLongDescription" xml:space="preserve">
+    <value>Dev Home GitHub Extension provides GitHub integration into the Dev Home experience. This extension provides repository recommendations for Dev Home's machine configuration tool as well as GitHub widgets for the dashboard. You will need Dev Home installed in order to use this extension. This is an open source project and we welcome community participation. To participate, please visit https://github.com/microsoft/devhomegithubextension.</value>
+    <comment>{Locked="https://github.com/microsoft/devhomegithubextension", "GitHub"} Description for the GitHub extension.</comment>
+  </data>
+  <data name="DevHomeGameDevDisplayName" xml:space="preserve">
+    <value>Microsoft Dev Home Game Dev Extension (Preview)</value>
+    <comment>{Locked="Microsoft"} Display name for the Game Dev extension.</comment>
+  </data>
+  <data name="DevHomeGameDevLongDescription" xml:space="preserve">
+    <value>Microsoft Game Dev Extension provides Microsoft Game Development integration into the Dev Home experience. This extension provides gaming development package recommendations for Dev Home's machine configuration tool as well as game development widgets for the dashboard. You will need Dev Home installed in order to use this extension.</value>
+    <comment>{Locked="Microsoft"} Description for the GitHub extension.</comment>
+  </data>
+  <data name="WidgetsForUniGetUIDisplayName" xml:space="preserve">
+    <value>Widgets for UniGetUI (formerly WingetUI)</value>
+    <comment>{Locked="UniGetUI", "WingetUI"} Display name for the 'Widgets for UniGetUI' extension.</comment>
+  </data>
+  <data name="WidgetsForUniGetUIPublisher" xml:space="preserve">
+    <value>Martí Climent</value>
+    <comment>{Locked="Martí Climent"} Display name for the 'Widgets for UniGetUI' publisher.</comment>
+  </data>
+  <data name="WidgetsForUniGetUILongDescription" xml:space="preserve">
+    <value>Widgets for the Windows Widgets and Dev Home applications that will help you quickly manage your software updates without having to launch UniGetUI. WARNING: This application requires UniGetUI to be installed and running on your system. This application does NOT perform any of the updates, but rather it interfaces with UniGetUI to keep your packages up-to-date.</value>
+    <comment>{Locked="UniGetUI", "Windows"} Description for the 'Widgets for UniGetUI' extension.</comment>
+  </data>
 </root>
