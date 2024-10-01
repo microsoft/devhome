@@ -144,13 +144,24 @@ internal sealed class SSHWalletWidget : CoreWidget
         SetConfigure();
     }
 
+    // This function assumes arg.Data will be a json string object with the following structure:
+    // { "data": "hostname" }
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
+        var jsonObject = JsonDocument.Parse(args.Data).RootElement;
+        var host = jsonObject.GetProperty("data").GetString();
+
+        if (string.IsNullOrEmpty(host))
+        {
+            Log.Error("Invalid data received for HandleConnect.");
+            return;
+        }
+
         var cmd = new Process();
         cmd.StartInfo = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = $"/k \"ssh {args.Data}\"",
+            Arguments = $"/k \"ssh {host}\"",
             UseShellExecute = true,
         };
 

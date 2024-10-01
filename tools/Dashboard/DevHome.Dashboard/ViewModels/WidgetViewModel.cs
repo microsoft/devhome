@@ -25,7 +25,6 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -311,20 +310,29 @@ public partial class WidgetViewModel : ObservableObject
         return grid;
     }
 
-    private string MergeJsonData(string jsonStringA, string jsonStringB)
+    private Newtonsoft.Json.Linq.JObject WrapJsonString(string jsonString)
     {
-        if (string.IsNullOrEmpty(jsonStringA))
+        return new Newtonsoft.Json.Linq.JObject { ["data"] = jsonString };
+    }
+
+    private string MergeJsonData(Windows.Data.Json.JsonValue actionValue, Windows.Data.Json.JsonObject inputsObject)
+    {
+        Newtonsoft.Json.Linq.JObject objA = [];
+        Newtonsoft.Json.Linq.JObject objB = [];
+
+        if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.Object)
         {
-            return jsonStringB;
+            objA = Newtonsoft.Json.Linq.JObject.Parse(actionValue.Stringify());
+        }
+        else if (actionValue?.ValueType == Windows.Data.Json.JsonValueType.String)
+        {
+            objA = WrapJsonString(actionValue.Stringify());
         }
 
-        if (string.IsNullOrEmpty(jsonStringB))
+        if (inputsObject?.ValueType != Windows.Data.Json.JsonValueType.Null)
         {
-            return jsonStringA;
+            objB = Newtonsoft.Json.Linq.JObject.Parse(inputsObject.Stringify());
         }
-
-        var objA = JObject.Parse(jsonStringA);
-        var objB = JObject.Parse(jsonStringB);
 
         objA.Merge(objB);
 
@@ -341,22 +349,10 @@ public partial class WidgetViewModel : ObservableObject
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
         {
-            var actionData = string.Empty;
-            var inputsData = string.Empty;
+            Windows.Data.Json.JsonValue actionValue = executeAction.DataJson;
+            Windows.Data.Json.JsonObject inputsObject = args.Inputs.AsJson();
 
-            var dataType = executeAction.DataJson.ValueType;
-            if (dataType != Windows.Data.Json.JsonValueType.Null)
-            {
-                actionData = executeAction.DataJson.Stringify();
-            }
-
-            var inputType = args.Inputs.AsJson().ValueType;
-            if (inputType != Windows.Data.Json.JsonValueType.Null)
-            {
-                inputsData = args.Inputs.AsJson().Stringify();
-            }
-
-            var dataToSend = MergeJsonData(actionData, inputsData);
+            var dataToSend = MergeJsonData(actionValue, inputsObject);
 
             _log.Information($"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
