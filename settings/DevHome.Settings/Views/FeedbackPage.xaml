@@ -111,7 +111,7 @@
                     <ctControls:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xE909;"/>
+                                  Glyph="&#xE774;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
@@ -137,7 +137,7 @@
                     <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xf552;"/>
+                                  Glyph="&#xea18;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
