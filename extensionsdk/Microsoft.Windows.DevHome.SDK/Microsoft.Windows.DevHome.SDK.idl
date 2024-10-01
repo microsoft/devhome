@@ -1602,17 +1602,14 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperationWithProgress<QuickStartProjectResult, QuickStartProjectProgress> GenerateAsync();
     }
 
-    // Extensions implement this and is provided to Dev Home when CreateChatStyleGenerationOperation is called.
-    // This allows to have an async operation can be started but also additional context reported back to Dev Home
-    // as progress is being made such as a detailed log out output through the adaptive card session.
+    // Used to create a response based on whether the user's prompt is a valid prompt.
     [experimental]
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface IQuickStartChatStyleGenerationOperation
     {
-            // Used to create a response based on whether the user's prompt is a valid prompt.
-            // A valid prompt is determined by the denotion of a project type, having a clear objective,
-            // including language requirements, and including detailed project requirements. This response
-            // is given to the user to refine the prompt and guide them to a good prompt. 
+        // Starts the operation which generates a response based on the user's prompt to the chat UI. The response
+        // will denote whether the user has entered a meaningful and valid prompt that can be used to generate 
+        // a codespace. 
         Windows.Foundation.IAsyncOperation<QuickStartChatStyleResult> GenerateChatStyleResponse();
     }
 
@@ -1669,14 +1666,11 @@ namespace Microsoft.Windows.DevHome.SDK
         IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(String prompt, Windows.Storage.StorageFolder outputFolder);
     }
 
-    // Extensions can implement this provider to provide a way to
-    // create a project based on a prompt as part of the Dev Home 
-    // quick start project feature.
+    // Used to create the chat style messages between the user and the chat UI.
     [experimental]
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface IQuickStartProjectProvider2 requires IQuickStartProjectProvider
     {
-        // Used to create the chat style messages between the user and the chat UI.
         IQuickStartChatStyleGenerationOperation CreateChatStyleGenerationOperation(String prompt);
     }
 
