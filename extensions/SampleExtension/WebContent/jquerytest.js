@@ -9,7 +9,7 @@ $(document).ready(function () {
         $("html").attr('data-theme', 'dark');
         $("h1").hover(
             function () {
-                $(this).css("color", "yellow"); // High contrast with darkMode
+                $(this).css("color", "orange"); // High contrast with darkMode
             },
             function () {
                 $(this).css("color", "cyan"); // High contrast with darkMode
