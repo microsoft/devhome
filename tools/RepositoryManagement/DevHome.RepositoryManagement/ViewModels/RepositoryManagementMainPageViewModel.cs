@@ -50,6 +50,8 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
     private readonly Window _window;
 
+    private readonly IExperimentationService _experimentationService;
+
     private List<RepositoryManagementItemViewModel> _allLineItems = [];
 
     private List<Repository> _allRepositoriesFromTheDatabase;
@@ -62,6 +64,9 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _areFilterAndSortEnabled;
+
+    [ObservableProperty]
+    private bool _shouldShowSourceControlSelection;
 
     public enum SortOrder
     {
@@ -191,6 +196,8 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         _allLineItems = ConvertToLineItems(repositoriesWithCommits);
         LineItemsToDisplay = new(HideFilterAndSort(_allLineItems).Where(x => x.IsHiddenFromPage == false).ToList());
 
+        ShouldShowSourceControlSelection = _experimentationService.IsFeatureEnabled("RepositoryManagementSourceControlSelector");
+
         AreFilterAndSortEnabled = true;
     }
 
@@ -216,7 +223,8 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         RepositoryManagementDataAccessService dataAccessService,
         INavigationService navigationService,
         RepositoryEnhancerService enchanceRepositoryService,
-        Window window)
+        Window window,
+        IExperimentationService experimentationService)
     {
         _dataAccessService = dataAccessService;
         _factory = factory;
@@ -224,6 +232,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
         _navigationService = navigationService;
         _enhanceRepositoryService = enchanceRepositoryService;
         _window = window;
+        _experimentationService = experimentationService;
     }
 
     private void UpdateDisplayedRepositories()

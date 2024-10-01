@@ -42,6 +42,50 @@
                 x:Key="TrueToVisibleConverter"
                 FalseValue="Collapsed"
                 TrueValue="Visible" />
+            <DataTemplate x:Name="CommitInformationTemplate" x:DataType="viewmodels:RepositoryManagementItemViewModel">
+                <StackPanel
+    x:Name="CommitFoundStackPanel"
+    Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToVisibleConverter}}"
+    Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind LatestCommitSHA}"/>
+                    <FontIcon
+        FontFamily="{StaticResource SymbolThemeFontFamily}"
+        Glyph="&#xEA81;"
+        FontSize="8"
+        VerticalAlignment="Top"
+        Margin="0, 5, 5, 0"/>
+                    <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                    <FontIcon
+        FontFamily="{StaticResource SymbolThemeFontFamily}"
+        Glyph="&#xEA81;"
+        FontSize="8"
+        VerticalAlignment="Top"
+        Margin="0, 5, 5, 0"/>
+                    <TextBlock
+        Text="{x:Bind MinutesSinceLatestCommit}"/>
+                    <ToolTipService.ToolTip>
+                        <StackPanel
+            Orientation="Horizontal">
+                            <TextBlock
+                Text="{x:Bind LatestCommitSHA}"/>
+                            <FontIcon
+                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                Glyph="&#xEA81;"
+                FontSize="8"
+                VerticalAlignment="Top"
+                Margin="0, 5, 5, 0"/>
+                            <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                            <FontIcon
+                FontFamily="{StaticResource SymbolThemeFontFamily}"
+                Glyph="&#xEA81;"
+                FontSize="8"
+                VerticalAlignment="Top"
+                Margin="0, 5, 5, 0"/>
+                            <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
+                        </StackPanel>
+                    </ToolTipService.ToolTip>
+                </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
     <i:Interaction.Behaviors>
@@ -152,7 +196,6 @@
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition />
                             <ColumnDefinition />
-                            <ColumnDefinition />
                             <ColumnDefinition Width="50" />
                         </Grid.ColumnDefinitions>
                         <TextBlock
@@ -176,7 +219,6 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="2*" />
-                                <ColumnDefinition />
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="50" />
@@ -206,64 +248,40 @@
                                     <TextBlock x:Uid="CommitNotFound"/>
                                 </ToolTipService.ToolTip>
                             </TextBlock>
-                            <StackPanel
+
+                            <!-- Show only the commit information-->
+                            <ContentPresenter
+                                Visibility="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.ShouldShowSourceControlSelection, Mode=OneWay, Converter={StaticResource TrueToCollapsedConverter} }"
                                 Grid.Column="3"
-                                x:Name="CommitFoundStackPanel"
-                                Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToVisibleConverter}}"
-                                Orientation="Horizontal">
-                                <TextBlock Text="{x:Bind LatestCommitSHA}"/>
-                                <FontIcon
-                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                    Glyph="&#xEA81;"
-                                    FontSize="8"
+                                ContentTemplate="{StaticResource CommitInformationTemplate}"
+                                DataContext="{x:Bind}"/>
+                            <Grid
+                                Grid.Column="3"
+                                ColumnSpacing="5"
+                                Visibility="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.ShouldShowSourceControlSelection, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter} }">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter
+                                    ContentTemplate="{StaticResource CommitInformationTemplate}"
+                                    DataContext="{x:Bind}"/>
+                                <DropDownButton
+                                    Grid.Column="1"
                                     VerticalAlignment="Top"
-                                    Margin="0, 5, 5, 0"/>
-                                <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
-                                <FontIcon
-                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                    Glyph="&#xEA81;"
-                                    FontSize="8"
-                                    VerticalAlignment="Top"
-                                    Margin="0, 5, 5, 0"/>
-                                <TextBlock
-                                    Text="{x:Bind MinutesSinceLatestCommit}"/>
-                                <ToolTipService.ToolTip>
-                                    <StackPanel
-                                        Orientation="Horizontal">
-                                        <TextBlock
-                                            Text="{x:Bind LatestCommitSHA}"/>
-                                        <FontIcon
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                            Glyph="&#xEA81;"
-                                            FontSize="8"
-                                            VerticalAlignment="Top"
-                                            Margin="0, 5, 5, 0"/>
-                                        <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
-                                        <FontIcon
-                                            FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                            Glyph="&#xEA81;"
-                                            FontSize="8"
-                                            VerticalAlignment="Top"
-                                            Margin="0, 5, 5, 0"/>
-                                        <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
-                                    </StackPanel>
-                                </ToolTipService.ToolTip>
-                            </StackPanel>
-                            <DropDownButton
-                                Grid.Column="4"
-                                VerticalAlignment="Top"
-                                Content="{x:Bind SourceControlProviderDisplayName}"
-                                ToolTipService.ToolTip="{x:Bind SourceControlProviderPackageDisplayName}"
-                                Flyout="{x:Bind AllSourceControlProviderNames, Mode=OneWay}"
-                                Command="{x:Bind UpdateSourceControlProviderNamesCommand}">
-                            </DropDownButton>
+                                    Content="{x:Bind SourceControlProviderDisplayName}"
+                                    ToolTipService.ToolTip="{x:Bind SourceControlProviderPackageDisplayName}"
+                                    Flyout="{x:Bind AllSourceControlProviderNames, Mode=OneWay}"
+                                    Command="{x:Bind UpdateSourceControlProviderNamesCommand}">
+                                </DropDownButton>
+                            </Grid>
                             <TextBlock
-                                Grid.Column="5"
+                                Grid.Column="4"
                                 Text="{x:Bind Branch}"
                                 ToolTipService.ToolTip="{x:Bind Branch}" />
                             <Button
                                 x:Uid="MoreOptionsButton"
-                                Grid.Column="6"
+                                Grid.Column="5"
                                 Style="{StaticResource HorizontalThreeDotsStyle}"
                                 AutomationProperties.Name="{x:Bind MoreOptionsButtonAutomationName}">
                                 <Button.Flyout>
