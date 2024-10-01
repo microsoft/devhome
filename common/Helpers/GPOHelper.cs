@@ -18,7 +18,7 @@ public class GPOHelper
 
     // Registry path where gpo policy values are stored
     private const string PoliciesScopeMachine = "HKEY_LOCAL_MACHINE";
-    private const string PoliciesPath = @"\SOFTWARE\Policies\Microsoft\Windows\DevHome";
+    private const string PoliciesPath = @"\SOFTWARE\Policies\DevHome";
 
     // Registry value names
     private const string PolicyConfigureEnabledDevHome = "ConfigureEnabledDevHome";
