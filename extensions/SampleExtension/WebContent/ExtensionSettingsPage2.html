@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Woof</title>
+    <title>ExtensionSettingsPage2</title>
     <script>
         "use strict";
 
@@ -34,17 +34,21 @@
     <style>
         /* Default styles (light mode) */
         body {
+            background-color: rgb(243, 243, 243);
             color: rgb(32, 32, 32);
+            font-family: 'Segoe UI', Tahoma, Geneva;
         }
 
         /* Dark mode styles */
         [data-theme="dark"] body {
+            background-color: rgb(32, 32, 32);
             color: rgb(243, 243, 243);
+            font-family: 'Segoe UI',Tahoma, Geneva;
         }
     </style>
 </head>
 <body id="body">
-    <h1> Woof </h1>
+    <h1>This page has a solid background that matches Dev Home's theme</h1>
     <img id="dog" src="dog.jpg" style="width:500px; height:500px"/>
     <div>
         <input id="b1B" type="submit" name="button" onclick="navigateToPreviousPage()" value="Back to Extension Settings main page" />
