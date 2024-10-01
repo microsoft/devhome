@@ -264,7 +264,7 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
     private void UpdateSettingsXML(string localRepositoryLocation)
     {
         int index = ExistingCacheLocation.IndexOf("repository", StringComparison.OrdinalIgnoreCase);
-        var settingsXMLPath = string.Concat(this.ExistingCacheLocation.AsSpan(0, index), "settings.xml");
+        var settingsXMLPath = string.Concat(ExistingCacheLocation.AsSpan(0, index), "settings.xml");
         var key = "settings";
         var subkey = "localRepository";
 
