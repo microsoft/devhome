@@ -80,20 +80,8 @@ public class MicrosoftStoreService : IMicrosoftStoreService
     {
         try
         {
-            var installTask = InstallPackageAsync(packageId);
-
             // Wait for a maximum of StoreInstallTimeout (60 seconds).
-            var completedTask = await Task.WhenAny(installTask, Task.Delay(_storeInstallTimeout));
-
-            if (completedTask.Exception != null)
-            {
-                throw completedTask.Exception;
-            }
-
-            if (completedTask != installTask)
-            {
-                throw new TimeoutException("Store Install task did not finish in time.");
-            }
+            await InstallPackageAsync(packageId, _storeInstallTimeout);
 
             return true;
         }
@@ -103,6 +91,23 @@ public class MicrosoftStoreService : IMicrosoftStoreService
         }
 
         return false;
+    }
+
+    public async Task InstallPackageAsync(string packageId, TimeSpan timeout)
+    {
+        var installTask = InstallPackageAsync(packageId);
+
+        var completedTask = await Task.WhenAny(installTask, Task.Delay(timeout));
+
+        if (completedTask.Exception != null)
+        {
+            throw completedTask.Exception;
+        }
+
+        if (completedTask != installTask)
+        {
+            throw new TimeoutException("Store Install task did not finish in time.");
+        }
     }
 
     private async Task InstallPackageAsync(string packageId)
