@@ -349,10 +349,4 @@
   <data name="WidgetScreenshotAltDisplaySSKeychain" xml:space="preserve">
     <value>SSH Keychain widget preview image</value>
   </data>
-  <data name="RepositoryManagementSourceControlSelector_Description" xml:space="preserve">
-    <value>Toggle to allow tester to change the source control provider.</value>
-  </data>
-  <data name="RepositoryManagementSourceControlSelector_Name" xml:space="preserve">
-    <value>Show Souce Control Provider</value>
-  </data>
 </root>

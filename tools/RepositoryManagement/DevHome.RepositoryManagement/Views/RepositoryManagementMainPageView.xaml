@@ -44,47 +44,45 @@
                 TrueValue="Visible" />
             <DataTemplate x:Name="CommitInformationTemplate" x:DataType="viewmodels:RepositoryManagementItemViewModel">
                 <StackPanel
-    x:Name="CommitFoundStackPanel"
-    Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToVisibleConverter}}"
-    Orientation="Horizontal">
-                    <TextBlock Text="{x:Bind LatestCommitSHA}"/>
-                    <FontIcon
-        FontFamily="{StaticResource SymbolThemeFontFamily}"
-        Glyph="&#xEA81;"
-        FontSize="8"
-        VerticalAlignment="Top"
-        Margin="0, 5, 5, 0"/>
-                    <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
-                    <FontIcon
-        FontFamily="{StaticResource SymbolThemeFontFamily}"
-        Glyph="&#xEA81;"
-        FontSize="8"
-        VerticalAlignment="Top"
-        Margin="0, 5, 5, 0"/>
-                    <TextBlock
-        Text="{x:Bind MinutesSinceLatestCommit}"/>
-                    <ToolTipService.ToolTip>
-                        <StackPanel
-            Orientation="Horizontal">
-                            <TextBlock
-                Text="{x:Bind LatestCommitSHA}"/>
-                            <FontIcon
-                FontFamily="{StaticResource SymbolThemeFontFamily}"
-                Glyph="&#xEA81;"
-                FontSize="8"
-                VerticalAlignment="Top"
-                Margin="0, 5, 5, 0"/>
-                            <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
-                            <FontIcon
-                FontFamily="{StaticResource SymbolThemeFontFamily}"
-                Glyph="&#xEA81;"
-                FontSize="8"
-                VerticalAlignment="Top"
-                Margin="0, 5, 5, 0"/>
-                            <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
-                        </StackPanel>
-                    </ToolTipService.ToolTip>
-                </StackPanel>
+                    x:Name="CommitFoundStackPanel"
+                    Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToVisibleConverter}}"
+                    Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind LatestCommitSHA}"/>
+                        <FontIcon
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Glyph="&#xEA81;"
+                            FontSize="8"
+                            VerticalAlignment="Top"
+                            Margin="0, 5, 5, 0"/>
+                        <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                        <FontIcon
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Glyph="&#xEA81;"
+                            FontSize="8"
+                            VerticalAlignment="Top"
+                            Margin="0, 5, 5, 0"/>
+                        <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
+                        <ToolTipService.ToolTip>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock Text="{x:Bind LatestCommitSHA}"/>
+                                <FontIcon
+                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                    Glyph="&#xEA81;"
+                                    FontSize="8"
+                                    VerticalAlignment="Top"
+                                    Margin="0, 5, 5, 0"/>
+                                <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                                <FontIcon
+                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                    Glyph="&#xEA81;"
+                                    FontSize="8"
+                                    VerticalAlignment="Top"
+                                    Margin="0, 5, 5, 0"/>
+                                <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
+                            </StackPanel>
+                        </ToolTipService.ToolTip>
+                    </StackPanel>
             </DataTemplate>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>

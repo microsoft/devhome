@@ -583,4 +583,10 @@
   <data name="RepositoryManagementExperiment_Name" xml:space="preserve">
     <value>Repository Management</value>
   </data>
+    <data name="RepositoryManagementSourceControlSelector_Description" xml:space="preserve">
+    <value>Toggle to allow tester to change the source control provider.</value>
+  </data>
+  <data name="RepositoryManagementSourceControlSelector_Name" xml:space="preserve">
+    <value>Show Souce Control Provider</value>
+  </data>
 </root>
