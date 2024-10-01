@@ -1523,12 +1523,13 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // Used by the extension to provide information on the chat style generation
     [experimental]
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     runtimeclass QuickStartChatStyleResult
     {
+        // The result object returned to Dev Home when the chat response is received. 
         QuickStartChatStyleResult(String chatResponse);
 
-        // Allows extensions to provide intermediary status for the operation e.g "Generating project".
+        // The response of the chat to the user to help the user refine the prompt.
         String ChatResponse { get; };
     }
 
@@ -1605,13 +1606,13 @@ namespace Microsoft.Windows.DevHome.SDK
     // This allows to have an async operation can be started but also additional context reported back to Dev Home
     // as progress is being made such as a detailed log out output through the adaptive card session.
     [experimental]
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface IQuickStartChatStyleGenerationOperation
     {
-        // Starts the operation which generates a project based on a given prompt by the user in the
-        // given output folder. The generated content in the output folder can be anything that is needed
-        // for the project based on the technology it uses.  Dev Home just displays the generated content
-        // in a file viewer.
+            // Used to create a response based on whether the user's prompt is a valid prompt.
+            // A valid prompt is determined by the denotion of a project type, having a clear objective,
+            // including language requirements, and including detailed project requirements. This response
+            // is given to the user to refine the prompt and guide them to a good prompt. 
         Windows.Foundation.IAsyncOperation<QuickStartChatStyleResult> GenerateChatStyleResponse();
     }
 
@@ -1672,10 +1673,10 @@ namespace Microsoft.Windows.DevHome.SDK
     // create a project based on a prompt as part of the Dev Home 
     // quick start project feature.
     [experimental]
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 6)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
     interface IQuickStartProjectProvider2 requires IQuickStartProjectProvider
     {
-        // Pass additional flag to allow the ability to ignore prompt guidance / errors
+        // Used to create the chat style messages between the user and the chat UI.
         IQuickStartChatStyleGenerationOperation CreateChatStyleGenerationOperation(String prompt);
     }
 
