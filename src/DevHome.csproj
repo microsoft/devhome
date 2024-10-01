@@ -57,6 +57,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="assets\ExtensionInformation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Schemas\ExtensionInformation.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
     <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
@@ -84,7 +93,7 @@
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
     <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />

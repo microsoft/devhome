@@ -1,0 +1,103 @@
+{
+  "Products": [
+    {
+      "ProductId": "9MV8F79FGXTR",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "LocalizedProperties": {
+          "DisplayNameKey": "DevHomeAzureDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher"
+        },
+        "DevHomeExtensions": [
+          {
+            "LocalizedProperties": {
+              "DisplayNameKey": "DevHomeAzureDisplayName"
+            },
+            "SupportedProviderTypes": [
+              "ComputeSystem",
+              "DeveloperId",
+              "QuickStartProject",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": [
+              {
+                "LocalizedProperties": {
+                  "DisplayNameKey": "DevBoxProviderDisplayName"
+                },
+                "ProviderType": "ComputeSystem"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZCC27PR6N6",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "LocalizedProperties": {
+          "DisplayNameKey": "DevHomeGitHubDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher"
+        },
+        "DevHomeExtensions": [
+          {
+            "LocalizedProperties": {
+              "DisplayNameKey": "DevHomeGitHubDisplayName"
+            },
+            "SupportedProviderTypes": [
+              "DeveloperId",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZ845RW19RW",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.DevHomeMicrosoftGameDevExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "LocalizedProperties": {
+          "DisplayNameKey": "DevHomeGameDevDisplayName",
+          "PublisherDisplayNameKey": "MicrosoftPublisher"
+        },
+        "DevHomeExtensions": [
+          {
+            "LocalizedProperties": {
+              "DisplayNameKey": "DevHomeGameDevDisplayName"
+            },
+            "SupportedProviderTypes": [
+              "FeaturedApplications"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NB9M5KZ8SLX",
+      "Properties": {
+        "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g",
+        "SupportsWidgets": true,
+        "LocalizedProperties": {
+          "DisplayNameKey": "WidgetsForUniGetUIDisplayName",
+          "PublisherDisplayNameKey": "WidgetsForUniGetUIPublisher"
+        },
+        "DevHomeExtensions": [
+          {
+            "LocalizedProperties": {
+              "DisplayNameKey": "WidgetsForUniGetUIDisplayName"
+            },
+            "SupportedProviderTypes": [],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    }
+  ]
+} 

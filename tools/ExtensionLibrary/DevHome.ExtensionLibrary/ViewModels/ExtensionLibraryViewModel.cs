@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -17,7 +18,6 @@ using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
-using Windows.Storage;
 using static DevHome.Common.Helpers.CommonConstants;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
@@ -30,6 +30,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private readonly IExtensionService _extensionService;
     private readonly DispatcherQueue _dispatcherQueue;
+
+    private readonly IStringResource _stringResource;
 
     // All internal Dev Home extensions that should allow users to enable/disable them, should add
     // their class Ids to this set.
@@ -46,10 +48,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
+    public ExtensionLibraryViewModel(
+        IExtensionService extensionService,
+        DispatcherQueue dispatcherQueue,
+        IStringResource stringResource)
     {
         _extensionService = extensionService;
         _dispatcherQueue = dispatcherQueue;
+        _stringResource = stringResource;
 
         StorePackagesList = new();
         InstalledPackagesList = new();
@@ -133,32 +139,12 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         }
     }
 
-    private async Task<string> GetStoreData()
-    {
-        var packagesFileContents = string.Empty;
-        var packagesFileName = "extensionResult.json";
-        try
-        {
-            _log.Information($"Get packages file '{packagesFileName}'");
-            var uri = new Uri($"ms-appx:///DevHome.ExtensionLibrary/Assets/{packagesFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            packagesFileContents = await FileIO.ReadTextAsync(file);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, "Error retrieving packages");
-            ShouldShowStoreError = true;
-        }
-
-        return packagesFileContents;
-    }
-
     private async void GetAvailablePackages()
     {
         StorePackagesList.Clear();
 
-        var storeData = await GetStoreData();
-        if (string.IsNullOrEmpty(storeData))
+        var extensionJsonData = await _extensionService.GetExtensionJsonDataAsync();
+        if (extensionJsonData == null)
         {
             _log.Error("No package data found");
             ShouldShowStoreError = true;
@@ -167,45 +153,23 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         var tempStorePackagesList = new List<StorePackageViewModel>();
 
-        var jsonObj = JsonObject.Parse(storeData);
-        if (jsonObj != null)
+        foreach (var product in extensionJsonData.Products)
         {
-            var products = jsonObj.GetNamedArray("Products");
-            foreach (var product in products)
+            // Don't show packages of already installed extensions as available.
+            if (IsAlreadyInstalled(product.Properties.PackageFamilyName))
             {
-                var productObj = product.GetObject();
-                var productId = productObj.GetNamedString("ProductId");
-
-                // Don't show self as available.
-                if (productId == DevHomeProductId)
-                {
-                    continue;
-                }
-
-                var title = string.Empty;
-                var publisher = string.Empty;
-
-                var localizedProperties = productObj.GetNamedArray("LocalizedProperties");
-                foreach (var localizedProperty in localizedProperties)
-                {
-                    var propertyObject = localizedProperty.GetObject();
-                    title = propertyObject.GetNamedValue("ProductTitle").GetString();
-                    publisher = propertyObject.GetNamedValue("PublisherName").GetString();
-                }
-
-                var properties = productObj.GetNamedObject("Properties");
-                var packageFamilyName = properties.GetNamedString("PackageFamilyName");
-
-                // Don't show packages of already installed extensions as available.
-                if (IsAlreadyInstalled(packageFamilyName))
-                {
-                    continue;
-                }
-
-                _log.Information($"Found package: {productId}, {packageFamilyName}");
-                var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
-                tempStorePackagesList.Add(storePackage);
+                continue;
             }
+
+            _log.Information($"Found package: {product.ProductId}, {product.Properties.PackageFamilyName}");
+
+            var storePackage = new StorePackageViewModel(
+                product.ProductId,
+                _stringResource.GetLocalized(product.Properties.ResourceProperties.DisplayNameKey),
+                _stringResource.GetLocalized(product.Properties.ResourceProperties.PublisherDisplayNameKey),
+                product.Properties.PackageFamilyName);
+
+            tempStorePackagesList.Add(storePackage);
         }
 
         tempStorePackagesList = tempStorePackagesList.OrderBy(storePackage => storePackage.Title).ToList();

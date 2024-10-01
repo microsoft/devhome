@@ -1,0 +1,94 @@
+{
+  "$id": "",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Required schema to allow users to discover non-installed extensions within Dev Home.",
+  "type": "object",
+  "properties": {
+    "Products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ProductId": { "type": "string" },
+          "Properties": {
+            "type": "object",
+            "properties": {
+              "PackageFamilyName": { "type": "string" },
+              "LocalizedProperties": {
+                "type": "object",
+                "properties": {
+                  "DisplayNameKey": { "type": "string" },
+                  "PublisherDisplayNameKey": { "type": "string" }
+                },
+                "required": [ "DisplayNameKey", "PublisherDisplayNameKey" ]
+              },
+              "DevHomeExtensions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "LocalizedProperties": {
+                      "type": "object",
+                      "properties": {
+                        "DisplayNameKey": { "type": "string" }
+                      },
+                      "required": [ "DisplayNameKey" ]
+                    },
+                    "SupportedProviderTypes": {
+                      "type": "array",
+                      "items": {
+                        "enum": [
+                          "ComputeSystem",
+                          "DeveloperId",
+                          "FeaturedApplications",
+                          "LocalRepository",
+                          "QuickStartProject",
+                          "Repository",
+                          "Settings"
+                        ]
+                      }
+                    },
+                    "ProviderSpecificProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "LocalizedProperties": {
+                            "type": "object",
+                            "properties": {
+                              "DisplayNameKey": { "type": "string" }
+                            },
+                            "required": [ "DisplayNameKey" ]
+                          },
+                          "ProviderType": {
+                            "type": "string",
+                            "enum": [
+                              "ComputeSystem",
+                              "DeveloperId",
+                              "FeaturedApplications",
+                              "LocalRepository",
+                              "QuickStartProject",
+                              "Repository",
+                              "Settings"
+                            ]
+                          }
+                        },
+                        "required": [ "LocalizedProperties", "ProviderType" ]
+                      }
+                    }
+                  },
+                  "required": [ "LocalizedProperties", "SupportedProviderTypes", "ProviderSpecificProperties" ]
+                }
+              },
+              "SupportsWidgets": { "type": "boolean" }
+            },
+            "required": [ "PackageFamilyName", "LocalizedProperties", "DevHomeExtensions", "SupportsWidgets" ]
+          }
+        },
+        "required": [ "ProductId", "Properties" ]
+      }
+    }
+  },
+  "required": [ "Products" ],
+  "additionalProperties": false
+} 

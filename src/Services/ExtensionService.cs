@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
@@ -14,6 +16,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using static DevHome.Common.Helpers.CommonConstants;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
@@ -42,12 +45,21 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
     private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
-    public ExtensionService(ILocalSettingsService settingsService)
+    private readonly string _localExtensionJsonSchemaAbsoluteFilePath;
+
+    private readonly string _localExtensionJsonAbsoluteFilePath;
+
+    private readonly IStringResource _stringResource;
+
+    public ExtensionService(ILocalSettingsService settingsService, IStringResource stringResource)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
+        _localExtensionJsonSchemaAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
+        _localExtensionJsonAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
+        _stringResource = stringResource;
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -403,5 +415,23 @@ public class ExtensionService : IExtensionService, IDisposable
         await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
 
         return true;
+    }
+
+    public async Task<DevHomeExtensionJsonData?> GetExtensionJsonDataAsync()
+    {
+        try
+        {
+            _log.Information($"Get extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath);
+            var serializerOptions = ExtensionJsonSerializerOptions;
+            serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
+            return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, serializerOptions);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving extension json information");
+        }
+
+        return null;
     }
 }
