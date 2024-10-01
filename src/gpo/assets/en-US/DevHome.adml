@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" revision="0.1901" schemaVersion="1.0" xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <displayName>Dev Home</displayName>
+  <description>Dev Home</description>
+  <resources>
+    <stringTable>
+      <string id="DevHome">Microsoft Dev Home</string>
+      <string id="InstallerUpdates">Installer and Updates</string>
+
+      <string id="SUPPORTED_DEVHOME_0_1901">Dev Home version 0.1901.* or later</string>
+
+      <string id="ConfigureAllDevHomeEnabledStateDescription">This policy configures the enabled state for Dev Home.
+
+If you enable this setting, Dev Home will be always enabled and the user won't be able to disable it.
+
+If you disable this setting, Dev Home will be always disabled and the user won't be able to enable it.
+
+If you don't configure this setting, users are able to enable or disable Dev Home.
+
+This policy will override any enabled state policies for individual Dev Home features.
+</string>
+
+      <string id="ConfigureEnabledMachineConfigurationDescription">This policy configures the enabled state for a Dev Home feature.
+
+If you enable this setting, Machine Configuration will be always enabled and the user won't be able to disable it.
+
+If you disable this setting, Machine Configuration will be always disabled and the user won't be able to enable it.
+
+If you don't configure this setting, users are able to enable or disable Machine Configuration.
+
+This policy has a lower priority than the policy "Configure Dev Home enabled state" and does not override it.
+</string>
+
+      <string id="ConfigureEnabledEnvironmentsDescription">This policy configures the enabled state for a Dev Home feature.
+
+If you enable this setting, Environments will be always enabled and the user won't be able to disable it.
+
+If you disable this setting, Environtments will be always disabled and the user won't be able to enable it.
+
+If you don't configure this setting, users are able to enable or disable Environments.
+
+This policy has a lower priority than the policy "Configure Dev Home enabled state" and does not override it.
+</string>
+
+      <string id="ConfigureEnabledFeatureDescription">This policy configures the enabled state for a Dev Home feature.
+
+If you enable this setting, the feature will be always enabled and the user won't be able to disable it.
+
+If you disable this setting, the feature will be always disabled and the user won't be able to enable it.
+
+If you don't configure this setting, users are able to enable or disable the feature.
+
+This policy has a lower priority than the policy "Configure Dev Home enabled state" and does not override it.
+</string>
+
+      <string id="ConfigureAllDevHomeEnabledState">Configure Dev Home enabled state</string>
+      <string id="ConfigureEnabledMachineConfiguration">Configure Machine Configuration enabled state</string>
+    </stringTable>
+
+    <presentationTable>
+      <presentation id="PowerToysRunIndividualPluginEnabledState">
+        <listBox refId="PowerToysRunIndividualPluginEnabledList">List of managed plugins:</listBox>
+      </presentation>
+      <presentation id="MwbPolicyDefinedIpMappingRules">
+        <multiTextBox refId="MwbPolicyDefinedIpMappingsList">List of IP Address mappings:</multiTextBox>
+      </presentation>
+    </presentationTable>
+
+  </resources>
+</policyDefinitionResources>
+
