@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestMap>
+  <TestJobGroup Name="DevHomeWin10x64" TestSystem="Default" ConfigPath="[BuildRoot]\uitest\TestGroupWin10x64.xml" IsActive="true"/>
+  <!--
+  // Providers section lists all providers that your tests require to execute.
+  // For example:
+  // If you need to pull files from a VSO Git repo, you could include VsoGit provider that points to your repo.
+  // If you have multiple VSODrop, you could include VSODrop provider (the primary one does not need to be re-declared here).
+  //
+  // Do not include any providers that you don't need!
+  // Otherwise, it will waste resources.
+  -->
+  <Providers>
+    <Provider Type="PipelineArtifacts">
+      <Properties>
+        <Add Name="CloudTest.ProviderCustomName" Value="[MsixArtifacts]" />
+        <!-- The PipelineArtifactBuildUrl will be updated by the pipeline parameters to specify the corresponding client build, so don't worry if this one is outdated. -->
+        <Add Name="PipelineArtifactBuildUrl" Value="https://microsoft.visualstudio.com/Dart/_build/results?buildId=105398371"/>
+        <Add Name="PipelineArtifactName" Value="msix_x64_Release"/>
+      </Properties>
+    </Provider>
+
+  </Providers>
+</TestMap>

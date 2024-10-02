@@ -156,14 +156,14 @@ public partial class FileExplorerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task AddFolderClick()
+    public async Task<string> AddFolderClick()
     {
+        StorageFolder? repoRootFolder = null;
         if (IsFeatureEnabled)
         {
             await Task.Run(async () =>
             {
                 using var folderDialog = new WindowOpenFolderDialog();
-                StorageFolder? repoRootFolder = null;
 
                 try
                 {
@@ -186,6 +186,14 @@ public partial class FileExplorerViewModel : ObservableObject
             });
             RefreshTrackedRepositories();
         }
+
+        return repoRootFolder == null ? string.Empty : repoRootFolder.Path;
+    }
+
+    public void AddRepositoryAlreadyOnMachine(string path)
+    {
+        RepoTracker.AddRepositoryPath(_unassigned, path);
+        RefreshTrackedRepositories();
     }
 
     public void RemoveTrackedRepositoryFromDevHome(string rootPath)

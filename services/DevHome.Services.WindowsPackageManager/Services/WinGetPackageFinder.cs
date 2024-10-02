@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Services.WindowsPackageManager.COM;
@@ -154,7 +155,13 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
     private async Task<IList<CatalogPackage>> GetPackagesInternalAsync(WinGetCatalog catalog, FindPackagesOptions options)
     {
         _logger.LogInformation($"Performing search on catalog {catalog.GetDescriptiveName()}");
+        _logger.LogDebug($"Calling WinGet COM API {nameof(PackageCatalog.FindPackagesAsync)}");
+
+        // Find packages using WinGet COM API
+        var perfTimer = Stopwatch.StartNew();
         var findResult = await catalog.Catalog.FindPackagesAsync(options);
+        perfTimer.Stop();
+
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
             _logger.LogError($"Failed to find packages with status {findResult.Status}");
@@ -170,7 +177,7 @@ internal sealed class WinGetPackageFinder : IWinGetPackageFinder
         }
 
         _logger.LogInformation($"Found {result.Count} results from catalog {catalog.GetDescriptiveName()} [{string.Join(", ", result.Select(p => p.Id))}]");
-
+        _logger.LogDebug($"Finished calling WinGet COM API {nameof(PackageCatalog.FindPackagesAsync)} with {result.Count} results in {perfTimer.ElapsedMilliseconds} ms");
         return result;
     }
 }

@@ -320,8 +320,8 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
         {
             CacheName = "Maven cache (Java)",
             EnvironmentVariable = "MAVEN_OPTS",
-            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2") },
-            ExampleSubDirectory = Path.Join(PackagesStr, "m2"),
+            CacheDirectory = new List<string> { Path.Join(_userProfilePath, ".m2", "repository") },
+            ExampleSubDirectory = Path.Join(PackagesStr, "m2", "repository"),
         },
         new DevDriveCacheData
         {
@@ -406,12 +406,40 @@ public partial class DevDriveInsightsViewModel : ObservableObject, IRecipient<De
         DevDriveOptimizerLoadingCompleted = true;
     }
 
+    private string GetMovedCacheLocationForMaven(string input)
+    {
+        var searchString = "-Dmaven.repo.local = ";
+        int startIndex = input.IndexOf(searchString, StringComparison.OrdinalIgnoreCase);
+        if (startIndex == -1)
+        {
+            return string.Empty; // search substring not found
+        }
+
+        startIndex += searchString.Length;
+        int endIndex = input.IndexOf(' ', startIndex);
+        if (endIndex == -1)
+        {
+            endIndex = input.Length; // No space found, take till end of string
+        }
+
+        return input.Substring(startIndex, endIndex - startIndex);
+    }
+
     public void UpdateOptimizedListViewModelList()
     {
         foreach (var cache in _cacheInfo)
         {
-            // We retrieve the cache location from environment variable, because if the cache might have already moved.
+            // We retrieve the cache location from environment variable, because the cache might have already moved.
             var movedCacheLocation = Environment.GetEnvironmentVariable(cache.EnvironmentVariable!, EnvironmentVariableTarget.User);
+
+            // Note that for Maven cache, the environment variable is in the format "-Dmaven.repo.local = E:\packages\m2\repository"
+            // So we have to extract the cache location accordingly
+            if (string.Equals(cache.EnvironmentVariable!, "MAVEN_OPTS", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(movedCacheLocation))
+            {
+                var movedCacheLocationForMaven = GetMovedCacheLocationForMaven(movedCacheLocation);
+                movedCacheLocation = movedCacheLocationForMaven;
+            }
+
             if (!string.IsNullOrEmpty(movedCacheLocation) && CacheInDevDrive(movedCacheLocation))
             {
                 // Cache already in dev drive, show the "Optimized" card

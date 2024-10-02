@@ -42,18 +42,25 @@ public class GitExecute
 
                 // Add timeout for 1 minute
                 process.WaitForExit(TimeSpan.FromMinutes(1));
+
+                if (process.ExitCode != 0)
+                {
+                    Log.Error("Execute Git process exited unsuccessfully with exit code {ExitCode}", process.ExitCode);
+                    return new GitCommandRunnerResultInfo(ProviderOperationStatus.Failure, output, "Execute Git process exited unsuccessfully", string.Empty, null, arguments, process.ExitCode);
+                }
+
                 return new GitCommandRunnerResultInfo(ProviderOperationStatus.Success, output);
             }
             else
             {
                 Log.Error("Failed to start the Git process: process is null");
-                return new GitCommandRunnerResultInfo(ProviderOperationStatus.Failure, "Git process is null", string.Empty, new InvalidOperationException("Failed to start the Git process: process is null"), null);
+                return new GitCommandRunnerResultInfo(ProviderOperationStatus.Failure, null, "Git process is null", string.Empty, new InvalidOperationException("Failed to start the Git process: process is null"), null, null);
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to invoke Git with arguments: {Argument}", arguments);
-            return new GitCommandRunnerResultInfo(ProviderOperationStatus.Failure, "Failed to invoke Git with arguments", string.Empty, ex, arguments);
+            return new GitCommandRunnerResultInfo(ProviderOperationStatus.Failure, null, "Failed to invoke Git with arguments", string.Empty, ex, arguments, null);
         }
     }
 }

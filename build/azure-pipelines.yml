@@ -18,6 +18,16 @@ parameters:
   default:
   - Debug
   - Release
+- name: "holdTrigger"
+  displayName: CloudTest HoldTrigger setting
+  type: string
+  default: None
+  values:
+  - None
+  - Completion
+  - Execution
+  - Failure
+  - Timeout
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
@@ -42,6 +52,9 @@ extends:
   template: v1/M365.Official.PipelineTemplate.yml@m365Pipelines
   parameters:
     sdl:
+      binskim:
+        break: false
+        scanOutputDirectoryOnly: true
       roslyn:
         enabled: true
       arrow:
@@ -122,10 +135,7 @@ extends:
             targetPath: DevHomeStub\DevHomeStubPackage\AppxPackages
 
     - stage: Build_DevHome
-      dependsOn: Build_SDK
-      condition: in(dependencies.Build_SDK.result, 'Succeeded')
-      variables:
-        VersionOfSDK: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.VersionOfSDK']]
+      dependsOn: []
       jobs:
       - ${{ each configuration in parameters.Configurations }}:
         - ${{ each platform in parameters.Platforms }}:
@@ -140,12 +150,6 @@ extends:
               displayName: Replace Stubbed Files
               inputs:
                 filePath: 'build/scripts/Unstub.ps1'
-
-            - task: DownloadPipelineArtifact@2
-              inputs:
-                buildType: 'current'
-                artifactName: 'SdkNugetPackage'
-                targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
             - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@4
               displayName: Send and Download Localization Files for Artifacts
@@ -295,35 +299,54 @@ extends:
             #   env:
             #     AzureServicesAuthConnectionString: $(ApiScanConnectionString)
 
-            - task: Windows Application Driver@0
-              condition: and(always(), ne('${{ platform}}', 'arm64'))
+            - task: CopyFiles@2
+              displayName: Copy Unit Test DLLs
               inputs:
-                OperationType: 'Start'
+                #SourceFolder: # string. Source Folder.
+                Contents: 'test/bin/**/*' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
 
-            - task: PowerShell@2
-              displayName: 'Run Unittests'
-              condition: ne('${{ platform}}', 'arm64')
+            - task: CopyFiles@2
+              displayName: Copy Tools Unit Test DLLs
               inputs:
-                filePath: 'Test.ps1'
-                arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -IsAzurePipelineBuild
+                #SourceFolder: # string. Source Folder.
+                Contents: 'tools/*/*UnitTest/bin/**/*' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
 
-            - task: Windows Application Driver@0
-              condition: and(always(), ne('${{ platform}}', 'arm64'))
+            - task: CopyFiles@2
+              displayName: Copy UI Test DLLs
               inputs:
-                OperationType: 'Stop'
+                #SourceFolder: # string. Source Folder.
+                Contents: 'uitest/bin/**/*' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
 
-            - task: PublishTestResults@2
-              displayName: 'Add Test Results to ADO'
-              condition: and(always(), ne('${{ platform}}', 'arm64'))
+            - task: CopyFiles@2
+              displayName: Copy Tools UI Test DLLs
               inputs:
-                testResultsFormat: 'VSTest'
-                testResultsFiles: '*.trx'
-                searchFolder: '$(testOutputArtifactDir)'
-                mergeTestResults: true
-                failTaskOnFailedTests: true
-                testRunTitle: '$(Agent.JobName)'
-                buildPlatform: '${{ platform }}'
-                buildConfiguration: '${{ configuration }}'
+                #SourceFolder: # string. Source Folder.
+                Contents: 'tools/*/*UITest/bin/**/*' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
+
+            - task: CopyFiles@2
+              displayName: Copy TestMap and TestGroup xmls
+              inputs:
+                #SourceFolder: # string. Source Folder.
+                Contents: 'uitest/*.xml' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
+
+            - task: CopyFiles@2
+              displayName: Copy run settings
+              inputs:
+                #SourceFolder: # string. Source Folder.
+                Contents: 'uitest/Test.runsettings' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
+
+            - task: CopyFiles@2
+              displayName: Copy Setup and Cleanup scripts
+              inputs:
+                #SourceFolder: # string. Source Folder.
+                Contents: 'uitest/UITest*.ps1' # string. Required. Contents. Default: *
+                targetFolder: '$(Build.ArtifactStagingDirectory)\unittest'
 
             templateContext:
               outputs:
@@ -341,18 +364,59 @@ extends:
                 sbomPackageName: devhome.locoutput
                 sbomPackageVersion: $(MSIXVersion)
               - output: pipelineArtifact
-                displayName: 'Publish Test Results'
-                condition: and(always(), ne('${{ platform}}', 'arm64'))
-                artifactName: TestResults_${{ platform }}_${{ configuration }}
-                targetPath: $(testOutputArtifactDir)
-                sbomPackageName: devhome.testresults
-                sbomPackageVersion: $(MSIXVersion)
-              - output: pipelineArtifact
                 displayName: Publish MSIX Artifact
                 artifactName: msix_${{ platform }}_${{ configuration }}
                 targetPath: $(appxPackageDir)\${{ configuration }}
                 sbomPackageName: devhome.msixpackage
                 sbomPackageVersion: $(MSIXVersion)
+              - output: pipelineArtifact
+                displayName: Publish Test Artifacts
+                artifactName: DevHomeUITests_${{ platform }}_${{ configuration }}
+                targetPath: $(Build.ArtifactStagingDirectory)\unittest
+                sbomPackageName: devhome.msixpackage
+                sbomPackageVersion: $(MSIXVersion)
+
+    - stage: Test
+      dependsOn: [Build_DevHome]
+      condition: and(in(dependencies.Build_DevHome.result, 'Succeeded'), ${{ containsValue(parameters.Configurations, 'release') }})
+      jobs:
+      - job: DevHomeWin11x64Test
+        pool: server
+        displayName: 'Dev Home Windows 11 Tests'
+        condition: ${{ containsValue(parameters.Platforms, 'x64') }}
+        timeoutInMinutes: 120
+        steps:
+        - task: asg-cloudtest.asg-cloudtest-servertasks.1ED2E272-8122-4964-9A8B-E1112FC306AA.CloudTestServerBuildTask@1
+          displayName: 'CloudTest Agentless Task'
+          inputs:
+            connectedServiceName: 'DevHomeCloudTest'
+            cloudTestTenant: devhomecloudtest
+            testMapLocation: '[BuildRoot]\uitest\TestMapWin11x64.xml'
+            pipelineArtifactName: DevHomeUITests_x64_Release
+            pipelineArtifactBuildUrl: '$(System.TaskDefinitionsUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)'
+            buildDropArtifactName: ''
+            parserProperties: 'worker:VsTestVersion=V150;session:HoldTrigger=${{ parameters.holdTrigger }};VstsTestResultAttachmentUploadBehavior=Always;Provider:[MsixArtifacts]:PipelineArtifactBuildUrl=$(System.TaskDefinitionsUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId);'
+            notificationSubscribers: 'dream'
+            scheduleBuildRequesterAlias: 'dream'
+
+      - job: DevHomeWin10x64Test
+        pool: server
+        displayName: 'Dev Home Windows 10 Tests'
+        condition: ${{ containsValue(parameters.Platforms, 'x64') }}
+        timeoutInMinutes: 120
+        steps:
+        - task: asg-cloudtest.asg-cloudtest-servertasks.1ED2E272-8122-4964-9A8B-E1112FC306AA.CloudTestServerBuildTask@1
+          displayName: 'CloudTest Agentless Task'
+          inputs:
+            connectedServiceName: 'DevHomeCloudTest'
+            cloudTestTenant: devhomecloudtest
+            testMapLocation: '[BuildRoot]\uitest\TestMapWin10x64.xml'
+            pipelineArtifactName: DevHomeUITests_x64_Release
+            pipelineArtifactBuildUrl: '$(System.TaskDefinitionsUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)'
+            buildDropArtifactName: ''
+            parserProperties: 'worker:VsTestVersion=V150;session:HoldTrigger=${{ parameters.holdTrigger }};VstsTestResultAttachmentUploadBehavior=Always;Provider:[MsixArtifacts]:PipelineArtifactBuildUrl=$(System.TaskDefinitionsUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId);'
+            notificationSubscribers: 'dream'
+            scheduleBuildRequesterAlias: 'dream'
 
     - stage: Build_MsixBundle
       dependsOn: [Build_DevHome, Build_StubPackages]
@@ -490,8 +554,7 @@ extends:
             targetPath: AppxBundles\Debug
 
     - stage: Store_Publish
-      dependsOn:
-      - Build_MsixBundle
+      dependsOn: [Build_MsixBundle, Test]
       condition: |
         and
         (

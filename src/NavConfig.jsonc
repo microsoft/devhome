@@ -178,6 +178,28 @@
       "openPage": {
         "key": "DevHome.RepositoryManagement.ViewModels.RepositoryManagementMainPageView"
       }
+    },
+    {
+      "identity": "RepositoryManagementSourceControlSelector",
+      "enabledByDefault": true,
+      "needsFeaturePresenceCheck": false,
+      "buildTypeOverrides": [
+        {
+          "buildType": "dev",
+          "enabledByDefault": false,
+          "visible": true
+        },
+        {
+          "buildType": "canary",
+          "enabledByDefault": false,
+          "visible": false
+        },
+        {
+          "buildType": "stable",
+          "enabledByDefault": false,
+          "visible": false
+        }
+      ]
     }
- ]
+  ]
 }

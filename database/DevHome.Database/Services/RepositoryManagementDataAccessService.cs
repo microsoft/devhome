@@ -53,10 +53,15 @@ public class RepositoryManagementDataAccessService
     /// from the database if it already exists.</returns>
     public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
     {
+        return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, null);
+    }
+
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid? sourceControlProviderClassId)
+    {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
         {
-            _log.Warning($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
+            _log.Information($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
             return existingRepository;
         }
 
@@ -64,7 +69,8 @@ public class RepositoryManagementDataAccessService
         {
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
-            RepositoryUri = repositoryUri.ToString(),
+            RepositoryUri = repositoryUri,
+            SourceControlClassId = sourceControlProviderClassId,
         };
 
         if (!string.IsNullOrEmpty(configurationFileLocationAndName))
@@ -91,7 +97,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DatabaseEvent(nameof(MakeRepository), ex));
+                new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
             return new Repository();
         }
 
@@ -192,6 +198,39 @@ public class RepositoryManagementDataAccessService
 
         return true;
     }
+
+    public bool SetSourceControlId(Repository repository, Guid sourceControlId)
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
+            if (repositoryToUpdate == null)
+            {
+                _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return false;
+            }
+
+            // TODO: Figure out a method to update the entity in the database and
+            // the entity in memory.
+            repository.SourceControlClassId = sourceControlId;
+            repositoryToUpdate.SourceControlClassId = sourceControlId;
+
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when updating the clone location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DatabaseEvent(nameof(UpdateCloneLocation), ex));
+            return false;
+        }
+
+        return true;
+    }
+
 
     /// <summary>
     /// Sets the IsHidden property of the <see cref="Repository"/>.

@@ -142,9 +142,9 @@ public class DashboardPage : ApplicationPage
         {
             return _element.Size.Height switch
             {
-                292 => "Small",
-                608 => "Medium",
-                924 => "Large",
+                146 => "Small",
+                304 => "Medium",
+                462 => "Large",
                 _ => "Unknown",
             };
         }

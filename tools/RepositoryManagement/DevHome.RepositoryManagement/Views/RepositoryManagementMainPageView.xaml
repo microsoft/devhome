@@ -13,6 +13,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.RepositoryManagement.ViewModels"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     x:Name="RepositoryManagementMainPage"
     mc:Ignorable="d">
     <commonviews:ToolPage.Resources>
@@ -33,6 +34,56 @@
                 <Setter Property="Height" Value="36" />
                 <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
             </Style>
+            <converters:BoolToVisibilityConverter
+                x:Key="TrueToCollapsedConverter"
+                FalseValue="Visible"
+                TrueValue="Collapsed" />
+            <converters:BoolToVisibilityConverter
+                x:Key="TrueToVisibleConverter"
+                FalseValue="Collapsed"
+                TrueValue="Visible" />
+            <DataTemplate x:Name="CommitInformationTemplate" x:DataType="viewmodels:RepositoryManagementItemViewModel">
+                <StackPanel
+                    x:Name="CommitFoundStackPanel"
+                    Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToVisibleConverter}}"
+                    Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind LatestCommitSHA}"/>
+                        <FontIcon
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Glyph="&#xEA81;"
+                            FontSize="8"
+                            VerticalAlignment="Top"
+                            Margin="0, 5, 5, 0"/>
+                        <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                        <FontIcon
+                            FontFamily="{StaticResource SymbolThemeFontFamily}"
+                            Glyph="&#xEA81;"
+                            FontSize="8"
+                            VerticalAlignment="Top"
+                            Margin="0, 5, 5, 0"/>
+                        <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
+                        <ToolTipService.ToolTip>
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <TextBlock Text="{x:Bind LatestCommitSHA}"/>
+                                <FontIcon
+                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                    Glyph="&#xEA81;"
+                                    FontSize="8"
+                                    VerticalAlignment="Top"
+                                    Margin="0, 5, 5, 0"/>
+                                <TextBlock Text="{x:Bind LatestCommitAuthor}"/>
+                                <FontIcon
+                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                    Glyph="&#xEA81;"
+                                    FontSize="8"
+                                    VerticalAlignment="Top"
+                                    Margin="0, 5, 5, 0"/>
+                                <TextBlock Text="{x:Bind MinutesSinceLatestCommit}"/>
+                            </StackPanel>
+                        </ToolTipService.ToolTip>
+                    </StackPanel>
+            </DataTemplate>
         </ResourceDictionary>
     </commonviews:ToolPage.Resources>
     <i:Interaction.Behaviors>
@@ -55,28 +106,25 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-
-            <!-- TODO: Needs localization -->
             <TextBlock
-                x:Name="EnvironmentsHeader"
+                x:Uid="Header"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="Repositories" />
-
-            <!-- TODO: Buttons are not aligned with sort text box.-->
-            <!-- TODO: Needs localization -->
             <Button
                 Grid.Column="1"
                 Content="Add repository"
                 Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"
                 HorizontalAlignment="Right"/>
-            
-            <!-- TODO: Needs localization -->
             <Button
+                x:Uid="AddRepositoryButton"
+                Grid.Column="1"
+                Command="{x:Bind ViewModel.AddExistingRepositoryCommand}"
+                HorizontalAlignment="Right"/>
+            <Button
+                x:Uid="CloneRepositoriesButton"
                 Grid.Column="2"
-                Margin="0,0,50,0"
-                Content="Clone repository"
                 Command="{x:Bind ViewModel.NavigateToCloneRepositoryExpirenceCommand}"
                 HorizontalAlignment="Right"/>
         </Grid>
@@ -87,21 +135,39 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-
-            <!-- TODO: Needs localization -->
-            <!-- TODO: Implemenet filtering -->
-            <TextBox Grid.Column="0" PlaceholderText="Filter" />
-
-            <!-- TODO: Needs localization -->
+            <TextBox
+                x:Uid="FilterTextBox"
+                x:Name="FilterRepositoriesTextBox"
+                Grid.Column="0"
+                IsEnabled="{x:Bind ViewModel.AreFilterAndSortEnabled, Mode=OneWay}"
+                Text="{x:Bind ViewModel.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.FilterRepositoriesCommand}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </TextBox>
             <TextBlock
+                x:Uid="SortTextBlock"
                 Grid.Column="2"
-                VerticalAlignment="Center"
-                Text="Sort:" />
-            <ComboBox Grid.Column="3" MinWidth="150">
-                <!-- TODO: Needs localization. -->
-                <!-- TODO: Implement sort.-->
-                <ComboBoxItem Content="A to Z" IsSelected="True" />
-                <ComboBoxItem Content="Z to A" />
+                VerticalAlignment="Center"/>
+            <ComboBox
+                Grid.Column="3"
+                MinWidth="150"
+                x:Name="RepositorySortComboBox"
+                IsEnabled="{x:Bind ViewModel.AreFilterAndSortEnabled, Mode=OneWay}">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.ChangeSortOrderCommand}" CommandParameter="{x:Bind RepositorySortComboBox.SelectedItem, Mode=OneWay}" />
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+                <ComboBoxItem
+                    x:Uid="SortAlphabeticallyAscending"
+                    IsSelected="True"
+                    Tag="NameAscending"/>
+                <ComboBoxItem
+                    x:Uid="SortAlphabeticallyDescending"
+                    Tag="NameDescending"/>
             </ComboBox>
         </Grid>
         <Grid Grid.Row="2" Padding="0,10,0,0">
@@ -110,7 +176,7 @@
             </Grid.ColumnDefinitions>
             <ListView
                 ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}"
-                ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                ItemsSource="{x:Bind ViewModel.LineItemsToDisplay, Mode=OneWay}"
                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
                 ScrollViewer.VerticalScrollMode="Auto" 
                 SelectionMode="None">
@@ -130,18 +196,18 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="50" />
                         </Grid.ColumnDefinitions>
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="0" Text="Name" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="2" Text="Clone path" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="3" Text="Latest commit" />
-
-                        <!-- TODO: Needs localization -->
-                        <TextBlock Grid.Column="4" Text="Branch" />
+                        <TextBlock
+                            Grid.Column="0"
+                            x:Uid="NameHeader"/>
+                        <TextBlock
+                            Grid.Column="2"
+                            x:Uid="ClonePathHeader" />
+                        <TextBlock
+                            Grid.Column="3"
+                            x:Uid="LatestCommitHeader" />
+                        <TextBlock
+                            Grid.Column="4"
+                            x:Uid="BranchHeader" />
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
@@ -170,13 +236,43 @@
                                 ToolTipService.ToolTip="WinGet Configuration file found. Run it from the '...' menu to set up this repo"/>
                             <TextBlock
                                 Grid.Column="2"
-                                Text="{x:Bind ClonePath, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind ClonePath, Mode=OneWay}" />
-                            <!-- TODO: Provide commit URL, name, author name, and time -->
+                                Text="{x:Bind ClonePath, Mode=OneWay}"/>
                             <TextBlock
+                                x:Uid="CommitNotFound"
+                                x:Name="CommitNotFoundTextBlock"
                                 Grid.Column="3"
-                                Text="{x:Bind LatestCommit}"
-                                ToolTipService.ToolTip="{x:Bind LatestCommit}" />
+                                Visibility="{x:Bind HasCommitInformation, Converter={StaticResource TrueToCollapsedConverter}}">
+                                <ToolTipService.ToolTip>
+                                    <TextBlock x:Uid="CommitNotFound"/>
+                                </ToolTipService.ToolTip>
+                            </TextBlock>
+
+                            <!-- Show only the commit information-->
+                            <ContentPresenter
+                                Visibility="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.ShouldShowSourceControlSelection, Mode=OneWay, Converter={StaticResource TrueToCollapsedConverter} }"
+                                Grid.Column="3"
+                                ContentTemplate="{StaticResource CommitInformationTemplate}"
+                                DataContext="{x:Bind}"/>
+                            <Grid
+                                Grid.Column="3"
+                                ColumnSpacing="5"
+                                Visibility="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.ShouldShowSourceControlSelection, Mode=OneWay, Converter={StaticResource TrueToVisibleConverter} }">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter
+                                    ContentTemplate="{StaticResource CommitInformationTemplate}"
+                                    DataContext="{x:Bind}"/>
+                                <DropDownButton
+                                    Grid.Column="1"
+                                    VerticalAlignment="Top"
+                                    Content="{x:Bind SourceControlProviderDisplayName}"
+                                    ToolTipService.ToolTip="{x:Bind SourceControlProviderPackageDisplayName}"
+                                    Flyout="{x:Bind AllSourceControlProviderNames, Mode=OneWay}"
+                                    Command="{x:Bind UpdateSourceControlProviderNamesCommand}">
+                                </DropDownButton>
+                            </Grid>
                             <TextBlock
                                 Grid.Column="4"
                                 Text="{x:Bind Branch}"
@@ -184,17 +280,27 @@
                             <Button
                                 x:Uid="MoreOptionsButton"
                                 Grid.Column="5"
-                                Style="{StaticResource HorizontalThreeDotsStyle}">
+                                Style="{StaticResource HorizontalThreeDotsStyle}"
+                                AutomationProperties.Name="{x:Bind MoreOptionsButtonAutomationName}">
                                 <Button.Flyout>
-                                    <!-- TODO: Needs localization -->
                                     <MenuFlyout>
-                                        <MenuFlyoutItem Text="Open in File Explorer" Command="{x:Bind OpenInFileExplorerCommand}" />
-                                        <MenuFlyoutItem Text="Open in Command Line" Command="{x:Bind OpenInCMDCommand}" />
-                                        <MenuFlyoutItem Text="Move Repository" Command="{x:Bind MoveRepositoryCommand}" />
-                                        <MenuFlyoutItem Text="Add to WinGet configuration file" Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
-                                        <MenuFlyoutItem Text="Run WinGet configuration file" Command="{x:Bind RunConfigurationFileCommand}" IsEnabled="{x:Bind HasAConfigurationFile}" />
-                                        <MenuFlyoutItem Text="Remove from this list" Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}" CommandParameter="{x:Bind}" />
-                                        <MenuFlyoutItem Text="Delete" Command="{x:Bind DeleteRepositoryCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="OpenInFileExplorer"
+                                            Command="{x:Bind OpenInFileExplorerCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="OpenInCMD"
+                                            Command="{x:Bind OpenInCMDCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="AddToConfigurationFile"
+                                            Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RunDetectedConfigurationFile"
+                                            Command="{x:Bind RunConfigurationFileCommand}"
+                                            IsEnabled="{x:Bind HasAConfigurationFile}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="RemoveRepositoryFromList"
+                                            Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}"
+                                            CommandParameter="{x:Bind}" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>
