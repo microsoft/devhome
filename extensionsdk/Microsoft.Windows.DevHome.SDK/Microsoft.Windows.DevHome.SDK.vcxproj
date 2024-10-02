@@ -227,6 +227,7 @@
     <ClInclude Include="OpenConfigurationSetResult.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProviderOperationResult.h" />
+    <ClCompile Include="QuickStartChatStyleResult.h" />
     <ClInclude Include="QuickStartProjectAdaptiveCardResult.h" />
     <ClInclude Include="QuickStartProjectResult.h" />
     <ClInclude Include="RepositoriesResult.h" />
@@ -266,6 +267,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ProviderOperationResult.cpp" />
+    <ClCompile Include="QuickStartChatStyleResult.cpp" />
     <ClCompile Include="QuickStartProjectAdaptiveCardResult.cpp" />
     <ClCompile Include="QuickStartProjectResult.cpp" />
     <ClCompile Include="RepositoriesResult.cpp" />

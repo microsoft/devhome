@@ -1521,6 +1521,18 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
+    // Used by the extension to provide information on the chat style generation
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    runtimeclass QuickStartChatStyleResult
+    {
+        // The result object returned to Dev Home when the chat response is received. 
+        QuickStartChatStyleResult(String chatResponse);
+
+        // The response of the chat to the user to help the user refine the prompt.
+        String ChatResponse { get; };
+    }
+
     // Passed back to Dev Home to provide the progress in generating a quick start project.
     // This is used by Dev Home to show progress to the user while the project is being generated.
     [experimental]
@@ -1590,6 +1602,17 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperationWithProgress<QuickStartProjectResult, QuickStartProjectProgress> GenerateAsync();
     }
 
+    // Used to create a response based on whether the user's prompt is a valid prompt.
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    interface IQuickStartChatStyleGenerationOperation
+    {
+        // Starts the operation which generates a response based on the user's prompt to the chat UI. The response
+        // will denote whether the user has entered a meaningful and valid prompt that can be used to generate 
+        // a codespace. 
+        Windows.Foundation.IAsyncOperation<QuickStartChatStyleResult> GenerateChatStyleResponse();
+    }
+
     // Extensions can implement this provider to provide a way to
     // create a project based on a prompt as part of the Dev Home 
     // quick start project feature.
@@ -1641,6 +1664,14 @@ namespace Microsoft.Windows.DevHome.SDK
         // is needed for the project based on the technology it uses.  Dev Home just displays the generated content
         // in a file viewer.
         IQuickStartProjectGenerationOperation CreateProjectGenerationOperation(String prompt, Windows.Storage.StorageFolder outputFolder);
+    }
+
+    // Used to create the chat style messages between the user and the chat UI.
+    [experimental]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 8)]
+    interface IQuickStartProjectProvider2 requires IQuickStartProjectProvider
+    {
+        IQuickStartChatStyleGenerationOperation CreateChatStyleGenerationOperation(String prompt);
     }
 
     // End of QuickStartProject APIs
