@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.DevHomeAdaptiveCards.CardModels;
 using DevHome.Common.DevHomeAdaptiveCards.InputValues;
 using Microsoft.UI.Xaml;
@@ -85,10 +86,14 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
         comboBox.ItemsSource = listOfComboBoxItems;
         comboBox.SelectedIndex = int.TryParse(choiceSet.Value, out var selectedIndex) ? selectedIndex : UnSelectedIndex;
 
-        // Setup event handlers
-        comboBox.SelectionChanged += RefreshCardOnSelectionChanged;
-        comboBox.Unloaded += RemoveEventHandler;
-        comboBox.Loaded += AddEventHandlers;
+        // Setup selection changed weak event handler
+        var selectionChangedWeakRef = new WeakEventListener<ComboBox, object, SelectionChangedEventArgs>(comboBox)
+        {
+            OnEventAction = (instance, source, args) => RefreshCardOnSelectionChanged(instance, args),
+            OnDetachAction = (weakEventListener) => comboBox.SelectionChanged -= weakEventListener.OnEvent,
+        };
+
+        comboBox.SelectionChanged += selectionChangedWeakRef.OnEvent;
 
         // Use the choiceSets Id as the name of the combo box.
         comboBox.Name = choiceSet.Id;
@@ -222,24 +227,6 @@ public partial class DevHomeChoiceSetWithDynamicRefresh : IAdaptiveElementRender
             {
                 UpdateComboBoxWithDynamicData(parentComboBox, comboBoxToUpdate);
             }
-        }
-    }
-
-    private void RemoveEventHandler(object sender, object args)
-    {
-        if (sender is ComboBox parentComboBox)
-        {
-            parentComboBox.SelectionChanged -= RefreshCardOnSelectionChanged;
-            parentComboBox.Unloaded -= RemoveEventHandler;
-        }
-    }
-
-    private void AddEventHandlers(object sender, object args)
-    {
-        if (sender is ComboBox parentComboBox)
-        {
-            parentComboBox.SelectionChanged += RefreshCardOnSelectionChanged;
-            parentComboBox.Unloaded += RemoveEventHandler;
         }
     }
 

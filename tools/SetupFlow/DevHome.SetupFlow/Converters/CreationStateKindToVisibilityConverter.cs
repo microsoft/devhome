@@ -15,7 +15,7 @@ using Microsoft.UI.Xaml.Media;
 namespace DevHome.SetupFlow.Converters;
 
 /// <summary>
-/// Converter to convert the state of the EnvironmentCreationOptions page to a visibility enum.
+/// Converts the state of the EnvironmentCreationOptions page to a visibility enum.
 /// </summary>
 public class CreationStateKindToVisibilityConverter : IValueConverter
 {

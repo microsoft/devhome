@@ -250,7 +250,7 @@ public partial class EnvironmentCreationOptionsViewModel : SetupPageViewModelBas
                 var result = _extensionAdaptiveCardSession.Initialize(_extensionAdaptiveCard);
                 if (result.Status == ProviderOperationStatus.Failure)
                 {
-                    _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMsg: {result.DisplayMessage}, DiagnosticMsg: {result.DiagnosticText}");
+                    _log.Error(result.ExtendedError, $"Extension failed to generate adaptive card. DisplayMessage: {result.DisplayMessage}, DiagnosticMessage: {result.DiagnosticText}");
                     SessionErrorTitle = _stringResource.GetLocalized("ErrorLoadingCreationUITitle", _curProviderDetails.ComputeSystemProvider.DisplayName);
                     SessionErrorMessage = result.DisplayMessage;
                     CanGoToNextPage = false;
