@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
@@ -12,6 +13,8 @@ using DevHome.ExtensionLibrary.ViewModels;
 using DevHome.Models;
 using DevHome.Telemetry;
 using FastSerialization;
+using Json.Path;
+using Json.Schema;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -36,6 +39,8 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly object _lock = new();
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
     private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
+
+    private readonly Uri _localExtensionJsonSchemaFilePath;
 
     private readonly Uri _localExtensionJsonFilePath;
 
@@ -63,7 +68,8 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
-        _localExtensionJsonFilePath = new($@"ms-appx:///DevHome/Assets/ExtensionInformation.json");
+        _localExtensionJsonSchemaFilePath = new($@"ms-appx:///Assets/Schemas/ExtensionInformation.schema.json");
+        _localExtensionJsonFilePath = new($@"ms-appx:///Assets/ExtensionInformation.json");
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -425,9 +431,22 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
+            // First validate the schema against the json file to confirm it is valid.
+            var extensionInfoJsonSchemafile = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonSchemaFilePath);
+            var jsonSchema = await FileIO.ReadTextAsync(extensionInfoJsonSchemafile);
+            var schema = JsonSchema.FromText(jsonSchema);
+
             _log.Information($"Get packages file '{_localExtensionJsonFilePath}'");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonFilePath);
-            var extensionJson = await FileIO.ReadTextAsync(file);
+            var extensionInfoJsonfile = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonFilePath);
+            var extensionJson = await FileIO.ReadTextAsync(extensionInfoJsonfile);
+            var jsonNode = JsonNode.Parse(extensionJson);
+            var validationResult = schema.Evaluate(jsonNode);
+
+            if (!validationResult.IsValid)
+            {
+                throw new InvalidDataException($"Json data in file {extensionInfoJsonfile} does not match schema in {jsonSchema}");
+            }
+
             return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, _jsonSerializerOptions);
         }
         catch (Exception ex)

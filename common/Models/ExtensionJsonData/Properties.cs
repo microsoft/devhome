@@ -13,5 +13,5 @@ public class Properties
 
     public required ResourceProperties ResourceProperties { get; set; }
 
-    public List<DevHomeExtension> DevHomeExtensions { get; } = new();
+    public List<DevHomeExtension> DevHomeExtensions { get; set; } = new();
 }

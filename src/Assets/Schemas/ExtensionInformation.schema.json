@@ -13,7 +13,7 @@
           "Properties": {
             "type": "object",
             "properties": {
-              "PackageFamilyName": { "type": "string" },
+              "PackageFamilyName2": { "type": "string" },
               "ResourceProperties": {
                 "type": "object",
                 "properties": {
@@ -86,7 +86,7 @@
               },
               "SupportsWidgets": { "type": "boolean" }
             },
-            "required": [ "PackageFamilyName", "ResourceProperties", "DevHomeExtensions", "SupportsWidgets" ]
+            "required": [ "PackageFamilyName2", "ResourceProperties", "DevHomeExtensions", "SupportsWidgets" ]
           }
         },
         "required": [ "ProductId", "Properties" ]

@@ -9,7 +9,7 @@ public class DevHomeExtension
 {
     public required ResourceProperties ResourceProperties { get; set; }
 
-    public List<string> SupportedProviderTypes { get; } = new();
+    public List<string> SupportedProviderTypes { get; set; } = new();
 
-    public List<ProviderSpecificProperty> ProviderSpecificProperties { get; } = new();
+    public List<ProviderSpecificProperty> ProviderSpecificProperties { get; set; } = new();
 }
