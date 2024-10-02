@@ -8,14 +8,6 @@
     <Configurations>Debug;Release;Debug_FailFast</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Services\**" />
-    <Content Remove="Services\**" />
-    <EmbeddedResource Remove="Services\**" />
-    <None Remove="Services\**" />
-    <Page Remove="Services\**" />
-    <PRIResource Remove="Services\**" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Views\RepositoriesPageView.xaml" />
   </ItemGroup>
 

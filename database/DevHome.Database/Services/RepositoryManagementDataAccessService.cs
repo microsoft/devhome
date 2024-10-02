@@ -37,7 +37,7 @@ public class RepositoryManagementDataAccessService
     /// <param name="repositoryUri">The uri used to clone the repository.</param>
     /// <returns>The newly made Repository.  Null if an exception occured.  Can return a repository
     /// from the database if it already exists.</returns>
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
+    public Repository? MakeRepository(string repositoryName, string cloneLocation, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
@@ -51,7 +51,7 @@ public class RepositoryManagementDataAccessService
     /// <param name="repositoryUri">The uri used to clone the repository.</param>
     /// <returns>The newly made Repository.  Null if an exception occured.  Can return a repository
     /// from the database if it already exists.</returns>
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
+    public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, null);
     }
@@ -230,7 +230,6 @@ public class RepositoryManagementDataAccessService
 
         return true;
     }
-
 
     /// <summary>
     /// Sets the IsHidden property of the <see cref="Repository"/>.
