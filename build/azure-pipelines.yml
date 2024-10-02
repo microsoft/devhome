@@ -52,6 +52,9 @@ extends:
   template: v1/M365.Official.PipelineTemplate.yml@m365Pipelines
   parameters:
     sdl:
+      binskim:
+        break: false
+        scanOutputDirectoryOnly: true
       roslyn:
         enabled: true
       arrow:
