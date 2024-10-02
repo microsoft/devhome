@@ -291,6 +291,9 @@
                                             x:Uid="OpenInCMD"
                                             Command="{x:Bind OpenInCMDCommand}" />
                                         <MenuFlyoutItem
+                                            x:Uid="MoveRepository"
+                                            Command="{x:Bind MoveRepositoryCommand}" />
+                                        <MenuFlyoutItem
                                             x:Uid="AddToConfigurationFile"
                                             Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
                                         <MenuFlyoutItem
@@ -301,6 +304,9 @@
                                             x:Uid="RemoveRepositoryFromList"
                                             Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.HideRepositoryCommand}"
                                             CommandParameter="{x:Bind}" />
+                                        <MenuFlyoutItem
+                                            x:Uid="DeleteRepository"
+                                            Command="{x:Bind DeleteRepositoryCommand}" />
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

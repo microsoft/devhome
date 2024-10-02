@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +17,6 @@ using DevHome.RepositoryManagement.Factories;
 using DevHome.RepositoryManagement.Models;
 using DevHome.RepositoryManagement.Services;
 using DevHome.SetupFlow.Common.Helpers;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;

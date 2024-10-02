@@ -5,10 +5,10 @@ and see property information displayed after retrieval from a source control tec
 
 ## List of Allowed Property Values Displayed in File Explorer
 
-System.VersionControl.Status, 
-System.VersionControl.LastChangeDate, 
-System.VersionControl.LastChangeAuthorEmail, 
-System.VersionControl.LastChangeAuthorName,
-System.VersionControl.LastChangeID, 
-System.VersionControl.LastChangeMessage, 
-System.VersionControl.CurrentFolderStatus
+* System.VersionControl.Status
+* System.VersionControl.LastChangeDate
+* System.VersionControl.LastChangeAuthorEmail
+* System.VersionControl.LastChangeAuthorName
+* System.VersionControl.LastChangeID
+* System.VersionControl.LastChangeMessage
+* System.VersionControl.CurrentFolderStatus

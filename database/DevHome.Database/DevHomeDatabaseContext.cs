@@ -27,8 +27,6 @@ public class DevHomeDatabaseContext : DbContext, IDevHomeDatabaseContext
     // Should incremenet once per release.
     public uint SchemaVersion => 1;
 
-    private const string DatabaseFileName = "DevHome.db";
-
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(DevHomeDatabaseContext));
 
     public DbSet<Repository> Repositories { get; set; }
@@ -39,11 +37,18 @@ public class DevHomeDatabaseContext : DbContext, IDevHomeDatabaseContext
     {
         if (RuntimeHelper.IsMSIX)
         {
-            DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, DatabaseFileName);
+            DbPath = Path.Join(ApplicationData.Current.LocalFolder.Path, "DevHome.db");
         }
         else
         {
-            DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFileName);
+#if CANARY_BUILD
+            var databaseFileName = "DevHome_Canary.db";
+#elif STABLE_BUILD
+            var databaseFileName = "DevHome.db";
+#else
+            var databaseFileName = "DevHome_dev.db";
+#endif
+            DbPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), databaseFileName);
         }
     }
 
@@ -75,6 +80,6 @@ public class DevHomeDatabaseContext : DbContext, IDevHomeDatabaseContext
 
     public EntityEntry Add(Repository repository)
     {
-        return this.Add(repository);
+        return Repositories.Add(repository);
     }
 }
