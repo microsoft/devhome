@@ -40,7 +40,7 @@
                             Orientation="Horizontal">
                             <DropDownButton 
                                 Content="{Binding SourceControlProviderDisplayName}"
-                                AutomationProperties.Name="{Binding RepoPathMapping}"
+                                AutomationProperties.Name="{Binding RepositoryPathMapping}"
                                 ToolTipService.ToolTip="{Binding SourceControlProviderPackageDisplayName}"
                                 AutomationProperties.PositionInSet="{Binding Position}"
                                 AutomationProperties.SizeOfSet="{Binding Size}">

@@ -20,7 +20,7 @@ public class RepositoryInformation
 
     public string SourceControlProviderPackageDisplayName { get; }
 
-    public string RepoPathMapping { get; }
+    public string RepositoryPathMapping { get; }
 
     public int Position { get; }
 
@@ -33,7 +33,7 @@ public class RepositoryInformation
         var extension = GetExtension(classId);
         SourceControlProviderDisplayName = GetExtensionDisplayName(extension);
         SourceControlProviderPackageDisplayName = GetExtensionPackageDisplayName(extension);
-        RepoPathMapping = string.Concat(RepositoryRootPath, " ", SourceControlProviderDisplayName);
+        RepositoryPathMapping = string.Concat(RepositoryRootPath, " ", SourceControlProviderDisplayName);
         Position = position;
         Size = size;
     }

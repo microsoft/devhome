@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -70,11 +71,10 @@ public partial class FileExplorerViewModel : ObservableObject
         {
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
-            var position = 0;
-            foreach (KeyValuePair<string, string> data in repoCollection)
+            for (int position = 0; position < repoCollection.Count; position++)
             {
-                position++;
-                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, position, repoCollection.Count));
+                var data = repoCollection.ElementAt(position);
+                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, position + 1, repoCollection.Count));
             }
         }
     }
