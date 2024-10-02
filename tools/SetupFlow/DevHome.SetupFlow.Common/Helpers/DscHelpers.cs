@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
+using System.IO;
+using System.Linq;
+
 namespace DevHome.SetupFlow.Common.Helpers;
 
 /// <summary>
@@ -31,4 +35,30 @@ public static class DscHelpers
     public const string ConfigurationFileYamlExtension = ".dsc.yaml";
 
     public const string ConfigurationFileWingetExtension = ".winget";
+
+    /// <summary>
+    /// Enumerates all files inside the <see cref="ConfigurationFolderName"/> of a repository
+    /// and returns the most recently modified configuration file.
+    /// </summary>
+    /// <param name="repositoryRoot">The path to the root of a repository.</param>
+    /// <returns>Path to the configuration file.  String.Empty in all other cases.</returns>
+    public static string GetConfigurationFileIfExists(string repositoryRoot)
+    {
+        var configurationDirectory = Path.Join(repositoryRoot, ConfigurationFolderName);
+        if (Directory.Exists(configurationDirectory))
+        {
+            var fileToUse = Directory.EnumerateFiles(configurationDirectory)
+            .Where(file => file.EndsWith(ConfigurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
+                           file.EndsWith(ConfigurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(configurationFile => File.GetLastWriteTime(configurationFile))
+            .FirstOrDefault();
+
+            if (fileToUse != default)
+            {
+                return fileToUse;
+            }
+        }
+
+        return string.Empty;
+    }
 }
