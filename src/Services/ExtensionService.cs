@@ -23,6 +23,7 @@ using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using static DevHome.Common.Helpers.CommonConstants;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
@@ -40,17 +41,6 @@ public class ExtensionService : IExtensionService, IDisposable
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
     private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
 
-    private readonly Uri _localExtensionJsonSchemaFilePath;
-
-    private readonly Uri _localExtensionJsonFilePath;
-
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        TypeInfoResolver = new JsonSourceGenerationContext(),
-    };
-
     private readonly ILocalSettingsService _localSettingsService;
 
     private bool _disposedValue;
@@ -62,14 +52,18 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
     private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
+    private readonly string _localExtensionJsonSchemaAbsoluteFilePath;
+
+    private readonly string _localExtensionJsonAbsoluteFilePath;
+
     public ExtensionService(ILocalSettingsService settingsService)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
-        _localExtensionJsonSchemaFilePath = new($@"ms-appx:///Assets/Schemas/ExtensionInformation.schema.json");
-        _localExtensionJsonFilePath = new($@"ms-appx:///Assets/ExtensionInformation.json");
+        _localExtensionJsonSchemaAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
+        _localExtensionJsonAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -431,23 +425,9 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
-            // First validate the schema against the json file to confirm it is valid.
-            var extensionInfoJsonSchemafile = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonSchemaFilePath);
-            var jsonSchema = await FileIO.ReadTextAsync(extensionInfoJsonSchemafile);
-            var schema = JsonSchema.FromText(jsonSchema);
-
-            _log.Information($"Get packages file '{_localExtensionJsonFilePath}'");
-            var extensionInfoJsonfile = await StorageFile.GetFileFromApplicationUriAsync(_localExtensionJsonFilePath);
-            var extensionJson = await FileIO.ReadTextAsync(extensionInfoJsonfile);
-            var jsonNode = JsonNode.Parse(extensionJson);
-            var validationResult = schema.Evaluate(jsonNode);
-
-            if (!validationResult.IsValid)
-            {
-                throw new InvalidDataException($"Json data in file {extensionInfoJsonfile} does not match schema in {jsonSchema}");
-            }
-
-            return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, _jsonSerializerOptions);
+            _log.Information($"Get extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath);
+            return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, ExtensionJsonSerializerOptions);
         }
         catch (Exception ex)
         {

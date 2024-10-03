@@ -31,6 +31,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly IExtensionService _extensionService;
     private readonly DispatcherQueue _dispatcherQueue;
 
+    private readonly IStringResource _stringResource;
+
     // All internal Dev Home extensions that should allow users to enable/disable them, should add
     // their class Ids to this set.
     private readonly HashSet<string> _internalClassIdsToBeShownInExtensionsPage =
@@ -46,10 +48,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
+    public ExtensionLibraryViewModel(
+        IExtensionService extensionService,
+        DispatcherQueue dispatcherQueue,
+        IStringResource stringResource)
     {
         _extensionService = extensionService;
         _dispatcherQueue = dispatcherQueue;
+        _stringResource = stringResource;
 
         StorePackagesList = new();
         InstalledPackagesList = new();
@@ -159,8 +165,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
             var storePackage = new StorePackageViewModel(
                 product.ProductId,
-                product.Properties.ResourceProperties.LocalizedDisplayName,
-                product.Properties.ResourceProperties.LocalizedPublisherDisplayName,
+                _stringResource.GetLocalized(product.Properties.ResourceProperties.DisplayNameKey),
+                _stringResource.GetLocalized(product.Properties.ResourceProperties.PublisherDisplayNameKey),
                 product.Properties.PackageFamilyName);
 
             tempStorePackagesList.Add(storePackage);

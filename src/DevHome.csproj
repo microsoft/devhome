@@ -82,7 +82,6 @@
     <!-- Temporarily duplicate the Adaptive Card from DevHome.Common -->
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="2.0.1-beta" GeneratePathProperty="true" />
     <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="2.2.1-beta" GeneratePathProperty="true" />
-    <PackageReference Include="JsonSchema.Net" Version="7.2.3" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20240910-x0103" />
     <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">

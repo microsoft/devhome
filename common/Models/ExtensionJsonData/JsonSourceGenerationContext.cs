@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json.Serialization;
+using Json.Schema;
 
 namespace DevHome.Common.Models.ExtensionJsonData;
 
@@ -18,6 +19,8 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 [JsonSerializable(typeof(Product))]
 [JsonSerializable(typeof(DevHomeExtensionJsonData))]
 [JsonSerializable(typeof(DevHomeExtension))]
+[JsonSerializable(typeof(JsonSchema))]
+[JsonSerializable(typeof(EvaluationResults))]
 public partial class JsonSourceGenerationContext : JsonSerializerContext
 {
 }
