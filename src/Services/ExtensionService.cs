@@ -421,7 +421,7 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
-            _log.Information($"Get extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
+            _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
             var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath);
             var serializerOptions = ExtensionJsonSerializerOptions;
             serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));

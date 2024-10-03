@@ -93,7 +93,7 @@
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
-	<ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
     <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />

@@ -10,14 +10,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.ApplicationModel;
-using Windows.Data.Json;
 using static DevHome.Common.Helpers.CommonConstants;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
@@ -30,8 +28,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private readonly IExtensionService _extensionService;
     private readonly DispatcherQueue _dispatcherQueue;
-
-    private readonly IStringResource _stringResource;
 
     // All internal Dev Home extensions that should allow users to enable/disable them, should add
     // their class Ids to this set.
@@ -48,14 +44,10 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(
-        IExtensionService extensionService,
-        DispatcherQueue dispatcherQueue,
-        IStringResource stringResource)
+    public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
         _dispatcherQueue = dispatcherQueue;
-        _stringResource = stringResource;
 
         StorePackagesList = new();
         InstalledPackagesList = new();
@@ -165,8 +157,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
             var storePackage = new StorePackageViewModel(
                 product.ProductId,
-                _stringResource.GetLocalized(product.Properties.ResourceProperties.DisplayNameKey),
-                _stringResource.GetLocalized(product.Properties.ResourceProperties.PublisherDisplayNameKey),
+                product.Properties.LocalizedProperties.DisplayName,
+                product.Properties.LocalizedProperties.PublisherDisplayName,
                 product.Properties.PackageFamilyName);
 
             tempStorePackagesList.Add(storePackage);
