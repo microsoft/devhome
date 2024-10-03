@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Services;
 using DevHome.Common.Windows.FileDialog;
 using DevHome.Database.DatabaseModels.RepositoryManagement;
@@ -61,10 +62,13 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     private string _filterText = string.Empty;
 
     [ObservableProperty]
-    private bool _areFilterAndSortEnabled;
+    private bool _areControlsEnabled;
 
     [ObservableProperty]
     private bool _shouldShowSourceControlSelection;
+
+    [ObservableProperty]
+    private bool _isNavigatedTo;
 
     public enum SortOrder
     {
@@ -99,11 +103,11 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             _sortTag = SortOrder.NameDescending;
         }
 
-        AreFilterAndSortEnabled = false;
+        AreControlsEnabled = false;
 
         UpdateDisplayedRepositories();
 
-        AreFilterAndSortEnabled = true;
+        AreControlsEnabled = true;
     }
 
     [RelayCommand]
@@ -115,12 +119,13 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     [RelayCommand]
     public async Task AddExistingRepository()
     {
-        AreFilterAndSortEnabled = false;
+        AreControlsEnabled = false;
 
         var existingRepositoryLocation = await GetRepositoryLocationFromUser();
         if (existingRepositoryLocation.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
             _log.Warning($"Repository in {nameof(AddExistingRepository)} is either empty.");
+            AreControlsEnabled = false;
             return;
         }
 
@@ -169,7 +174,7 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
         UpdateDisplayedRepositories();
 
-        AreFilterAndSortEnabled = true;
+        AreControlsEnabled = true;
     }
 
     [RelayCommand]
@@ -181,22 +186,29 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
     [RelayCommand]
     public async Task LoadRepositories()
     {
-        // TODO: Spinning progress ring when loading repositories.
-        AreFilterAndSortEnabled = false;
-        _allRepositoriesFromTheDatabase = _dataAccessService.GetRepositories();
-        _allRepositoriesFromTheDatabase = await AssignSourceControlId(_allRepositoriesFromTheDatabase);
+        IsNavigatedTo = true;
+        AreControlsEnabled = false;
 
-        var repositoriesWithCommits = GetRepositoryAndLatestCommitPairs(_allRepositoriesFromTheDatabase);
+        var tempLineItemsToDisplay = new List<RepositoryManagementItemViewModel>();
+        await Task.Run(async () =>
+        {
+            _allRepositoriesFromTheDatabase = _dataAccessService.GetRepositories();
+            _allRepositoriesFromTheDatabase = await AssignSourceControlId(_allRepositoriesFromTheDatabase);
 
-        _allLineItems.Clear();
-        LineItemsToDisplay.Clear();
+            var repositoriesWithCommits = GetRepositoryAndLatestCommitPairs(_allRepositoriesFromTheDatabase);
 
-        _allLineItems = ConvertToLineItems(repositoriesWithCommits);
-        LineItemsToDisplay = new(HideFilterAndSort(_allLineItems).Where(x => x.IsHiddenFromPage == false).ToList());
+            _allLineItems.Clear();
+            _allLineItems = ConvertToLineItems(repositoriesWithCommits);
+            tempLineItemsToDisplay = HideFilterAndSort(_allLineItems).Where(x => x.IsHiddenFromPage == false).ToList();
+        });
 
         ShouldShowSourceControlSelection = _experimentationService.IsFeatureEnabled("RepositoryManagementSourceControlSelector");
 
-        AreFilterAndSortEnabled = true;
+        LineItemsToDisplay.Clear();
+        LineItemsToDisplay = new(tempLineItemsToDisplay);
+
+        AreControlsEnabled = true;
+        IsNavigatedTo = false;
     }
 
     [RelayCommand]
@@ -207,13 +219,13 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return;
         }
 
-        AreFilterAndSortEnabled = false;
+        AreControlsEnabled = false;
 
         repository.RemoveThisRepositoryFromTheList();
         repository.IsHiddenFromPage = true;
         UpdateDisplayedRepositories();
 
-        AreFilterAndSortEnabled = true;
+        AreControlsEnabled = true;
     }
 
     public RepositoryManagementMainPageViewModel(
