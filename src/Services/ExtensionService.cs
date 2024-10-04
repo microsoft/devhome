@@ -45,11 +45,11 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
     private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
-    private readonly string _localExtensionJsonSchemaAbsoluteFilePath;
-
-    private readonly string _localExtensionJsonAbsoluteFilePath;
-
     private readonly IStringResource _stringResource;
+
+    private string? _localExtensionJsonSchemaAbsoluteFilePath;
+
+    private string? _localExtensionJsonAbsoluteFilePath;
 
     public ExtensionService(ILocalSettingsService settingsService, IStringResource stringResource)
     {
@@ -57,8 +57,6 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
-        _localExtensionJsonSchemaAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
-        _localExtensionJsonAbsoluteFilePath = Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
         _stringResource = stringResource;
     }
 
@@ -421,6 +419,9 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
+            _localExtensionJsonSchemaAbsoluteFilePath ??= Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
+            _localExtensionJsonAbsoluteFilePath ??= Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
+
             _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
             var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath);
             var serializerOptions = ExtensionJsonSerializerOptions;
