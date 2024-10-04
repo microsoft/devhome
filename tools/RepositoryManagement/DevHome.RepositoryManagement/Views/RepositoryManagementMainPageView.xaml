@@ -263,7 +263,24 @@
                             <TextBlock
                                 Grid.Column="1"
                                 Text="{x:Bind ClonePath, Mode=OneWay}"
-                                VerticalAlignment="Center"/>
+                                VerticalAlignment="Center"
+                                Visibility="{x:Bind ShouldShowMovingRepositoryProgressRing, Mode=OneWay, Converter={StaticResource TrueToCollapsedConverter}}"/>
+                            <Grid
+                                Grid.Column="1"
+                                ColumnSpacing="5"
+                                Visibility="{x:Bind ShouldShowMovingRepositoryProgressRing, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    x:Uid="Moving"
+                                    Grid.Column="0"/>
+                                <ProgressRing
+                                    Grid.Column="1"
+                                    Height="20"
+                                    Width="20"/>
+                            </Grid>
                             <TextBlock
                                 x:Uid="CommitNotFound"
                                 x:Name="CommitNotFoundTextBlock"
@@ -330,27 +347,33 @@
                                     <MenuFlyout>
                                         <MenuFlyoutItem
                                             x:Uid="OpenInFileExplorer"
-                                            Command="{x:Bind OpenInFileExplorerCommand}" />
+                                            Command="{x:Bind OpenInFileExplorerCommand}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                         <MenuFlyoutItem
                                             x:Uid="OpenInCMD"
-                                            Command="{x:Bind OpenInCMDCommand}" />
+                                            Command="{x:Bind OpenInCMDCommand}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                         <MenuFlyoutItem
                                             x:Uid="MoveRepository"
-                                            Command="{x:Bind MoveRepositoryCommand}" />
+                                            Command="{x:Bind MoveRepositoryCommand}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                         <MenuFlyoutItem
                                             x:Uid="AddToConfigurationFile"
-                                            Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}" />
+                                            Command="{x:Bind MakeConfigurationFileWithThisRepositoryCommand}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                         <MenuFlyoutItem
                                             x:Uid="RunDetectedConfigurationFile"
                                             Command="{x:Bind RunConfigurationFileCommand}"
                                             IsEnabled="{x:Bind HasAConfigurationFile}" />
                                         <MenuFlyoutItem
                                             x:Uid="RemoveRepositoryFromList"
-                                            Command="{x:Bind HideRepositoryCommand}"/>
+                                            Command="{x:Bind HideRepositoryCommand}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                         <MenuFlyoutItem
                                             x:Uid="DeleteRepository"
                                             Command="{Binding ElementName=RepositoryManagementMainPage, Path=ViewModel.DeleteRepositoryCommand}"
-                                            CommandParameter="{x:Bind}" />
+                                            CommandParameter="{x:Bind}"
+                                            IsEnabled="{x:Bind EnableAllOperationsExceptRunConfiguartion, Mode=OneWay}"/>
                                     </MenuFlyout>
                                 </Button.Flyout>
                             </Button>

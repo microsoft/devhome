@@ -97,6 +97,12 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
     public string SourceControlExtensionClassId { get; set; }
 
     [ObservableProperty]
+    private bool _enableAllOperationsExceptRunConfiguartion;
+
+    [ObservableProperty]
+    private bool _shouldShowMovingRepositoryProgressRing;
+
+    [ObservableProperty]
     private MenuFlyout _allSourceControlProviderNames;
 
     [RelayCommand]
@@ -174,24 +180,30 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
         try
         {
-            // Store all file system entry attributes to restore after the move.
-            // FileSystem.MoveDirectory removes read-only attribute of files and folders.
-            Dictionary<string, FileAttributes> attributes = new();
-            foreach (var repositoryFile in Directory.GetFileSystemEntries(ClonePath, "*", SearchOption.AllDirectories))
-            {
-                var theFullPath = Path.GetFullPath(repositoryFile);
-                theFullPath = theFullPath.Replace(ClonePath, newClonePath);
-                attributes.Add(Path.GetFullPath(theFullPath), File.GetAttributes(repositoryFile));
-            }
+            EnableAllOperationsExceptRunConfiguartion = false;
+            ShouldShowMovingRepositoryProgressRing = true;
 
-            // Directory.Move does not move across drives.
-            Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(ClonePath, newClonePath);
-
-            foreach (var newFile in Directory.GetFileSystemEntries(newClonePath, "*", SearchOption.AllDirectories))
+            await Task.Run(() =>
             {
-                var fullPathToEntry = Path.GetFullPath(newFile);
-                File.SetAttributes(fullPathToEntry, attributes[Path.GetFullPath(fullPathToEntry)]);
-            }
+                // Store all file system entry attributes to restore after the move.
+                // FileSystem.MoveDirectory removes read-only attribute of files and folders.
+                Dictionary<string, FileAttributes> attributes = new();
+                foreach (var repositoryFile in Directory.GetFileSystemEntries(ClonePath, "*", SearchOption.AllDirectories))
+                {
+                    var theFullPath = Path.GetFullPath(repositoryFile);
+                    theFullPath = theFullPath.Replace(ClonePath, newClonePath);
+                    attributes.Add(Path.GetFullPath(theFullPath), File.GetAttributes(repositoryFile));
+                }
+
+                // Directory.Move does not move across drives.
+                Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(ClonePath, newClonePath);
+
+                foreach (var newFile in Directory.GetFileSystemEntries(newClonePath, "*", SearchOption.AllDirectories))
+                {
+                    var fullPathToEntry = Path.GetFullPath(newFile);
+                    File.SetAttributes(fullPathToEntry, attributes[Path.GetFullPath(fullPathToEntry)]);
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -217,8 +229,20 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
 
         _repositoryEnhancerService.RemoveTrackedRepository(ClonePath);
         await _repositoryEnhancerService.MakeRepositoryEnhanced(newClonePath, _repositoryEnhancerService.GetSourceControlProvider(SourceControlExtensionClassId));
-        RepositoryActionHelper.DeleteEverything(ClonePath);
+
+        try
+        {
+            RepositoryActionHelper.DeleteEverything(ClonePath);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Could not remove all of {RepositoryName} from {ClonePath}.");
+        }
+
         ClonePath = newClonePath;
+
+        ShouldShowMovingRepositoryProgressRing = false;
+        EnableAllOperationsExceptRunConfiguartion = true;
     }
 
     [RelayCommand]
@@ -303,6 +327,7 @@ public partial class RepositoryManagementItemViewModel : ObservableObject
         _extensionService = extensionService;
         _repositoryEnhancerService = repositoryEnhancerService;
         _updateCallback = updateCallback;
+        _enableAllOperationsExceptRunConfiguartion = true;
     }
 
     public void RemoveThisRepositoryFromTheList()

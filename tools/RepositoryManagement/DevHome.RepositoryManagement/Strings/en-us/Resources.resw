@@ -265,4 +265,8 @@
     <value>Loading Repositories</value>
     <comment>Label when Repotiroy Management is loading repositories.</comment>
   </data>
+  <data name="Moving.Text" xml:space="preserve">
+    <value>Moving</value>
+    <comment>String to display when the repository is being moved.</comment>
+  </data>
 </root>

@@ -277,6 +277,11 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
             return;
         }
 
+        AreControlsEnabled = false;
+        _allLineItems.Remove(repositoryLineItem);
+        UpdateDisplayedRepositories();
+        AreControlsEnabled = true;
+
         try
         {
             var repository = _dataAccessService.GetRepository(repositoryName, clonePath);
@@ -305,19 +310,6 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
 
         try
         {
-            RepositoryActionHelper.DeleteEverything(clonePath);
-        }
-        catch (Exception ex)
-        {
-            _log.Error(ex, $"Error when deleting the repository.");
-            TelemetryFactory.Get<ITelemetry>().Log(
-                "DevHome_RepositoryLineItem_Event",
-                LogLevel.Critical,
-                new RepositoryLineItemErrorEvent(nameof(DeleteRepositoryAsync), ex));
-        }
-
-        try
-        {
             _enhanceRepositoryService.RemoveTrackedRepository(clonePath);
         }
         catch (Exception ex)
@@ -329,10 +321,18 @@ public partial class RepositoryManagementMainPageViewModel : ObservableObject
                 new RepositoryLineItemErrorEvent(nameof(DeleteRepositoryAsync), ex));
         }
 
-        AreControlsEnabled = false;
-        _allLineItems.Remove(repositoryLineItem);
-        UpdateDisplayedRepositories();
-        AreControlsEnabled = true;
+        try
+        {
+            await Task.Run(() => RepositoryActionHelper.DeleteEverything(clonePath));
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Error when deleting the repository.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_RepositoryLineItem_Event",
+                LogLevel.Critical,
+                new RepositoryLineItemErrorEvent(nameof(DeleteRepositoryAsync), ex));
+        }
     }
 
     public RepositoryManagementMainPageViewModel(
