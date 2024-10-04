@@ -7,7 +7,8 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 
 /// <summary>
 /// Root class that will contain the deserialized data located in the
-/// src\Assets\Schemas\ExtensionInformation.schema.json file.
+/// src\Assets\ExtensionInformation.json file. Its schema is located in
+/// src\Assets\Schemas\ExtensionInformation.schema.json.
 /// </summary>
 public class DevHomeExtensionContentData
 {
