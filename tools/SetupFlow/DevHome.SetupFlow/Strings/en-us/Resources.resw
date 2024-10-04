@@ -1820,6 +1820,10 @@
     <value>There was an error loading the data required to create {0} environments</value>
     <comment>Locked={"{0}"} Error text display when we are unable to retrieve the creation data for a Dev Home provider. {0} is the name of the provider</comment>
   </data>
+  <data name="ErrorLoadingCreationUIForDeveloperId" xml:space="preserve">
+    <value>There was an error loading {0} environments for '{1}'.</value>
+    <comment>Locked={"{0}", "{1}"} Error text to display when a Dev Home provider returns an error when returning environments for a specific user. {0} is the name of the provider and {1} is the users logon Id.</comment>
+  </data>
   <data name="EnvironmentCreationReviewTabTitle" xml:space="preserve">
     <value>Environment</value>
     <comment>Title for create environment review tab</comment>
@@ -2034,5 +2038,9 @@
   <data name="NoInternetConnectionDescription" xml:space="preserve">
     <value>Please check your network settings and try again.</value>
     <comment>Text displayed when there is no internet connection</comment>
+  </data>
+  <data name="EnvironmentSelectAccountHeader.Header" xml:space="preserve">
+    <value>Select an account</value>
+    <comment>Header text for combo box where the user can select an account</comment>
   </data>
 </root>
