@@ -28,7 +28,7 @@ public sealed partial class WERPage : Page
         ViewModel = Application.Current.GetService<WERPageViewModel>();
         InitializeComponent();
 
-        // Populate selector items for each WER analyizer registered with the system
+        // Populate selector items for each WER analyzer registered with the system
         foreach (Tool tool in ViewModel.RegisteredAnalysisTools)
         {
             InfoSelector.Items.Add(CreateSelectorBarItemForDebugAnalyzer(tool));
