@@ -5,8 +5,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Views;
 using DevHome.RepositoryManagement.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.RepositoryManagement.Views;
 

@@ -283,14 +283,17 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
             }
 
-            var experimentationService = _host.GetService<IExperimentationService>();
-            var canUseTheDatabase = experimentationService.IsFeatureEnabled("RepositoryManagementExperiment");
-
-            if (canUseTheDatabase)
+            try
             {
-                // TODO: Is this the best place to add the repository to the database?
-                // Maybe a "PostExecutionStep" would be nice.
-                var repository = _dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri.ToString());
+                _ = _dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri.ToString());
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex, $"Could not add {RepositoryName} to the database because {ex.Message}");
+                TelemetryFactory.Get<ITelemetry>().LogError(
+                    "CloneTask_CouldNotClone_Event",
+                    LogLevel.Critical,
+                    new ExceptionEvent(ex.HResult, ex.Message));
             }
 
             WasCloningSuccessful = true;

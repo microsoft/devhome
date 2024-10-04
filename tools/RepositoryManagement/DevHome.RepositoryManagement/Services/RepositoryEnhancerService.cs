@@ -51,6 +51,13 @@ public class RepositoryEnhancerService
         return _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result.ToList();
     }
 
+    public IExtensionWrapper GetSourceControlProvider(string extensionId)
+    {
+        return _extensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository)
+            .Result
+            .FirstOrDefault(x => x.ExtensionClassId.Equals(extensionId, StringComparison.OrdinalIgnoreCase));
+    }
+
     /// <summary>
     /// Associates a source control provider with a local repository.
     /// </summary>
@@ -60,6 +67,11 @@ public class RepositoryEnhancerService
     {
         _sourceControlRegistrar.AddRepositoryAlreadyOnMachine(repositoryLocation);
         return await AssignSourceControlToPath(repositoryLocation, sourceControlId);
+    }
+
+    public void RemoveTrackedRepository(string repositoryLocation)
+    {
+        _sourceControlRegistrar.RemoveTrackedRepositoryFromDevHome(repositoryLocation);
     }
 
     public string GetLocalBranchName(string repositoryLocation)

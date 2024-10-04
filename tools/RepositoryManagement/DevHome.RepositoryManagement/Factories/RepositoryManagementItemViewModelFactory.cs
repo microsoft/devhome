@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.Common.Services;
 using DevHome.Database.Services;
 using DevHome.RepositoryManagement.Services;
@@ -39,7 +40,11 @@ public class RepositoryManagementItemViewModelFactory
         _repositoryEnhancerService = repositoryEnhancerService;
     }
 
-    public RepositoryManagementItemViewModel MakeViewModel(string repositoryName, string cloneLocation, bool isHidden)
+    public RepositoryManagementItemViewModel MakeViewModel(
+        string repositoryName,
+        string cloneLocation,
+        bool isHidden,
+        Action updateCallback)
     {
         var localIsHidden = isHidden;
         var localRepositoryName = repositoryName;
@@ -65,7 +70,8 @@ public class RepositoryManagementItemViewModelFactory
             _extensionService,
             _repositoryEnhancerService,
             localRepositoryName,
-            localCloneLocation);
+            localCloneLocation,
+            updateCallback);
 
         newViewModel.IsHiddenFromPage = localIsHidden;
 

@@ -178,11 +178,11 @@
     <comment>Introduces the sorting combo box.</comment>
   </data>
   <data name="SortAlphabeticallyAscending.Content" xml:space="preserve">
-    <value>A to Z</value>
+    <value>Name: Ascending</value>
     <comment>Repositories are sorted from the beginning of the alphabet to the end.</comment>
   </data>
   <data name="SortAlphabeticallyDescending.Content" xml:space="preserve">
-    <value>Z to A</value>
+    <value>Name: Descending</value>
     <comment>Repositories are sorted from the end of the alphabet to the beginning.</comment>
   </data>
   <data name="NameHeader.Text" xml:space="preserve">
