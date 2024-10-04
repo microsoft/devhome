@@ -48,8 +48,6 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public AdvancedCollectionView ComputeSystemCardAdvancedCollectionView { get; private set; }
 
-    public Dictionary<DeveloperIdWrapper, ComputeSystemsResult> DevIdToComputeSystemMap { get; set; }
-
     public ComputeSystemProvider Provider { get; set; }
 
     public DeveloperIdWrapper CurrentDeveloperId { get; set; }
@@ -101,21 +99,22 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         return AccessibilityName;
     }
 
-    public ComputeSystemsListViewModel(ComputeSystemsLoadedData loadedData)
+    public ComputeSystemsListViewModel(
+        ComputeSystemProviderDetails providerDetails,
+        KeyValuePair<DeveloperIdWrapper, ComputeSystemsResult> devIdComputeSystemPair)
     {
-        Provider = loadedData.ProviderDetails.ComputeSystemProvider;
-        DevIdToComputeSystemMap = loadedData.DevIdToComputeSystemMap;
-
-        // Get the first developerId and compute system result.
-        var devIdToResultKeyValuePair = DevIdToComputeSystemMap.FirstOrDefault();
-        CurrentResult = devIdToResultKeyValuePair.Value;
-        CurrentDeveloperId = devIdToResultKeyValuePair.Key;
+        Provider = providerDetails.ComputeSystemProvider;
+        CurrentResult = devIdComputeSystemPair.Value;
+        CurrentDeveloperId = devIdComputeSystemPair.Key;
 
         DisplayName = Provider.DisplayName;
 
         if ((CurrentResult != null) && (CurrentResult.ComputeSystems != null))
         {
-            ComputeSystems = CurrentResult.ComputeSystems.Select(computeSystem => new ComputeSystemCache(computeSystem)).ToList();
+            // Filter out compute systems that do not support configuration.
+            ComputeSystems = CurrentResult.ComputeSystems
+                .Where(computeSystem => computeSystem.SupportedOperations.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+                .Select(computeSystem => new ComputeSystemCache(computeSystem)).ToList();
         }
 
         // Create a new AdvancedCollectionView for the ComputeSystemCards collection.

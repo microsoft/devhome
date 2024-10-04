@@ -12,8 +12,9 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepositoryManagement;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.RepositoryManagement.Services;
+using DevHome.Database.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -44,6 +45,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     private readonly DirectoryInfo _cloneLocation;
 
     private readonly IRepositoryProvider _repositoryProvider;
+
+    private readonly RepositoryManagementDataAccessService _dataAccessService;
 
     public DirectoryInfo CloneLocation => _cloneLocation;
 
@@ -173,6 +176,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         _activityId = activityId;
         _host = host;
         _summaryScreenInformation = new CloneRepoSummaryInformationViewModel(host.GetService<SetupFlowOrchestrator>(), stringResource);
+        _dataAccessService = _host.GetService<RepositoryManagementDataAccessService>();
     }
 
     /// <summary>
@@ -181,7 +185,14 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, ISetupFlowStringResource stringResource, string providerName, Guid activityId, IHost host)
+    public CloneRepoTask(
+        IRepositoryProvider repositoryProvider,
+        DirectoryInfo cloneLocation,
+        IRepository repositoryToClone,
+        ISetupFlowStringResource stringResource,
+        string providerName,
+        Guid activityId,
+        IHost host)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -193,6 +204,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         _activityId = activityId;
         _host = host;
         _summaryScreenInformation = new CloneRepoSummaryInformationViewModel(host.GetService<SetupFlowOrchestrator>(), stringResource);
+        _dataAccessService = _host.GetService<RepositoryManagementDataAccessService>();
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -263,21 +275,12 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
 
             // Search for a configuration file.
-            var configurationDirectory = Path.Join(_cloneLocation.FullName, DscHelpers.ConfigurationFolderName);
-            if (Directory.Exists(configurationDirectory))
+            var configurationFile = DscHelpers.GetConfigurationFileIfExists(_cloneLocation.FullName);
+            if (!configurationFile.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
             {
-                var fileToUse = Directory.EnumerateFiles(configurationDirectory)
-                .Where(file => file.EndsWith(DscHelpers.ConfigurationFileYamlExtension, StringComparison.OrdinalIgnoreCase) ||
-                               file.EndsWith(DscHelpers.ConfigurationFileWingetExtension, StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(configurationFile => File.GetLastWriteTime(configurationFile))
-                .FirstOrDefault();
-
-                if (fileToUse != null)
-                {
-                    _summaryScreenInformation.FilePathAndName = fileToUse;
-                    _summaryScreenInformation.RepoName = RepositoryName;
-                    _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
-                }
+                _summaryScreenInformation.FilePathAndName = configurationFile;
+                _summaryScreenInformation.RepoName = RepositoryName;
+                _summaryScreenInformation.OwningAccount = RepositoryToClone.OwningAccountName ?? string.Empty;
             }
 
             var experimentationService = _host.GetService<IExperimentationService>();
@@ -287,8 +290,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             {
                 // TODO: Is this the best place to add the repository to the database?
                 // Maybe a "PostExecutionStep" would be nice.
-                _host.GetService<RepositoryManagementDataAccessService>()
-                .AddRepository(RepositoryName, CloneLocation.FullName);
+                var repository = _dataAccessService.MakeRepository(RepositoryName, CloneLocation.FullName, _summaryScreenInformation.FilePathAndName, RepositoryToClone.RepoUri.ToString());
             }
 
             WasCloningSuccessful = true;

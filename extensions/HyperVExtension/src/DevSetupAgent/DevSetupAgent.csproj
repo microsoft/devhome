@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevSetupEngineProjection\DevSetupEngineProjection.csproj" />
     <ProjectReference Include="..\DevSetupEngine\DevSetupEngine.csproj" />
     <ProjectReference Include="..\HyperVExtension.HostGuestCommunication\HyperVExtension.HostGuestCommunication.csproj" />

@@ -111,6 +111,24 @@
                                         <views:SearchView />
                                     </DataTemplate>
                                 </selectors:AppManagementViewSelector.SearchTemplate>
+                                <!-- Message template -->
+                                <selectors:AppManagementViewSelector.SearchMessageTemplate>
+                                    <DataTemplate x:DataType="viewmodels:SearchMessageViewModel">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock
+                                                Style="{ThemeResource BaseTextBlockStyle}"
+                                                Text="{x:Bind PrimaryMessage, Mode=OneWay}"
+                                                Foreground="{ThemeResource TextFillColorSecondary}"
+                                                TextAlignment="Center"
+                                                TextWrapping="WrapWholeWords"/>
+                                            <TextBlock
+                                                Text="{x:Bind SecondaryMessage, Mode=OneWay}"
+                                                TextAlignment="Center"
+                                                Foreground="{ThemeResource TextFillColorTertiary}"
+                                                TextWrapping="WrapWholeWords"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </selectors:AppManagementViewSelector.SearchMessageTemplate>
                                 <!-- Shimmer search template -->
                                 <selectors:AppManagementViewSelector.ShimmerSearchTemplate>
                                     <DataTemplate>

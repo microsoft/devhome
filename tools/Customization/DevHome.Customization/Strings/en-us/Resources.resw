@@ -218,7 +218,7 @@
     <comment>Make dev drive trusted</comment>
   </data>
   <data name="MoreWindowsSettingsSectionDescription.Text" xml:space="preserve">
-    <value>Additional settings below can be configured in the system settings app</value>
+    <value>Additional settings below can be configured in the system settings app.</value>
     <comment>Description and context for a group of Windows settings in the system settings app</comment>
   </data>
   <data name="MoreWindowsSettingsSectionHeader.Text" xml:space="preserve">
@@ -306,7 +306,7 @@
     <comment>Header for main Windows customization page in the breadcrumb bar</comment>
   </data>
   <data name="VirtualizationFeatureManagementCard.Description" xml:space="preserve">
-    <value>Enable or disable optional Windows virtualization features</value>
+    <value>Enable or disable optional Windows virtualization features.</value>
     <comment>The description for the virtualization feature management settings card</comment>
   </data>
   <data name="VirtualizationFeatureManagementCard.Header" xml:space="preserve">

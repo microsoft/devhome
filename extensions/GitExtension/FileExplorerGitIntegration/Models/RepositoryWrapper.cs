@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Collections.Concurrent;
-using System.Data;
 using System.Globalization;
-using System.Management.Automation;
 using DevHome.Common.Services;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
@@ -14,7 +11,7 @@ namespace FileExplorerGitIntegration.Models;
 
 internal sealed class RepositoryWrapper : IDisposable
 {
-    private readonly Repository _repo;
+    private readonly GitDetect _gitDetect = new();
     private readonly ReaderWriterLockSlim _repoLock = new();
 
     private readonly string _workingDirectory;
@@ -40,15 +37,18 @@ internal sealed class RepositoryWrapper : IDisposable
     private readonly string _submoduleStatusStaged;
     private readonly string _submoduleStatusUntracked;
 
-    private Commit? _head;
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryWrapper));
+
+    private string? _head;
     private CommitLogCache? _commits;
 
     private bool _disposedValue;
 
     public RepositoryWrapper(string rootFolder)
     {
-        _repo = new Repository(rootFolder);
-        _workingDirectory = _repo.Info.WorkingDirectory;
+        _gitDetect.DetectGit();
+        ValidateGitRepositoryRootPath(rootFolder);
+        _workingDirectory = string.Concat(rootFolder, Path.DirectorySeparatorChar.ToString());
         _statusCache = new StatusCache(rootFolder);
 
         _folderStatusBranch = _stringResource.GetLocalized("FolderStatusBranch");
@@ -70,6 +70,36 @@ internal sealed class RepositoryWrapper : IDisposable
         _submoduleStatusUntracked = _stringResource.GetLocalized("SubmoduleStatusUntracked");
     }
 
+    public void ValidateGitRepositoryRootPath(string rootFolder)
+    {
+        var validateGitRootRepo = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), rootFolder, "rev-parse --show-toplevel");
+        var output = validateGitRootRepo.Output;
+        if (validateGitRootRepo.Status != ProviderOperationStatus.Success || output is null || output.Contains("fatal: not a git repository"))
+        {
+            _log.Error(validateGitRootRepo.Ex, $"Failed to validate the git root repository using GitExecute. RootFolder: {rootFolder} Git output: {output} Process Error Code: {validateGitRootRepo.ProcessExitCode}");
+            throw validateGitRootRepo.Ex ?? new ArgumentException($"Not a valid git repository root path:  RootFolder: {rootFolder} Git output: {output}");
+        }
+
+        if (WslIntegrator.IsWSLRepo(rootFolder))
+        {
+            var normalizedLinuxPath = WslIntegrator.GetNormalizedLinuxPath(rootFolder);
+            if (output.TrimEnd('\n') != normalizedLinuxPath)
+            {
+                _log.Error($"Not a valid WSL git repository root path: {rootFolder}");
+                throw new ArgumentException($"Not a valid WSL git repository root path: {rootFolder}");
+            }
+
+            return;
+        }
+
+        var normalizedRootFolderPath = rootFolder.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (output.TrimEnd('\n') != normalizedRootFolderPath)
+        {
+            _log.Error($"Not a valid git repository root path: {rootFolder}");
+            throw new ArgumentException($"Not a valid git repository root path: {rootFolder}");
+        }
+    }
+
     public CommitWrapper? FindLastCommit(string relativePath)
     {
         // Fetching the most recent status to check if the file is renamed
@@ -81,13 +111,24 @@ internal sealed class RepositoryWrapper : IDisposable
 
     private CommitLogCache GetCommitLogCache()
     {
-        // Fast path: if we have an up-to-date commit log, return that
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), _workingDirectory, "rev-parse HEAD");
+        if (result.Status != ProviderOperationStatus.Success)
+        {
+            throw result.Ex ?? new InvalidOperationException(result.ProcessExitCode?.ToString(CultureInfo.InvariantCulture) ?? "Unknown error while obtaining HEAD commit");
+        }
+
+        string? head = result.Output?.Trim();
+        if (string.IsNullOrEmpty(head))
+        {
+            throw new InvalidOperationException("Git command output is null or the repository has no commits");
+        }
+
         if (_head != null && _commits != null)
         {
             _repoLock.EnterReadLock();
             try
             {
-                if (_repo.Head.Tip == _head)
+                if (head == _head)
                 {
                     return _commits;
                 }
@@ -102,10 +143,10 @@ internal sealed class RepositoryWrapper : IDisposable
         _repoLock.EnterWriteLock();
         try
         {
-            if (_head == null || _commits == null || _repo.Head.Tip != _head)
+            if (_head == null || _commits == null || head != _head)
             {
-                _commits = new CommitLogCache(_repo);
-                _head = _repo.Head.Tip;
+                _commits = new CommitLogCache(_workingDirectory);
+                _head = head;
             }
         }
         finally
@@ -125,13 +166,13 @@ internal sealed class RepositoryWrapper : IDisposable
         try
         {
             _repoLock.EnterWriteLock();
-            branchName = _repo.Info.IsHeadDetached ?
-                string.Format(CultureInfo.CurrentCulture, _folderStatusDetached, _repo.Head.Tip.Sha[..7]) :
-                string.Format(CultureInfo.CurrentCulture, _folderStatusBranch, _repo.Head.FriendlyName);
-            if (_repo.Head.IsTracking)
+            branchName = repoStatus.IsHeadDetached ?
+                string.Format(CultureInfo.CurrentCulture, _folderStatusDetached, repoStatus.Sha[..7]) :
+                string.Format(CultureInfo.CurrentCulture, _folderStatusBranch, repoStatus.BranchName);
+            if (repoStatus.UpstreamBranch != string.Empty)
             {
-                var behind = _repo.Head.TrackingDetails.BehindBy;
-                var ahead = _repo.Head.TrackingDetails.AheadBy;
+                var behind = repoStatus.BehindBy;
+                var ahead = repoStatus.AheadBy;
                 if (behind == 0 && ahead == 0)
                 {
                     branchStatus = " ≡";
@@ -296,7 +337,6 @@ internal sealed class RepositoryWrapper : IDisposable
         {
             if (disposing)
             {
-                _repo.Dispose();
                 _repoLock.Dispose();
                 _statusCache.Dispose();
             }

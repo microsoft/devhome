@@ -100,7 +100,7 @@ public partial class ExperimentalFeature : ObservableObject
     [RelayCommand]
     public void Open()
     {
-        if (OpenPageKey != null)
+        if (!string.IsNullOrEmpty(OpenPageKey))
         {
             Application.Current.GetService<INavigationService>().NavigateTo(OpenPageKey, OpenPageParameter);
         }

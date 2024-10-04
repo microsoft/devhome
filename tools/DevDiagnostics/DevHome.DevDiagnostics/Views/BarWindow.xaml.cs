@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
+using DevHome.Common.Windows;
 using DevHome.DevDiagnostics.Controls;
 using DevHome.DevDiagnostics.Helpers;
 using DevHome.DevDiagnostics.Models;
@@ -19,7 +20,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Serilog;
 using Windows.Foundation;
-using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -176,6 +176,7 @@ public partial class BarWindow : ThemeAwareWindow
 
         button.Icon = tool.GetIcon();
         button.Command = tool.InvokeCommand;
+        button.IsEnabled = tool.IsEnabled;
         button.CommandParameter = this;
         button.ContextFlyout = CreateMenuFlyout(tool, pinOption);
 
@@ -230,6 +231,11 @@ public partial class BarWindow : ThemeAwareWindow
                 {
                     ToolsCommandBar.PrimaryCommands.Remove(primaryCommandButton);
                 }
+            }
+            else if (args.PropertyName == nameof(Tool.IsEnabled))
+            {
+                primaryCommandButton.IsEnabled = tool.IsEnabled;
+                secondaryCommandButton.IsEnabled = tool.IsEnabled;
             }
         };
     }

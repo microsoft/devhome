@@ -21,6 +21,8 @@ public class WslManager : IWslManager, IDisposable
 
     private readonly TimeSpan _oneMinutePollingInterval = TimeSpan.FromMinutes(1);
 
+    private readonly TimeSpan _packageInstallTimeOut = TimeSpan.FromMinutes(30);
+
     private readonly WslRegisteredDistributionFactory _wslRegisteredDistributionFactory;
 
     private readonly IWslServicesMediator _wslServicesMediator;
@@ -176,10 +178,7 @@ public class WslManager : IWslManager, IDisposable
                 // Install it from the store.
                 statusUpdateCallback?.Invoke(_stringResource.GetLocalized("DistributionPackageInstallationStart", definition.FriendlyName));
                 cancellationToken.ThrowIfCancellationRequested();
-                if (!await _microsoftStoreService.TryInstallPackageAsync(definition.StoreAppId))
-                {
-                    throw new InvalidDataException($"Failed to install the {definition.Name} package");
-                }
+                await _microsoftStoreService.InstallPackageAsync(definition.StoreAppId, _packageInstallTimeOut);
             }
             else
             {
@@ -225,9 +224,10 @@ public class WslManager : IWslManager, IDisposable
             {
                 // If not installed, we'll install it from the store.
                 statusUpdateCallback?.Invoke(_stringResource.GetLocalized("InstallingWslKernelPackage"));
-
                 cancellationToken.ThrowIfCancellationRequested();
-                if (!await _microsoftStoreService.TryInstallPackageAsync(WslKernelPackageStoreId))
+                await _microsoftStoreService.InstallPackageAsync(WslKernelPackageStoreId, _packageInstallTimeOut);
+
+                if (!_packageHelper.IsPackageInstalled(WSLPackageFamilyName))
                 {
                     throw new InvalidDataException("Failed to install the Wsl kernel package");
                 }

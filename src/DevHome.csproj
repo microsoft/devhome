@@ -61,6 +61,7 @@
     <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+    <None Remove="Styles\HyperlinkButton.xaml" />
     <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
   </ItemGroup>
 
@@ -79,7 +80,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
@@ -108,6 +109,7 @@
     <ProjectReference Include="..\tools\Customization\DevHome.Customization\DevHome.Customization.csproj" />
     <ProjectReference Include="..\tools\Utilities\EnvVariablesUtility\DevHome.EnvironmentVariables.csproj" />
     <ProjectReference Include="..\tools\Utilities\HostsUtility\DevHome.HostsFileEditor.csproj" />
+    <ProjectReference Include="..\tools\Utilities\IfeoTool\DevHome.IfeoTool.csproj" />
     <ProjectReference Include="..\tools\Utilities\RegPreviewUtility\DevHome.RegistryPreview.csproj" />
     <ProjectReference Include="..\tools\Utilities\src\DevHome.Utilities.csproj" />
   </ItemGroup>
@@ -122,6 +124,9 @@
     <None Update="NavConfig.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\HyperlinkButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

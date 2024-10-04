@@ -57,8 +57,8 @@ public class PageService : IPageService
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;
             var needsFeaturePresenceCheck = experimentalFeature.NeedsFeaturePresenceCheck;
-            var openPageKey = experimentalFeature.OpenPage.Key;
-            var openPageParameter = experimentalFeature.OpenPage.Parameter;
+            var openPageKey = experimentalFeature.OpenPage?.Key ?? string.Empty;
+            var openPageParameter = experimentalFeature.OpenPage?.Parameter ?? string.Empty;
             var isVisible = true;
             foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
             {

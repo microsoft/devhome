@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -70,9 +71,10 @@ public partial class FileExplorerViewModel : ObservableObject
         {
             TrackedRepositories.Clear();
             var repoCollection = RepoTracker.GetAllTrackedRepositories();
-            foreach (KeyValuePair<string, string> data in repoCollection)
+            for (int position = 0; position < repoCollection.Count; position++)
             {
-                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value));
+                var data = repoCollection.ElementAt(position);
+                TrackedRepositories.Add(new RepositoryInformation(data.Key, data.Value, position + 1, repoCollection.Count));
             }
         }
     }
@@ -156,14 +158,14 @@ public partial class FileExplorerViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task AddFolderClick()
+    public async Task<string> AddFolderClick()
     {
+        StorageFolder? repoRootFolder = null;
         if (IsFeatureEnabled)
         {
             await Task.Run(async () =>
             {
                 using var folderDialog = new WindowOpenFolderDialog();
-                StorageFolder? repoRootFolder = null;
 
                 try
                 {
@@ -186,6 +188,14 @@ public partial class FileExplorerViewModel : ObservableObject
             });
             RefreshTrackedRepositories();
         }
+
+        return repoRootFolder == null ? string.Empty : repoRootFolder.Path;
+    }
+
+    public void AddRepositoryAlreadyOnMachine(string path)
+    {
+        RepoTracker.AddRepositoryPath(_unassigned, path);
+        RefreshTrackedRepositories();
     }
 
     public void RemoveTrackedRepositoryFromDevHome(string rootPath)

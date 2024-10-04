@@ -19,18 +19,22 @@ public class GitCommandRunnerResultInfo
 
     public string? Arguments { get; set; }
 
+    public int? ProcessExitCode { get; set; }
+
     public GitCommandRunnerResultInfo(ProviderOperationStatus status, string? output)
     {
         Status = status;
         Output = output;
     }
 
-    public GitCommandRunnerResultInfo(ProviderOperationStatus status, string? displayMessage, string? diagnosticText, Exception? ex, string? args)
+    public GitCommandRunnerResultInfo(ProviderOperationStatus status, string? output, string? displayMessage, string? diagnosticText, Exception? ex, string? args, int? processExitCode)
     {
         Status = status;
+        Output = output;
         DisplayMessage = displayMessage;
         DiagnosticText = diagnosticText;
         Ex = ex;
         Arguments = args;
+        ProcessExitCode = processExitCode;
     }
 }

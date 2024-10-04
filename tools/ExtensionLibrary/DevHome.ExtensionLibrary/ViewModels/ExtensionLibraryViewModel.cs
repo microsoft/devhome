@@ -51,9 +51,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         _extensionService = extensionService;
         _dispatcherQueue = dispatcherQueue;
 
-        extensionService.OnExtensionsChanged -= OnExtensionsChanged;
-        extensionService.OnExtensionsChanged += OnExtensionsChanged;
-
         StorePackagesList = new();
         InstalledPackagesList = new();
     }
@@ -69,6 +66,21 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     {
         await GetInstalledPackagesAndExtensionsAsync();
         GetAvailablePackages();
+
+        if (_extensionService != null)
+        {
+            _extensionService.OnExtensionsChanged -= OnExtensionsChanged;
+            _extensionService.OnExtensionsChanged += OnExtensionsChanged;
+        }
+    }
+
+    [RelayCommand]
+    public void Unloaded()
+    {
+        if (_extensionService != null)
+        {
+            _extensionService.OnExtensionsChanged -= OnExtensionsChanged;
+        }
     }
 
     private async void OnExtensionsChanged(object? sender, EventArgs e)

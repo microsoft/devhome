@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
-using DevHome.DevDiagnostics.Controls;
+using DevHome.Common.Windows;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.DevDiagnostics.Views;

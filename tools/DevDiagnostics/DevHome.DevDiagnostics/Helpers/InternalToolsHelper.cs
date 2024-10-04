@@ -18,6 +18,7 @@ internal sealed class InternalToolsHelper
         _allInternalTools = new List<Tool>
         {
             new ClipboardMonitorInternalTool(),
+            new ImageOptionsInternalTool(),
         };
     }
 }
