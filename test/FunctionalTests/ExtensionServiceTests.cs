@@ -35,6 +35,6 @@ public class ExtensionServiceTests
         var extensionJsonData = await extensionService.GetExtensionJsonDataAsync();
         Assert.IsNotNull(extensionJsonData);
 
-        Assert.IsInstanceOfType(extensionJsonData, typeof(DevHomeExtensionJsonData));
+        Assert.IsInstanceOfType(extensionJsonData, typeof(DevHomeExtensionContentData));
     }
 }

@@ -61,6 +61,7 @@
                             "required": [ "DisplayNameKey" ]
                           },
                           "ProviderType": {
+                            "$comment": "Enum values should be kept in sync with the provider type enum values located in the Dev Home SDK.",
                             "type": "string",
                             "enum": [
                               "ComputeSystem",

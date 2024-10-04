@@ -47,9 +47,9 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly IStringResource _stringResource;
 
-    private string? _localExtensionJsonSchemaAbsoluteFilePath;
+    private readonly Lazy<string> _localExtensionJsonSchemaAbsoluteFilePath;
 
-    private string? _localExtensionJsonAbsoluteFilePath;
+    private readonly Lazy<string> _localExtensionJsonAbsoluteFilePath;
 
     public ExtensionService(ILocalSettingsService settingsService, IStringResource stringResource)
     {
@@ -58,6 +58,18 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
         _stringResource = stringResource;
+        _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
+        _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
+    }
+
+    private string GetExtensionJsonSchemaAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonSchemaRelativeFilePath);
+    }
+
+    private string GetExtensionJsonAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -415,18 +427,15 @@ public class ExtensionService : IExtensionService, IDisposable
         return true;
     }
 
-    public async Task<DevHomeExtensionJsonData?> GetExtensionJsonDataAsync()
+    public async Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync()
     {
         try
         {
-            _localExtensionJsonSchemaAbsoluteFilePath ??= Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
-            _localExtensionJsonAbsoluteFilePath ??= Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
-
-            _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath}'");
-            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath);
+            _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath.Value}'");
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
             var serializerOptions = ExtensionJsonSerializerOptions;
             serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
-            return JsonSerializer.Deserialize<DevHomeExtensionJsonData>(extensionJson, serializerOptions);
+            return JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
         }
         catch (Exception ex)
         {

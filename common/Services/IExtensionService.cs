@@ -41,5 +41,5 @@ public interface IExtensionService
     /// Gets known extension information from internal extension json file.
     /// </summary>
     /// <returns>An object that holds a list of extension information based on the internal json file.</returns>
-    public Task<DevHomeExtensionJsonData?> GetExtensionJsonDataAsync();
+    public Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync();
 }

@@ -9,7 +9,7 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 /// Root class that will contain the deserialized data located in the
 /// src\Assets\Schemas\ExtensionInformation.schema.json file.
 /// </summary>
-public class DevHomeExtensionJsonData
+public class DevHomeExtensionContentData
 {
     public List<Product> Products { get; set; } = new();
 }

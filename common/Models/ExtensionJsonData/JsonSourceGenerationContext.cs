@@ -17,7 +17,7 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 [JsonSerializable(typeof(ProviderSpecificProperty))]
 [JsonSerializable(typeof(Properties))]
 [JsonSerializable(typeof(Product))]
-[JsonSerializable(typeof(DevHomeExtensionJsonData))]
+[JsonSerializable(typeof(DevHomeExtensionContentData))]
 [JsonSerializable(typeof(DevHomeExtension))]
 [JsonSerializable(typeof(JsonSchema))]
 [JsonSerializable(typeof(EvaluationResults))]
