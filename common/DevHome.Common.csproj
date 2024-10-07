@@ -61,6 +61,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\services\DevHome.Services.Core\DevHome.Services.Core.csproj" />
+    <ProjectReference Include="..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,5 +12,7 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 /// </summary>
 public class DevHomeExtensionContentData
 {
+    public List<string> ProductIds { get; set; } = new();
+
     public List<Product> Products { get; set; } = new();
 }

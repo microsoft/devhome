@@ -5,12 +5,15 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Models.ExtensionJsonData;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class StorePackageViewModel : ObservableObject
 {
+    private readonly Product _product;
+
     [ObservableProperty]
     private string _productId;
 
@@ -26,13 +29,14 @@ public partial class StorePackageViewModel : ObservableObject
     [ObservableProperty]
     private string _automationInstallPfn;
 
-    public StorePackageViewModel(string productId, string title, string publisher, string packageFamilyName)
+    public StorePackageViewModel(Product product)
     {
-        _productId = productId;
-        _title = title;
-        _publisher = publisher;
-        _packageFamilyName = packageFamilyName;
-        _automationInstallPfn = $"Install_{packageFamilyName}";
+        _product = product;
+        _productId = product.ProductId;
+        _title = product.Properties.GetLocalizedProductTitle();
+        _publisher = product.Properties.GetLocalizedPublisherName();
+        _packageFamilyName = product.Properties.PackageFamilyName;
+        _automationInstallPfn = $"Install_{_packageFamilyName}";
     }
 
     [RelayCommand]

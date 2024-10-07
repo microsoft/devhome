@@ -4,6 +4,13 @@
   "description": "Required schema to allow users to discover non-installed extensions within Dev Home.",
   "type": "object",
   "properties": {
+    "ProductIds": {
+      "$comment": "The Microsoft store productIds listed here should match only one product in the products list below.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "Products": {
       "type": "array",
       "items": {
@@ -13,21 +20,22 @@
           "Properties": {
             "type": "object",
             "properties": {
-              "PackageFamilyName": { "type": "string" },
-              "LocalizedProperties": {
-                "type": "object",
-                "properties": {
-                  "DisplayNameKey": { "type": "string" },
-                  "PublisherDisplayNameKey": { "type": "string" }
-                },
-                "required": [ "DisplayNameKey", "PublisherDisplayNameKey" ]
+              "PublisherName": {
+                "$comment": "Fallback property in case WinGet is unavailable on the users computer to get the localized publisher name.",
+                "type": "string"
               },
+              "ProductTitle": {
+                "$comment": "Fallback property in case WinGet is unavailable on the users computer to get the localized product title.",
+                "type": "string"
+              },
+              "PackageFamilyName": { "type": "string" },
               "DevHomeExtensions": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
                     "LocalizedProperties": {
+                      "$comment": "This is only necessary if a package contains multiple extensions. Dev Home, by default will assume a package only contains a single extension and use the packages product title from WinGet as the display name for the first extension in the list.",
                       "type": "object",
                       "properties": {
                         "DisplayNameKey": { "type": "string" }
@@ -78,12 +86,12 @@
                       }
                     }
                   },
-                  "required": [ "LocalizedProperties", "SupportedProviderTypes", "ProviderSpecificProperties" ]
+                  "required": [ "SupportedProviderTypes", "ProviderSpecificProperties" ]
                 }
               },
               "SupportsWidgets": { "type": "boolean" }
             },
-            "required": [ "PackageFamilyName", "LocalizedProperties", "DevHomeExtensions", "SupportsWidgets" ]
+            "required": [ "ProductTitle", "PublisherName", "PackageFamilyName", "DevHomeExtensions", "SupportsWidgets" ]
           }
         },
         "required": [ "ProductId", "Properties" ]

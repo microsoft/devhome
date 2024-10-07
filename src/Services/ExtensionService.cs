@@ -8,6 +8,8 @@ using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -36,6 +38,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly ILocalSettingsService _localSettingsService;
 
+    private readonly IWinGet _winGet;
+
     private bool _disposedValue;
 
     private const string CreateInstanceProperty = "CreateInstance";
@@ -51,13 +55,17 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly Lazy<string> _localExtensionJsonAbsoluteFilePath;
 
-    public ExtensionService(ILocalSettingsService settingsService, IStringResource stringResource)
+    public ExtensionService(
+        ILocalSettingsService settingsService,
+        IStringResource stringResource,
+        IWinGet winGet)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
         _stringResource = stringResource;
+        _winGet = winGet;
         _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
         _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
     }
@@ -429,13 +437,43 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public async Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync()
     {
+        // offload interaction Interaction with WinGet to background thread.
+        return await Task.Run(GetExtensionJsonDataInternalAsync);
+    }
+
+    private async Task<DevHomeExtensionContentData?> GetExtensionJsonDataInternalAsync()
+    {
         try
         {
             _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath.Value}'");
             var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
             var serializerOptions = ExtensionJsonSerializerOptions;
             serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
-            return JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+            var contentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+
+            if (contentData == null)
+            {
+                throw new InvalidDataException($"Unable to deserialize json in {_localExtensionJsonAbsoluteFilePath.Value}");
+            }
+
+            var winGetIds = new List<WinGetPackageUri>();
+            var winGetIdToProductMap = new Dictionary<string, Product>();
+            contentData.Products.ForEach(product =>
+            {
+                winGetIdToProductMap.Add(product.ProductId, product);
+                winGetIds.Add(_winGet.CreateMsStoreCatalogPackageUri(product.ProductId));
+            });
+
+            var winGetPackages = await _winGet.GetPackagesAsync(winGetIds);
+            foreach (var package in winGetPackages)
+            {
+                if (winGetIdToProductMap.TryGetValue(package.Id, out var product))
+                {
+                    product.Properties.WinGetPackage = package;
+                }
+            }
+
+            return contentData;
         }
         catch (Exception ex)
         {
