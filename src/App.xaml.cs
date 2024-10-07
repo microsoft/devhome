@@ -118,6 +118,7 @@ public partial class App : Application, IApp
             services.AddCore();
             services.AddWinGet();
             services.AddDSC();
+            services.AddHttpClient();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();

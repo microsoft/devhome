@@ -18,6 +18,7 @@
     <None Remove="Views\AddCreateHyperlinkButton.xaml" />
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
+    <None Remove="Views\DevHomeProviderInstallExpander.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
     <None Remove="Windows\SecondaryWindowTemplate.xaml" />
     <None Remove="Windows\WindowTitleBar.xaml" />
@@ -111,5 +112,11 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\DevHomeProviderInstallExpander.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

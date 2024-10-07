@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models.ExtensionJsonData;
@@ -9,6 +10,7 @@ using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
 using DevHome.Telemetry;
+using Json.Schema;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -36,10 +38,14 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly ILocalSettingsService _localSettingsService;
 
+    private readonly IHttpClientFactory _httpClientFactory;
+
     private bool _disposedValue;
 
     private const string CreateInstanceProperty = "CreateInstance";
     private const string ClassIdProperty = "@ClassId";
+
+    private const string ExtensionJsonGithubUrl = @"https://raw.githubusercontent.com/microsoft/devhome/refs/heads/user/bbonaby/add-json-schema2/src/Assets/ExtensionInformation.json";
 
     private static readonly List<IExtensionWrapper> _installedExtensions = new();
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
@@ -51,7 +57,12 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly Lazy<string> _localExtensionJsonAbsoluteFilePath;
 
-    public ExtensionService(ILocalSettingsService settingsService, IStringResource stringResource)
+    public DevHomeExtensionContentData? ExtensionContentData { get; private set; } = new();
+
+    public ExtensionService(
+        ILocalSettingsService settingsService,
+        IStringResource stringResource,
+        IHttpClientFactory httpClientFactory)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
@@ -60,6 +71,7 @@ public class ExtensionService : IExtensionService, IDisposable
         _stringResource = stringResource;
         _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
         _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
+        _httpClientFactory = httpClientFactory;
     }
 
     private string GetExtensionJsonSchemaAbsoluteFilePath()
@@ -431,11 +443,17 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
-            _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath.Value}'");
-            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
+            if (ExtensionContentData != null)
+            {
+                return ExtensionContentData;
+            }
+
+            _log.Information($"Getting extension information from GitHub via: '{ExtensionJsonGithubUrl}'");
+            var extensionJson = await TryGetExtensionJsonFromGitHubAsync();
             var serializerOptions = ExtensionJsonSerializerOptions;
             serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
-            return JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+            ExtensionContentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+            return ExtensionContentData;
         }
         catch (Exception ex)
         {
@@ -443,5 +461,55 @@ public class ExtensionService : IExtensionService, IDisposable
         }
 
         return null;
+    }
+
+    private async Task<string> TryGetExtensionJsonFromGitHubAsync()
+    {
+        var localExtensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
+        localExtensionJson += "}";
+
+        // Remove carriage returns from new lines if they are present in the local json file.
+        localExtensionJson = localExtensionJson.Replace("\r", string.Empty);
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var extensionJsonFromGitHub = await httpClient.GetStringAsync(ExtensionJsonGithubUrl);
+
+            // Remove carriage returns from new lines if they are present in the json from GitHub.
+            extensionJsonFromGitHub = extensionJsonFromGitHub.Replace("\r", string.Empty);
+            if (string.IsNullOrEmpty(extensionJsonFromGitHub))
+            {
+                throw new InvalidDataException($"Unable to retrieve json from {ExtensionJsonGithubUrl}");
+            }
+
+            if (localExtensionJson.Equals(extensionJsonFromGitHub, StringComparison.OrdinalIgnoreCase))
+            {
+                return localExtensionJson;
+            }
+
+            // Try to validate the json against the current version of Dev Homes extension json schema.
+            var schema = JsonSchema.FromText(extensionJsonFromGitHub, ExtensionJsonSerializerOptions);
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonSchemaAbsoluteFilePath.Value);
+            var jsonNode = JsonNode.Parse(extensionJson);
+            var options = new EvaluationOptions
+            {
+                OutputFormat = OutputFormat.Hierarchical,
+            };
+            var validationResult = schema.Evaluate(jsonNode, options);
+
+            if (validationResult.IsValid)
+            {
+                // Overwrite the existing file with the new content from GitHub.
+                await File.WriteAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value, extensionJsonFromGitHub);
+            }
+
+            localExtensionJson = extensionJsonFromGitHub;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving and validating extension json from GitHub");
+        }
+
+        return localExtensionJson;
     }
 }

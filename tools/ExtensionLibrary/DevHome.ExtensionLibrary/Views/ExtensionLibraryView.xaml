@@ -10,6 +10,9 @@
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:commonViewModels="using:DevHome.Common.ViewModels"
+    xmlns:commonConverters="using:DevHome.Common.Converters"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:commonviews="using:DevHome.Common.Views">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
@@ -21,7 +24,31 @@
     </i:Interaction.Behaviors>
 
     <Page.Resources>
+        <DataTemplate x:Key="SettingsCardHeaderTemplate" x:DataType="commonViewModels:StorePackageViewModel">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="{Binding Title}" />
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="{Binding Publisher}" />
+                <ItemsRepeater
+                    ItemsSource="{Binding SupportedProviderTypesInPackage, Converter={StaticResource ExcludeStringsFromListConverter}, ConverterParameter='Settings,DeveloperId'}" >
+                </ItemsRepeater>
+            </Grid>
+        </DataTemplate>
         <ResourceDictionary>
+            <commonConverters:ExcludeStringsFromListConverter x:Key="ExcludeStringsFromListConverter" />
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
             <converters:DoubleToVisibilityConverter x:Key="InverseCountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
             <ResourceDictionary.ThemeDictionaries>
@@ -123,13 +150,13 @@
                                AutomationProperties.HeadingLevel="2"/>
                     <ItemsRepeater x:Uid="AvailableFromStoreItemsRepeater" ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
                         <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
-                                <ctControls:SettingsCard Header="{x:Bind Title}"
-                                                Description="{x:Bind Publisher}"
-                                                Margin="{ThemeResource SettingsCardMargin}"
-                                                CornerRadius="3"
-                                                AutomationProperties.Name="{x:Bind Title}"
-                                                IsClickEnabled="False">
+                            <DataTemplate x:DataType="commonViewModels:StorePackageViewModel">
+                                <ctControls:SettingsCard
+                                    Template="{StaticResource }"
+                                    Margin="{ThemeResource SettingsCardMargin}"
+                                    CornerRadius="3"
+                                    AutomationProperties.Name="{x:Bind Title}"
+                                    IsClickEnabled="False">
                                     <ctControls:SettingsCard.HeaderIcon>
                                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                     </ctControls:SettingsCard.HeaderIcon>

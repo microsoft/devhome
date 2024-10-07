@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -155,11 +156,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
             _log.Information($"Found package: {product.ProductId}, {product.Properties.PackageFamilyName}");
 
-            var storePackage = new StorePackageViewModel(
-                product.ProductId,
-                product.Properties.LocalizedProperties.DisplayName,
-                product.Properties.LocalizedProperties.PublisherDisplayName,
-                product.Properties.PackageFamilyName);
+            var storePackage = new StorePackageViewModel(product);
 
             tempStorePackagesList.Add(storePackage);
         }
