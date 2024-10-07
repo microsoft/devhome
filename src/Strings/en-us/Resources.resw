@@ -349,32 +349,8 @@
   <data name="WidgetScreenshotAltDisplaySSKeychain" xml:space="preserve">
     <value>SSH Keychain widget preview image</value>
   </data>
-  <data name="DevHomeAzureDisplayName" xml:space="preserve">
-    <value>Microsoft Dev Home Azure Extension (Preview)</value>
-    <comment>{Locked="Microsoft", "Azure"} Display name for the Azure extension.</comment>
-  </data>
-  <data name="MicrosoftPublisher" xml:space="preserve">
-    <value>Microsoft Corporation</value>
-    <comment>{Locked="Microsoft"} Display name for the Microsoft publisher.</comment>
-  </data>
   <data name="DevBoxProviderDisplayName" xml:space="preserve">
     <value>Microsoft Dev Box</value>
     <comment>{Locked="Microsoft Dev Box"} Display name for the Dev Box provider.</comment>
-  </data>
-  <data name="DevHomeGitHubDisplayName" xml:space="preserve">
-    <value>Microsoft Dev Home GitHub Extension (Preview)</value>
-    <comment>{Locked="Microsoft", "Azure"} Display name for the Azure extension.</comment>
-  </data>
-  <data name="DevHomeGameDevDisplayName" xml:space="preserve">
-    <value>Microsoft Dev Home Game Dev Extension (Preview)</value>
-    <comment>{Locked="Microsoft"} Display name for the Game Dev extension.</comment>
-  </data>
-  <data name="WidgetsForUniGetUIDisplayName" xml:space="preserve">
-    <value>Widgets for UniGetUI (formerly WingetUI)</value>
-    <comment>{Locked="UniGetUI", "WingetUI"} Display name for the 'Widgets for UniGetUI' extension.</comment>
-  </data>
-  <data name="WidgetsForUniGetUIPublisher" xml:space="preserve">
-    <value>Martí Climent</value>
-    <comment>{Locked="Martí Climent"} Display name for the 'Widgets for UniGetUI' publisher.</comment>
   </data>
 </root>
