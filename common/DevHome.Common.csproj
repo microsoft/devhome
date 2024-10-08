@@ -61,7 +61,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\services\DevHome.Services.Core\DevHome.Services.Core.csproj" />
-    <ProjectReference Include="..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" />
+
+    <!--
+      The DevSetupAgent project in the Hyper-V extension references the DevHome.Common project.
+      Set the 'Private' flag to false to prevent the referenced dlls from DevHome.Services.WindowsPackageManager
+      from being copied to the output folder and causing conflicts.
+    -->
+    <ProjectReference Include="..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" Private="false"/>
   </ItemGroup>
 
   <ItemGroup>
