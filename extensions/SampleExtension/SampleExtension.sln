@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleExtension", "SampleExtension.csproj", "{81215577-330C-4EAC-B9C0-574B2176ED18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer", "..\WebServer\WebServer.csproj", "{ACE719F1-6A8A-4494-A451-B165A2ECCA79}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_FailFast|arm64 = Debug_FailFast|arm64
@@ -49,24 +47,6 @@ Global
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.ActiveCfg = Release|x86
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.Build.0 = Release|x86
 		{81215577-330C-4EAC-B9C0-574B2176ED18}.Release|x86.Deploy.0 = Release|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|arm64.ActiveCfg = Debug_FailFast|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|arm64.Build.0 = Debug_FailFast|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|x64.ActiveCfg = Debug_FailFast|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|x64.Build.0 = Debug_FailFast|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|x86.ActiveCfg = Debug_FailFast|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug_FailFast|x86.Build.0 = Debug_FailFast|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|arm64.ActiveCfg = Debug|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|arm64.Build.0 = Debug|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|x64.ActiveCfg = Debug|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|x64.Build.0 = Debug|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|x86.ActiveCfg = Debug|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Debug|x86.Build.0 = Debug|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|arm64.ActiveCfg = Release|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|arm64.Build.0 = Release|ARM64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|x64.ActiveCfg = Release|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|x64.Build.0 = Release|x64
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|x86.ActiveCfg = Release|x86
-		{ACE719F1-6A8A-4494-A451-B165A2ECCA79}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

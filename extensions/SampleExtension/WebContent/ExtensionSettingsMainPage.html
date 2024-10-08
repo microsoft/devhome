@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Extension Settings Main Page</title>
+    <script>
+        "use strict";
+
+        var lightMode = "rgb(243, 243, 243)";
+        var darkMode = "rgb(32, 32, 32)";
+
+        function doPostMessage(message) {
+            // Do different things in WebView2 vs the browser, so neither gets an error
+            try {
+                window.chrome.webview.postMessage(message);
+                console.log("window.chrome");
+
+            }
+            catch {
+                window.postMessage(message);
+            }
+        };
+
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        function onGotFocus(x) {
+            var output = (x.id) ? x.id : x;
+            doPostMessage("Focus on: " + output);
+            console.log("Focus on: " + output);
+        };
+
+        function onFocusOut() {
+            if (!document.hasFocus()) {
+                doPostMessage("Focus on: document lost focus");
+                console.log("Focus on: document lost focus");
+            }
+        };
+
+        function navigateToPage(webPage) {
+            window.location.assign(webPage);
+        }
+
+        function onSendMessageButtonClicked() {
+            console.log("Send message button clicked");
+            window.chrome.webview.postMessage("buttonClicked");
+        }
+
+    </script>
+    <meta name="color-scheme" content="dark light">
+    <style>
+        /* Default styles (light mode) */
+        body {
+            color: rgb(32, 32, 32);
+            font-family: 'Segoe UI', Tahoma, Geneva;
+        }
+
+        /* Dark mode styles */
+        [data-theme="dark"] body {
+            color: rgb(243, 243, 243);
+            font-family: 'Segoe UI', Tahoma, Geneva;
+        }
+    </style>
+</head>
+<body id="body">
+    <h1> Extension Settings Main Page </h1>
+    <img id="cat" src="cat.jpg" alt="A cute cat" style="width:500px; height:500px" />
+    <div>
+        <input id="b1B" type="submit" name="button" onclick="navigateToPage('SolidBackgroundExample.html')" value="Solid Background Example" />
+        <input id="b1B" type="submit" name="button" onclick="navigateToPage('CSSExample.html')" value="CSS Styled Page Example" />
+        <input id="b1B" type="submit" name="button" onclick="navigateToPage('TestJQuery.html')" value="jQuery Page Example" />
+        <input id="b1B" type="submit" name="button" onclick="navigateToPage('ViewLogsPage.html')" value="View Logs Example" />
+    </div>
+</body>
+</html>
