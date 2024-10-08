@@ -58,6 +58,23 @@ public sealed partial class AddRepositoriesView : UserControl
                 ToolTipService.SetToolTip(menuItem, stringResource.GetLocalized("PrefixForDevHomeVersion", extension.PackageDisplayName));
                 menuFlyout.Items.Add(menuItem);
             }
+
+            var unassignMenuItem = new MenuFlyoutItem
+            {
+                Text = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources").GetLocalized("MenuFlyoutUnregisteredRepository_Content"),
+            };
+            unassignMenuItem.Click += UnassignFolderButton_Click;
+            menuFlyout.Items.Add(unassignMenuItem);
+        }
+    }
+
+    public void UnassignFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Extract relevant data from view and give to view model for unassign
+        MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
+        if (menuItem.DataContext is RepositoryInformation repoInfo)
+        {
+            ViewModel.UnassignSourceControlProviderFromRepository(repoInfo.RepositoryRootPath);
         }
     }
 

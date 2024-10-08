@@ -292,4 +292,11 @@ public partial class FileExplorerViewModel : ObservableObject
 
         await LocalSettingsService!.SaveSettingAsync("ShowRepositoryStatus", value);
     }
+
+    public void UnassignSourceControlProviderFromRepository(string repositoryRootPath)
+    {
+        ExtraFolderPropertiesWrapper.Unregister(repositoryRootPath);
+        RepoTracker.ModifySourceControlProviderForTrackedRepository(_unassigned, repositoryRootPath);
+        RefreshTrackedRepositories();
+    }
 }
