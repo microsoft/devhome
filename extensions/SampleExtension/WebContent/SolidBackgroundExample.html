@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Solid Background Example</title>
+    <script>
+        "use strict";
+
+        var lightMode = "rgb(243, 243, 243)";
+        var darkMode = "rgb(32, 32, 32)";
+
+        function doPostMessage(message) {
+            // Do different things in WebView2 vs the browser, so neither gets an error
+            try {
+                window.chrome.webview.postMessage(message);
+                console.log("window.chrome");
+
+            }
+            catch {
+                window.postMessage(message);
+            }
+        };
+
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        function navigateToPreviousPage() {
+            window.location.assign('ExtensionSettingsMainPage.html');
+        };
+    </script>
+    <meta name="color-scheme" content="dark light">
+    <style>
+        /* Default styles (light mode) */
+        body {
+            background-color: rgb(243, 243, 243);
+            color: rgb(32, 32, 32);
+            font-family: 'Segoe UI', Tahoma, Geneva;
+        }
+
+        /* Dark mode styles */
+        [data-theme="dark"] body {
+            background-color: rgb(32, 32, 32);
+            color: rgb(243, 243, 243);
+            font-family: 'Segoe UI',Tahoma, Geneva;
+        }
+    </style>
+</head>
+<body id="body">
+    <h1>Solid Background Example</h1>
+    <h2>This page has a solid background that matches Dev Home's theme</h2>
+    <img id="dog" src="dog.jpg" alt="A cute dog" style="width:500px; height:500px"/>
+    <div>
+        <input id="b1B" type="submit" name="button" onclick="navigateToPreviousPage()" value="Back to Extension Settings Main Page" />
+    </div>
+</body>
+</html>

@@ -24,10 +24,10 @@ public class SettingsProvider2 : ISettingsProvider2
     public SettingsProvider2()
     {
         // select a method to get the URL
-        // _uri = GetUrlFromFilePath("ExtensionSettingsPage.html");
+        // _uri = GetUrlFromFilePath("ExtensionSettingsMainPage.html");
 
         // use the web server to serve the page
-        _uri = GetUrlFromWebServer("ExtensionSettingsPage.html");
+        _uri = GetUrlFromWebServer("ExtensionSettingsMainPage.html");
 
         // use a public website
         // _uri = new Uri("https://github.com/login");

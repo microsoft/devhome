@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
+using SampleExtension.Helpers;
 
 namespace WebServer;
 
@@ -28,6 +29,15 @@ public class WebServer : IDisposable
         _listener = new HttpListener();
         _listener.Prefixes.Add($"http://localhost:{_port}/");
         _listener.Start();
+
+        RegisterRouteHandler("/openLogs", (request, response) =>
+        {
+            Console.WriteLine("/openLogs called");
+            response.StatusCode = (int)HttpStatusCode.OK;
+            FileHelper.OpenLogsLocation();
+            response.Close();
+            return true;
+        });
 
         Receive();
     }
