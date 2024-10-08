@@ -33,8 +33,8 @@ public partial class StorePackageViewModel : ObservableObject
     {
         _product = product;
         _productId = product.ProductId;
-        _title = product.Properties.GetLocalizedProductTitle();
-        _publisher = product.Properties.GetLocalizedPublisherName();
+        _title = product.Properties.ProductTitle;
+        _publisher = product.Properties.PublisherName;
         _packageFamilyName = product.Properties.PackageFamilyName;
         _automationInstallPfn = $"Install_{_packageFamilyName}";
     }

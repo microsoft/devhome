@@ -469,7 +469,9 @@ public class ExtensionService : IExtensionService, IDisposable
             {
                 if (winGetIdToProductMap.TryGetValue(package.Id, out var product))
                 {
-                    product.Properties.WinGetPackage = package;
+                    product.Properties.Description = package.Description;
+                    product.Properties.PublisherName = package.PublisherName;
+                    product.Properties.ProductTitle = package.Name;
                 }
             }
 
