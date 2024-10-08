@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>View Logs Page</title>
+    <style>
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.light-mode {
+            color: black;
+        }
+        body.dark-mode {
+            color: white;
+        }
+        .toggle-button {
+            padding: 10px 20px;
+            margin: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-button" onclick="openLogs()">View Logs</button>
+
+    <script>
+        function applyTheme(theme) {
+            const body = document.body;
+            if (theme === 'dark') {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+            }
+        }
+
+        function openLogs() {
+            window.postMessage('openLogs', '*');
+        }
+
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        applyTheme(prefersDarkScheme.matches ? 'dark' : 'light');
+
+        prefersDarkScheme.addEventListener('change', (e) => {
+            applyTheme(e.matches ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>
