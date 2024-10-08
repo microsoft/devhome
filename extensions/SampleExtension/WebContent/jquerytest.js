@@ -7,24 +7,32 @@ $(document).ready(function () {
 
     if (isDarkMode) {
         $("html").attr('data-theme', 'dark');
-        $("body").css("color", "white"); // Set starting text color to white in dark mode
+        $("body").css("color", lightMode);
+        $("input[name='button']").css({
+            "background-color": darkMode,
+            "color": lightMode
+        });
         $("h2").hover(
             function () {
-                $(this).css("color", "orange"); // High contrast with darkMode
+                $(this).css("color", "orange");
             },
             function () {
-                $(this).css("color", "cyan"); // High contrast with darkMode
+                $(this).css("color", "cyan");
             }
         );
     } else {
         $("html").attr('data-theme', 'light');
-        $("body").css("color", "black"); // Set starting text color to black in light mode
+        $("body").css("color", darkMode);
+        $("input[name='button']").css({
+            "background-color": lightMode,
+            "color": darkMode
+        });
         $("h2").hover(
             function () {
-                $(this).css("color", "blue"); // High contrast with lightMode
+                $(this).css("color", "blue");
             },
             function () {
-                $(this).css("color", "red"); // High contrast with lightMode
+                $(this).css("color", "red");
             }
         );
     }
