@@ -14,7 +14,7 @@ namespace DevHome.Common.ViewModels;
 
 public partial class StorePackageViewModel : ObservableObject
 {
-    private readonly Product _productInfo;
+    private readonly Product _product;
 
     public string ProductId { get; }
 
@@ -30,13 +30,13 @@ public partial class StorePackageViewModel : ObservableObject
 
     public List<string> SupportedProviderTypesInPackage { get; }
 
-    public StorePackageViewModel(Product productInfo)
+    public StorePackageViewModel(Product product)
     {
-        _productInfo = productInfo;
-        ProductId = productInfo.ProductId;
-        Title = productInfo.Properties.ProductTitle;
-        Publisher = productInfo.Properties.PublisherName;
-        PackageFamilyName = productInfo.Properties.PackageFamilyName;
+        _product = product;
+        ProductId = product.ProductId;
+        Title = product.Properties.ProductTitle;
+        Publisher = product.Properties.PublisherName;
+        PackageFamilyName = product.Properties.PackageFamilyName;
         AutomationInstallPfn = $"Install_{PackageFamilyName}";
         SupportedProviderInfo = GetSupportedProviderInfo();
         SupportedProviderTypesInPackage = GetSupportedProviderTypesInPackage();
@@ -70,18 +70,16 @@ public partial class StorePackageViewModel : ObservableObject
     private Dictionary<string, List<string>> GetSupportedProviderInfo()
     {
         var supportedProviderDisplayNames = new Dictionary<string, List<string>>();
-        var providerTypesFound = new HashSet<string>();
-        foreach (var extension in _productInfo.Properties.DevHomeExtensions)
+        foreach (var extension in _product.Properties.DevHomeExtensions)
         {
             foreach (var provider in extension.ProviderSpecificProperties)
             {
-                providerTypesFound.Add(provider.ProviderType);
                 supportedProviderDisplayNames[provider.ProviderType].Add(provider.LocalizedProperties.DisplayName);
             }
         }
 
         // Sort the display name lists so they don't need to be sorted later.
-        foreach (var providerType in providerTypesFound)
+        foreach (var providerType in supportedProviderDisplayNames.Keys)
         {
             supportedProviderDisplayNames[providerType].Sort();
         }
