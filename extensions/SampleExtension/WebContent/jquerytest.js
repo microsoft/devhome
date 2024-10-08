@@ -7,6 +7,7 @@ $(document).ready(function () {
 
     if (isDarkMode) {
         $("html").attr('data-theme', 'dark');
+        $("body").css("color", "white"); // Set starting text color to white in dark mode
         $("h1").hover(
             function () {
                 $(this).css("color", "orange"); // High contrast with darkMode
@@ -17,6 +18,7 @@ $(document).ready(function () {
         );
     } else {
         $("html").attr('data-theme', 'light');
+        $("body").css("color", "black"); // Set starting text color to black in light mode
         $("h1").hover(
             function () {
                 $(this).css("color", "blue"); // High contrast with lightMode
