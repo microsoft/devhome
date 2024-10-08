@@ -28,7 +28,8 @@ public partial class StorePackageViewModel : ObservableObject
 
     public Dictionary<string, List<string>> SupportedProviderInfo { get; }
 
-    public List<string> SupportedProviderTypesInPackage { get; }
+    [ObservableProperty]
+    private readonly List<string> _supportedProviderTypesInPackage = new();
 
     public StorePackageViewModel(Product product)
     {
@@ -47,6 +48,11 @@ public partial class StorePackageViewModel : ObservableObject
     {
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
         await Launcher.LaunchUriAsync(new(linkString));
+    }
+
+    public void FilterOutProviderTypes(List<string> providerTypes)
+    {
+        SupportedProviderTypesInPackage.RemoveAll(providerTypes.Contains);
     }
 
     public List<string> GetSupportedProviderDisplayNamesBasedOnType(string providerType)
