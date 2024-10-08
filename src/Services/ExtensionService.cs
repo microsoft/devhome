@@ -9,6 +9,8 @@ using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Telemetry;
 using Json.Schema;
 using Microsoft.UI.Xaml;
@@ -38,6 +40,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly ILocalSettingsService _localSettingsService;
 
+    private readonly IWinGet _winGet;
+
     private readonly IHttpClientFactory _httpClientFactory;
 
     private bool _disposedValue;
@@ -62,6 +66,7 @@ public class ExtensionService : IExtensionService, IDisposable
     public ExtensionService(
         ILocalSettingsService settingsService,
         IStringResource stringResource,
+        IWinGet winGet,
         IHttpClientFactory httpClientFactory)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
@@ -69,6 +74,7 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
         _stringResource = stringResource;
+        _winGet = winGet;
         _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
         _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
         _httpClientFactory = httpClientFactory;
@@ -441,6 +447,12 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public async Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync()
     {
+        // offload interaction Interaction with WinGet to background thread.
+        return await Task.Run(GetExtensionJsonDataInternalAsync);
+    }
+
+    private async Task<DevHomeExtensionContentData?> GetExtensionJsonDataInternalAsync()
+    {
         try
         {
             if (ExtensionContentData != null)
@@ -452,21 +464,45 @@ public class ExtensionService : IExtensionService, IDisposable
             var extensionJson = await TryGetExtensionJsonFromGitHubAsync();
             var serializerOptions = ExtensionJsonSerializerOptions;
             serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
-            ExtensionContentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
-            return ExtensionContentData;
+            var contentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+
+            if (contentData == null)
+            {
+                throw new InvalidDataException($"Unable to deserialize json in {_localExtensionJsonAbsoluteFilePath.Value}");
+            }
+
+            var winGetIds = new List<WinGetPackageUri>();
+            var winGetIdToProductMap = new Dictionary<string, Product>();
+            contentData.Products.ForEach(product =>
+            {
+                winGetIdToProductMap.Add(product.ProductId, product);
+                winGetIds.Add(_winGet.CreateMsStoreCatalogPackageUri(product.ProductId));
+            });
+
+            var winGetPackages = await _winGet.GetPackagesAsync(winGetIds);
+            foreach (var package in winGetPackages)
+            {
+                if (winGetIdToProductMap.TryGetValue(package.Id, out var product))
+                {
+                    product.Properties.Description = package.Description;
+                    product.Properties.PublisherName = package.PublisherName;
+                    product.Properties.ProductTitle = package.Name;
+                }
+            }
+
+            ExtensionContentData = contentData;
         }
         catch (Exception ex)
         {
             _log.Error(ex, "Error retrieving extension json information");
         }
 
-        return null;
+        return ExtensionContentData;
     }
 
     private async Task<string> TryGetExtensionJsonFromGitHubAsync()
     {
         var localExtensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
-        localExtensionJson += "}";
 
         // Remove carriage returns from new lines if they are present in the local json file.
         localExtensionJson = localExtensionJson.Replace("\r", string.Empty);

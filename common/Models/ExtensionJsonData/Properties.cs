@@ -11,7 +11,11 @@ public class Properties
 
     public required bool SupportsWidgets { get; set; }
 
-    public required LocalizedProperties LocalizedProperties { get; set; }
+    public string Description { get; set; } = string.Empty;
+
+    public string PublisherName { get; set; } = string.Empty;
+
+    public string ProductTitle { get; set; } = string.Empty;
 
     public required List<DevHomeExtension> DevHomeExtensions { get; set; } = new();
 }

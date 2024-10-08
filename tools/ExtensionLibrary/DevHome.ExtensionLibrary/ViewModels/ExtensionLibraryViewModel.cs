@@ -45,6 +45,12 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
+    [ObservableProperty]
+    private bool _shouldShowAvailableExtensionsProgressRing = false;
+
+    [ObservableProperty]
+    private bool _shouldShowNoExtensionsAvailableMessage = false;
+
     public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
@@ -64,6 +70,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     public async Task LoadedAsync()
     {
         await GetInstalledPackagesAndExtensionsAsync();
+        ShouldShowNoExtensionsAvailableMessage = false;
+        ShouldShowAvailableExtensionsProgressRing = true;
         GetAvailablePackages();
 
         if (_extensionService != null)
@@ -139,6 +147,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         var extensionJsonData = await _extensionService.GetExtensionJsonDataAsync();
         if (extensionJsonData == null)
         {
+            ShouldShowAvailableExtensionsProgressRing = false;
             _log.Error("No package data found");
             ShouldShowStoreError = true;
             return;
@@ -165,6 +174,13 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         foreach (var storePackage in tempStorePackagesList)
         {
             StorePackagesList.Add(storePackage);
+        }
+
+        ShouldShowAvailableExtensionsProgressRing = false;
+
+        if (StorePackagesList.Count == 0)
+        {
+            ShouldShowNoExtensionsAvailableMessage = true;
         }
     }
 

@@ -172,9 +172,16 @@
                     </ItemsRepeater>
                     <!-- No available items messages -->
                     <TextBlock x:Uid="NoAvailableExtensions"
-                            Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.ShouldShowNoExtensionsAvailableMessage, Mode=OneWay}"
                             Margin="0,20,0,48"
                             HorizontalAlignment="Center" />
+                    <ProgressRing
+                        Width="20"
+                        Height="20"
+                        Visibility="{x:Bind ViewModel.ShouldShowAvailableExtensionsProgressRing, Mode=OneWay}"
+                        Margin="0,20,0,48"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
                     <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
                         <TextBlock x:Uid="StoreErrorMessage"
                                 Foreground="{ThemeResource SystemFillColorCautionBrush}"

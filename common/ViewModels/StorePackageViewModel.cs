@@ -34,8 +34,8 @@ public partial class StorePackageViewModel : ObservableObject
     {
         _productInfo = productInfo;
         ProductId = productInfo.ProductId;
-        Title = productInfo.Properties.LocalizedProperties.DisplayName;
-        Publisher = productInfo.Properties.LocalizedProperties.PublisherDisplayName;
+        Title = productInfo.Properties.ProductTitle;
+        Publisher = productInfo.Properties.PublisherName;
         PackageFamilyName = productInfo.Properties.PackageFamilyName;
         AutomationInstallPfn = $"Install_{PackageFamilyName}";
         SupportedProviderInfo = GetSupportedProviderInfo();

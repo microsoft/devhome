@@ -49,15 +49,11 @@ public class LocalizedPropertiesConverter : JsonConverter<LocalizedProperties>
                     case nameof(LocalizedProperties.DisplayNameKey):
                         localizedProperties.DisplayNameKey = reader.GetString()!;
                         break;
-                    case nameof(LocalizedProperties.PublisherDisplayNameKey):
-                        localizedProperties.PublisherDisplayNameKey = reader.GetString()!;
-                        break;
                 }
             }
         }
 
         localizedProperties.DisplayName = _stringResource.GetLocalized(localizedProperties.DisplayNameKey);
-        localizedProperties.PublisherDisplayName = _stringResource.GetLocalized(localizedProperties.PublisherDisplayNameKey);
 
         return localizedProperties;
     }

@@ -64,7 +64,8 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
                 services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator(null));
-                services.AddSingleton<IExtensionService>(new ExtensionService(LocalSettingsService.Object, StringResource.Object));
+                services.AddSingleton<IExtensionService>(
+                    new ExtensionService(LocalSettingsService.Object, StringResource.Object, WindowsPackageManager.Object));
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();

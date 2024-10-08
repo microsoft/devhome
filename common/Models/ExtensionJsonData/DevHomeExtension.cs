@@ -7,7 +7,7 @@ namespace DevHome.Common.Models.ExtensionJsonData;
 
 public class DevHomeExtension
 {
-    public required LocalizedProperties LocalizedProperties { get; set; }
+    public LocalizedProperties LocalizedProperties { get; set; } = new();
 
     public required List<string> SupportedProviderTypes { get; set; } = new();
 
