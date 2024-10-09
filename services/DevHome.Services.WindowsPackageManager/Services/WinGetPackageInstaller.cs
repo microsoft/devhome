@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Services.Core.Extensions;
@@ -13,6 +14,7 @@ using DevHome.Services.WindowsPackageManager.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Management.Deployment;
+using Windows.Foundation;
 using Windows.Win32.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services;
@@ -39,7 +41,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
     }
 
     /// <inheritdoc />
-    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId)
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version, Guid activityId)
     {
         if (catalog == null)
         {
@@ -51,29 +53,34 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
 
         try
         {
-            // 1. Find package
-            var package = await FindPackageOrThrowAsync(catalog, packageId);
-
-            // 2. Install package
-            _logger.LogInformation($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
-            var installResult = await InstallPackageInternalAsync(package, version, activityId);
-            var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
-            var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
-
-            // 3. Report install result
-            _logger.LogInformation($"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
-            if (installResult.Status != InstallResultStatus.Ok)
+            return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (_, progress) =>
             {
-                throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
-            }
+                // 1. Find package
+                var package = await FindPackageOrThrowAsync(catalog, packageId);
 
-            _logger.LogInformation($"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
-            TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", Telemetry.LogLevel.Critical, new AppInstallResultEvent(package.Id, catalog.Catalog.Info.Id), activityId);
-            return new WinGetInstallPackageResult()
-            {
-                ExtendedErrorCode = extendedErrorCode,
-                RebootRequired = installResult.RebootRequired,
-            };
+                // 2. Install package
+                _logger.LogInformation($"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
+                var install = InstallPackageInternalAsync(package, version, activityId);
+                install.Progress += (_, p) => progress.Report(new(p));
+                var installResult = await install;
+                var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+                var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
+
+                // 3. Report install result
+                _logger.LogInformation($"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+                if (installResult.Status != InstallResultStatus.Ok)
+                {
+                    throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
+                }
+
+                _logger.LogInformation($"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
+                TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", Telemetry.LogLevel.Critical, new AppInstallResultEvent(package.Id, catalog.Catalog.Info.Id), activityId);
+                return new WinGetInstallPackageResult()
+                {
+                    ExtendedErrorCode = extendedErrorCode,
+                    RebootRequired = installResult.RebootRequired,
+                };
+            });
         }
         catch
         {
@@ -88,7 +95,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
     /// </summary>
     /// <param name="package">Package to install</param>
     /// <returns>Install result</returns>
-    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package, string version, Guid activityId)
+    private IAsyncOperationWithProgress<InstallResult, InstallProgress> InstallPackageInternalAsync(CatalogPackage package, string version, Guid activityId)
     {
         var installOptions = _wingetFactory.CreateInstallOptions();
         installOptions.PackageInstallMode = PackageInstallMode.Silent;
@@ -106,7 +113,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller, IDisposa
         }
 
         var packageManager = _wingetFactory.CreatePackageManager();
-        return await packageManager.InstallPackageAsync(package, installOptions).AsTask();
+        return packageManager.InstallPackageAsync(package, installOptions);
     }
 
     /// <summary>
