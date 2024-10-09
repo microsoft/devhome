@@ -76,11 +76,9 @@ public class BaseSetupFlowTest
                 // App-management services
                 services.AddSingleton<IWinGet>(WindowsPackageManager.Object);
                 services.AddTransient<WinGetPackageJsonDataSource>();
-                services.AddTransient<WinGetPackageRestoreDataSource>();
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
-                services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
                 services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
                 services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
                 services.AddSingleton<IDSC>(new Mock<IDSC>().Object);

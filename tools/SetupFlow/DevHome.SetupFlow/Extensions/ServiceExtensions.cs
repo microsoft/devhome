@@ -58,13 +58,11 @@ public static class ServiceExtensions
         services.AddTransient<SearchMessageViewModel>();
 
         // Services
-        services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
         services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
         services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
 
-        services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
