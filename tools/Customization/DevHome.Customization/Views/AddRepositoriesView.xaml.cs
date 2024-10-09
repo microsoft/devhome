@@ -43,6 +43,7 @@ public sealed partial class AddRepositoriesView : UserControl
     {
         if (sender is MenuFlyout menuFlyout)
         {
+            var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
             menuFlyout.Items.Clear();
 
             foreach (var extension in ViewModel.ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result)
@@ -54,14 +55,13 @@ public sealed partial class AddRepositoriesView : UserControl
                 };
                 menuItem.Click += AssignSourceControlProviderButton_Click;
 
-                var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
                 ToolTipService.SetToolTip(menuItem, stringResource.GetLocalized("PrefixForDevHomeVersion", extension.PackageDisplayName));
                 menuFlyout.Items.Add(menuItem);
             }
 
             var unassignMenuItem = new MenuFlyoutItem
             {
-                Text = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources").GetLocalized("MenuFlyoutUnregisteredRepository_Content"),
+                Text = stringResource.GetLocalized("MenuFlyoutUnregisteredRepository_Content"),
             };
             unassignMenuItem.Click += UnassignFolderButton_Click;
             menuFlyout.Items.Add(unassignMenuItem);
