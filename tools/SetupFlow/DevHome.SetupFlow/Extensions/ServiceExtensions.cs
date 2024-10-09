@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Internal.Windows.DevHome.Helpers;
-using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 
 namespace DevHome.SetupFlow.Extensions;
 
