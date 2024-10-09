@@ -80,9 +80,6 @@ public static class StringResourceKey
     public static readonly string RemovedAllApplications = nameof(RemovedAllApplications);
     public static readonly string ResultCountPlural = nameof(ResultCountPlural);
     public static readonly string ResultCountSingular = nameof(ResultCountSingular);
-    public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);
-    public static readonly string RestorePackagesDescription = nameof(RestorePackagesDescription);
-    public static readonly string RestorePackagesDescriptionWithDate = nameof(RestorePackagesDescriptionWithDate);
     public static readonly string Repository = nameof(Repository);
     public static readonly string ReviewNothingToSetUpToolTip = nameof(ReviewNothingToSetUpToolTip);
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
