@@ -18,6 +18,7 @@
     <VersionNumber Condition="'$(VersionNumber)'==''">0.0.0.0</VersionNumber>
     <_PropertySheetDisplayName>DevHome.Root.Props</_PropertySheetDisplayName>
     <ForceImportBeforeCppProps>$(MsbuildThisFileDirectory)\Cpp.Build.props</ForceImportBeforeCppProps>
+    <WindowsSdkPackageVersion>10.0.19041.34</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
