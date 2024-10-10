@@ -11,9 +11,10 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
 
-    <StackPanel>
+    <StackPanel
+        x:Uid="FileExplorerPage_FileExplorerVersionControlSettingsGroup">
         <TextBlock 
-            x:Uid="FileExplorerSettingsTextBlock"
+            x:Uid="FileExplorerVersionControlSettings"
             Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
 
         <ctControls:SettingsCard
