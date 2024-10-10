@@ -441,9 +441,9 @@
     <value>Enable File Explorer Version Control Integration</value>
     <comment>The header for the settings card that allows user to enable or disable File Explorer Version Control Integration</comment>
   </data>
-  <data name="FileExplorerSettingsTextBlock.Text" xml:space="preserve">
+  <data name="FileExplorerVersionControlSettings.Text" xml:space="preserve">
     <value>File Explorer + Version Control</value>
-    <comment>The text for the File Explorer Settings toggle</comment>
+    <comment>Header text for a group of toggle controls to configure File Explorer Version Control Integration</comment>
   </data>
   <data name="ShowVersionControlInfoCard.Description" xml:space="preserve">
     <value>See version control columns for enhanced repositories like "Code Status", "Last Change Date", "Last Change Message"</value>
@@ -477,7 +477,7 @@
     <value>An exception was thrown while obtaining the repository from the local repository provider: </value>
     <comment>An error message when an exception is thrown while obtaining the repository from the local repository provider</comment>
   </data>
-   <data name="RegistrationErrorWithFileExplorer" xml:space="preserve">
+  <data name="RegistrationErrorWithFileExplorer" xml:space="preserve">
     <value>Failed to register repository root folder with File Explorer </value>
     <comment>An error message when the repository root folder cannot be registered with File Explorer</comment>
   </data>
@@ -488,5 +488,17 @@
   <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>More Options</value>
     <comment>Text for the more options button on the setting card for the Add Repositories UI</comment>
+  </data>
+  <data name="MoreOptionsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>More Options</value>
+    <comment>Tool tip for the more options button on the setting card for the Add Repositories UI</comment>
+  </data>
+  <data name="FileExplorerPage_FileExplorerVersionControlSettingsGroup.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>File Explorer + Version Control</value>
+    <comment>Narrator text for a group of toggle controls to configure File Explorer Version Control Integration</comment>
+  </data>
+  <data name="FileExplorerPage_AddRepositoriesGroup.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Add repositories</value>
+    <comment>Narrator text for the Add Repositories user experience in File Explorer source control integration</comment>
   </data>
 </root>
