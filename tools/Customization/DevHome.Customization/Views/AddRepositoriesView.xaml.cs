@@ -45,6 +45,7 @@ public sealed partial class AddRepositoriesView : UserControl
     {
         if (sender is MenuFlyout menuFlyout)
         {
+            var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
             menuFlyout.Items.Clear();
 
             foreach (var extension in ViewModel.ExtensionService.GetInstalledExtensionsAsync(ProviderType.LocalRepository).Result)
@@ -56,10 +57,26 @@ public sealed partial class AddRepositoriesView : UserControl
                 };
                 menuItem.Click += AssignSourceControlProviderButton_Click;
 
-                var stringResource = new StringResource("DevHome.Customization.pri", "DevHome.Customization/Resources");
                 ToolTipService.SetToolTip(menuItem, stringResource.GetLocalized("PrefixForDevHomeVersion", extension.PackageDisplayName));
                 menuFlyout.Items.Add(menuItem);
             }
+
+            var unassignMenuItem = new MenuFlyoutItem
+            {
+                Text = stringResource.GetLocalized("MenuFlyoutUnregisteredRepository_Content"),
+            };
+            unassignMenuItem.Click += UnassignFolderButton_Click;
+            menuFlyout.Items.Add(unassignMenuItem);
+        }
+    }
+
+    public void UnassignFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Extract relevant data from view and give to view model for unassign
+        MenuFlyoutItem menuItem = (MenuFlyoutItem)sender;
+        if (menuItem.DataContext is RepositoryInformation repoInfo)
+        {
+            ViewModel.UnassignSourceControlProviderFromRepository(repoInfo.RepositoryRootPath);
         }
     }
 

@@ -306,4 +306,11 @@ public partial class FileExplorerViewModel : ObservableObject
             _log.Information($"Set focus to add reposiotry card result: {isFocusSet}");
         }
     }
+
+    public void UnassignSourceControlProviderFromRepository(string repositoryRootPath)
+    {
+        ExtraFolderPropertiesWrapper.Unregister(repositoryRootPath);
+        RepoTracker.ModifySourceControlProviderForTrackedRepository(_unassigned, repositoryRootPath);
+        RefreshTrackedRepositories();
+    }
 }
