@@ -1,0 +1,103 @@
+{
+  "$id": "",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Required schema to allow users to discover non-installed extensions within Dev Home.",
+  "type": "object",
+  "properties": {
+    "ProductIds": {
+      "$comment": "The Microsoft store productIds listed here should match only one product in the products list below.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "Products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ProductId": { "type": "string" },
+          "Properties": {
+            "type": "object",
+            "properties": {
+              "PublisherName": {
+                "$comment": "Fallback property in case WinGet is unavailable on the users computer to get the localized publisher name.",
+                "type": "string"
+              },
+              "ProductTitle": {
+                "$comment": "Fallback property in case WinGet is unavailable on the users computer to get the localized product title.",
+                "type": "string"
+              },
+              "PackageFamilyName": { "type": "string" },
+              "DevHomeExtensions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "LocalizedProperties": {
+                      "$comment": "This is only necessary if a package contains multiple extensions. Dev Home, by default will assume a package only contains a single extension and use the packages product title from WinGet as the display name for the first extension in the list.",
+                      "type": "object",
+                      "properties": {
+                        "DisplayNameKey": { "type": "string" }
+                      },
+                      "required": [ "DisplayNameKey" ]
+                    },
+                    "SupportedProviderTypes": {
+                      "$comment": "Enum values should be kept in sync with the provider type enum values located in the Dev Home SDK.",
+                      "type": "array",
+                      "items": {
+                        "enum": [
+                          "ComputeSystem",
+                          "DeveloperId",
+                          "FeaturedApplications",
+                          "LocalRepository",
+                          "QuickStartProject",
+                          "Repository",
+                          "Settings"
+                        ]
+                      }
+                    },
+                    "ProviderSpecificProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "LocalizedProperties": {
+                            "type": "object",
+                            "properties": {
+                              "DisplayNameKey": { "type": "string" }
+                            },
+                            "required": [ "DisplayNameKey" ]
+                          },
+                          "ProviderType": {
+                            "type": "string",
+                            "enum": [
+                              "ComputeSystem",
+                              "DeveloperId",
+                              "FeaturedApplications",
+                              "LocalRepository",
+                              "QuickStartProject",
+                              "Repository",
+                              "Settings"
+                            ]
+                          }
+                        },
+                        "required": [ "LocalizedProperties", "ProviderType" ]
+                      }
+                    }
+                  },
+                  "required": [ "SupportedProviderTypes", "ProviderSpecificProperties" ]
+                }
+              },
+              "SupportsWidgets": { "type": "boolean" }
+            },
+            "required": [ "ProductTitle", "PublisherName", "PackageFamilyName", "DevHomeExtensions", "SupportsWidgets" ]
+          }
+        },
+        "required": [ "ProductId", "Properties" ]
+      }
+    }
+  },
+  "required": [ "Products" ],
+  "additionalProperties": false
+} 

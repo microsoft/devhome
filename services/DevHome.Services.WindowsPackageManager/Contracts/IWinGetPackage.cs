@@ -145,6 +145,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package description.
+    /// </summary>
+    public string Description
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the package uri of this package
     /// </summary>
     /// <param name="installVersion">The version to install</param>

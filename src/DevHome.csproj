@@ -57,6 +57,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="assets\ExtensionInformation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Schemas\ExtensionInformation.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
     <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
     <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />

@@ -9,6 +9,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Models;
 using Microsoft.Extensions.Options;
+using Windows.ApplicationModel;
 using Windows.Storage;
 
 namespace DevHome.Common.Services;
@@ -105,5 +106,10 @@ public class LocalSettingsService : ILocalSettingsService
 
             await Task.Run(() => _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings));
         }
+    }
+
+    public string GetPathToPackageLocation()
+    {
+        return Package.Current.EffectivePath;
     }
 }

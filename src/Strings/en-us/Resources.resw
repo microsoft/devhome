@@ -349,4 +349,8 @@
   <data name="WidgetScreenshotAltDisplaySSKeychain" xml:space="preserve">
     <value>SSH Keychain widget preview image</value>
   </data>
+  <data name="DevBoxProviderDisplayName" xml:space="preserve">
+    <value>Microsoft Dev Box</value>
+    <comment>{Locked="Microsoft Dev Box"} Display name for the Dev Box provider.</comment>
+  </data>
 </root>

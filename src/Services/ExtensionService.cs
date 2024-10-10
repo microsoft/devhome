@@ -1,11 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -14,6 +18,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using static DevHome.Common.Helpers.CommonConstants;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
@@ -33,6 +38,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly ILocalSettingsService _localSettingsService;
 
+    private readonly IWinGet _winGet;
+
     private bool _disposedValue;
 
     private const string CreateInstanceProperty = "CreateInstance";
@@ -42,12 +49,35 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
     private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
-    public ExtensionService(ILocalSettingsService settingsService)
+    private readonly IStringResource _stringResource;
+
+    private readonly Lazy<string> _localExtensionJsonSchemaAbsoluteFilePath;
+
+    private readonly Lazy<string> _localExtensionJsonAbsoluteFilePath;
+
+    public ExtensionService(
+        ILocalSettingsService settingsService,
+        IStringResource stringResource,
+        IWinGet winGet)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
+        _stringResource = stringResource;
+        _winGet = winGet;
+        _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
+        _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
+    }
+
+    private string GetExtensionJsonSchemaAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonSchemaRelativeFilePath);
+    }
+
+    private string GetExtensionJsonAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -403,5 +433,55 @@ public class ExtensionService : IExtensionService, IDisposable
         await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
 
         return true;
+    }
+
+    public async Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync()
+    {
+        // offload interaction Interaction with WinGet to background thread.
+        return await Task.Run(GetExtensionJsonDataInternalAsync);
+    }
+
+    private async Task<DevHomeExtensionContentData?> GetExtensionJsonDataInternalAsync()
+    {
+        try
+        {
+            _log.Information($"Getting extension information from file: '{_localExtensionJsonAbsoluteFilePath.Value}'");
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
+            var serializerOptions = ExtensionJsonSerializerOptions;
+            serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
+            var contentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+
+            if (contentData == null)
+            {
+                throw new InvalidDataException($"Unable to deserialize json in {_localExtensionJsonAbsoluteFilePath.Value}");
+            }
+
+            var winGetIds = new List<WinGetPackageUri>();
+            var winGetIdToProductMap = new Dictionary<string, Product>();
+            contentData.Products.ForEach(product =>
+            {
+                winGetIdToProductMap.Add(product.ProductId, product);
+                winGetIds.Add(_winGet.CreateMsStoreCatalogPackageUri(product.ProductId));
+            });
+
+            var winGetPackages = await _winGet.GetPackagesAsync(winGetIds);
+            foreach (var package in winGetPackages)
+            {
+                if (winGetIdToProductMap.TryGetValue(package.Id, out var product))
+                {
+                    product.Properties.Description = package.Description;
+                    product.Properties.PublisherName = package.PublisherName;
+                    product.Properties.ProductTitle = package.Name;
+                }
+            }
+
+            return contentData;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving extension json information");
+        }
+
+        return null;
     }
 }
