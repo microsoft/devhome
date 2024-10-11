@@ -16,6 +16,7 @@
         <ctControls:SettingsCard
             x:Uid="AddRepositoriesCard"
             x:Name="AddRepositoriesCard"
+            Margin="{ThemeResource SettingsCardMargin}"
             Grid.Column="1">
             <Button 
                 x:Uid="AddFolderButton"
@@ -32,7 +33,7 @@
                     <ctControls:SettingsCard 
                         Header="{Binding RepositoryRootPath}"
                         Description="{Binding SourceControlProviderDisplayName}"
-                        Margin="0">
+                        Margin="{ThemeResource SettingsCardMargin}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon 
                                 FontFamily="{StaticResource SymbolThemeFontFamily}" 
