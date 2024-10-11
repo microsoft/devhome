@@ -12,6 +12,8 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.ViewModels;
+using DevHome.Services.Core.Contracts;
+using DevHome.Services.Core.Services;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -28,6 +30,9 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private const string DevHomeProductId = "9N8MHTPHNGVV";
 
     private readonly IExtensionService _extensionService;
+
+    private readonly IMicrosoftStoreService _microsoftStoreService;
+
     private readonly DispatcherQueue _dispatcherQueue;
 
     // All internal Dev Home extensions that should allow users to enable/disable them, should add
@@ -51,10 +56,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowNoExtensionsAvailableMessage = false;
 
-    public ExtensionLibraryViewModel(IExtensionService extensionService, DispatcherQueue dispatcherQueue)
+    public ExtensionLibraryViewModel(
+        IExtensionService extensionService,
+        IMicrosoftStoreService storeService,
+        DispatcherQueue dispatcherQueue)
     {
         _extensionService = extensionService;
         _dispatcherQueue = dispatcherQueue;
+        _microsoftStoreService = storeService;
 
         StorePackagesList = new();
         InstalledPackagesList = new();
@@ -165,7 +174,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
             _log.Information($"Found package: {product.ProductId}, {product.Properties.PackageFamilyName}");
 
-            var storePackage = new StorePackageViewModel(product);
+            var storePackage = new StorePackageViewModel(product, _microsoftStoreService);
 
             tempStorePackagesList.Add(storePackage);
         }

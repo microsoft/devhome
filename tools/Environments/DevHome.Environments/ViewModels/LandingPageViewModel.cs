@@ -16,7 +16,7 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using DevHome.Environments.Helpers;
+using DevHome.Common.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -38,6 +38,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly INavigationService _navigationService;
 
+    private readonly IExtensionService _extensionService;
+
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
@@ -57,6 +59,9 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public ObservableCollection<ComputeSystemCardBase> ComputeSystemCards { get; set; } = new();
 
     public AdvancedCollectionView ComputeSystemCardsView { get; set; }
+
+    [ObservableProperty]
+    private ExtensionInstallationViewModel _installationViewModel;
 
     public bool HasPageLoadedForTheFirstTime { get; set; }
 
@@ -100,6 +105,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
+        ExtensionInstallationViewModel installationViewModel,
         IExtensionService extensionService,
         Window mainWindow)
     {
@@ -115,6 +121,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
         extensionService.ExtensionToggled += OnExtensionToggled;
+        _extensionService = extensionService;
+        _installationViewModel = installationViewModel;
     }
 
     private void OnExtensionToggled(IExtensionService sender, IExtensionWrapper extension)
@@ -133,6 +141,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task OnLoadedAsync()
     {
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
         await LoadModelAsync();
     }
 

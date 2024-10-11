@@ -31,6 +31,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -316,8 +317,21 @@
             </StackPanel>
         </Grid>
 
+        <!-- Extension install expander -->
+        <Grid
+            Grid.Row="3"
+            MaxWidth="{ThemeResource MaxPageContentWidth}"
+            Margin="40 0 40 5">
+            <ContentControl
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                IsTabStop="False"
+                ContentTemplate="{StaticResource EnvironmentPackagesAvailableTemplate}"
+                DataContext="{x:Bind ViewModel.InstallationViewModel, Mode=OneWay}">
+            </ContentControl>
+        </Grid>
         <!-- Per VM/Compute System card -->
-        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}"
+        <ScrollViewer Grid.Row="4" Style="{StaticResource EnvironmentScrollViewerStyle}"
             MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid>
                 <StackPanel>

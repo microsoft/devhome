@@ -63,9 +63,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+
                 <!--- Show the Select environment subtitle on the page. -->
                 <TextBlock
                     Grid.Row="0"
@@ -73,10 +75,23 @@
                     x:Name="LabelForItemsView"
                     Foreground="{ThemeResource TextFillColorSecondary}"/>
 
+                <!-- Extension install expander -->
+                <Grid
+                     Grid.Row="1"
+                     MaxWidth="{ThemeResource MaxPageContentWidth}">
+                    <ContentControl
+                         VerticalAlignment="Stretch"
+                         HorizontalContentAlignment="Stretch"
+                         IsTabStop="False"
+                         ContentTemplate="{StaticResource EnvironmentPackagesAvailableTemplate}"
+                         DataContext="{x:Bind ViewModel.InstallationViewModel, Mode=OneWay}">
+                    </ContentControl>
+                </Grid>
+
                 <!--- List of Compute system providers the user can choose from when they're loaded. -->
                 <ItemsView 
                     x:Name="ComputeSystemProviderViewModelsList"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
                     ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
                     ItemTemplate="{StaticResource ProviderItemTemplate}"
@@ -94,7 +109,7 @@
                 </ItemsView>
 
                 <Grid
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.RowSpan="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -105,29 +120,12 @@
                         Height="25"/>
                 </Grid>
 
-                <StackPanel 
-                    Grid.Row="2"
-                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center">
-                    <TextBlock 
-                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
-                        HorizontalAlignment="Center" 
-                        TextWrapping="WrapWholeWords" 
-                        HorizontalTextAlignment="Center" />
-                    <HyperlinkButton 
-                        Grid.Column="3" 
-                        HorizontalAlignment="Center" 
-                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
-                        Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
-                </StackPanel>
-
                 <InfoBar
                     MaxWidth="480"
                     Margin="24"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Grid.Row="3">
+                    Grid.Row="4">
                     <i:Interaction.Behaviors>
                         <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
                     </i:Interaction.Behaviors>

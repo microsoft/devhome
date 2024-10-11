@@ -7,7 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.Models.ExtensionJsonData;
+using DevHome.Common.Services;
+using DevHome.Services.Core.Contracts;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.System;
 
 namespace DevHome.Common.ViewModels;
@@ -16,46 +23,81 @@ public partial class StorePackageViewModel : ObservableObject
 {
     private readonly Product _product;
 
+    private readonly IMicrosoftStoreService _microsoftStoreService;
+
     public string ProductId { get; }
 
     public string Title { get; }
 
     public string Publisher { get; }
 
+    public string Description { get; }
+
     public string PackageFamilyName { get; }
 
     public string AutomationInstallPfn { get; }
 
-    public Dictionary<string, List<string>> SupportedProviderInfo { get; }
+    public BitmapSource? IconSource { get; }
 
-    [ObservableProperty]
-    private readonly List<string> _supportedProviderTypesInPackage = new();
+    public Dictionary<string, List<string>> SupportedProviderInfo { get; private set; } = new();
 
-    public StorePackageViewModel(Product product)
+    public List<string> SupportedProviderTypesInPackage { get; private set; } = new();
+
+    public List<string> EnvironmentProviderDisplayNames { get; }
+
+    public string? InstallationErrorMessage { get; private set; }
+
+    public string CurrentButtonContentKey { get; private set; } = GetButtonResourceKey;
+
+    public bool IsPackageInstalling { get; private set; }
+
+    public bool IsPackageInstalled { get; private set; }
+
+    private const string GetButtonResourceKey = "GetStorePackageButton";
+
+    private const string PackageInstalledResourceKey = "PackageInstalled";
+
+    private const string RetryPackageInstallationKey = "RetryPackageInstallation";
+
+    public StorePackageViewModel(Product product, IMicrosoftStoreService microsoftStoreService)
     {
+        _microsoftStoreService = microsoftStoreService;
+
+        var packageInstalledWeakRef = new WeakEventListener<IMicrosoftStoreService, object, AppInstallManagerItemEventArgs>(microsoftStoreService)
+        {
+            OnEventAction = (instance, source, args) => PackagedInstallChanged(instance, args),
+            OnDetachAction = (weakEventListener) => microsoftStoreService.ItemStatusChanged -= weakEventListener.OnEvent,
+        };
+
+        microsoftStoreService.ItemStatusChanged += packageInstalledWeakRef.OnEvent;
+
         _product = product;
         ProductId = product.ProductId;
         Title = product.Properties.ProductTitle;
         Publisher = product.Properties.PublisherName;
         PackageFamilyName = product.Properties.PackageFamilyName;
+        Description = product.Properties.Description;
         AutomationInstallPfn = $"Install_{PackageFamilyName}";
-        SupportedProviderInfo = GetSupportedProviderInfo();
-        SupportedProviderTypesInPackage = GetSupportedProviderTypesInPackage();
+        UpdateSupportedProviderInfo();
+        UpdateSupportedProviderTypesInPackageList();
+        EnvironmentProviderDisplayNames = GetSupportedProviderDisplayNamesBasedOnType("ComputeSystem");
     }
 
     [RelayCommand]
     public async Task LaunchStoreButton(string packageId)
     {
+        InstallationErrorMessage = null;
+
+        if (IsPackageInstalling)
+        {
+            return;
+        }
+
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
         await Launcher.LaunchUriAsync(new(linkString));
     }
 
-    public void FilterOutProviderTypes(List<string> providerTypes)
-    {
-        SupportedProviderTypesInPackage.RemoveAll(providerTypes.Contains);
-    }
-
-    public List<string> GetSupportedProviderDisplayNamesBasedOnType(string providerType)
+    private List<string> GetSupportedProviderDisplayNamesBasedOnType(string providerType)
     {
         if (SupportedProviderInfo.TryGetValue(providerType, out var providerDisplayNameList))
         {
@@ -65,22 +107,39 @@ public partial class StorePackageViewModel : ObservableObject
         return new();
     }
 
-    private List<string> GetSupportedProviderTypesInPackage()
+    private void UpdateSupportedProviderTypesInPackageList()
     {
-        var supportedProviderInfo = SupportedProviderInfo;
-        var supportedProviderTypes = supportedProviderInfo.Keys.ToList();
-        supportedProviderTypes.Sort();
-        return supportedProviderTypes;
+        var supportedProviderTypes = new List<string>();
+        foreach (var extension in _product.Properties.DevHomeExtensions)
+        {
+            supportedProviderTypes.AddRange(extension.SupportedProviderTypes);
+        }
+
+        var distinctTypes = new HashSet<string>(supportedProviderTypes).ToList();
+        if (_product.Properties.SupportsWidgets)
+        {
+            distinctTypes.Add("Widgets");
+        }
+
+        distinctTypes.Sort();
+        SupportedProviderTypesInPackage = distinctTypes;
     }
 
-    private Dictionary<string, List<string>> GetSupportedProviderInfo()
+    private void UpdateSupportedProviderInfo()
     {
         var supportedProviderDisplayNames = new Dictionary<string, List<string>>();
         foreach (var extension in _product.Properties.DevHomeExtensions)
         {
             foreach (var provider in extension.ProviderSpecificProperties)
             {
-                supportedProviderDisplayNames[provider.ProviderType].Add(provider.LocalizedProperties.DisplayName);
+                if (supportedProviderDisplayNames.TryGetValue(provider.ProviderType, out var providerList))
+                {
+                    providerList.Add(provider.LocalizedProperties.DisplayName);
+                }
+                else
+                {
+                    supportedProviderDisplayNames[provider.ProviderType] = new() { provider.LocalizedProperties.DisplayName };
+                }
             }
         }
 
@@ -90,6 +149,42 @@ public partial class StorePackageViewModel : ObservableObject
             supportedProviderDisplayNames[providerType].Sort();
         }
 
-        return supportedProviderDisplayNames;
+        SupportedProviderInfo = supportedProviderDisplayNames;
+    }
+
+    public void PackagedInstallChanged(object sender, AppInstallManagerItemEventArgs args)
+    {
+        if (!PackageFamilyName.Equals(args.Item.PackageFamilyName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        InstallationErrorMessage = null;
+        IsPackageInstalling = true;
+        var status = args.Item.GetCurrentStatus();
+        var isInstallationDone = true;
+
+        switch (status.InstallState)
+        {
+            case AppInstallState.Error:
+                InstallationErrorMessage = $"Failed. Error code: {status.ErrorCode:X}";
+                CurrentButtonContentKey = PackageInstalledResourceKey;
+                break;
+            case AppInstallState.Canceled:
+                CurrentButtonContentKey = GetButtonResourceKey;
+                break;
+            case AppInstallState.Completed:
+                CurrentButtonContentKey = PackageInstalledResourceKey;
+                break;
+            default:
+                isInstallationDone = false;
+                break;
+        }
+
+        if (isInstallationDone)
+        {
+            IsPackageInstalling = false;
+            IsPackageInstalled = true;
+        }
     }
 }

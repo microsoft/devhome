@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using CommunityToolkit.WinUI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Views;
 using DevHome.ExtensionLibrary.ViewModels;
@@ -13,6 +14,8 @@ public partial class ExtensionLibraryView : ToolPage
     public ExtensionLibraryViewModel ViewModel { get; }
 
     internal ExtensionLibraryBannerViewModel BannerViewModel { get; }
+
+    public ContentAlignment AlignmentForContent { get; } = ContentAlignment.Left;
 
     public ExtensionLibraryView()
     {

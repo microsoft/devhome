@@ -16,6 +16,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Dispatching;
@@ -80,11 +81,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public int SelectedComputeSystemSortComboBoxIndex { get; set; }
 
+    public ExtensionInstallationViewModel InstallationViewModel { get; }
+
     public SetupTargetViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowViewModel setupFlowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
+        ExtensionInstallationViewModel installationViewModel,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
         DispatcherQueue dispatcherQueue)
         : base(stringResource, orchestrator)
@@ -115,6 +119,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
+        InstallationViewModel = installationViewModel;
     }
 
     /// <summary>
@@ -485,9 +490,10 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    public async Task Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
     }
 
     /// <summary>

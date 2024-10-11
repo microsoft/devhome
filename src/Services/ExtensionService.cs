@@ -9,6 +9,7 @@ using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Services.Core.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Telemetry;
@@ -42,6 +43,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly IWinGet _winGet;
 
+    private readonly IPackageDeploymentService _packageDeploymentService;
+
     private readonly IHttpClientFactory _httpClientFactory;
 
     private bool _disposedValue;
@@ -67,6 +70,7 @@ public class ExtensionService : IExtensionService, IDisposable
         ILocalSettingsService settingsService,
         IStringResource stringResource,
         IWinGet winGet,
+        IPackageDeploymentService packageDeploymentService,
         IHttpClientFactory httpClientFactory)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
@@ -78,6 +82,7 @@ public class ExtensionService : IExtensionService, IDisposable
         _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
         _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
         _httpClientFactory = httpClientFactory;
+        _packageDeploymentService = packageDeploymentService;
     }
 
     private string GetExtensionJsonSchemaAbsoluteFilePath()
@@ -455,11 +460,6 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         try
         {
-            if (ExtensionContentData != null)
-            {
-                return ExtensionContentData;
-            }
-
             _log.Information($"Getting extension information from GitHub via: '{ExtensionJsonGithubUrl}'");
             var extensionJson = await TryGetExtensionJsonFromGitHubAsync();
             var serializerOptions = ExtensionJsonSerializerOptions;
@@ -547,5 +547,10 @@ public class ExtensionService : IExtensionService, IDisposable
         }
 
         return localExtensionJson;
+    }
+
+    public bool IsExtensionInstalled(string packageFamilyName)
+    {
+        return _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName).Any();
     }
 }

@@ -203,8 +203,9 @@
         Foreground="{ThemeResource TextFillColorSecondary}"
         SetupShellNotificationVisibility="Visible">
         <Grid
-            RowSpacing="40">
+            RowSpacing="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
@@ -315,9 +316,22 @@
                     </Button>
                 </Grid>
             </Grid>
+            <!-- Extension install expander -->
+            <Grid
+                Grid.Row="1"
+                MaxWidth="{ThemeResource MaxPageContentWidth}">
+                <ContentControl
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    IsTabStop="False"
+                    ContentTemplate="{StaticResource EnvironmentPackagesAvailableTemplate}"
+                    DataContext="{x:Bind ViewModel.InstallationViewModel, Mode=OneWay}">
+                </ContentControl>
+            </Grid>
+            
             <!--- List of ComputeSystemsListViewModel objects. -->
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay}">
                 <ListView
                     ItemsSource="{x:Bind ViewModel.ComputeSystemsCollectionView, Mode=OneWay}"
@@ -352,7 +366,7 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="3"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
                 <!--- Show shimmers when list not loaded -->
                 <StackPanel

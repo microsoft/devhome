@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DevHome.SetupFlow": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

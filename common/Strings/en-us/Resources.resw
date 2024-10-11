@@ -359,4 +359,60 @@
     <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>
+  <data name="ComputeSystemProviderType" xml:space="preserve">
+    <value>Environments</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="FeaturedApplicationsProviderType" xml:space="preserve">
+    <value>Featured Applications</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="QuickStartProjectProviderType" xml:space="preserve">
+    <value>Quick Start Projects</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="RepositoryProviderType" xml:space="preserve">
+    <value>Remote Repositories</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="LocalRepositoryProviderType" xml:space="preserve">
+    <value>Local Repositories</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="WidgetsProviderType" xml:space="preserve">
+    <value>Widgets</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="GetStorePackageButton" xml:space="preserve">
+    <value>Get</value>
+    <comment>Text on button that allows user to get the package from the store</comment>
+  </data>
+  <data name="GetButton.Content" xml:space="preserve">
+    <value>Get</value>
+    <comment>Text on button that allows user to get the package from the store</comment>
+  </data>
+  <data name="Browse.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Text on button that allows user to get the package from the store</comment>
+  </data>
+  <data name="RetryPackageInstallation" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Text on button that allows user to get the package from the store</comment>
+  </data>
+  <data name="EnvironmentAvailableExpanderHeader.Text" xml:space="preserve">
+    <value>View other supported environments</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="EnvironmentAvailableExpanderDescription.Text" xml:space="preserve">
+    <value>We've shorted listed extensions that support environments here for you.</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="PackagedInstalled" xml:space="preserve">
+    <value>Installed</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
+  <data name="FindOtherExtensions.Text" xml:space="preserve">
+    <value>Find other extensions that support environments</value>
+    <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
+  </data>
 </root>

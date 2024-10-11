@@ -21,6 +21,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlow_ThemeResources.xaml" />
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Styles/HorizontalCardStyles.xaml" />
                 <ResourceDictionary Source="ms-appx:///DevHome.Common/Views/AdaptiveCardViews/AdaptiveCardResourceTemplates.xaml" />
+                <ResourceDictionary Source="ms-appx:///DevHome.Common/Templates/CommonTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

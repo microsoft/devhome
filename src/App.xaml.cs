@@ -9,6 +9,7 @@ using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using DevHome.Contracts.Services;
 using DevHome.Customization.Extensions;
 using DevHome.Dashboard.Extensions;
@@ -158,6 +159,7 @@ public partial class App : Application, IApp
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
             services.AddTransient<InitializationViewModel>();
+            services.AddTransient<ExtensionInstallationViewModel>();
 
             // Settings
             services.AddSettings(context);

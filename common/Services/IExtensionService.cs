@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Models.ExtensionJsonData;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 
 namespace DevHome.Common.Services;
@@ -42,4 +43,6 @@ public interface IExtensionService
     /// </summary>
     /// <returns>An object that holds a list of extension information based on the internal json file.</returns>
     public Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync();
+
+    public bool IsExtensionInstalled(string packageFamilyName);
 }
