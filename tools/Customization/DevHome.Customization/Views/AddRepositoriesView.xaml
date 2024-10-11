@@ -15,11 +15,13 @@
             Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
         <ctControls:SettingsCard
             x:Uid="AddRepositoriesCard"
+            x:Name="AddRepositoriesCard"
             Grid.Column="1">
             <Button 
                 x:Uid="AddFolderButton"
                 Style="{ThemeResource AccentButtonStyle}" 
-                Command="{x:Bind ViewModel.AddFolderClickCommand}" />
+                Command="{x:Bind ViewModel.AddFolderClickCommand}"
+                CommandParameter="{Binding ElementName=AddRepositoriesCard}"/>
         </ctControls:SettingsCard>
         <ItemsRepeater 
             Name="ItemsRepeaterForAllRepoPaths" 
