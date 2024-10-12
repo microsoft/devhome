@@ -16,10 +16,4 @@ public sealed partial class SelectEnvironmentProviderView : UserControl
     {
         this.InitializeComponent();
     }
-
-    private async void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.InitializeAsync(NotificationQueue);
-        this.Focus(FocusState.Programmatic);
-    }
 }

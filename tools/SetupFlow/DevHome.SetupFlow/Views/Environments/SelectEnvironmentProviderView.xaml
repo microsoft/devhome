@@ -9,8 +9,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="OnLoaded">
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,6 +39,13 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.LoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
     <!--- Show the Select environment header on the page. -->
     <Grid>

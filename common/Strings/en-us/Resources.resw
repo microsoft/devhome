@@ -391,8 +391,8 @@
     <value>Get</value>
     <comment>Text on button that allows user to get the package from the store</comment>
   </data>
-  <data name="Browse.Content" xml:space="preserve">
-    <value>Browse</value>
+  <data name="GoToStore.Content" xml:space="preserve">
+    <value>Go to store</value>
     <comment>Text on button that allows user to get the package from the store</comment>
   </data>
   <data name="RetryPackageInstallation" xml:space="preserve">
@@ -407,7 +407,7 @@
     <value>We've shorted listed extensions that support environments here for you.</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>
-  <data name="PackagedInstalled" xml:space="preserve">
+  <data name="PackageInstalled" xml:space="preserve">
     <value>Installed</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
@@ -30,7 +31,7 @@ public class ExtensionService : IExtensionService, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionService));
 
-    public event EventHandler OnExtensionsChanged = (_, _) => { };
+    public event TypedEventHandler<IExtensionService, ExtensionPackageChangedEventArgs>? OnExtensionsChanged;
 
     public event TypedEventHandler<IExtensionService, IExtensionWrapper> ExtensionToggled = (_, _) => { };
 
@@ -108,7 +109,7 @@ public class ExtensionService : IExtensionService, IDisposable
 
                 if (isDevHomeExtension)
                 {
-                    OnPackageChange(args.Package);
+                    OnPackageChange(args.Package, PackageChangedEventKind.Installed);
                 }
             }
         }
@@ -124,7 +125,7 @@ public class ExtensionService : IExtensionService, IDisposable
                 {
                     if (extension.PackageFullName == args.Package.Id.FullName)
                     {
-                        OnPackageChange(args.Package);
+                        OnPackageChange(args.Package, PackageChangedEventKind.UnInstalled);
                         break;
                     }
                 }
@@ -145,18 +146,18 @@ public class ExtensionService : IExtensionService, IDisposable
 
                 if (isDevHomeExtension)
                 {
-                    OnPackageChange(args.TargetPackage);
+                    OnPackageChange(args.TargetPackage, PackageChangedEventKind.Updated);
                 }
             }
         }
     }
 
-    private void OnPackageChange(Package package)
+    private void OnPackageChange(Package package, PackageChangedEventKind changedEventKind)
     {
         _installedExtensions.Clear();
         _enabledExtensions.Clear();
         _installedWidgetsPackageFamilyNames.Clear();
-        OnExtensionsChanged.Invoke(this, EventArgs.Empty);
+        OnExtensionsChanged?.Invoke(this, new(package, changedEventKind));
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)

@@ -120,6 +120,15 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
         InstallationViewModel = installationViewModel;
+        InstallationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
+    }
+
+    public void OnExtensionsChanged(object sender, EventArgs args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await GetComputeSystemsAsync();
+        });
     }
 
     /// <summary>
@@ -138,6 +147,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
         // Unsubscribe from the EndSetupFlow event handler.
         _setupFlowViewModel.EndSetupFlow -= OnRemovingComputeSystems;
+        InstallationViewModel.ExtensionChangedEvent -= OnExtensionsChanged;
     }
 
     /// <summary>
@@ -490,25 +500,19 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
     }
 
-    public async Task Initialize(StackedNotificationsBehavior notificationQueue)
+    [RelayCommand]
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
         await InstallationViewModel.UpdateExtensionPackageInfoAsync();
     }
 
     /// <summary>
-    /// Navigates the user to the create environment flow or extension library based on whether or not an extension
-    /// that supports environments is installed.
+    /// Navigates the user to the create environment flow.
     /// </summary>
     [RelayCommand]
     public void CallToActionButton()
     {
-        if (_shouldNavigateToExtensionPage)
-        {
-            Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
-            return;
-        }
-
         Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow;SetupEnvironmentPage");
     }
 

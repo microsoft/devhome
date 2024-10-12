@@ -9,13 +9,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.Models.ExtensionJsonData;
-using DevHome.Common.Services;
 using DevHome.Services.Core.Contracts;
-using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
-using Windows.System;
+using WindowsSystem = Windows.System;
 
 namespace DevHome.Common.ViewModels;
 
@@ -24,6 +22,8 @@ public partial class StorePackageViewModel : ObservableObject
     private readonly Product _product;
 
     private readonly IMicrosoftStoreService _microsoftStoreService;
+
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public string ProductId { get; }
 
@@ -45,13 +45,17 @@ public partial class StorePackageViewModel : ObservableObject
 
     public List<string> EnvironmentProviderDisplayNames { get; }
 
-    public string? InstallationErrorMessage { get; private set; }
+    [ObservableProperty]
+    private string? _installationErrorMessage;
 
-    public string CurrentButtonContentKey { get; private set; } = GetButtonResourceKey;
+    [ObservableProperty]
+    private string _currentButtonContentKey = GetButtonResourceKey;
 
-    public bool IsPackageInstalling { get; private set; }
+    [ObservableProperty]
+    private bool _isPackageInstalling;
 
-    public bool IsPackageInstalled { get; private set; }
+    [ObservableProperty]
+    private bool _isPackageInstalled;
 
     private const string GetButtonResourceKey = "GetStorePackageButton";
 
@@ -59,9 +63,13 @@ public partial class StorePackageViewModel : ObservableObject
 
     private const string RetryPackageInstallationKey = "RetryPackageInstallation";
 
-    public StorePackageViewModel(Product product, IMicrosoftStoreService microsoftStoreService)
+    public StorePackageViewModel(
+        Product product,
+        DispatcherQueue dispatcherQueue,
+        IMicrosoftStoreService microsoftStoreService)
     {
         _microsoftStoreService = microsoftStoreService;
+        _dispatcherQueue = dispatcherQueue;
 
         var packageInstalledWeakRef = new WeakEventListener<IMicrosoftStoreService, object, AppInstallManagerItemEventArgs>(microsoftStoreService)
         {
@@ -94,7 +102,7 @@ public partial class StorePackageViewModel : ObservableObject
         }
 
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
-        await Launcher.LaunchUriAsync(new(linkString));
+        await WindowsSystem.Launcher.LaunchUriAsync(new(linkString));
     }
 
     private List<string> GetSupportedProviderDisplayNamesBasedOnType(string providerType)
@@ -159,32 +167,36 @@ public partial class StorePackageViewModel : ObservableObject
             return;
         }
 
-        InstallationErrorMessage = null;
-        IsPackageInstalling = true;
         var status = args.Item.GetCurrentStatus();
         var isInstallationDone = true;
 
-        switch (status.InstallState)
+        _dispatcherQueue.TryEnqueue(() =>
         {
-            case AppInstallState.Error:
-                InstallationErrorMessage = $"Failed. Error code: {status.ErrorCode:X}";
-                CurrentButtonContentKey = PackageInstalledResourceKey;
-                break;
-            case AppInstallState.Canceled:
-                CurrentButtonContentKey = GetButtonResourceKey;
-                break;
-            case AppInstallState.Completed:
-                CurrentButtonContentKey = PackageInstalledResourceKey;
-                break;
-            default:
-                isInstallationDone = false;
-                break;
-        }
+            InstallationErrorMessage = null;
+            IsPackageInstalling = true;
 
-        if (isInstallationDone)
-        {
-            IsPackageInstalling = false;
-            IsPackageInstalled = true;
-        }
+            switch (status.InstallState)
+            {
+                case AppInstallState.Error:
+                    InstallationErrorMessage = $"Failed. Error code: {status.ErrorCode:X}";
+                    CurrentButtonContentKey = PackageInstalledResourceKey;
+                    break;
+                case AppInstallState.Canceled:
+                    CurrentButtonContentKey = GetButtonResourceKey;
+                    break;
+                case AppInstallState.Completed:
+                    CurrentButtonContentKey = PackageInstalledResourceKey;
+                    break;
+                default:
+                    isInstallationDone = false;
+                    break;
+            }
+
+            if (isInstallationDone)
+            {
+                IsPackageInstalling = false;
+                IsPackageInstalled = true;
+            }
+        });
     }
 }

@@ -174,7 +174,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
             _log.Information($"Found package: {product.ProductId}, {product.Properties.PackageFamilyName}");
 
-            var storePackage = new StorePackageViewModel(product, _microsoftStoreService);
+            var storePackage = new StorePackageViewModel(product, _dispatcherQueue, _microsoftStoreService);
 
             tempStorePackagesList.Add(storePackage);
         }

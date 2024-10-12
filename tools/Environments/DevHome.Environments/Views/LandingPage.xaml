@@ -384,7 +384,7 @@
         </ScrollViewer>
 
         <!-- Notification panel -->
-        <Grid Grid.Row="3" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <Grid Grid.Row="4" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <InfoBar MaxWidth="600"
                 Margin="24"
                 HorizontalAlignment="Right"

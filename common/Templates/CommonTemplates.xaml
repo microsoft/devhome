@@ -18,7 +18,8 @@
     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     <commonConverters:ProviderTypesToResourceStringConverter x:Key="ProviderTypesToResourceStringConverter" />
     <commonConverters:StringToResourceConverter x:Key="StringToResourceConverter" />
-    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    <converters:BoolNegationConverter  x:Key="BoolNegationConverter"/>
+    <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
 
     <DataTemplate x:Key="StackedNotificationInfoBarContentTemplate">
         <Grid>
@@ -152,113 +153,125 @@
                 </Grid>
             </Expander.Header>
             <Expander.Content>
-                <StackPanel
-                    Padding="0 10 0 10">
-                    <ItemsRepeater
-                        ItemsSource="{Binding StorePackagesThatSupportEnvironments, Mode=OneWay}">
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="commonViewModels:StorePackageViewModel">
-                                <Grid
-                                    Padding="20 0 40 0"
-                                    ColumnSpacing="20"
-                                    HorizontalAlignment="Stretch"
-                                    Margin = "0 5 0 5"
-                                    BorderThickness = "1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Viewbox
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        Width="20"
-                                        Height="20">
-                                        <Grid
-                                            VerticalAlignment="Center">
-                                            <ImageIcon
-                                                Visibility="{Binding IconSource, Converter={StaticResource NonNullToVisibleConverter}}"
-                                                Source="{Binding IconSource, Mode=OneWay}" />
-                                            <FontIcon
-                                                Visibility="{Binding IconSource, Converter={StaticResource NullToVisibleConverter}}"
-                                                FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                                Glyph="&#xea86;"/>
-                                        </Grid>
-                                    </Viewbox>
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Text="{Binding Title}"
-                                        FontSize="12"/>
-                                    <labs:TokenView
-                                        Grid.Column="2"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Margin="30 0 0 0"
-                                        IsTabStop="False"
-                                        ItemsSource="{Binding EnvironmentProviderDisplayNames, Mode=OneWay}"
-                                        SelectionMode="None"
-                                        IsWrapped="True">
-                                        <labs:TokenView.Resources>
-                                            <Style
-                                            BasedOn="{StaticResource DefaultTokenItemStyle}"
-                                            TargetType="labs:TokenItem" />
-                                            <Style
-                                            x:Key="DefaultTokenItemStyle"
-                                            TargetType="labs:TokenItem">
-                                                <Style.Setters>
-                                                    <Setter Property="IsTabStop" Value="False" />
-                                                </Style.Setters>
-                                            </Style>
-                                        </labs:TokenView.Resources>
-                                        <labs:TokenView.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <TextBlock Text="{Binding}" FontSize="12" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </labs:TokenView.ItemTemplate>
-                                    </labs:TokenView>
-                                    <Button
-                                        Grid.Row="0"
-                                        Grid.Column="3"
-                                        Grid.ColumnSpan="2"
-                                        HorizontalAlignment="Right"
-                                        AutomationProperties.AutomationId="{Binding AutomationInstallPfn}"
-                                        Padding="25 4 25 6"
-                                        MinWidth="118"
-                                        DataContext="{Binding}"
-                                        IsEnabled="{Binding IsPackageInstalled, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                                        Command="{Binding LaunchStoreButtonCommand}"
-                                        CommandParameter="{Binding ProductId}">
-                                        <Button.ContentTemplate>
-                                            <DataTemplate x:DataType="commonViewModels:StorePackageViewModel">
-                                                <Grid>
-                                                    <TextBlock
-                                                        Visibility="{Binding IsPackageInstalling, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                                                        Text="{Binding CurrentButtonContentKey, Converter={StaticResource StringToResourceConverter}, ConverterParameter='DevHome.Common'}"/>
-                                                    <ProgressRing
-                                                        Visibility="{Binding IsPackageInstalling}"
-                                                        IsIndeterminate="True"
-                                                        Height="20"
-                                                        Width="20" />
-                                                </Grid>
-                                            </DataTemplate>
-                                        </Button.ContentTemplate>
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                    <Rectangle 
-                        Margin="0 10 0 15"
+                <StackPanel>
+                    <StackPanel
+                        Padding="0 10 0 10">
+                        <ProgressRing
+                            IsIndeterminate="True"
+                            Visibility="{Binding IsLoadingExtensionData}">
+                        </ProgressRing>
+                        <ItemsRepeater
+                            Visibility="{Binding StorePackagesThatSupportEnvironments.Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
+                            ItemsSource="{Binding StorePackagesThatSupportEnvironments, Mode=OneWay}">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="commonViewModels:StorePackageViewModel">
+                                    <Grid
+                                        Padding="20 0 40 0"
+                                        ColumnSpacing="20"
+                                        HorizontalAlignment="Stretch"
+                                        Margin = "0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Viewbox
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            Width="20"
+                                            Height="20">
+                                            <Grid
+                                                VerticalAlignment="Center">
+                                                <ImageIcon
+                                                    Visibility="{Binding IconSource, Converter={StaticResource NonNullToVisibleConverter}}"
+                                                    Source="{Binding IconSource, Mode=OneWay}" />
+                                                <FontIcon
+                                                    Visibility="{Binding IconSource, Converter={StaticResource NullToVisibleConverter}}"
+                                                    FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                                    Glyph="&#xea86;"/>
+                                            </Grid>
+                                        </Viewbox>
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Title}"
+                                            FontSize="12"/>
+                                        <labs:TokenView
+                                            Grid.Column="2"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Margin="30 0 0 0"
+                                            IsTabStop="False"
+                                            ItemsSource="{Binding EnvironmentProviderDisplayNames, Mode=OneWay}"
+                                            SelectionMode="None"
+                                            IsWrapped="True">
+                                            <labs:TokenView.Resources>
+                                                <Style
+                                                BasedOn="{StaticResource DefaultTokenItemStyle}"
+                                                TargetType="labs:TokenItem" />
+                                                <Style
+                                                x:Key="DefaultTokenItemStyle"
+                                                TargetType="labs:TokenItem">
+                                                    <Style.Setters>
+                                                        <Setter Property="IsTabStop" Value="False" />
+                                                    </Style.Setters>
+                                                </Style>
+                                            </labs:TokenView.Resources>
+                                            <labs:TokenView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <TextBlock Text="{Binding}" FontSize="12" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </labs:TokenView.ItemTemplate>
+                                        </labs:TokenView>
+                                        <Button
+                                            Grid.Row="0"
+                                            Grid.Column="3"
+                                            Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Right"
+                                            Visibility="{Binding IsPackageInstalling, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                                            AutomationProperties.AutomationId="{Binding AutomationInstallPfn}"
+                                            Padding="25 4 25 6"
+                                            MinWidth="118"
+                                            DataContext="{Binding}"
+                                            Content="{Binding CurrentButtonContentKey, Converter={StaticResource StringToResourceConverter}, ConverterParameter='DevHome.Common'}"
+                                            IsEnabled="{Binding IsPackageInstalled, Converter={StaticResource BoolNegationConverter}}"
+                                            Command="{Binding LaunchStoreButtonCommand}"
+                                            CommandParameter="{Binding ProductId}">
+                                        </Button>
+                                        <Button
+                                            Grid.Row="0"
+                                            Grid.Column="3"
+                                            Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Right"
+                                            Visibility="{Binding IsPackageInstalling}"
+                                            AutomationProperties.AutomationId="{Binding AutomationInstallPfn}"
+                                            Padding="25 4 25 6"
+                                            MinWidth="118"
+                                            DataContext="{Binding}">
+                                            <Button.Content>
+                                                <ProgressRing
+                                                    IsIndeterminate="True"
+                                                    Height="20"
+                                                    Width="20" />
+                                            </Button.Content>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+                    <Rectangle
+                        Visibility="{Binding StorePackagesThatSupportEnvironments.Count, Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
+                        Margin="0 10 0 10"
                         HorizontalAlignment="Stretch" 
                         Fill="{ThemeResource ControlStrokeColorSecondaryBrush}" 
                         Height="1"/>
                     <Grid
-                        Padding="20 0 40 0">
+                        Padding="20 0 40 10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="*" />
@@ -266,12 +279,14 @@
                         <TextBlock
                             x:Uid="ms-resource:///DevHome.Common/Resources/FindOtherExtensions"
                             HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
                             Grid.Column="0"
                             />
                         <Button
-                            x:Uid="ms-resource:///DevHome.Common/Resources/GetButton"
+                            x:Uid="ms-resource:///DevHome.Common/Resources/GoToStore"
                             Grid.Column="1"
                             HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
                             Padding="25 4 25 6"
                             MinWidth="118"
                             Command="{Binding BrowseStoreButtonCommand}">

@@ -15,7 +15,6 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -195,6 +194,14 @@
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.LoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
         <!--- Show the "Setup a Target header on the page. -->
     <setupControls:SetupShell

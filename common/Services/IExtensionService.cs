@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DevHome.Common.Models;
 using DevHome.Common.Models.ExtensionJsonData;
 using Windows.ApplicationModel;
 using Windows.Foundation;
@@ -22,7 +23,7 @@ public interface IExtensionService
 
     Task SignalStopExtensionsAsync();
 
-    public event EventHandler OnExtensionsChanged;
+    public event TypedEventHandler<IExtensionService, ExtensionPackageChangedEventArgs> OnExtensionsChanged;
 
     public event TypedEventHandler<IExtensionService, IExtensionWrapper> ExtensionToggled;
 

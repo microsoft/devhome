@@ -123,6 +123,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         extensionService.ExtensionToggled += OnExtensionToggled;
         _extensionService = extensionService;
         _installationViewModel = installationViewModel;
+        _installationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
     }
 
     private void OnExtensionToggled(IExtensionService sender, IExtensionWrapper extension)
@@ -136,6 +137,14 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public void Initialize(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+    }
+
+    public void OnExtensionsChanged(object? sender, EventArgs args)
+    {
+        _mainWindow.DispatcherQueue.TryEnqueue(async () =>
+        {
+            await SyncButton();
+        });
     }
 
     [RelayCommand]
@@ -172,12 +181,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void CallToActionInvokeButton()
     {
-        if (ShouldNavigateToExtensionsPage)
-        {
-            _navigationService.NavigateTo(KnownPageKeys.Extensions);
-            return;
-        }
-
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }

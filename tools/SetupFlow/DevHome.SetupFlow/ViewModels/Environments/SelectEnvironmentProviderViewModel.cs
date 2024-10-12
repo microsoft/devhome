@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Behaviors;
+using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
@@ -14,8 +16,10 @@ using DevHome.Common.Services;
 using DevHome.Common.ViewModels;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
@@ -24,6 +28,8 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
     private readonly IComputeSystemService _computeSystemService;
+
+    private readonly DispatcherQueue _dispatcherQueue;
 
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
 
@@ -49,6 +55,8 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public SelectEnvironmentProviderViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
+        IExtensionService extensionService,
+        DispatcherQueue dispatcherQueue,
         ExtensionInstallationViewModel installationViewModel,
         IComputeSystemService computeSystemService)
            : base(stringResource, orchestrator)
@@ -56,6 +64,16 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
         InstallationViewModel = installationViewModel;
+        InstallationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
+        _dispatcherQueue = dispatcherQueue;
+    }
+
+    public void OnExtensionsChanged(object sender, EventArgs args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await LoadProvidersAsync();
+        });
     }
 
     private async Task LoadProvidersAsync()
@@ -77,7 +95,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
 
         AreProvidersLoaded = true;
-        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
     }
 
     [RelayCommand]
@@ -105,9 +122,11 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
     }
 
-    public async Task InitializeAsync(StackedNotificationsBehavior notificationQueue)
+    [RelayCommand]
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
         await LoadProvidersAsync();
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
     }
 }
