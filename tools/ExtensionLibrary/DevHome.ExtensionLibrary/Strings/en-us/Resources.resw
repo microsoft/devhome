@@ -153,10 +153,6 @@
     <value>Available in the Microsoft Store</value>
     <comment>Header for the list of packages available for download from the store</comment>
   </data>
-  <data name="GetButton.Content" xml:space="preserve">
-    <value>Get</value>
-    <comment>Text on button that allows user to get the package from the store</comment>
-  </data>
   <data name="NoAvailableExtensions.Text" xml:space="preserve">
     <value>No more extensions are available.</value>
     <comment>Message shown when there are no extensions left to install</comment>

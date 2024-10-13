@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
+using DevHome.Common.Models.ExtensionJsonData;
+
 namespace DevHome.Common.Helpers;
 
 public static class CommonConstants
@@ -32,4 +35,16 @@ public static class CommonConstants
 #endif
 
     public const string HyperVWindowsOptionalFeatureName = "Microsoft-Hyper-V";
+
+    public static JsonSerializerOptions ExtensionJsonSerializerOptions => new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        TypeInfoResolver = new JsonSourceGenerationContext(),
+        TypeInfoResolverChain = { JsonSourceGenerationContext.Default },
+    };
+
+    public static readonly string InternalExtensionJsonSchemaRelativeFilePath = @"Assets\Schemas\ExtensionInformation.schema.json";
+
+    public static readonly string InternalExtensionJsonRelativeFilePath = @"Assets\ExtensionInformation.json";
 }

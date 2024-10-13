@@ -9,8 +9,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="OnLoaded">
+    xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -41,6 +40,19 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.LoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="UnLoaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.UnLoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
     <!--- Show the Select environment header on the page. -->
     <Grid>
         <Grid.RowDefinitions>
@@ -63,6 +75,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
@@ -73,10 +86,23 @@
                     x:Name="LabelForItemsView"
                     Foreground="{ThemeResource TextFillColorSecondary}"/>
 
+                <!-- Extension install expander -->
+                <Grid
+                     Grid.Row="1"
+                     MaxWidth="{ThemeResource MaxPageContentWidth}">
+                    <ContentControl
+                         VerticalAlignment="Stretch"
+                         HorizontalContentAlignment="Stretch"
+                         IsTabStop="False"
+                         ContentTemplate="{StaticResource EnvironmentPackagesAvailableTemplate}"
+                         DataContext="{x:Bind ViewModel.InstallationViewModel, Mode=OneWay}">
+                    </ContentControl>
+                </Grid>
+
                 <!--- List of Compute system providers the user can choose from when they're loaded. -->
                 <ItemsView 
                     x:Name="ComputeSystemProviderViewModelsList"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     AutomationProperties.LabeledBy="{Binding ElementName=LabelForItemsView, Mode=OneWay}"
                     ItemsSource="{x:Bind ViewModel.ProvidersViewModels, Mode=OneWay}"
                     ItemTemplate="{StaticResource ProviderItemTemplate}"
@@ -94,7 +120,7 @@
                 </ItemsView>
 
                 <Grid
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.RowSpan="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -106,19 +132,19 @@
                 </Grid>
 
                 <StackPanel 
-                    Grid.Row="2"
-                    Visibility="{x:Bind ViewModel.CallToActionText, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                    Grid.Row="3"
+                    Visibility="{x:Bind ViewModel.ShouldShowCallToActionText, Mode=OneWay }"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center">
-                    <TextBlock 
-                        Text="{x:Bind ViewModel.CallToActionText, Mode=OneWay}"
+                    <TextBlock
+                        x:Uid="NoExtensionAvailableForEnvironmentCreation"
                         HorizontalAlignment="Center" 
                         TextWrapping="WrapWholeWords" 
                         HorizontalTextAlignment="Center" />
                     <HyperlinkButton 
-                        Grid.Column="3" 
+                        Grid.Column="3"
+                        x:Uid="GoToExtensionsPageButton"
                         HorizontalAlignment="Center" 
-                        Content="{x:Bind ViewModel.CallToActionHyperLinkButtonText, Mode=OneWay}"
                         Command="{x:Bind ViewModel.CallToActionButtonCommand}" />
                 </StackPanel>
 
@@ -127,7 +153,7 @@
                     Margin="24"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
-                    Grid.Row="3">
+                    Grid.Row="4">
                     <i:Interaction.Behaviors>
                         <winUIBehaviors:StackedNotificationsBehavior x:Name="NotificationQueue" />
                     </i:Interaction.Behaviors>

@@ -1,0 +1,84 @@
+{
+  "ProductIds": [ "9MV8F79FGXTR", "9NZCC27PR6N6", "9NZ845RW19RW", "9NB9M5KZ8SLX" ],
+  "Products": [
+    {
+      "ProductId": "9MV8F79FGXTR",
+      "Properties": {
+        "PublisherName": "Microsoft Corporation",
+        "ProductTitle": "Dev Home Azure Extension (Preview)",
+        "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "DevHomeExtensions": [
+          {
+            "SupportedProviderTypes": [
+              "ComputeSystem",
+              "DeveloperId",
+              "QuickStartProject",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": [
+              {
+                "LocalizedProperties": {
+                  "DisplayNameKey": "DevBoxProviderDisplayName"
+                },
+                "ProviderType": "ComputeSystem"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZCC27PR6N6",
+      "Properties": {
+        "PublisherName": "Microsoft Corporation",
+        "ProductTitle": "Dev Home GitHub Extension (Preview)",
+        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "DevHomeExtensions": [
+          {
+            "SupportedProviderTypes": [
+              "DeveloperId",
+              "Repository",
+              "Settings"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NZ845RW19RW",
+      "Properties": {
+        "PublisherName": "Microsoft Corporation",
+        "ProductTitle": "Microsoft Game Dev Extension (Preview)",
+        "PackageFamilyName": "Microsoft.DevHomeMicrosoftGameDevExtension_8wekyb3d8bbwe",
+        "SupportsWidgets": true,
+        "DevHomeExtensions": [
+          {
+            "SupportedProviderTypes": [
+              "FeaturedApplications"
+            ],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    },
+    {
+      "ProductId": "9NB9M5KZ8SLX",
+      "Properties": {
+        "PublisherName": "Martí Climent",
+        "ProductTitle": "Widgets for UniGetUI (formerly WingetUI)",
+        "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g",
+        "SupportsWidgets": true,
+        "DevHomeExtensions": [
+          {
+            "SupportedProviderTypes": [],
+            "ProviderSpecificProperties": []
+          }
+        ]
+      }
+    }
+  ]
+} 

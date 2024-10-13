@@ -2043,4 +2043,10 @@
     <value>Select an account</value>
     <comment>Header text for combo box where the user can select an account</comment>
   </data>
+  <data name="GoToExtensionsPageButton.Content" xml:space="preserve">
+    <value>Go to extensions page</value>
+  </data>
+  <data name="NoExtensionAvailableForEnvironmentCreation.Text" xml:space="preserve">
+    <value>View your extensions</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;
@@ -17,7 +18,7 @@ public interface IComputeSystemManager
     /// </summary>
     public ComputeSystemReviewItem? ComputeSystemSetupItem { get; set; }
 
-    public Task GetComputeSystemsAsync(Func<ComputeSystemsLoadedData, Task> callback);
+    public Task GetComputeSystemsAsync(Func<ComputeSystemsLoadedData, Task> callback, CancellationToken cancellationToken);
 
     public event TypedEventHandler<ComputeSystem, ComputeSystemState> ComputeSystemStateChanged;
 

@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Environments.Exceptions;
 using DevHome.Common.Environments.Helpers;
@@ -70,11 +71,11 @@ public class ComputeSystemProvider
         }
     }
 
-    public async Task<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId)
+    public async Task<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, CancellationToken cancellationToken)
     {
         try
         {
-            return await _computeSystemProvider.GetComputeSystemsAsync(developerId);
+            return await _computeSystemProvider.GetComputeSystemsAsync(developerId).AsTask(cancellationToken);
         }
         catch (Exception ex)
         {

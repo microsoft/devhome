@@ -59,7 +59,10 @@ public static class StackedNotificationsBehaviorExtensions
             }
 
             notificationToShow.Content = stackPanel;
-            behavior.Show(notificationToShow);
+            if (behavior.AssociatedObject != null)
+            {
+                behavior.Show(notificationToShow);
+            }
         });
     }
 
@@ -69,7 +72,10 @@ public static class StackedNotificationsBehaviorExtensions
 
         dispatcherQueue?.EnqueueAsync(() =>
         {
-            behavior.Remove(notification);
+            if (behavior.AssociatedObject != null)
+            {
+                behavior.Remove(notification);
+            }
         });
     }
 
@@ -79,7 +85,10 @@ public static class StackedNotificationsBehaviorExtensions
 
         dispatcherQueue.EnqueueAsync(() =>
         {
-            behavior.Clear();
+            if (behavior.AssociatedObject != null)
+            {
+                behavior.Clear();
+            }
         });
     }
 }

@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Net.Http;
 using DevHome.Common.Contracts;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Services;
+using DevHome.Services.Core.Contracts;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Services;
@@ -26,6 +28,10 @@ public class BaseSetupFlowTest
 
     protected Mock<IThemeSelectorService> ThemeSelectorService { get; private set; }
 
+    protected Mock<IHttpClientFactory> HttpClientFactory { get; private set; }
+
+    protected Mock<IPackageDeploymentService> DeploymentService { get; private set; }
+
     protected Mock<IRestoreInfo> RestoreInfo { get; private set; }
 
     protected Mock<ISetupFlowStringResource> StringResource { get; private set; }
@@ -43,6 +49,8 @@ public class BaseSetupFlowTest
         RestoreInfo = new Mock<IRestoreInfo>();
         StringResource = new Mock<ISetupFlowStringResource>();
         LocalSettingsService = new Mock<ILocalSettingsService>();
+        DeploymentService = new Mock<IPackageDeploymentService>();
+        HttpClientFactory = new Mock<IHttpClientFactory>();
         TestHost = CreateTestHost();
 
         // Configure string resource localization to return the input key by default
@@ -64,7 +72,11 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
                 services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator(null));
-                services.AddSingleton<IExtensionService>(new ExtensionService(LocalSettingsService.Object));
+                services.AddSingleton(LocalSettingsService.Object);
+                services.AddSingleton(WindowsPackageManager.Object);
+                services.AddSingleton(DeploymentService.Object);
+                services.AddSingleton(HttpClientFactory.Object);
+                services.AddSingleton<IExtensionService, ExtensionService>();
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();

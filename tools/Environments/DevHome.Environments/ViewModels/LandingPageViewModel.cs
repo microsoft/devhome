@@ -16,7 +16,7 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using DevHome.Environments.Helpers;
+using DevHome.Common.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -38,9 +38,15 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly INavigationService _navigationService;
 
+    private readonly IExtensionService _extensionService;
+
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
+
+    private readonly SemaphoreSlim _extensionUpdateLock = new(1, 1);
+
+    private CancellationTokenSource _extensionUpdateCancellationSource = new();
 
     private EnvironmentsNotificationHelper? _notificationsHelper;
 
@@ -58,10 +64,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public AdvancedCollectionView ComputeSystemCardsView { get; set; }
 
-    public bool HasPageLoadedForTheFirstTime { get; set; }
-
     [ObservableProperty]
-    private bool _shouldNavigateToExtensionsPage;
+    private ExtensionInstallationExpanderViewModel _installationViewModel;
+
+    public bool HasPageLoadedForTheFirstTime { get; set; }
 
     [ObservableProperty]
     private string? _callToActionText;
@@ -100,6 +106,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
+        ExtensionInstallationExpanderViewModel installationViewModel,
         IExtensionService extensionService,
         Window mainWindow)
     {
@@ -115,6 +122,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
         extensionService.ExtensionToggled += OnExtensionToggled;
+        _extensionService = extensionService;
+        _installationViewModel = installationViewModel;
+
+        // LandingPageViewModel is a singleton as well as the ExtensionService.
+        _installationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
     }
 
     private void OnExtensionToggled(IExtensionService sender, IExtensionWrapper extension)
@@ -125,15 +137,26 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    public void OnExtensionsChanged(object? sender, EventArgs args)
     {
-        _notificationsHelper = new(notificationQueue);
+        _mainWindow.DispatcherQueue.TryEnqueue(async () =>
+        {
+            await SyncButton();
+        });
     }
 
     [RelayCommand]
-    private async Task OnLoadedAsync()
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
+        _notificationsHelper = new(notificationQueue);
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
         await LoadModelAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnLoaded()
+    {
+        _notificationsHelper = null;
     }
 
     [RelayCommand]
@@ -163,12 +186,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void CallToActionInvokeButton()
     {
-        if (ShouldNavigateToExtensionsPage)
-        {
-            _navigationService.NavigateTo(KnownPageKeys.Extensions);
-            return;
-        }
-
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }
@@ -236,13 +253,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     /// </summary>
     public async Task LoadModelAsync()
     {
-        lock (_lock)
+        _extensionUpdateCancellationSource.Cancel();
+        _extensionUpdateCancellationSource = new();
+        await _extensionUpdateLock.WaitAsync(_extensionUpdateCancellationSource.Token);
+        try
         {
-            if (IsLoading)
-            {
-                return;
-            }
-
             // If the page has already loaded once, then we don't need to re-load the compute systems as that can take a while.
             // The user can click the sync button to refresh the compute systems. However, there may be new operations that have started
             // since the last time the page was loaded. So we need to add those to the view model quickly.
@@ -254,41 +269,45 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             }
 
             IsLoading = true;
-        }
 
-        // Start a new sync timer
-        _ = Task.Run(async () =>
-        {
-            await RunSyncTimmer();
-        });
-
-        lock (ComputeSystemCards)
-        {
-            for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
+            // Start a new sync timer
+            _ = Task.Run(async () =>
             {
-                if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
+                await RunSyncTimmer();
+            });
+
+            lock (ComputeSystemCards)
+            {
+                for (var i = ComputeSystemCards.Count - 1; i >= 0; i--)
                 {
-                    computeSystemViewModel.RemoveStateChangedHandler();
-                    ComputeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
-                    ComputeSystemCards.RemoveAt(i);
+                    if (ComputeSystemCards[i] is ComputeSystemViewModel computeSystemViewModel)
+                    {
+                        computeSystemViewModel.RemoveStateChangedHandler();
+                        ComputeSystemCards[i].ComputeSystemErrorReceived -= OnComputeSystemOperationError;
+                        ComputeSystemCards.RemoveAt(i);
+                    }
                 }
             }
-        }
 
-        _notificationsHelper?.ClearNotifications();
-        CallToActionText = null;
-        CallToActionHyperLinkButtonText = null;
-        ShouldNavigateToExtensionsPage = false;
-        ShowLoadingShimmer = true;
-        await _computeSystemManager.GetComputeSystemsAsync(AddAllComputeSystemsFromAProvider);
-        ShowLoadingShimmer = false;
-        UpdateCallToActionText();
+            _notificationsHelper?.ClearNotifications();
+            CallToActionText = null;
+            CallToActionHyperLinkButtonText = null;
+            ShowLoadingShimmer = true;
+            await _computeSystemManager.GetComputeSystemsAsync(AddAllComputeSystemsFromAProvider, _extensionUpdateCancellationSource.Token);
+            ShowLoadingShimmer = false;
+            UpdateCallToActionText();
 
-        lock (_lock)
-        {
             IsLoading = false;
             HasPageLoadedForTheFirstTime = true;
             _extensionsToggled = false;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Exception occurred while retrieving environments");
+        }
+        finally
+        {
+            _extensionUpdateLock.Release();
         }
     }
 
@@ -542,6 +561,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             if (disposing)
             {
                 _computeSystemLoadWait.Dispose();
+                _extensionUpdateLock.Dispose();
+                _extensionUpdateCancellationSource.Dispose();
             }
 
             _disposed = true;
@@ -564,10 +585,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var providerCountWithOutAllKeyword = Providers.Count - 1;
-
-        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
-        ShouldNavigateToExtensionsPage = callToActionData.NavigateToExtensionsLibrary;
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText();
         CallToActionText = callToActionData.CallToActionText;
         CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }

@@ -16,7 +16,7 @@ public class ComputeSystemProviderWrapperTest
     {
         var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, false);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), new CancellationToken(false)).Result;
         var computeSystems = computeSystemsResult.ComputeSystems.ToList();
         var numberOfComputeSystems = 1;
 
@@ -30,7 +30,7 @@ public class ComputeSystemProviderWrapperTest
     {
         var providerImpl = new TestComputeSystemProviderImpl(TestHelpers.ComputeSystemProviderDisplayName, TestHelpers.ComputeSystemProviderId, true);
         var computeSystemProviderWrapper = new ComputeSystemProvider(providerImpl);
-        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId()).Result;
+        var computeSystemsResult = computeSystemProviderWrapper.GetComputeSystemsAsync(new TestDeveloperId(), new CancellationToken(false)).Result;
 
         // Verify that the result is a failure and that the exception was caught within the wrapper.
         Assert.AreEqual(ProviderOperationStatus.Failure, computeSystemsResult.Result.Status);

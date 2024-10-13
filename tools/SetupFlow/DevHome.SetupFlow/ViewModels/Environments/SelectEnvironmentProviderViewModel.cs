@@ -1,40 +1,43 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.Behaviors;
+using CommunityToolkit.WinUI.Helpers;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Dispatching;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels.Environments;
 
-public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
+public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SelectEnvironmentProviderViewModel));
 
     private readonly IComputeSystemService _computeSystemService;
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
+    private readonly SemaphoreSlim _extensionUpdateLock = new(1, 1);
+
     public ComputeSystemProviderDetails SelectedProvider { get; private set; }
 
     private EnvironmentsNotificationHelper _notificationsHelper;
 
-    private bool _isFirstTimeLoading;
-
-    [ObservableProperty]
-    private string _callToActionText;
-
-    [ObservableProperty]
-    private string _callToActionHyperLinkButtonText;
+    private bool _disposed;
 
     [ObservableProperty]
     private bool _areProvidersLoaded;
@@ -43,44 +46,71 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     private int _selectedProviderIndex;
 
     [ObservableProperty]
+    private bool _shouldShowCallToActionText;
+
+    [ObservableProperty]
     private ObservableCollection<ComputeSystemProviderViewModel> _providersViewModels;
+
+    public ExtensionInstallationExpanderViewModel InstallationViewModel { get; }
 
     public SelectEnvironmentProviderViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
+        IExtensionService extensionService,
+        DispatcherQueue dispatcherQueue,
+        ExtensionInstallationExpanderViewModel installationViewModel,
         IComputeSystemService computeSystemService)
            : base(stringResource, orchestrator)
     {
         PageTitle = stringResource.GetLocalized(StringResourceKey.SelectEnvironmentPageTitle);
         _computeSystemService = computeSystemService;
-        _isFirstTimeLoading = true;
+        InstallationViewModel = installationViewModel;
+        InstallationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
+        _dispatcherQueue = dispatcherQueue;
+    }
+
+    public void OnExtensionsChanged(object sender, EventArgs args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await LoadProvidersAsync();
+        });
     }
 
     private async Task LoadProvidersAsync()
     {
-        CanGoToNextPage = false;
-        AreProvidersLoaded = false;
-        Orchestrator.NotifyNavigationCanExecuteChanged();
-        CallToActionText = null;
-        CallToActionHyperLinkButtonText = null;
+        await _extensionUpdateLock.WaitAsync();
 
-        var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
-        ProvidersViewModels = new();
-        foreach (var providerDetail in providerDetails)
+        try
         {
-            // Only list providers that support creation
-            if (providerDetail.ComputeSystemProvider.SupportedOperations.HasFlag(ComputeSystemProviderOperations.CreateComputeSystem))
+            CanGoToNextPage = false;
+            AreProvidersLoaded = false;
+            ShouldShowCallToActionText = false;
+            Orchestrator.NotifyNavigationCanExecuteChanged();
+
+            var providerDetails = await Task.Run(_computeSystemService.GetComputeSystemProvidersAsync);
+            ProvidersViewModels = new();
+            foreach (var providerDetail in providerDetails)
             {
-                _notificationsHelper?.DisplayComputeSystemProviderErrors(providerDetail);
-                ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+                // Only list providers that support creation
+                if (providerDetail.ComputeSystemProvider.SupportedOperations.HasFlag(ComputeSystemProviderOperations.CreateComputeSystem))
+                {
+                    _notificationsHelper?.DisplayComputeSystemProviderErrors(providerDetail);
+                    ProvidersViewModels.Add(new ComputeSystemProviderViewModel(providerDetail));
+                }
             }
+
+            if (ProvidersViewModels.Count == 0)
+            {
+                ShouldShowCallToActionText = true;
+            }
+
+            AreProvidersLoaded = true;
         }
-
-        AreProvidersLoaded = true;
-
-        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(ProvidersViewModels.Count, true);
-        CallToActionText = callToActionData.CallToActionText;
-        CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
+        finally
+        {
+            _extensionUpdateLock.Release();
+        }
     }
 
     [RelayCommand]
@@ -108,18 +138,6 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
         }
     }
 
-    public async Task InitializeAsync(StackedNotificationsBehavior notificationQueue)
-    {
-        _notificationsHelper = new(notificationQueue);
-
-        if (_isFirstTimeLoading || !string.IsNullOrEmpty(CallToActionText))
-        {
-            _isFirstTimeLoading = false;
-            CanGoToNextPage = false;
-            await LoadProvidersAsync();
-        }
-    }
-
     /// <summary>
     /// Navigates the user to the extensions page library
     /// process.
@@ -128,5 +146,38 @@ public partial class SelectEnvironmentProviderViewModel : SetupPageViewModelBase
     public void CallToActionButton()
     {
         Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
+    }
+
+    [RelayCommand]
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
+    {
+        _notificationsHelper = new(notificationQueue);
+        await LoadProvidersAsync();
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnLoaded()
+    {
+        _notificationsHelper = null;
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _extensionUpdateLock.Dispose();
+            }
+
+            _disposed = true;
+        }
     }
 }

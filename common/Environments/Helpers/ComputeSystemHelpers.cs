@@ -114,28 +114,13 @@ public static class ComputeSystemHelpers
         };
     }
 
-    public static EnvironmentsCallToActionData UpdateCallToActionText(int providerCount, bool isCreationPage = false)
+    public static EnvironmentsCallToActionData UpdateCallToActionText()
     {
-        var navigateToExtensionsLibrary = false;
-        string? callToActionText = null;
-        string? callToActionHyperLinkText = null;
+        // Text to redirect user to Creation flow in Machine configuration
+        var callToActionText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledCallToAction");
+        var callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledButton");
 
-        // When the provider count is zero we'll show UX to redirect the user to the extensions library and when it is
-        // greater than zero we'll show UX to redirect user to the create environment flow.
-        if (providerCount == 0)
-        {
-            navigateToExtensionsLibrary = true;
-            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledCallToAction");
-            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsAndExtensionsNotInstalledButton");
-        }
-        else if (providerCount > 0 && !isCreationPage)
-        {
-            // Text to redirect user to Creation flow in Machine configuration
-            callToActionText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledCallToAction");
-            callToActionHyperLinkText = StringResourceHelper.GetResource("NoEnvironmentsButExtensionsInstalledButton");
-        }
-
-        return new(navigateToExtensionsLibrary, callToActionText, callToActionHyperLinkText);
+        return new(callToActionText, callToActionHyperLinkText);
     }
 
     /// <summary>

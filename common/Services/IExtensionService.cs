@@ -4,6 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DevHome.Common.Models;
+using DevHome.Common.Models.ExtensionJsonData;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 
 namespace DevHome.Common.Services;
@@ -20,7 +23,7 @@ public interface IExtensionService
 
     Task SignalStopExtensionsAsync();
 
-    public event EventHandler OnExtensionsChanged;
+    public event TypedEventHandler<IExtensionService, ExtensionPackageChangedEventArgs> OnExtensionsChanged;
 
     public event TypedEventHandler<IExtensionService, IExtensionWrapper> ExtensionToggled;
 
@@ -35,4 +38,12 @@ public interface IExtensionService
     /// <param name="extension">The out of proc extension object</param>
     /// <returns>True only if the extension was disabled. False otherwise.</returns>
     public Task<bool> DisableExtensionIfWindowsFeatureNotAvailable(IExtensionWrapper extension);
+
+    /// <summary>
+    /// Gets known extension information from internal extension json file.
+    /// </summary>
+    /// <returns>An object that holds a list of extension information based on the internal json file.</returns>
+    public Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync();
+
+    public bool IsExtensionInstalled(string packageFamilyName);
 }

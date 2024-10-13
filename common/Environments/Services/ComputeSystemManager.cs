@@ -42,10 +42,11 @@ public class ComputeSystemManager : IComputeSystemManager
     /// <summary>
     /// This method gets the ComputeSystems from the providers in parallel.
     /// </summary>
-    public async Task GetComputeSystemsAsync(Func<ComputeSystemsLoadedData, Task> callback)
+    public async Task GetComputeSystemsAsync(Func<ComputeSystemsLoadedData, Task> callback, CancellationToken cancellationToken)
     {
         // Create a cancellation token that will cancel the task after 2 minute.
         var cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, cancellationToken);
         cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(2));
         var token = cancellationTokenSource.Token;
         var computeSystemsProviderDetails = await _computeSystemService.GetComputeSystemProvidersAsync();
@@ -62,12 +63,14 @@ public class ComputeSystemManager : IComputeSystemManager
 
                 foreach (var devIdWrapper in providerDetails.DeveloperIds)
                 {
-                    var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId);
+                    token.ThrowIfCancellationRequested();
+                    var result = await providerDetails.ComputeSystemProvider.GetComputeSystemsAsync(devIdWrapper.DeveloperId, token);
                     wrapperDictionary.Add(devIdWrapper, result);
                     results.Add(result);
                 }
 
                 var loadedData = new ComputeSystemsLoadedData(providerDetails, wrapperDictionary);
+                token.ThrowIfCancellationRequested();
                 await callback(loadedData);
             });
         }
@@ -125,7 +128,7 @@ public class ComputeSystemManager : IComputeSystemManager
         lock (_creationOperationLock)
         {
             var totalOperations = _createComputeSystemOperations.Count;
-            for (var i = 0; i < totalOperations; i++)
+            for (var i = totalOperations - 1; i >= 0; i--)
             {
                 var operation = _createComputeSystemOperations.ElementAt(i).Value;
                 if (operation.CreateComputeSystemResult != null)

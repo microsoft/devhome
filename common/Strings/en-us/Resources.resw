@@ -359,4 +359,46 @@
     <value>Provides services and environments for running native user-mode Linux shells and tools on Windows.</value>
     <comment>Description for the Containers-Microsoft-Windows-Subsystem-Linux optional feature.</comment>
   </data>
+  <data name="ComputeSystemProviderType" xml:space="preserve">
+    <value>Environments</value>
+  </data>
+	<data name="FeaturedApplicationsProviderType" xml:space="preserve">
+    <value>Featured Applications</value>
+  </data>
+	<data name="QuickStartProjectProviderType" xml:space="preserve">
+    <value>Quick Start Projects</value>
+  </data>
+	<data name="RepositoryProviderType" xml:space="preserve">
+    <value>Remote Repositories</value>
+  </data>
+	<data name="LocalRepositoryProviderType" xml:space="preserve">
+    <value>Local Repositories</value>
+  </data>
+	<data name="WidgetsProviderType" xml:space="preserve">
+    <value>Widgets</value>
+  </data>
+	<data name="GetStorePackageButton" xml:space="preserve">
+    <value>Get</value>
+  </data>
+	<data name="GetButton.Content" xml:space="preserve">
+    <value>Get</value>
+  </data>
+	<data name="GoToStore.Content" xml:space="preserve">
+    <value>Go to store</value>
+  </data>
+	<data name="RetryPackageInstallation" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+	<data name="EnvironmentAvailableExpanderHeader.Text" xml:space="preserve">
+    <value>View other supported environments</value>
+  </data>
+	<data name="EnvironmentAvailableExpanderDescription.Text" xml:space="preserve">
+    <value>We've shorted listed extensions that support environments here for you.</value>
+  </data>
+	<data name="PackageInstalled" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+	<data name="FindOtherExtensions.Text" xml:space="preserve">
+    <value>Find other extensions that support environments</value>
+  </data>
 </root>

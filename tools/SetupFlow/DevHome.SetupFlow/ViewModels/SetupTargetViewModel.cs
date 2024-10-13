@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,8 +14,8 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Dispatching;
@@ -24,7 +24,7 @@ using Serilog;
 
 namespace DevHome.SetupFlow.ViewModels;
 
-public partial class SetupTargetViewModel : SetupPageViewModelBase
+public partial class SetupTargetViewModel : SetupPageViewModelBase, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(SetupTargetViewModel));
 
@@ -40,9 +40,13 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
 
-    private EnvironmentsNotificationHelper _notificationsHelper;
+    private readonly SemaphoreSlim _extensionUpdateLock = new(1, 1);
 
-    private bool _shouldNavigateToExtensionPage;
+    private CancellationTokenSource _extensionUpdateCancellationSource = new();
+
+    private bool _disposed;
+
+    private EnvironmentsNotificationHelper _notificationsHelper;
 
     [ObservableProperty]
     private string _callToActionText;
@@ -80,11 +84,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public int SelectedComputeSystemSortComboBoxIndex { get; set; }
 
+    public ExtensionInstallationExpanderViewModel InstallationViewModel { get; }
+
     public SetupTargetViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowViewModel setupFlowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
+        ExtensionInstallationExpanderViewModel installationViewModel,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
         DispatcherQueue dispatcherQueue)
         : base(stringResource, orchestrator)
@@ -115,6 +122,16 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
+        InstallationViewModel = installationViewModel;
+        InstallationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
+    }
+
+    public void OnExtensionsChanged(object sender, EventArgs args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await GetComputeSystemsAsync();
+        });
     }
 
     /// <summary>
@@ -133,6 +150,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
         // Unsubscribe from the EndSetupFlow event handler.
         _setupFlowViewModel.EndSetupFlow -= OnRemovingComputeSystems;
+        InstallationViewModel.ExtensionChangedEvent -= OnExtensionsChanged;
     }
 
     /// <summary>
@@ -273,37 +291,47 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     /// </summary>
     private async Task GetComputeSystemsAsync()
     {
-        // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
-        // pressed.
-        RemoveComputeSystemsListViewModels();
-        CallToActionText = null;
-        CallToActionHyperLinkButtonText = null;
-        _shouldNavigateToExtensionPage = false;
-
-        // Disable the sync and next buttons while we're getting the compute systems.
-        ComputeSystemLoadingCompleted = false;
-        UpdateNextButtonState();
-        _notificationsHelper?.ClearNotifications();
-
-        // load the compute systems so we can show them in the UI.
-        await Task.Run(LoadAllComputeSystemsInTheUIAsync);
-        ShouldShowShimmerBelowList = false;
-        ComputeSystemLoadingCompleted = true;
-
-        // Enable the sync and next buttons when we're done getting the compute systems.
-        UpdateNextButtonState();
-
-        ComputeSystemsCollectionView.Refresh();
-
-        // No compute systems found, show the call to action UI
-        if (_computeSystemViewModelList.Count == 0)
+        _extensionUpdateCancellationSource.Cancel();
+        _extensionUpdateCancellationSource = new();
+        await _extensionUpdateLock.WaitAsync(_extensionUpdateCancellationSource.Token);
+        try
         {
-            var providerCountWithOutAllKeyword = ComputeSystemProviderComboBoxNames.Count - 1;
+            // Remove any existing ComputeSystemsListViewModels from the list if they exist. E.g when sync button is
+            // pressed.
+            RemoveComputeSystemsListViewModels();
+            CallToActionText = null;
+            CallToActionHyperLinkButtonText = null;
 
-            var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
-            _shouldNavigateToExtensionPage = callToActionData.NavigateToExtensionsLibrary;
-            CallToActionText = callToActionData.CallToActionText;
-            CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
+            // Disable the sync and next buttons while we're getting the compute systems.
+            ComputeSystemLoadingCompleted = false;
+            UpdateNextButtonState();
+            _notificationsHelper?.ClearNotifications();
+
+            // load the compute systems so we can show them in the UI.
+            await Task.Run(LoadAllComputeSystemsInTheUIAsync, _extensionUpdateCancellationSource.Token);
+            ShouldShowShimmerBelowList = false;
+            ComputeSystemLoadingCompleted = true;
+
+            // Enable the sync and next buttons when we're done getting the compute systems.
+            UpdateNextButtonState();
+
+            ComputeSystemsCollectionView.Refresh();
+
+            // No compute systems found, show the call to action UI
+            if (_computeSystemViewModelList.Count == 0)
+            {
+                var callToActionData = ComputeSystemHelpers.UpdateCallToActionText();
+                CallToActionText = callToActionData.CallToActionText;
+                CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, $"Exception occurred while retrieving environments");
+        }
+        finally
+        {
+            _extensionUpdateLock.Release();
         }
     }
 
@@ -372,7 +400,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     {
         try
         {
-            await ComputeSystemManagerObj.GetComputeSystemsAsync(UpdateListViewModelList);
+            await ComputeSystemManagerObj.GetComputeSystemsAsync(UpdateListViewModelList, _extensionUpdateCancellationSource.Token);
         }
         catch (Exception ex)
         {
@@ -485,24 +513,25 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    [RelayCommand]
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnLoaded()
+    {
+        _notificationsHelper = null;
     }
 
     /// <summary>
-    /// Navigates the user to the create environment flow or extension library based on whether or not an extension
-    /// that supports environments is installed.
+    /// Navigates the user to the create environment flow.
     /// </summary>
     [RelayCommand]
     public void CallToActionButton()
     {
-        if (_shouldNavigateToExtensionPage)
-        {
-            Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
-            return;
-        }
-
         Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow;SetupEnvironmentPage");
     }
 
@@ -516,6 +545,26 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
                 return false;
             default:
                 return true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _extensionUpdateLock.Dispose();
+                _extensionUpdateCancellationSource.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }
