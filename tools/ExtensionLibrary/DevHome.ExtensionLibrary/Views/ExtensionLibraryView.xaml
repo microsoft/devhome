@@ -10,6 +10,9 @@
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:commonViewModels="using:DevHome.Common.ViewModels"
+    xmlns:commonConverters="using:DevHome.Common.Converters"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:commonviews="using:DevHome.Common.Views">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
@@ -121,34 +124,24 @@
                                Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                                Margin="{StaticResource ExtensionLibrarySubTitleMargin}" 
                                AutomationProperties.HeadingLevel="2"/>
-                    <ItemsRepeater x:Uid="AvailableFromStoreItemsRepeater" ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
-                                <ctControls:SettingsCard Header="{x:Bind Title}"
-                                                Description="{x:Bind Publisher}"
-                                                Margin="{ThemeResource SettingsCardMargin}"
-                                                CornerRadius="3"
-                                                AutomationProperties.Name="{x:Bind Title}"
-                                                IsClickEnabled="False">
-                                    <ctControls:SettingsCard.HeaderIcon>
-                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
-                                    </ctControls:SettingsCard.HeaderIcon>
-                                    <Button x:Uid="GetButton"
-                                        AutomationProperties.AutomationId="{x:Bind AutomationInstallPfn}"
-                                        Padding="25 4 25 6"
-                                        MinWidth="118"
-                                        Command="{x:Bind LaunchStoreButtonCommand}"
-                                        CommandParameter="{x:Bind ProductId}" />
-                                </ctControls:SettingsCard>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                    <!-- No available items messages -->
-                    <TextBlock x:Uid="NoAvailableExtensions"
-                            Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
+                    <ItemsRepeater
+                        x:Uid="AvailableFromStoreItemsRepeater"
+                        ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}"
+                        ItemTemplate="{StaticResource AvailablePackagesTemplate}">
+                        </ItemsRepeater>
+                        <!-- No available items messages -->
+                        <TextBlock x:Uid="NoAvailableExtensions"
+                            Visibility="{x:Bind ViewModel.ShouldShowNoExtensionsAvailableMessage, Mode=OneWay}"
                             Margin="0,20,0,48"
                             HorizontalAlignment="Center" />
-                    <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
+                        <ProgressRing
+                            Width="20"
+                            Height="20"
+                            Visibility="{x:Bind ViewModel.ShouldShowAvailableExtensionsProgressRing, Mode=OneWay}"
+                            Margin="0,20,0,48"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                        <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
                         <TextBlock x:Uid="StoreErrorMessage"
                                 Foreground="{ThemeResource SystemFillColorCautionBrush}"
                                 Margin="0,50,0,0"

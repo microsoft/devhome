@@ -16,7 +16,7 @@ using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Services;
-using DevHome.Environments.Helpers;
+using DevHome.Common.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -38,6 +38,8 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     private readonly INavigationService _navigationService;
 
+    private readonly IExtensionService _extensionService;
+
     private readonly StringResource _stringResource;
 
     private readonly object _lock = new();
@@ -58,10 +60,10 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
     public AdvancedCollectionView ComputeSystemCardsView { get; set; }
 
-    public bool HasPageLoadedForTheFirstTime { get; set; }
-
     [ObservableProperty]
-    private bool _shouldNavigateToExtensionsPage;
+    private ExtensionInstallationViewModel _installationViewModel;
+
+    public bool HasPageLoadedForTheFirstTime { get; set; }
 
     [ObservableProperty]
     private string? _callToActionText;
@@ -100,6 +102,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     public LandingPageViewModel(
         INavigationService navigationService,
         IComputeSystemManager manager,
+        ExtensionInstallationViewModel installationViewModel,
         IExtensionService extensionService,
         Window mainWindow)
     {
@@ -115,6 +118,11 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         ComputeSystemCardsView = new AdvancedCollectionView(ComputeSystemCards);
         ComputeSystemCardsView.SortDescriptions.Add(new SortDescription("IsCardCreating", SortDirection.Descending));
         extensionService.ExtensionToggled += OnExtensionToggled;
+        _extensionService = extensionService;
+        _installationViewModel = installationViewModel;
+
+        // LandingPageViewModel is a singleton aswell as the ExtensionService.
+        _installationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
     }
 
     private void OnExtensionToggled(IExtensionService sender, IExtensionWrapper extension)
@@ -125,15 +133,26 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    public void OnExtensionsChanged(object? sender, EventArgs args)
     {
-        _notificationsHelper = new(notificationQueue);
+        _mainWindow.DispatcherQueue.TryEnqueue(async () =>
+        {
+            await SyncButton();
+        });
     }
 
     [RelayCommand]
-    private async Task OnLoadedAsync()
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
+        _notificationsHelper = new(notificationQueue);
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
         await LoadModelAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnLoaded()
+    {
+        _notificationsHelper = null;
     }
 
     [RelayCommand]
@@ -163,12 +182,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void CallToActionInvokeButton()
     {
-        if (ShouldNavigateToExtensionsPage)
-        {
-            _navigationService.NavigateTo(KnownPageKeys.Extensions);
-            return;
-        }
-
         _log.Information("User clicked on the create environment button. Navigating to Select environment page in Setup flow");
         _navigationService.NavigateTo(KnownPageKeys.SetupFlow, "startCreationFlow;EnvironmentsLandingPage");
     }
@@ -278,7 +291,6 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
         _notificationsHelper?.ClearNotifications();
         CallToActionText = null;
         CallToActionHyperLinkButtonText = null;
-        ShouldNavigateToExtensionsPage = false;
         ShowLoadingShimmer = true;
         await _computeSystemManager.GetComputeSystemsAsync(AddAllComputeSystemsFromAProvider);
         ShowLoadingShimmer = false;
@@ -564,10 +576,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var providerCountWithOutAllKeyword = Providers.Count - 1;
-
-        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
-        ShouldNavigateToExtensionsPage = callToActionData.NavigateToExtensionsLibrary;
+        var callToActionData = ComputeSystemHelpers.UpdateCallToActionText();
         CallToActionText = callToActionData.CallToActionText;
         CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
     }

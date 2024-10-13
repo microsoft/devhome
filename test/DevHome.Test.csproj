@@ -15,9 +15,13 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.5.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.5.2" />
+    <PackageReference Include="Moq" Version="4.18.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\database\DevHome.Database\DevHome.Database.csproj" />
     <ProjectReference Include="..\src\DevHome.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FunctionalTests\" />
   </ItemGroup>
 </Project>

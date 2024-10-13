@@ -16,6 +16,7 @@ using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.ViewModels;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Dispatching;
@@ -41,8 +42,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     private readonly ComputeSystemViewModelFactory _computeSystemViewModelFactory;
 
     private EnvironmentsNotificationHelper _notificationsHelper;
-
-    private bool _shouldNavigateToExtensionPage;
 
     [ObservableProperty]
     private string _callToActionText;
@@ -80,11 +79,14 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     public int SelectedComputeSystemSortComboBoxIndex { get; set; }
 
+    public ExtensionInstallationViewModel InstallationViewModel { get; }
+
     public SetupTargetViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowViewModel setupFlowModel,
         SetupFlowOrchestrator orchestrator,
         IComputeSystemManager computeSystemManager,
+        ExtensionInstallationViewModel installationViewModel,
         ComputeSystemViewModelFactory computeSystemViewModelFactory,
         DispatcherQueue dispatcherQueue)
         : base(stringResource, orchestrator)
@@ -115,6 +117,16 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         ComputeSystemManagerObj = computeSystemManager;
         _setupFlowViewModel = setupFlowModel;
         _setupFlowViewModel.EndSetupFlow += OnRemovingComputeSystems;
+        InstallationViewModel = installationViewModel;
+        InstallationViewModel.ExtensionChangedEvent += OnExtensionsChanged;
+    }
+
+    public void OnExtensionsChanged(object sender, EventArgs args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await GetComputeSystemsAsync();
+        });
     }
 
     /// <summary>
@@ -133,6 +145,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
         // Unsubscribe from the EndSetupFlow event handler.
         _setupFlowViewModel.EndSetupFlow -= OnRemovingComputeSystems;
+        InstallationViewModel.ExtensionChangedEvent -= OnExtensionsChanged;
     }
 
     /// <summary>
@@ -278,7 +291,6 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         RemoveComputeSystemsListViewModels();
         CallToActionText = null;
         CallToActionHyperLinkButtonText = null;
-        _shouldNavigateToExtensionPage = false;
 
         // Disable the sync and next buttons while we're getting the compute systems.
         ComputeSystemLoadingCompleted = false;
@@ -298,10 +310,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         // No compute systems found, show the call to action UI
         if (_computeSystemViewModelList.Count == 0)
         {
-            var providerCountWithOutAllKeyword = ComputeSystemProviderComboBoxNames.Count - 1;
-
-            var callToActionData = ComputeSystemHelpers.UpdateCallToActionText(providerCountWithOutAllKeyword);
-            _shouldNavigateToExtensionPage = callToActionData.NavigateToExtensionsLibrary;
+            var callToActionData = ComputeSystemHelpers.UpdateCallToActionText();
             CallToActionText = callToActionData.CallToActionText;
             CallToActionHyperLinkButtonText = callToActionData.CallToActionHyperLinkText;
         }
@@ -485,24 +494,25 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
         }
     }
 
-    public void Initialize(StackedNotificationsBehavior notificationQueue)
+    [RelayCommand]
+    private async Task OnLoadedAsync(StackedNotificationsBehavior notificationQueue)
     {
         _notificationsHelper = new(notificationQueue);
+        await InstallationViewModel.UpdateExtensionPackageInfoAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnLoaded()
+    {
+        _notificationsHelper = null;
     }
 
     /// <summary>
-    /// Navigates the user to the create environment flow or extension library based on whether or not an extension
-    /// that supports environments is installed.
+    /// Navigates the user to the create environment flow.
     /// </summary>
     [RelayCommand]
     public void CallToActionButton()
     {
-        if (_shouldNavigateToExtensionPage)
-        {
-            Orchestrator.NavigateToOutsideFlow(KnownPageKeys.Extensions);
-            return;
-        }
-
         Orchestrator.NavigateToOutsideFlow(KnownPageKeys.SetupFlow, "startCreationFlow;SetupEnvironmentPage");
     }
 

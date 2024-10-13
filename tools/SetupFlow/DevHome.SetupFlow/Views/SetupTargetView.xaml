@@ -15,7 +15,6 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
-    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -196,15 +195,29 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-        <!--- Show the "Setup a Target header on the page. -->
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.LoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+        <ic:EventTriggerBehavior EventName="UnLoaded">
+            <ic:InvokeCommandAction
+                Command="{x:Bind ViewModel.UnLoadedCommand}"
+                CommandParameter="{x:Bind NotificationQueue, Mode=OneWay}"/>
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
+    <!--- Show the "Setup a Target header on the page. -->
     <setupControls:SetupShell
         x:Uid="SetupShell_SetupTarget"
         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
         Foreground="{ThemeResource TextFillColorSecondary}"
         SetupShellNotificationVisibility="Visible">
         <Grid
-            RowSpacing="40">
+            RowSpacing="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
@@ -315,9 +328,23 @@
                     </Button>
                 </Grid>
             </Grid>
+
+            <!-- Extension install expander -->
+            <Grid
+                Grid.Row="1"
+                MaxWidth="{ThemeResource MaxPageContentWidth}">
+                <ContentControl
+                    VerticalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    IsTabStop="False"
+                    ContentTemplate="{StaticResource EnvironmentPackagesAvailableTemplate}"
+                    DataContext="{x:Bind ViewModel.InstallationViewModel, Mode=OneWay}">
+                </ContentControl>
+            </Grid>
+
             <!--- List of ComputeSystemsListViewModel objects. -->
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay}">
                 <ListView
                     ItemsSource="{x:Bind ViewModel.ComputeSystemsCollectionView, Mode=OneWay}"
@@ -352,7 +379,7 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 Visibility="{x:Bind ViewModel.ShouldShowCollectionView, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
                 <!--- Show shimmers when list not loaded -->
                 <StackPanel

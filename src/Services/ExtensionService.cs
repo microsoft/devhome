@@ -1,12 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
+using DevHome.Common.Models.ExtensionJsonData;
 using DevHome.Common.Services;
 using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Services.Core.Contracts;
+using DevHome.Services.WindowsPackageManager.Contracts;
+using DevHome.Services.WindowsPackageManager.Models;
 using DevHome.Telemetry;
+using Json.Schema;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -14,6 +22,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using static DevHome.Common.Helpers.CommonConstants;
 using static DevHome.Common.Helpers.ManagementInfrastructureHelper;
 
 namespace DevHome.Services;
@@ -22,7 +31,7 @@ public class ExtensionService : IExtensionService, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(ExtensionService));
 
-    public event EventHandler OnExtensionsChanged = (_, _) => { };
+    public event TypedEventHandler<IExtensionService, ExtensionPackageChangedEventArgs>? OnExtensionsChanged;
 
     public event TypedEventHandler<IExtensionService, IExtensionWrapper> ExtensionToggled = (_, _) => { };
 
@@ -33,21 +42,58 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private readonly ILocalSettingsService _localSettingsService;
 
+    private readonly IWinGet _winGet;
+
+    private readonly IPackageDeploymentService _packageDeploymentService;
+
+    private readonly IHttpClientFactory _httpClientFactory;
+
     private bool _disposedValue;
 
     private const string CreateInstanceProperty = "CreateInstance";
     private const string ClassIdProperty = "@ClassId";
 
+    private const string ExtensionJsonGithubUrl = @"https://raw.githubusercontent.com/microsoft/devhome/refs/heads/user/bbonaby/add-json-schema2/src/Assets/ExtensionInformation.json";
+
     private static readonly List<IExtensionWrapper> _installedExtensions = new();
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
     private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
-    public ExtensionService(ILocalSettingsService settingsService)
+    private readonly IStringResource _stringResource;
+
+    private readonly Lazy<string> _localExtensionJsonSchemaAbsoluteFilePath;
+
+    private readonly Lazy<string> _localExtensionJsonAbsoluteFilePath;
+
+    public DevHomeExtensionContentData? ExtensionContentData { get; private set; } = new();
+
+    public ExtensionService(
+        ILocalSettingsService settingsService,
+        IStringResource stringResource,
+        IWinGet winGet,
+        IPackageDeploymentService packageDeploymentService,
+        IHttpClientFactory httpClientFactory)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
         _localSettingsService = settingsService;
+        _stringResource = stringResource;
+        _winGet = winGet;
+        _localExtensionJsonSchemaAbsoluteFilePath = new Lazy<string>(GetExtensionJsonSchemaAbsoluteFilePath);
+        _localExtensionJsonAbsoluteFilePath = new Lazy<string>(GetExtensionJsonAbsoluteFilePath);
+        _httpClientFactory = httpClientFactory;
+        _packageDeploymentService = packageDeploymentService;
+    }
+
+    private string GetExtensionJsonSchemaAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonSchemaRelativeFilePath);
+    }
+
+    private string GetExtensionJsonAbsoluteFilePath()
+    {
+        return Path.Combine(_localSettingsService.GetPathToPackageLocation(), LocalExtensionJsonRelativeFilePath);
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
@@ -63,7 +109,7 @@ public class ExtensionService : IExtensionService, IDisposable
 
                 if (isDevHomeExtension)
                 {
-                    OnPackageChange(args.Package);
+                    OnPackageChange(args.Package, PackageChangedEventKind.Installed);
                 }
             }
         }
@@ -79,7 +125,7 @@ public class ExtensionService : IExtensionService, IDisposable
                 {
                     if (extension.PackageFullName == args.Package.Id.FullName)
                     {
-                        OnPackageChange(args.Package);
+                        OnPackageChange(args.Package, PackageChangedEventKind.UnInstalled);
                         break;
                     }
                 }
@@ -100,18 +146,18 @@ public class ExtensionService : IExtensionService, IDisposable
 
                 if (isDevHomeExtension)
                 {
-                    OnPackageChange(args.TargetPackage);
+                    OnPackageChange(args.TargetPackage, PackageChangedEventKind.Updated);
                 }
             }
         }
     }
 
-    private void OnPackageChange(Package package)
+    private void OnPackageChange(Package package, PackageChangedEventKind changedEventKind)
     {
         _installedExtensions.Clear();
         _enabledExtensions.Clear();
         _installedWidgetsPackageFamilyNames.Clear();
-        OnExtensionsChanged.Invoke(this, EventArgs.Empty);
+        OnExtensionsChanged?.Invoke(this, new(package, changedEventKind));
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)
@@ -403,5 +449,109 @@ public class ExtensionService : IExtensionService, IDisposable
         await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
 
         return true;
+    }
+
+    public async Task<DevHomeExtensionContentData?> GetExtensionJsonDataAsync()
+    {
+        // offload interaction Interaction with WinGet to background thread.
+        return await Task.Run(GetExtensionJsonDataInternalAsync);
+    }
+
+    private async Task<DevHomeExtensionContentData?> GetExtensionJsonDataInternalAsync()
+    {
+        try
+        {
+            _log.Information($"Getting extension information from GitHub via: '{ExtensionJsonGithubUrl}'");
+            var extensionJson = await TryGetExtensionJsonFromGitHubAsync();
+            var serializerOptions = ExtensionJsonSerializerOptions;
+            serializerOptions.Converters.Add(new LocalizedPropertiesConverter(_stringResource));
+            var contentData = JsonSerializer.Deserialize<DevHomeExtensionContentData>(extensionJson, serializerOptions);
+
+            if (contentData == null)
+            {
+                throw new InvalidDataException($"Unable to deserialize json in {_localExtensionJsonAbsoluteFilePath.Value}");
+            }
+
+            var winGetIds = new List<WinGetPackageUri>();
+            var winGetIdToProductMap = new Dictionary<string, Product>();
+            contentData.Products.ForEach(product =>
+            {
+                winGetIdToProductMap.Add(product.ProductId, product);
+                winGetIds.Add(_winGet.CreateMsStoreCatalogPackageUri(product.ProductId));
+            });
+
+            var winGetPackages = await _winGet.GetPackagesAsync(winGetIds);
+            foreach (var package in winGetPackages)
+            {
+                if (winGetIdToProductMap.TryGetValue(package.Id, out var product))
+                {
+                    product.Properties.Description = package.Description;
+                    product.Properties.PublisherName = package.PublisherName;
+                    product.Properties.ProductTitle = package.Name;
+                }
+            }
+
+            ExtensionContentData = contentData;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving extension json information");
+        }
+
+        return ExtensionContentData;
+    }
+
+    private async Task<string> TryGetExtensionJsonFromGitHubAsync()
+    {
+        var localExtensionJson = await File.ReadAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value);
+
+        // Remove carriage returns from new lines if they are present in the local json file.
+        localExtensionJson = localExtensionJson.Replace("\r", string.Empty);
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+            var extensionJsonFromGitHub = await httpClient.GetStringAsync(ExtensionJsonGithubUrl);
+
+            // Remove carriage returns from new lines if they are present in the json from GitHub.
+            extensionJsonFromGitHub = extensionJsonFromGitHub.Replace("\r", string.Empty);
+            if (string.IsNullOrEmpty(extensionJsonFromGitHub))
+            {
+                throw new InvalidDataException($"Unable to retrieve json from {ExtensionJsonGithubUrl}");
+            }
+
+            if (localExtensionJson.Equals(extensionJsonFromGitHub, StringComparison.OrdinalIgnoreCase))
+            {
+                return localExtensionJson;
+            }
+
+            // Try to validate the json against the current version of Dev Homes extension json schema.
+            var schema = JsonSchema.FromText(extensionJsonFromGitHub, ExtensionJsonSerializerOptions);
+            var extensionJson = await File.ReadAllTextAsync(_localExtensionJsonSchemaAbsoluteFilePath.Value);
+            var jsonNode = JsonNode.Parse(extensionJson);
+            var options = new EvaluationOptions
+            {
+                OutputFormat = OutputFormat.Hierarchical,
+            };
+            var validationResult = schema.Evaluate(jsonNode, options);
+
+            if (validationResult.IsValid)
+            {
+                // Overwrite the existing file with the new content from GitHub.
+                await File.WriteAllTextAsync(_localExtensionJsonAbsoluteFilePath.Value, extensionJsonFromGitHub);
+            }
+
+            localExtensionJson = extensionJsonFromGitHub;
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Error retrieving and validating extension json from GitHub");
+        }
+
+        return localExtensionJson;
+    }
+
+    public bool IsExtensionInstalled(string packageFamilyName)
+    {
+        return _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName).Any();
     }
 }
