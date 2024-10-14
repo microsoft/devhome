@@ -203,6 +203,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry", "Telemetry", "{70D3F826-0057-4EAF-AA6D-09479075B056}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.IfeoTool", "tools\Utilities\IfeoTool\DevHome.IfeoTool.csproj", "{A9B2E87D-540F-4B4C-A4AA-EF3BDDC4171C}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnableLocalCabCollection", "tools\DevDiagnostics\Utilities\EnableLocalCabCollection\EnableLocalCabCollection.csproj", "{A382B448-A1F3-4D87-A674-736D2987E613}"
 EndProject
 Global
