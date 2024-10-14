@@ -8,6 +8,8 @@ using DevHome.Customization.Helpers;
 using DevHome.Customization.Models;
 using DevHome.Customization.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -104,6 +106,11 @@ public sealed partial class AddRepositoriesView : UserControl
             XamlRoot = xamlRoot,
             RequestedTheme = ActualTheme,
         };
+
+        // Set automation properties
+        AutomationProperties.SetName(errorDialog, stringResource.GetLocalized("AssignSourceControlErrorDialog_Title"));
+        AutomationProperties.SetHeadingLevel(errorDialog, AutomationHeadingLevel.Level1);
+
         _ = await errorDialog.ShowAsync();
     }
 
