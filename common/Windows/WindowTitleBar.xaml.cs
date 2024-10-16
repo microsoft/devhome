@@ -3,6 +3,7 @@
 
 using System;
 using DevHome.Common.Helpers;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -67,6 +68,35 @@ public sealed partial class WindowTitleBar : UserControl
         // window activation state or system theme has changed, and after the WindowCaption*
         // brushes have been updated. More details in TitleBarHelper.UpdateTitleBar method.
         TitleTextBlock.Foreground = TitleBarHelper.GetTitleBarTextColorBrush(IsActive);
+    }
+
+    // workaround as Appwindow titlebar doesn't update caption button colors correctly when changed while app is running
+    // https://task.ms/44172495
+    public void ApplySystemThemeToCaptionButtons()
+    {
+        if (Content is FrameworkElement rootElement)
+        {
+            Windows.UI.Color color;
+            if (rootElement.ActualTheme == ElementTheme.Dark)
+            {
+                color = Colors.White;
+            }
+            else
+            {
+                color = Colors.Black;
+            }
+
+            SetCaptionButtonColors(color);
+        }
+
+        return;
+    }
+
+    public void SetCaptionButtonColors(Windows.UI.Color color)
+    {
+        var res = Application.Current.Resources;
+        res["WindowCaptionForeground"] = color;
+        AppWindow.TitleBar.ButtonForegroundColor = color;
     }
 
     private static void OnTitleChanged(WindowTitleBar windowTitleBar, string newValue)
