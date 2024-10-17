@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices.WindowsRuntime;
 using DevHome.Services.WindowsPackageManager.Contracts;
-using DevHome.Services.WindowsPackageManager.Contracts.Operations;
 using DevHome.Services.WindowsPackageManager.Models;
+using Windows.Foundation;
 
 namespace DevHome.Services.WindowsPackageManager.Services.Operations;
 
@@ -32,12 +32,19 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
     }
 
     /// <inheritdoc />
-    public async Task<IWinGetInstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
+    public IAsyncOperationWithProgress<IWinGetInstallPackageResult, WinGetInstallPackageProgress> InstallPackageAsync(WinGetPackageUri packageUri, Guid activityId)
     {
-        return await _recovery.DoWithRecoveryAsync(async () =>
+        return AsyncInfo.Run<IWinGetInstallPackageResult, WinGetInstallPackageProgress>(async (_, progress) =>
         {
-            var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
+            // If recovery was initiated due to RPC failure, we need to
+            // re-attempt the operation and restart the progress reporting.
+            return await _recovery.DoWithRecoveryAsync(async () =>
+            {
+                var catalog = await _protocolParser.ResolveCatalogAsync(packageUri);
+                var install = _packageInstaller.InstallPackageAsync(catalog, packageUri.PackageId, packageUri.Options.Version, activityId);
+                install.Progress += (_, p) => progress.Report(p);
+                return await install;
+            });
         });
     }
 }

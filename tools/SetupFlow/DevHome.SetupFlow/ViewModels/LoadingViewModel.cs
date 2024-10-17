@@ -22,6 +22,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Serilog;
+using Windows.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -592,17 +593,27 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 _numberOfExecutingTasks++;
             });
 
-            TaskFinishedState taskFinishedState;
+            IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> result;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 _log.Information("Starting task as admin");
-                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
+                result = taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
             {
-                taskFinishedState = await taskInformation.TaskToExecute.Execute();
+                result = taskInformation.TaskToExecute.Execute();
             }
 
+            // Update the message as new progress is reported.
+            result.Progress += (_, progress) =>
+            {
+                if (!string.IsNullOrEmpty(progress?.Message))
+                {
+                    dispatcherQueue.TryEnqueue(() => loadingMessage.MessageToShow = progress.Message);
+                }
+            };
+
+            var taskFinishedState = await result;
             dispatcherQueue.TryEnqueue(() =>
             {
                 PerformPostTaskTasks(taskInformation, loadingMessage, taskFinishedState);
