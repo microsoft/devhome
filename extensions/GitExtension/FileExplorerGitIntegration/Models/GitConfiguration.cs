@@ -16,7 +16,7 @@ public class GitConfiguration : IDisposable
 
     private string GitExeInstallPath { get; set; } = string.Empty;
 
-    private readonly object _fileLock = new();
+    private static readonly object _fileLock = new();
 
     private readonly ILogger _log = Log.ForContext<GitDetect>();
 
