@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using DevHome.Common.TelemetryEvents.GitExtension;
+using DevHome.Common.TelemetryEvents.SourceControlIntegration;
+using DevHome.Telemetry;
 using Microsoft.Win32;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
@@ -13,6 +16,12 @@ public class GitDetect
 
     private readonly ILogger _log = Log.ForContext<GitDetect>();
 
+    private struct DetectInfo
+    {
+        public bool Found;
+        public string Version;
+    }
+
     public GitDetect()
     {
         GitConfiguration = new GitConfiguration(null);
@@ -20,19 +29,21 @@ public class GitDetect
 
     public bool DetectGit()
     {
-        var gitExeFound = false;
+        var detect = new DetectInfo { Found = false, Version = string.Empty };
+        var status = GitDetectStatus.NotFound;
 
-        if (!gitExeFound)
+        if (!detect.Found)
         {
             // Check if git.exe is present in PATH environment variable
-            gitExeFound = ValidateGitConfigurationPath("git.exe");
-            if (gitExeFound)
+            detect = ValidateGitConfigurationPath("git.exe");
+            if (detect.Found)
             {
+                status = GitDetectStatus.PathEnvironmentVariable;
                 GitConfiguration.StoreGitExeInstallPath("git.exe");
             }
         }
 
-        if (!gitExeFound)
+        if (!detect.Found)
         {
             // Check execution of git.exe by finding install location in registry keys
             string[] registryPaths = { "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1", "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1" };
@@ -43,25 +54,31 @@ public class GitDetect
                 if (!string.IsNullOrEmpty(gitPath))
                 {
                     var paths = FindSubdirectories(gitPath);
-                    gitExeFound = CheckForExeInPaths(paths);
-                    if (gitExeFound)
+                    detect = CheckForExeInPaths(paths);
+                    if (detect.Found)
                     {
+                        status = GitDetectStatus.RegistryProbe;
                         break;
                     }
                 }
             }
         }
 
-        if (!gitExeFound)
+        if (!detect.Found)
         {
             // Search for git.exe in common file paths
             var programFiles = Environment.GetEnvironmentVariable("ProgramFiles");
             var programFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
             string[] possiblePaths = { $"{programFiles}\\Git\\bin", $"{programFilesX86}\\Git\\bin", $"{programFiles}\\Git\\cmd", $"{programFilesX86}\\Git\\cmd" };
-            gitExeFound = CheckForExeInPaths(possiblePaths);
+            detect = CheckForExeInPaths(possiblePaths);
+            if (detect.Found)
+            {
+                status = GitDetectStatus.ProgramFiles;
+            }
         }
 
-        return gitExeFound;
+        TelemetryFactory.Get<ITelemetry>().Log("GitDetect_Event", LogLevel.Critical, new GitDetectEvent(status, detect.Version));
+        return detect.Found;
     }
 
     private string[] FindSubdirectories(string installLocation)
@@ -85,35 +102,35 @@ public class GitDetect
         }
     }
 
-    private bool CheckForExeInPaths(string[] possiblePaths)
+    private DetectInfo CheckForExeInPaths(string[] possiblePaths)
     {
         // Iterate through the possible paths to find the git.exe file
         foreach (var path in possiblePaths.Where(x => !string.IsNullOrEmpty(x)))
         {
             var gitPath = Path.Combine(path, "git.exe");
-            var isValid = ValidateGitConfigurationPath(gitPath);
+            var detect = ValidateGitConfigurationPath(gitPath);
 
             // If the git.exe file is found, store the install path and log the information
-            if (isValid)
+            if (detect.Found)
             {
                 GitConfiguration.StoreGitExeInstallPath(gitPath);
                 _log.Information("Git Exe Install Path found");
-                return true;
+                return detect;
             }
         }
 
         _log.Debug("Git.exe not found in paths examined");
-        return false;
+        return new DetectInfo { Found = false, Version = string.Empty };
     }
 
-    public bool ValidateGitConfigurationPath(string path)
+    private DetectInfo ValidateGitConfigurationPath(string path)
     {
         var result = GitExecute.ExecuteGitCommand(path, string.Empty, "--version");
         if (result.Status == ProviderOperationStatus.Success && result.Output != null && result.Output.Contains("git version"))
         {
-            return true;
+            return new DetectInfo { Found = true, Version = result.Output.Replace("git version", string.Empty) };
         }
 
-        return false;
+        return new DetectInfo { Found = false, Version = string.Empty };
     }
 }
