@@ -128,7 +128,7 @@ public class GitDetect
         var result = GitExecute.ExecuteGitCommand(path, string.Empty, "--version");
         if (result.Status == ProviderOperationStatus.Success && result.Output != null && result.Output.Contains("git version"))
         {
-            return new DetectInfo { Found = true, Version = result.Output.Replace("git version", string.Empty) };
+            return new DetectInfo { Found = true, Version = result.Output.Replace("git version", string.Empty).TrimEnd() };
         }
 
         return new DetectInfo { Found = false, Version = string.Empty };
