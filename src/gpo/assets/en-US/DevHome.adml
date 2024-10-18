@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" revision="0.1900" schemaVersion="1.0" xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <displayName>Dev Home</displayName>
+  <description>Dev Home</description>
+  <resources>
+    <stringTable>
+      <string id="DevHome">Microsoft Dev Home</string>
+
+      <string id="SUPPORTED_DEVHOME_0_1900">Dev Home version 0.1900.* or later</string>
+
+      <string id="ConfigureAllDevHomeEnabledStateDescription">This policy configures the enabled state for Dev Home.
+
+If you enable this setting, Dev Home will be always enabled and the user won't be able to disable it.
+
+If you disable this setting, Dev Home will be always disabled and the user won't be able to enable it.
+
+If you don't configure this setting, users are able to enable or disable Dev Home.
+
+This policy will override any enabled state policies for individual Dev Home features.
+</string>
+
+      <string id="ConfigureAllDevHomeEnabledState">Configure Dev Home enabled state</string>
+    </stringTable>
+
+    <presentationTable>
+    </presentationTable>
+
+  </resources>
+</policyDefinitionResources>
+
