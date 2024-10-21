@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -205,22 +206,12 @@ public partial class PackageViewModel : ObservableObject
 
     public BitmapImage GetLightThemeIcon()
     {
-        if (_package.LightThemeIcon != null)
-        {
-            return CreateBitmapImage(_package.LightThemeIcon);
-        }
-
-        return DefaultDarkPackageIconSource;
+        return _packageLightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon);
     }
 
     public BitmapImage GetDarkThemeIcon()
     {
-        if (_package.DarkThemeIcon != null)
-        {
-            return CreateBitmapImage(_package.DarkThemeIcon);
-        }
-
-        return DefaultDarkPackageIconSource;
+        return _packageDarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon);
     }
 
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
