@@ -11,9 +11,8 @@ using DevHome.Contracts.Services;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage.Streams;
-using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -85,8 +84,8 @@ public partial class PackageViewModel : ObservableObject
         _orchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
-        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => IconByTheme);
-        _packageLightThemeIcon = new Lazy<BitmapImage>(() => IconByTheme);
+        _packageDarkThemeIcon = new Lazy<BitmapImage>(GetIconByTheme());
+        _packageLightThemeIcon = new Lazy<BitmapImage>(GetIconByTheme());
 
         SelectedVersion = GetDefaultSelectedVersion();
         InstallPackageTask = CreateInstallTask();
@@ -202,19 +201,17 @@ public partial class PackageViewModel : ObservableObject
         _screenReaderService.Announce(announcementText);
     }
 
-    public BitmapImage IconByTheme
+    public BitmapImage GetIconByTheme()
     {
-        get
+        return _themeSelector.Theme switch
         {
-            if (_themeSelector.IsDarkTheme())
-            {
-                return CreateBitmapImage(_package.DarkThemeIcon);
-            }
-            else
-            {
-                return CreateBitmapImage(_package.LightThemeIcon);
-            }
-        }
+            // Get default dark theme icon if corresponding package icon was not found
+            ElementTheme.Dark =>
+                _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
+
+            // Get default light theme icon if corresponding package icon was not found
+            _ => _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon),
+        };
     }
 
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
