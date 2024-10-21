@@ -46,7 +46,6 @@ public class PageService : IPageService
         this.ConfigureCustomizationPages();
 
         // Configure footer pages
-        Configure<WhatsNewViewModel, WhatsNewPage>();
         this.ConfigureExtensionLibraryPages();
         this.ConfigureSettingsPages();
 
