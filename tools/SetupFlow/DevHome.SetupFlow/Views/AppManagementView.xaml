@@ -59,7 +59,14 @@
 
                 <!-- Search bar -->
                 <common:ExperimentControl ExperimentKey="AppManagement_SearchBoxPlaceholder" x:Name="SearchBox">
-
+                    <common:ExperimentControl.Resources>
+                        <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
+                            <Setter Property="QueryIcon" Value="Find"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Width" Value="400"/>
+                            <Setter Property="Margin" Value="0,0,0,20"/>
+                        </Style>
+                    </common:ExperimentControl.Resources>
                     <common:ExperimentControl.DefaultContent>
                         <AutoSuggestBox x:Name="SearchBox_Default" x:Uid="SearchBox" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
                             <i:Interaction.Behaviors>
@@ -72,7 +79,7 @@
 
                 </common:ExperimentControl>
 
-                    <!-- Main content -->
+                <!-- Main content -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent" AutomationProperties.AccessibilityView="Raw">
                     <ContentControl
                         IsTabStop="False"
