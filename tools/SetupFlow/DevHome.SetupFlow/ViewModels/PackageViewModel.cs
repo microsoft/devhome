@@ -86,8 +86,8 @@ public partial class PackageViewModel : ObservableObject
         _orchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
-        _packageDarkThemeIcon = new Lazy<BitmapImage>(GetIconByTheme());
-        _packageLightThemeIcon = new Lazy<BitmapImage>(GetIconByTheme());
+        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetDarkThemeIcon());
+        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetLightThemeIcon());
 
         SelectedVersion = GetDefaultSelectedVersion();
         InstallPackageTask = CreateInstallTask();
@@ -203,17 +203,24 @@ public partial class PackageViewModel : ObservableObject
         _screenReaderService.Announce(announcementText);
     }
 
-    public BitmapImage GetIconByTheme()
+    public BitmapImage GetLightThemeIcon()
     {
-        return _themeSelector.Theme switch
+        if (_package.LightThemeIcon != null)
         {
-            // Get default dark theme icon if corresponding package icon was not found
-            ElementTheme.Dark =>
-                _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
+            return CreateBitmapImage(_package.LightThemeIcon);
+        }
 
-            // Get default light theme icon if corresponding package icon was not found
-            _ => _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon),
-        };
+        return DefaultDarkPackageIconSource;
+    }
+
+    public BitmapImage GetDarkThemeIcon()
+    {
+        if (_package.DarkThemeIcon != null)
+        {
+            return CreateBitmapImage(_package.DarkThemeIcon);
+        }
+
+        return DefaultDarkPackageIconSource;
     }
 
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
