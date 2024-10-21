@@ -13,6 +13,8 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
+using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
 
