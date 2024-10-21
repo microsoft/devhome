@@ -155,7 +155,6 @@ public partial class App : Application, IApp
             services.AddTransient<ShellPage>();
             services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
-            services.AddTransient<WhatsNewViewModel>();
             services.AddTransient<InitializationViewModel>();
 
             // Settings

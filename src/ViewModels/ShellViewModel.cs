@@ -53,7 +53,7 @@ public partial class ShellViewModel : ObservableObject
         screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
-    public async Task OnLoaded()
+    public void OnLoaded()
     {
         var activationKind = AppInstance.GetCurrent().GetActivatedEventArgs().Kind;
         Log.Information($"Activated with kind {activationKind}");
@@ -68,8 +68,7 @@ public partial class ShellViewModel : ObservableObject
                 break;
             case ExtendedActivationKind.Launch:
             default:
-                var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);
-                NavigationService.NavigateTo(isNotFirstRun ? NavigationService.DefaultPage : typeof(WhatsNewViewModel).FullName!);
+                NavigationService.NavigateTo(NavigationService.DefaultPage);
                 break;
         }
     }

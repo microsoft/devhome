@@ -57,10 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
     <None Remove="Styles\HyperlinkButton.xaml" />
     <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
   </ItemGroup>

@@ -34,8 +34,6 @@ public sealed class DevHomeApplication
 
     private WindowsElement MachineConfigurationNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("DevHome.SetupFlow");
 
-    private WindowsElement IntroducingDevHomeNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("WhatsNew");
-
     private WindowsElement SettingsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("SettingsItem");
 
     private WindowsElement ExtensionsNavigationItem => _devHomeSession.Driver.FindElementByAccessibilityId("Extensions");
@@ -80,13 +78,6 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
-        return new(_devHomeSession.Driver);
-    }
-
-    public IntroducingDevHomePage NavigateToIntroducingDevHomePage()
-    {
-        Trace.WriteLine("Navigating to Introducing Dev Home");
-        IntroducingDevHomeNavigationItem.Click();
         return new(_devHomeSession.Driver);
     }
 

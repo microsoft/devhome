@@ -129,36 +129,6 @@
     <value>All files</value>
     <comment>Text for a dropdown option in a file picker dialog to show all files in a directory</comment>
   </data>
-  <data name="WhatsNewPage_DevIdCard.Description" xml:space="preserve">
-    <value>After you install an extension that connects one of your developer accounts to Dev Home, sign in to that account.</value>
-  </data>
-  <data name="WhatsNew.Content" xml:space="preserve">
-    <value>Introducing Dev Home</value>
-  </data>
-  <data name="WhatsNewPage_DevDriveCard.Description" xml:space="preserve">
-    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
-  </data>
-  <data name="WhatsNewPage_DevDriveCard.Title" xml:space="preserve">
-    <value>Create a Dev Drive</value>
-  </data>
-  <data name="WhatsNewPage_Description.Text" xml:space="preserve">
-    <value>Set up your machine, monitor your workflows, and access development utilities all from one centralized location.</value>
-  </data>
-  <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
-    <value>Get the info you need in one place—add widgets to track issues, pull requests, and system performance.</value>
-  </data>
-  <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
-    <value>Monitor projects in your dashboard</value>
-  </data>
-  <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
-    <value>Connect your developer account</value>
-  </data>
-  <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
-    <value>Keep up with pull requests, checks, merges, and more.</value>
-  </data>
-  <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
-    <value>Get timely notifications</value>
-  </data>
   <data name="InitializationPage_InfoDescription.Text" xml:space="preserve">
     <value>Monitor and track your coding tasks, workflows, system performance, and more on a customizable dashboard.</value>
   </data>
@@ -180,9 +150,6 @@
   <data name="InitializationPage_Title.Text" xml:space="preserve">
     <value>Dev Home is getting things ready for you...</value>
   </data>
-  <data name="WhatsNewPage_Title.Text" xml:space="preserve">
-    <value>Your development control center</value>
-  </data>
   <data name="Feedback_Title.Text" xml:space="preserve">
     <value>Feedback</value>
   </data>
@@ -191,24 +158,6 @@
   </data>
   <data name="AppDisplayNameStable" xml:space="preserve">
     <value>Dev Home (Preview)</value>
-  </data>
-  <data name="WhatsNewPage_DevDashCard.ButtonText" xml:space="preserve">
-    <value>Pin widgets</value>
-  </data>
-  <data name="WhatsNewPage_DevDriveCard.ButtonText" xml:space="preserve">
-    <value>Create Dev Drive</value>
-  </data>
-  <data name="WhatsNewPage_DevDriveCard.Link" xml:space="preserve">
-    <value>Learn more</value>
-  </data>
-  <data name="WhatsNewPage_DevIdCard.ButtonText" xml:space="preserve">
-    <value>Connect accounts</value>
-  </data>
-  <data name="WhatsNewPage_GetStartedButton.Content" xml:space="preserve">
-    <value>Get started</value>
-  </data>
-  <data name="WhatsNewPage_Header.Text" xml:space="preserve">
-    <value>Introducing Dev Home</value>
   </data>
   <data name="WidgetProviderDisplayNameDev" xml:space="preserve">
     <value>Dev Home (Dev)</value>
@@ -233,18 +182,6 @@
   <data name="AppDisplayNameStableAdministrator" xml:space="preserve">
     <value>Administrator: Dev Home (Preview)</value>
     <comment>Name of app when run as administrator</comment>
-  </data>
-  <data name="WhatsNewPage_ExtensionsCard.ButtonText" xml:space="preserve">
-    <value>Explore extensions</value>
-    <comment>Button text on extensions card on "whats new" page</comment>
-  </data>
-  <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
-    <value>Extensions help you get more out of Dev Home. For example, get recommendations for other repositories to add when setting up your machine in Dev Home and add other widgets to your dashboard.</value>
-    <comment>Description of extensions card on "whats new" page</comment>
-  </data>
-  <data name="WhatsNewPage_ExtensionsCard.Title" xml:space="preserve">
-    <value>Explore Dev Home extensions</value>
-    <comment>Title of extensions card on "whats new" page</comment>
   </data>
   <data name="WidgetDisplayNameCPU" xml:space="preserve">
     <value>CPU</value>

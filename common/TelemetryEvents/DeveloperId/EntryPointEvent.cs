@@ -24,8 +24,7 @@ public class EntryPointEvent : EventBase
         None = 0,
         Settings = 1,
         SetupFlow = 2,
-        WhatsNewPage = 3,
-        Widget = 4,
+        Widget = 3,
     }
 
     private readonly string[] _entryPointNames =
@@ -33,7 +32,6 @@ public class EntryPointEvent : EventBase
         string.Empty,
         "Settings",
         "SetupFlow",
-        "WhatsNewPage",
         "Widget",
     ];
 
