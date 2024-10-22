@@ -92,7 +92,6 @@
     <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\DevDiagnostics\DevHome.DevDiagnostics\DevHome.DevDiagnostics.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
     <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj" />
