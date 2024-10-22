@@ -206,12 +206,12 @@ public partial class PackageViewModel : ObservableObject
 
     public BitmapImage GetLightThemeIcon()
     {
-        return _packageLightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon);
+        return _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon);
     }
 
     public BitmapImage GetDarkThemeIcon()
     {
-        return _packageDarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon);
+        return _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon);
     }
 
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
