@@ -11,7 +11,6 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest;
@@ -26,8 +25,6 @@ public class BaseSetupFlowTest
 
     protected Mock<IThemeSelectorService> ThemeSelectorService { get; private set; }
 
-    protected Mock<IRestoreInfo> RestoreInfo { get; private set; }
-
     protected Mock<ISetupFlowStringResource> StringResource { get; private set; }
 
     protected Mock<ILocalSettingsService> LocalSettingsService { get; private set; }
@@ -40,7 +37,6 @@ public class BaseSetupFlowTest
     {
         WindowsPackageManager = new Mock<IWinGet>();
         ThemeSelectorService = new Mock<IThemeSelectorService>();
-        RestoreInfo = new Mock<IRestoreInfo>();
         StringResource = new Mock<ISetupFlowStringResource>();
         LocalSettingsService = new Mock<ILocalSettingsService>();
         TestHost = CreateTestHost();
@@ -76,11 +72,8 @@ public class BaseSetupFlowTest
                 // App-management services
                 services.AddSingleton<IWinGet>(WindowsPackageManager.Object);
                 services.AddTransient<WinGetPackageJsonDataSource>();
-                services.AddTransient<WinGetPackageRestoreDataSource>();
-                services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
-                services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
                 services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
                 services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
                 services.AddSingleton<IDSC>(new Mock<IDSC>().Object);
