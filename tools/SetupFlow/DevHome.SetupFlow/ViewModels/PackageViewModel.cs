@@ -11,6 +11,7 @@ using DevHome.Contracts.Services;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -85,8 +86,8 @@ public partial class PackageViewModel : ObservableObject
         _orchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
-        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetDarkThemeIcon());
-        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetLightThemeIcon());
+        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme());
+        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme());
 
         SelectedVersion = GetDefaultSelectedVersion();
         InstallPackageTask = CreateInstallTask();
@@ -202,14 +203,13 @@ public partial class PackageViewModel : ObservableObject
         _screenReaderService.Announce(announcementText);
     }
 
-    public BitmapImage GetLightThemeIcon()
+    private BitmapImage GetIconByTheme()
     {
-        return _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon);
-    }
-
-    public BitmapImage GetDarkThemeIcon()
-    {
-        return _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon);
+        return _themeSelector.GetActualTheme() switch
+        {
+            ElementTheme.Dark => _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
+            _ => _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon),
+        };
     }
 
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
