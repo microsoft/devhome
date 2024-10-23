@@ -6,7 +6,7 @@ extern alias Projection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices.WindowsRuntime;
 using DevHome.Services.DesiredStateConfiguration.Contracts;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Services;
@@ -14,7 +14,6 @@ using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Serilog;
 using Windows.Foundation;
-using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -91,9 +90,9 @@ public class ConfigureTask : ISetupTask
         };
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             try
             {
@@ -115,14 +114,14 @@ public class ConfigureTask : ISetupTask
                 _log.Error(e, $"Failed to apply configuration.");
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        });
     }
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             _log.Information($"Starting elevated application of configuration file {_file.Path}");
             var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
@@ -137,7 +136,7 @@ public class ConfigureTask : ISetupTask
             }
 
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
-        }).AsAsyncOperation();
+        });
     }
 
     /// <summary>
