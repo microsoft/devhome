@@ -34,7 +34,6 @@ graph TD;
     DevHome.Dashboard-->DevHome;
     DevHome.Experiments-->DevHome;
     DevHome.ExtensionLibrary-->DevHome;
-    DevHome.DevInsights-->DevHome.Service;
     DevHome.Settings-->DevHome;
     DevHome.SetupFlow-->DevHome;
     DevHome.RepositoryManagement-->DevHome
@@ -69,10 +68,6 @@ Dev Home Common also provides telemetry functionality.
 ## Settings
 
 This is a special component that acts similarly to a tool but isn't actually a tool. The Settings component, like other tools, consumes the Common project and is used by Dev Home Core. It manages user preferences across all tools and extensions.
-
-## Service
-
-This is an NT service which runs as local system that provides functionality to various DevHome components. This functionality would typically require elevation and isn't transactional in nature. For items in DevHome that require elevation and are of a transactional nature, helper utilities are launched elevated instead.
 
 ## Tools
 

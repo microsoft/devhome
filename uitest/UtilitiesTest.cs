@@ -14,10 +14,8 @@ public class UtilitiesTest : DevHomeTestBase
     [DataRow("DevHome.HostsFileEditor", false, DisplayName = "HostsUtility")]
     [DataRow("DevHome.RegistryPreview", false, DisplayName = "RegistryPreview")]
     [DataRow("DevHome.EnvironmentVariables", false, DisplayName = "EnvironmentVariables")]
-    [DataRow("DevHome.DevDiagnostics", false, DisplayName = "DevDiagnostics")]
     [DataRow("DevHome.HostsFileEditor", true, DisplayName = "HostsUtility as Admin")]
     [DataRow("DevHome.EnvironmentVariables", true, DisplayName = "EnvironmentVariables as Admin")]
-    [DataRow("DevHome.DevDiagnostics", true, DisplayName = "DevDiagnostics as Admin")]
     public void LaunchUtilityTest(string utilityName, bool launchAsAdmin)
     {
         var utilities = Application.NavigateToUtilitiesPage();
@@ -28,7 +26,7 @@ public class UtilitiesTest : DevHomeTestBase
     public void UtilitiesTestCleanup()
     {
         // Kill all utilities after each test
-        string[] utilityNames = { "DevHome.HostsFileEditor", "DevHome.RegistryPreview", "DevHome.EnvironmentVariables", "DevHome.DevDiagnostics" };
+        string[] utilityNames = { "DevHome.HostsFileEditor", "DevHome.RegistryPreview", "DevHome.EnvironmentVariables" };
         foreach (var utilityName in utilityNames)
         {
             var processes = Process.GetProcessesByName(utilityName);

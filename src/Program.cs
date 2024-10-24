@@ -70,7 +70,7 @@ public static class Program
     // Currently DevHome supports one set of command line arguments, most useful when debugging different apps within the Dev Home package.
     //
     // For example:
-    //    --utilitylaunch DevHome.DevDiagnostics.Exe --utilityLaunchArgs "--application problemapp2"
+    //    --utilitylaunch DevHome.MyUtility.Exe --utilityLaunchArgs "--application problemapp2"
     //
     // --utilityLaunch is the name of the utility to launch
     // --utilityLaunchArgs are the arguments to pass to the utility. This is optional, but be sure to include the quotes if you have spaces in the arguments.

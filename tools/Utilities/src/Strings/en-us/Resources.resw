@@ -144,14 +144,6 @@
     <value>Utilities</value>
     <comment>Utilities</comment>
   </data>
-  <data name="DevDiagnosticsDesc" xml:space="preserve">
-    <value>An application for gaining deeper insights into your applications.</value>
-    <comment>A description of the Dev Diagnostics utility</comment>
-  </data>
-  <data name="DevDiagnosticsTitle" xml:space="preserve">
-    <value>Dev Diagnostics</value>
-    <comment>Name of the Dev Diagnostics product</comment>
-  </data>
   <data name="RegistryPreviewUtilityDesc" xml:space="preserve">
     <value>Edit and visualize Windows Registry files.</value>
   </data>

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "DevHome.PI (Unpackaged)": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}

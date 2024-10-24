@@ -50,14 +50,6 @@ public partial class UtilitiesMainPageViewModel : ObservableObject
                 SupportsLaunchAsAdmin = Microsoft.UI.Xaml.Visibility.Visible,
                 UtilityAutomationId = "DevHome.EnvironmentVariables",
             },
-            new(Path.Combine(appExAliasAbsFolderPath, "DevHome.DevDiagnostics.exe"), experimentationService, "DevDiagnosticsExperiment")
-            {
-                Title = stringResource.GetLocalized("DevDiagnosticsTitle"),
-                Description = stringResource.GetLocalized("DevDiagnosticsDesc"),
-                NavigateUri = "https://go.microsoft.com/fwlink/?linkid=2275140",
-                ImageSource = Path.Combine(AppContext.BaseDirectory, "DD.ico"),
-                UtilityAutomationId = "DevHome.DevDiagnostics",
-            },
         };
 
         TelemetryFactory.Get<ITelemetry>().Log("Utilities_UtilitiesMainPage", LogLevel.Critical, new UtilitiesMainPageViewModelEvent());
