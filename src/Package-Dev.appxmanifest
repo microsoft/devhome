@@ -333,17 +333,6 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-        <desktop6:Extension Category="windows.service" Executable="DevHome.Service.exe" EntryPoint="DevHome.Service">
-          <desktop6:Service Name="DevHome-Dev.Service" StartupType="manual" StartAccount="localSystem" />
-        </desktop6:Extension>
-        <com2:Extension Category="windows.comServer">
-          <com2:ComServer>
-            <com3:ServiceServer ServiceName="DevHome-Dev.Service" LaunchAndActivationPermission="O:SYG:SYD:(A;;11;;;IU)">
-              <!-- Grant local activation rights to Interactive Users. -->
-              <com3:Class Id="1F98F450-C163-4A99-B257-E1E6CB3E1C57" DisplayName="CLSID_DevHomeService" />
-            </com3:ServiceServer>
-          </com2:ComServer>
-        </com2:Extension>
       </Extensions>
     </Application>
     <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">

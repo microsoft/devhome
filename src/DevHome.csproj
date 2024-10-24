@@ -82,9 +82,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
-    <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
-    <ProjectReference Include="..\service\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
@@ -173,11 +170,6 @@
   <ItemGroup>
     <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\service\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">
