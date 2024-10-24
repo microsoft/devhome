@@ -7,11 +7,6 @@
     },
     "DevHome (Unpackaged)": {
       "commandName": "Project"
-    },
-    "IfeoTool (Packaged)": {
-      "commandName": "MsixPackage",
-      "commandLineArgs": "--utilitylaunch DevHome.IfeoTool.Exe ",
-      "nativeDebugging": true
     }
   }
 }
