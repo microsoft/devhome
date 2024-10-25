@@ -11,7 +11,7 @@ using DevHome.Contracts.Services;
 using DevHome.Services.WindowsPackageManager.Contracts;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
-using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -86,8 +86,8 @@ public partial class PackageViewModel : ObservableObject
         _orchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
-        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
-        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
+        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme());
+        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme());
 
         SelectedVersion = GetDefaultSelectedVersion();
         InstallPackageTask = CreateInstallTask();
@@ -203,20 +203,11 @@ public partial class PackageViewModel : ObservableObject
         _screenReaderService.Announce(announcementText);
     }
 
-    /// <summary>
-    /// Gets the package icon based on the provided theme
-    /// </summary>
-    /// <param name="theme">Package icon theme</param>
-    /// <returns>Package icon</returns>
-    private BitmapImage GetIconByTheme(RestoreApplicationIconTheme theme)
+    private BitmapImage GetIconByTheme()
     {
-        return theme switch
+        return _themeSelector.GetActualTheme() switch
         {
-            // Get default dark theme icon if corresponding package icon was not found
-            RestoreApplicationIconTheme.Dark =>
-                _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
-
-            // Get default light theme icon if corresponding package icon was not found
+            ElementTheme.Dark => _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
             _ => _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon),
         };
     }

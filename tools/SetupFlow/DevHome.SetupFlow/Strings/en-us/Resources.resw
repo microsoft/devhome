@@ -601,18 +601,6 @@
     <value>{0} Results found for "{1}"</value>
     <comment>{Locked="{0}", "{1}"} Label for a search result counter. {0} is replaced by the number of result items. {1} is replaced with the search term.</comment>
   </data>
-  <data name="RestorePackagesTitle" xml:space="preserve">
-    <value>On {0}</value>
-    <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
-  </data>
-  <data name="RestorePackagesDescription" xml:space="preserve">
-    <value>These applications are from {0}. Select the ones to install.</value>
-    <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
-  </data>
-  <data name="RestorePackagesDescriptionWithDate" xml:space="preserve">
-    <value>These applications are from {0} (last synced on {1}). Select the ones to install.</value>
-    <comment>{Locked="{0}","{1}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name. {1} is replaced by a date.</comment>
-  </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
@@ -660,10 +648,6 @@
   <data name="Previous.Content" xml:space="preserve">
     <value>Previous</value>
     <comment>Label for a "go to previous page" button</comment>
-  </data>
-  <data name="Restore.Content" xml:space="preserve">
-    <value>Restore</value>
-    <comment>Label for restore button</comment>
   </data>
   <data name="Review_GenerateConfigurationFileButton.Content" xml:space="preserve">
     <value>Generate Configuration file</value>
