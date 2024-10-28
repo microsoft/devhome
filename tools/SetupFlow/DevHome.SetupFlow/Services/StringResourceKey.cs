@@ -279,9 +279,6 @@ public static class StringResourceKey
     public static readonly string NoEnvironmentsAndExtensionsNotInstalledCallToAction = nameof(NoEnvironmentsAndExtensionsNotInstalledCallToAction);
     public static readonly string NoEnvironmentsAndExtensionsNotInstalledButton = nameof(NoEnvironmentsAndExtensionsNotInstalledButton);
 
-    // Quickstart Playground
-    public static readonly string QuickstartPlaygroundLaunchButton = nameof(QuickstartPlaygroundLaunchButton);
-
     // Create Environment flow
     public static readonly string SelectEnvironmentPageTitle = nameof(SelectEnvironmentPageTitle);
     public static readonly string ConfigureEnvironmentPageTitle = nameof(ConfigureEnvironmentPageTitle);
