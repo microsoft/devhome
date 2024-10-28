@@ -132,30 +132,6 @@
       }
     },
     {
-      "identity": "DevDiagnosticsExperiment",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel"
-      }
-    },
-    {
       "identity": "RepositoryManagementExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [
