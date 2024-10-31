@@ -107,31 +107,6 @@
       }
     },
     {
-      "identity": "QuickstartPlayground",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
-        "parameter": "StartQuickstartPlayground"
-      }
-    },
-    {
       "identity": "RepositoryManagementExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [

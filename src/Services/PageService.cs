@@ -26,7 +26,7 @@ public class PageService : IPageService
 
     private readonly Dictionary<string, Type> _pages = new();
 
-    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService, IQuickstartSetupService quickstartSetupService)
+    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService)
     {
         // Configure top-level pages from registered tools
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -51,7 +51,6 @@ public class PageService : IPageService
 
         // Configure Experimental Feature pages
         ExperimentalFeature.LocalSettingsService = localSettingsService;
-        ExperimentalFeature.QuickstartSetupService = quickstartSetupService;
         foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;
