@@ -56,31 +56,6 @@
   },
   "experimentalFeatures": [
     {
-      "identity": "QuietBackgroundProcessesExperiment",
-      "enabledByDefault": false,
-      "needsFeaturePresenceCheck": true,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.Customization.ViewModels.MainPageViewModel"
-      }
-    },
-    {
       "identity": "FileExplorerSourceControlIntegration",
       "enabledByDefault": false,
       "needsFeaturePresenceCheck": true,

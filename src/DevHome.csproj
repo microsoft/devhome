@@ -89,10 +89,6 @@
     <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
     <ProjectReference Include="..\tools\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj" />
     <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
@@ -133,30 +129,6 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
-
-  <!-- Quiet background processes bins -->
-  <PropertyGroup>
-    <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
-    <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
-    <DevHomeInternal_Win32RuntimePath Condition="$(DevHomeInternal_Win32RuntimePath.EndsWith('native\\'))">$(DevHomeInternal_Win32RuntimePath)$(_DevHomeInternal_CppPlatform)\</DevHomeInternal_Win32RuntimePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <!-- Third party notice file -->
   <ItemGroup>

@@ -7,8 +7,7 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:views="using:DevHome.Customization.Views"
-    xmlns:quietviews="using:DevHome.QuietBackgroundProcesses.UI.Views">
+    xmlns:views="using:DevHome.Customization.Views">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadViewModelContentCommand}" />
@@ -61,9 +60,6 @@
                     <FontIcon Glyph="&#xE3AF;" FontFamily="{ThemeResource AmcFluentIcons}"/>
                 </controls:SettingsCard.HeaderIcon>
             </controls:SettingsCard>
-
-            <!--  Quiet Background Processes  -->
-            <quietviews:QuietBackgroundProcessesView />
         </StackPanel>
 
         <!--  More Windows settings  -->
