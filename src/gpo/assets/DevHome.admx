@@ -13,6 +13,8 @@
   </supportedOn>
   <categories>
     <category name="DevHome" displayName="$(string.DevHome)" />
+  </categories>
+
   <policies>
 
  <!--The name (id) of the policy is different from the valueName to sort it as first policy in edit dialog. The order is sorted alphabetically based on the "name" property.-->

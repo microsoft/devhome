@@ -24,9 +24,6 @@ This policy will override any enabled state policies for individual Dev Home fea
       <string id="ConfigureAllDevHomeEnabledState">Configure Dev Home enabled state</string>
     </stringTable>
 
-    <presentationTable>
-    </presentationTable>
-
   </resources>
 </policyDefinitionResources>
 
