@@ -100,10 +100,7 @@
           "enabledByDefault": false,
           "visible": false
         }
-      ],
-      "openPage": {
-        "key": "DevHome.RepositoryManagement.ViewModels.RepositoryManagementMainPageView"
-      }
+      ]
     },
     {
       "identity": "RepositoryManagementSourceControlSelector",
