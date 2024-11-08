@@ -32,6 +32,6 @@ properties:
         module: Microsoft.WinGet.DSC
         allowPrerelease: true
       settings:
-        id: Microsoft.GDK.2303
+        id: Microsoft.Gaming.GDK
         source: winget
   configurationVersion: 0.2.0
