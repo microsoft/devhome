@@ -31,23 +31,6 @@
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
-        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
-          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" RunFullTrust="true">
-            <uap5:Path>DevHome.QuietBackgroundProcesses.Server.exe</uap5:Path>
-            <uap5:Instancing>singleInstance</uap5:Instancing>
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
-          </uap5:OutOfProcessServer>
-        </uap5:Extension>
-        <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
-        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
-          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" RunFullTrust="true">
-            <uap5:Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</uap5:Path>
-            <uap5:Instancing>singleInstance</uap5:Instancing>
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
-          </uap5:OutOfProcessServer>
-        </uap5:Extension>
         <uap3:Extension Category="windows.appExtensionHost">
           <uap3:AppExtensionHost>
             <uap3:Name>com.microsoft.devhome</uap3:Name>

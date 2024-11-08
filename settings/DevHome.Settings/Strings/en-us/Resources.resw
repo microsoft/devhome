@@ -545,14 +545,6 @@
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
   </data>
-  <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
-    <value>Quiet background processes</value>
-    <comment>Name of experimental feature 'Quiet background processes' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
-  </data>
-  <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
-    <value>Quiet background processes allows you to free up resources while developing</value>
-    <comment>Inline description of the Quiet background processes experimental feature on the 'Settings -&gt; Experiments' page where you enable it.</comment>
-  </data>
   <data name="FileExplorerSourceControlIntegration_Name" xml:space="preserve">
     <value>File Explorer Source Control Integration</value>
     <comment>Name of experimental feature 'FileExplorer SourceControl Integration' on the 'Settings -&gt; Experiments' page where you enable it.</comment>
@@ -571,6 +563,6 @@
     <value>Toggle to allow tester to change the source control provider.</value>
   </data>
   <data name="RepositoryManagementSourceControlSelector_Name" xml:space="preserve">
-    <value>Show Souce Control Provider</value>
+    <value>Show Source Control Provider</value>
   </data>
 </root>
