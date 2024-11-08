@@ -2,11 +2,14 @@
 // Licensed under the MIT License.
 
 using Microsoft.Win32;
+using Serilog;
 
 namespace DevHome.Common.Helpers;
 
 public class GPOHelper
 {
+    private static readonly ILogger _log = Log.ForContext("SourceContext", nameof(GPOHelper));
+
     private enum GpoRuleConfigured
     {
         WrongValue = -3, // The policy is set to an unrecognized value
@@ -32,12 +35,14 @@ public class GPOHelper
                 valueName: registryValueName,
                 defaultValue: GpoRuleConfigured.NotConfigured);
 
+            _log.Error($"Registry value {registryValueName} set to {rawValue}");
+
             // Value will be null if the subkey specified by keyName does not exist.
             if (rawValue == null)
             {
                 return GpoRuleConfigured.NotConfigured;
             }
-            else if (rawValue is not int)
+            else if (rawValue is not int && rawValue is not GpoRuleConfigured)
             {
                 return GpoRuleConfigured.WrongValue;
             }
@@ -68,6 +73,7 @@ public class GPOHelper
         var configuredValue = GetConfiguredValue(registryValueName);
         if (configuredValue < 0)
         {
+            _log.Error($"Registry value {registryValueName} set to {configuredValue}, using default {defaultValue} instead.");
             configuredValue = defaultValue;
         }
 
