@@ -5,21 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls" 
-    xmlns:viewmodels="using:DevHome.Customization.ViewModels"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
-    <StackPanel>
-        <TextBlock 
+    <StackPanel
+        x:Uid="FileExplorerPage_AddRepositoriesGroup"
+        IsTabStop="True">
+        <TextBlock
             x:Uid="AddRepositoriesTextBlock"
             Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"/>
         <ctControls:SettingsCard
             x:Uid="AddRepositoriesCard"
+            x:Name="AddRepositoriesCard"
+            Margin="{ThemeResource SettingsCardMargin}"
             Grid.Column="1">
             <Button 
                 x:Uid="AddFolderButton"
                 Style="{ThemeResource AccentButtonStyle}" 
-                Command="{x:Bind ViewModel.AddFolderClickCommand}" />
+                Command="{x:Bind ViewModel.AddFolderClickCommand}"
+                CommandParameter="{Binding ElementName=AddRepositoriesCard}"/>
         </ctControls:SettingsCard>
         <ItemsRepeater 
             Name="ItemsRepeaterForAllRepoPaths" 
@@ -30,7 +34,7 @@
                     <ctControls:SettingsCard 
                         Header="{Binding RepositoryRootPath}"
                         Description="{Binding SourceControlProviderDisplayName}"
-                        Margin="0">
+                        Margin="{ThemeResource SettingsCardMargin}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon 
                                 FontFamily="{StaticResource SymbolThemeFontFamily}" 

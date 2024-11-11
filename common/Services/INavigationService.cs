@@ -44,7 +44,6 @@ public static class KnownPageKeys
 {
     public static readonly string Dashboard = "DevHome.Dashboard.ViewModels.DashboardViewModel";
     public static readonly string Extensions = "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel";
-    public static readonly string WhatsNew = "DevHome.ViewModels.WhatsNewViewModel";
     public static readonly string Settings = "DevHome.Settings.ViewModels.SettingsViewModel";
     public static readonly string Feedback = "DevHome.Settings.ViewModels.FeedbackViewModel";
     public static readonly string Environments = "DevHome.Environments.ViewModels.LandingPageViewModel";

@@ -56,31 +56,6 @@
   },
   "experimentalFeatures": [
     {
-      "identity": "QuietBackgroundProcessesExperiment",
-      "enabledByDefault": false,
-      "needsFeaturePresenceCheck": true,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.Customization.ViewModels.MainPageViewModel"
-      }
-    },
-    {
       "identity": "FileExplorerSourceControlIntegration",
       "enabledByDefault": false,
       "needsFeaturePresenceCheck": true,
@@ -107,55 +82,6 @@
       }
     },
     {
-      "identity": "QuickstartPlayground",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
-        "parameter": "StartQuickstartPlayground"
-      }
-    },
-    {
-      "identity": "DevDiagnosticsExperiment",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "stable",
-          "enabledByDefault": false,
-          "visible": true
-        }
-      ],
-      "openPage": {
-        "key": "DevHome.Utilities.ViewModels.UtilitiesMainPageViewModel"
-      }
-    },
-    {
       "identity": "RepositoryManagementExperiment",
       "enabledByDefault": false,
       "buildTypeOverrides": [
@@ -174,10 +100,7 @@
           "enabledByDefault": false,
           "visible": false
         }
-      ],
-      "openPage": {
-        "key": "DevHome.RepositoryManagement.ViewModels.RepositoryManagementMainPageView"
-      }
+      ]
     },
     {
       "identity": "RepositoryManagementSourceControlSelector",

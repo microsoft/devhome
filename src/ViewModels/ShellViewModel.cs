@@ -35,6 +35,9 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private InfoBarModel _shellInfoBarModel = new();
 
+    [ObservableProperty]
+    private bool _isDevHomeGPOEnabled;
+
     public ShellViewModel(
         INavigationService navigationService,
         INavigationViewService navigationViewService,
@@ -53,11 +56,17 @@ public partial class ShellViewModel : ObservableObject
         screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
-    public async Task OnLoaded()
+    public void OnLoaded()
     {
         var activationKind = AppInstance.GetCurrent().GetActivatedEventArgs().Kind;
         Log.Information($"Activated with kind {activationKind}");
         TelemetryFactory.Get<ITelemetry>().Log("DevHome_Shell_Loaded_Event", LogLevel.Critical, new DevHomeShellLoadedEvent(activationKind));
+
+        IsDevHomeGPOEnabled = GPOHelper.GetConfiguredEnabledDevHomeValue();
+        if (!IsDevHomeGPOEnabled)
+        {
+            return;
+        }
 
         switch (activationKind)
         {
@@ -68,8 +77,7 @@ public partial class ShellViewModel : ObservableObject
                 break;
             case ExtendedActivationKind.Launch:
             default:
-                var isNotFirstRun = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun);
-                NavigationService.NavigateTo(isNotFirstRun ? NavigationService.DefaultPage : typeof(WhatsNewViewModel).FullName!);
+                NavigationService.NavigateTo(NavigationService.DefaultPage);
                 break;
         }
     }

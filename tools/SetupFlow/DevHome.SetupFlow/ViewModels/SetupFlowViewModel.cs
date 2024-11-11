@@ -45,7 +45,6 @@ public partial class SetupFlowViewModel : ObservableObject
         PackageProvider packageProvider)
     {
         _navigationTargets.Add(_creationFlowNavigationParameter, StartCreationFlow);
-        _navigationTargets.Add("StartQuickstartPlayground", StartQuickStartFlow);
         _navigationTargets.Add(KnownPageKeys.RepositoryConfiguration, StartRepositoryConfigurationFlow);
 
         _host = host;
@@ -209,14 +208,6 @@ public partial class SetupFlowViewModel : ObservableObject
 
         // This method is only called when the user clicks a button that redirects them to 'Create Environment' flow in the setup flow.
         _mainPageViewModel.StartCreateEnvironmentWithTelemetry(string.Empty, _creationFlowNavigationParameter, parameters[1]);
-    }
-
-    private void StartQuickStartFlow(string parameter)
-    {
-        Cancel();
-        Orchestrator.FlowPages = [_mainPageViewModel];
-        var flowTitle = _stringResource.GetLocalized("MainPage_QuickstartPlayground/Header");
-        _mainPageViewModel.StartQuickstart(flowTitle);
     }
 
     private void StartRepositoryConfigurationFlow(string parameter)

@@ -31,23 +31,6 @@
         <uap:SplashScreen Image="Assets\Logos\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <!-- QuietBackgroundProcesses unelevated server which initiates & obtains a reference to a quiet session -->
-        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
-          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.Server" RunFullTrust="true">
-            <uap5:Path>DevHome.QuietBackgroundProcesses.Server.exe</uap5:Path>
-            <uap5:Instancing>singleInstance</uap5:Instancing>
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSessionManager" />
-          </uap5:OutOfProcessServer>
-        </uap5:Extension>
-        <!-- QuietBackgroundProcesses elevated server owns the quiet session -->
-        <uap5:Extension Category="windows.activatableClass.outOfProcessServer" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="packagedClassicApp">
-          <uap5:OutOfProcessServer ServerName="DevHome.QuietBackgroundProcesses.ElevatedServer" RunFullTrust="true">
-            <uap5:Path>DevHome.QuietBackgroundProcesses.ElevatedServer.exe</uap5:Path>
-            <uap5:Instancing>singleInstance</uap5:Instancing>
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession" />
-            <uap5:ActivatableClass ActivatableClassId="DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine" />
-          </uap5:OutOfProcessServer>
-        </uap5:Extension>
         <uap3:Extension Category="windows.appExtensionHost">
           <uap3:AppExtensionHost>
             <uap3:Name>com.microsoft.devhome</uap3:Name>
@@ -333,34 +316,6 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
-        <desktop6:Extension Category="windows.service" Executable="DevHome.Service.exe" EntryPoint="DevHome.Service">
-          <desktop6:Service Name="DevHome-Dev.Service" StartupType="manual" StartAccount="localSystem" />
-        </desktop6:Extension>
-        <com2:Extension Category="windows.comServer">
-          <com2:ComServer>
-            <com3:ServiceServer ServiceName="DevHome-Dev.Service" LaunchAndActivationPermission="O:SYG:SYD:(A;;11;;;IU)">
-              <!-- Grant local activation rights to Interactive Users. -->
-              <com3:Class Id="1F98F450-C163-4A99-B257-E1E6CB3E1C57" DisplayName="CLSID_DevHomeService" />
-            </com3:ServiceServer>
-          </com2:ComServer>
-        </com2:Extension>
-      </Extensions>
-    </Application>
-    <Application Id="DevHome.DevDiagnostics" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:DDDisplayName" Description="ms-resource:DDAppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
-      </uap:VisualElements>
-      <Extensions>
-        <!-- Limitations in Microsoft.Extension.Configuration require this to be a key=value pair.-->
-        <uap5:Extension Category="windows.startupTask" uap10:Parameters="/startuptask=true">
-          <uap5:StartupTask TaskId="DevHome.DevDiagnostics.Hotkey" Enabled="false" DisplayName="ms-resource:DDStartupTaskDisplayName" />
-        </uap5:Extension>
-        <uap3:Extension Category="windows.appExecutionAlias" Executable="DevHome.DevDiagnostics.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
-          <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="devhome.devdiagnostics.exe" />
-          </uap3:AppExecutionAlias>
-        </uap3:Extension>
       </Extensions>
     </Application>
     <Application Id="DevHome.HostsFileEditor" Executable="DevHome.HostsFileEditor.exe" EntryPoint="Windows.FullTrustApplication">
@@ -398,19 +353,6 @@
         <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
           <uap3:AppExecutionAlias>
             <desktop:ExecutionAlias Alias="DevHome.EnvironmentVariablesApp.exe" />
-          </uap3:AppExecutionAlias>
-        </uap3:Extension>
-      </Extensions>
-    </Application>
-    <Application Id="DevHome.IfeoTool" Executable="DevHome.IfeoTool.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="ms-resource:IfeoToolDisplayName" Description="ms-resource:IfeoToolDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" AppListEntry="none">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
-      </uap:VisualElements>
-      <Extensions>
-        <uap3:Extension Category="windows.appExecutionAlias" EntryPoint="Windows.FullTrustApplication">
-          <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="DevHome.IfeoTool.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
       </Extensions>
