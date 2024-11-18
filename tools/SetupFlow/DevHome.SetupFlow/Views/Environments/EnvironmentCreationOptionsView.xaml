@@ -9,12 +9,16 @@
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:commonBehaviors="using:DevHome.Common.Behaviors"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:setupFlowConverters="using:DevHome.SetupFlow.Converters"
     Unloaded="ViewUnloaded"
     Loaded="ViewLoaded">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="CollapsedWhenTrueBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
         <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectVisibleWhenEmptyConverter" NotEmptyValue="Collapsed" EmptyValue="Visible"/>
+        <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
+        <setupFlowConverters:CreationStateKindToVisibilityConverter x:Key="CreationStateKindToVisibilityConverter"/>
     </UserControl.Resources>
     <i:Interaction.Behaviors >
         <commonBehaviors:AutoFocusBehavior />
@@ -52,8 +56,9 @@
             Margin="{ThemeResource ContentPageMargin}"
             Grid.Row="1">
             <Grid>
-                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid
@@ -61,31 +66,75 @@
                     HorizontalAlignment="Stretch"
                     Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}">
                     <InfoBar
+                        Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                         IsOpen="True"
                         Title="{x:Bind ViewModel.SessionErrorTitle, Mode=OneWay}"
                         Severity="Error"
-                        Message="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}" >
+                        HorizontalAlignment="Stretch">
+                        <InfoBar.Content>
+                            <Grid>
+                                <!--- Textblock for when there is a title in the infobar -->
+                                <TextBlock
+                                    Visibility="{x:Bind ViewModel.SessionErrorTitle, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                                    Padding="0 0 0 20"
+                                    Margin="0 -10 0 0"
+                                    Text="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}"
+                                    IsTextSelectionEnabled="True"
+                                    TextWrapping="Wrap"/>
+
+                                <!--- Textblock for when there is no title in the infobar -->
+                                <TextBlock
+                                    Visibility="{x:Bind ViewModel.SessionErrorTitle, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
+                                    Padding="0 20 0 20"
+                                    Text="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay}"
+                                    IsTextSelectionEnabled="True"
+                                    TextWrapping="Wrap"/>
+                            </Grid>
+                            
+                        </InfoBar.Content>
                     </InfoBar>
                 </Grid>
+
+                <ComboBox
+                    Grid.Row="1"
+                    x:Name="AccountSelectionComboBox"
+                    x:Uid="EnvironmentSelectAccountHeader"
+                    Visibility="{x:Bind ViewModel.DeveloperIdWrappers, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
+                    ItemsSource="{x:Bind ViewModel.DeveloperIdWrappers, Mode=OneWay}"
+                    SelectedValue="{x:Bind ViewModel.SelectedDeveloperId, Mode=TwoWay}"
+                    DisplayMemberPath="LoginId"
+                    Margin="0 0 0 20"
+                    HorizontalAlignment="Left"
+                    MinWidth="250">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction
+                                Command="{x:Bind ViewModel.DeveloperIdSelectedCommand, Mode=OneWay}"
+                                CommandParameter="{Binding SelectedValue, ElementName=AccountSelectionComboBox, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ComboBox>
 
                 <!--- Show the adaptive card on the page if its loaded. -15 Padding added as the adaptive card adds an extra 40px of padding on all sides -->
                 <!-- Set focus to this grid because it is the first container with selectable elements.-->
                 <Grid
-                    Grid.Row="1"
-                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay}"
+                    Grid.Row="2"
+                    Visibility="{x:Bind ViewModel.CreationPageState, Mode=OneWay, Converter={StaticResource CreationStateKindToVisibilityConverter}, ConverterParameter='AdaptiveCardGrid'}"
                     x:Name="AdaptiveCardGrid" 
-                    Padding="-15">
+                    Padding="-15"
+                    HorizontalAlignment="Left">
                     <i:Interaction.Behaviors>
                         <behaviors:FocusBehavior/>
                     </i:Interaction.Behaviors>
                 </Grid>
 
                 <Grid
-                    Grid.Row="1"
+                    Grid.Row="2"
+                    x:Name="ProgressRingGrid"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     ColumnSpacing="10"
-                    Visibility="{x:Bind ViewModel.IsAdaptiveCardSessionLoaded, Mode=OneWay, Converter={StaticResource CollapsedWhenTrueBoolToVisibilityConverter}}">
+                    Visibility="{x:Bind ViewModel.CreationPageState, Mode=OneWay, Converter={StaticResource CreationStateKindToVisibilityConverter}, ConverterParameter='ProgressRingGrid'}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
@@ -96,7 +145,7 @@
                         IsActive="True"
                         Width="20"
                         Height="20"/>
-                    <TextBlock 
+                    <TextBlock
                         Visibility="{x:Bind ViewModel.SessionErrorMessage, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectVisibleWhenEmptyConverter}}"
                         Grid.Column="1" Text="{x:Bind ViewModel.AdaptiveCardLoadingMessage, Mode=OneWay}" />
                 </Grid>

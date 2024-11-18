@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using DevHome.Dashboard.ComSafeWidgetObjects;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Dashboard.Services;
 
@@ -12,5 +12,5 @@ public interface IWidgetScreenshotService
 {
     public void RemoveScreenshotsFromCache(string definitionId);
 
-    public Task<BitmapImage> GetScreenshotFromCacheAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme actualTheme);
+    public Task<Brush> GetBrushForWidgetScreenshotAsync(ComSafeWidgetDefinition widgetDefinition, ElementTheme theme);
 }

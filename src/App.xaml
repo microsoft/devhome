@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="/Styles/Feedback_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/FontFamilies.xaml" />
                 <ResourceDictionary Source="/Styles/FontSizes.xaml" />
+                <ResourceDictionary Source="/Styles/HyperlinkButton.xaml" />
                 <ResourceDictionary Source="/Styles/LayoutSizes.xaml" />
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />

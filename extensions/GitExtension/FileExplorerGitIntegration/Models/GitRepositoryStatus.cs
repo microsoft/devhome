@@ -11,6 +11,18 @@ internal sealed class GitRepositoryStatus
     private readonly Dictionary<string, SubmoduleStatus> _submoduleEntries = new();
     private readonly Dictionary<FileStatus, List<GitStatusEntry>> _statusEntries = new();
 
+    public string BranchName { get; set; } = string.Empty;
+
+    public bool IsHeadDetached { get; set; }
+
+    public string UpstreamBranch { get; set; } = string.Empty;
+
+    public int AheadBy { get; set; }
+
+    public int BehindBy { get; set; }
+
+    public string Sha { get; set; } = string.Empty;
+
     public GitRepositoryStatus()
     {
         _statusEntries.Add(FileStatus.NewInIndex, new List<GitStatusEntry>());

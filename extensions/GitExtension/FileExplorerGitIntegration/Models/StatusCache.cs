@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Threading.Channels;
 using LibGit2Sharp;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Windows.DevHome.SDK;
 using Serilog;
 using Windows.Win32;
@@ -25,7 +23,7 @@ internal sealed class StatusCache : IDisposable
     private readonly ReaderWriterLockSlim _statusLock = new();
     private readonly GitDetect _gitDetect = new();
     private readonly bool _gitInstalled;
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(StatusCache));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(StatusCache));
 
     private GitRepositoryStatus? _status;
     private bool _disposedValue;
@@ -199,7 +197,23 @@ internal sealed class StatusCache : IDisposable
         //                       Disclaimer: I'm not sure how far back porcelain=v2 is supported, but I'm pretty sure it's at least 3-4 years.
         //                       There could be old Git installations that predate it.
         // -z                  : Terminate filenames and entries with NUL instead of space/LF. This helps us deal with filenames containing spaces.
-        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), workingDirectory, "--no-optional-locks status --porcelain=v2 -z");
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), workingDirectory, "--no-optional-locks status --porcelain=v2 --branch -z");
+        if (result.Status != ProviderOperationStatus.Success)
+        {
+            return null;
+        }
+
+        return result.Output;
+    }
+
+    private string? RetrieveBranchInformation(string workingDirectory)
+    {
+        // Options fully explained at https://git-scm.com/docs/git-branch
+        // --no-optional-locks : Since this we are essentially running in the background, don't take any optional git locks
+        //                       that could interfere with the user's work. This means calling "branch" won't auto-update the
+        //                       index to make future "branch" calls faster, but it's better to be unintrusive.
+        // --show--current     : Show the current branch name. This is the only option we care about.
+        var result = GitExecute.ExecuteGitCommand(_gitDetect.GitConfiguration.ReadInstallPath(), workingDirectory, "--no-optional-locks branch --show-current");
         if (result.Status != ProviderOperationStatus.Success)
         {
             return null;
@@ -234,6 +248,7 @@ internal sealed class StatusCache : IDisposable
     {
         var repoStatus = new GitRepositoryStatus();
         ParseStatus(RetrieveStatusFromDirectory(_workingDirectory), repoStatus);
+        ParseBranchInformation(RetrieveBranchInformation(_workingDirectory), repoStatus);
         return repoStatus;
     }
 
@@ -292,11 +307,48 @@ internal sealed class StatusCache : IDisposable
                 var filePath = Path.Combine(relativeDir, line.Substring(2)).Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 repoStatus.Add(filePath, new GitStatusEntry(filePath, FileStatus.NewInWorkdir));
             }
+            else if (line.StartsWith("# branch.oid ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.oid <sha>
+                // For now, we only care about the <sha>.
+                repoStatus.Sha = line.Split(' ')[2];
+            }
+            else if (line.StartsWith("# branch.ab ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.ab +<ahead> -<behind>
+                // For now, we only care about the <ahead> and <behind>.
+                var pieces = line.Split(' ', 4);
+                var aheadBy = int.Parse(pieces[2][1..], CultureInfo.InvariantCulture);
+                var behindBy = int.Parse(pieces[3][1..], CultureInfo.InvariantCulture);
+                repoStatus.AheadBy = aheadBy;
+                repoStatus.BehindBy = behindBy;
+            }
+            else if (line.StartsWith("# branch.upstream ", StringComparison.Ordinal))
+            {
+                // For porcelain=v2, the branch status line has the following format:
+                //   # branch.upstream <upstream>
+                // For now, we only care about the <upstream>.
+                repoStatus.UpstreamBranch = line.Split(' ')[2];
+            }
             else
             {
                 _log.Warning($"Encountered unexpected line in ParseStatus: {line}");
             }
         }
+    }
+
+    private void ParseBranchInformation(string? branchInfo, GitRepositoryStatus repoStatus)
+    {
+        if (string.IsNullOrEmpty(branchInfo))
+        {
+            repoStatus.IsHeadDetached = true;
+            return;
+        }
+
+        repoStatus.BranchName = branchInfo.TrimEnd('\n');
+        repoStatus.IsHeadDetached = false;
     }
 
     private void ParseOrdinaryStatusEntry(

@@ -22,4 +22,12 @@ public abstract class PowerShellResultBase
     /// in the PowerShell runspace. This is used for logging and debugging purposes.
     /// </remark>
     public abstract string CommandOutputErrorMessage { get; set; }
+
+    /// <summary> Gets or sets HRESULT from the first error return by PowerShell. </summary>
+    /// <remark>
+    /// This is the error HRESULT that is returned when the command returns an error
+    /// in the PowerShell runspace. PowerShell can return a list of exceptions. This is the HRESULT
+    /// from the first exception in the list. This is used for logging and debugging purposes.
+    /// </remark>
+    public abstract int CommandOutputErrorFirstHResult { get; set; }
 }

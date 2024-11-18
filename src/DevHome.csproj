@@ -57,10 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
-    <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+    <None Remove="Styles\HyperlinkButton.xaml" />
     <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
   </ItemGroup>
 
@@ -79,15 +76,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
     <PackageReference Include="WinUIEx" Version="2.3.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\service\DevHome.Service.IDL\DevHome.Service.IDL.vcxproj" />
-    <ProjectReference Include="..\service\DevHome.Service.Projection\DevHome.Service.Projection.csproj" />
-    <ProjectReference Include="..\service\DevHome.Service\DevHome.Service.csproj" />
     <ProjectReference Include="..\extensions\CoreWidgetProvider\CoreWidgetProvider.csproj" />
     <ProjectReference Include="..\extensions\GitExtension\FileExplorerGitIntegration\FileExplorerGitIntegration.csproj" />
     <ProjectReference Include="..\extensions\WSLExtension\WSLExtension.csproj" />
@@ -95,11 +89,6 @@
     <ProjectReference Include="..\tools\Customization\DevHome.FileExplorerSourceControlIntegration\DevHome.FileExplorerSourceControlIntegration.csproj" />
     <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\DevDiagnostics\DevHome.DevDiagnostics\DevHome.DevDiagnostics.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.vcxproj" />
-    <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.vcxproj" />
     <ProjectReference Include="..\tools\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj" />
     <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
@@ -122,6 +111,9 @@
     <None Update="NavConfig.jsonc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\HyperlinkButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,30 +130,6 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
 
-  <!-- Quiet background processes bins -->
-  <PropertyGroup>
-    <_DevHomeInternal_CppPlatform>$(Platform)</_DevHomeInternal_CppPlatform>
-    <_DevHomeInternal_CppPlatform Condition="'$(Platform)' == 'x86'">Win32</_DevHomeInternal_CppPlatform>
-    <DevHomeInternal_Win32RuntimePath Condition="$(DevHomeInternal_Win32RuntimePath.EndsWith('native\\'))">$(DevHomeInternal_Win32RuntimePath)$(_DevHomeInternal_CppPlatform)\</DevHomeInternal_Win32RuntimePath>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Helpers.QuietBackgroundProcesses.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Server\DevHome.QuietBackgroundProcesses.Server.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.Common\DevHome.QuietBackgroundProcesses.winmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(CppBaseOutDir)\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine\DevHome.QuietBackgroundProcesses.PerformanceRecorderEngine.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <!-- Third party notice file -->
   <ItemGroup>
     <Content Include="$(SolutionDir)NOTICE.txt">
@@ -174,11 +142,6 @@
   <ItemGroup>
     <Content Include="$(TargetDir)\AdaptiveCards.ObjectModel.WinUI3.dll" Link="AdaptiveCards.ObjectModel.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(TargetDir)\AdaptiveCards.Rendering.WinUI3.dll" Link="AdaptiveCards.Rendering.WinUI3.dll" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\service\DevHome.Service.IDL\Generated Files\DevHome.Service.winmd" Link="DevHome.Service.winmd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="CopyAdaptiveCardsToTargetDir" BeforeTargets="BeforeBuild">

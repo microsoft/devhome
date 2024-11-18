@@ -59,3 +59,6 @@ using System.Diagnostics.CodeAnalysis;
 // Logger
 [assembly: SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Allow using LoggerExtensions methods")]
 [assembly: SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Allow string concatenation or interpolation")]
+
+[assembly: SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "Temporary.")]
+[assembly: SuppressMessage("Performance", "CA1853:Unnecessary call to 'Dictionary.ContainsKey(key)'", Justification = "Temporary.")]

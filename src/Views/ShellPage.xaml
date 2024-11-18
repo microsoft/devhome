@@ -6,7 +6,11 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:windows="using:DevHome.Common.Windows"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     Loaded="OnLoaded">
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -30,7 +34,8 @@
             OpenPaneLength="350"
             ExpandedModeThresholdWidth="1280"
             DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
-            Header="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
+            Header="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.IsDevHomeGPOEnabled, Mode=OneWay}">
             <NavigationView.Resources>
                 <ResourceDictionary>
                     <ResourceDictionary.ThemeDictionaries>
@@ -62,12 +67,6 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="WhatsNew" AutomationProperties.AutomationId="WhatsNew"
-                                    helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
                 <NavigationViewItem x:Uid="ms-resource:///DevHome.ExtensionLibrary/Resources/NavigationPane" AutomationProperties.AutomationId="Extensions"
                                     helpers:NavigationHelper.NavigateTo="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel">
                     <NavigationViewItem.Icon>
@@ -120,6 +119,21 @@
                     CornerRadius="{ThemeResource OverlayCornerRadius}" />
             </Grid>
         </NavigationView>
+
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="{x:Bind ViewModel.IsDevHomeGPOEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+            <TextBlock
+                x:Uid="GPODisabledDevHomeHeader"
+                Style="{StaticResource HeaderTextBlockStyle}"
+                HorizontalTextAlignment="Center"/>
+            <TextBlock
+                x:Uid="GPODisabledDevHomeDescription"
+                Style="{StaticResource SubheaderTextBlockStyle}"
+                HorizontalTextAlignment="Center"/>
+        </StackPanel>
 
         <!-- A "hidden" TextBlock read by the narrator on value change.
              Setting the visibility to Collapsed prevents the screen reader

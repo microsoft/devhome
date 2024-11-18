@@ -621,7 +621,10 @@ public class HyperVVirtualMachine : IComputeSystem
             var startResult = Start(string.Empty);
             if (startResult.Result.Status == ProviderOperationStatus.Failure)
             {
-                return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(startResult.Result.ExtendedError.HResult, startResult.Result.DisplayMessage));
+                return operation.CompleteOperation(new HostGuestCommunication.ApplyConfigurationResult(
+                    startResult.Result.ExtendedError.HResult,
+                    startResult.Result.DisplayMessage,
+                    startResult.Result.DiagnosticText));
             }
 
             using var guestSession = new GuestKvpSession(Guid.Parse(Id));

@@ -3,7 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using DevHome.Database.DatabaseModels.RepositoryManagement;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Models.WingetConfigure;
@@ -116,6 +119,38 @@ public class ConfigurationFileBuilder
         var yaml = yamlSerializer.Serialize(configFile);
         configStringWithHeader += yaml;
         return configStringWithHeader;
+    }
+
+    public string MakeConfigurationFileForRepoAndGit(Repository repository)
+    {
+        // WinGet configure uses the Id property to uniquely identify a resource and also to display the resource status in the UI.
+        // So we add a description to the Id to make it more readable in the UI. These do not need to be localized.
+        var id = $"{RepoNamePrefix}{repository.RepositoryName}{RepoNameSuffix}{Path.GetFullPath(repository.RepositoryClonePath)}";
+        var gitDependsOnId = DscHelpers.GitWinGetPackageId;
+
+        List<WinGetConfigResource> resources = [];
+
+        resources.Add(new WinGetConfigResource()
+        {
+            Resource = DscHelpers.GitCloneDscResource,
+            Id = id,
+            Directives = new() { AllowPrerelease = true, Description = $"Cloning: {repository.RepositoryName}" },
+            DependsOn = [gitDependsOnId],
+            Settings = new GitDscSettings() { HttpsUrl = string.Empty, RootDirectory = Path.GetFullPath(repository.RepositoryClonePath) },
+        });
+
+        resources.Add(CreateWinGetInstallForGitPreReq(ConfigurationFileKind.Normal));
+
+        var wingetConfigProperties = new WinGetConfigProperties();
+
+        // Merge the resources into the Resources property in the properties object
+        wingetConfigProperties.Resources = resources.ToArray();
+        wingetConfigProperties.ConfigurationVersion = DscHelpers.WinGetConfigureVersion;
+
+        // Create the new WinGetConfigFile object and serialize it to yaml
+        var configurationFile = new WinGetConfigFile() { Properties = wingetConfigProperties };
+
+        return SerializeWingetFileObjectToString(configurationFile);
     }
 
     /// <summary>

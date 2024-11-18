@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
-
 namespace FileExplorerGitIntegration.Models;
 
 internal sealed class ThrottledTask

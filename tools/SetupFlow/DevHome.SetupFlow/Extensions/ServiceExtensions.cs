@@ -12,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Internal.Windows.DevHome.Helpers;
-using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 
 namespace DevHome.SetupFlow.Extensions;
 
@@ -30,7 +29,6 @@ public static class ServiceExtensions
         services.AddRepoConfig();
         services.AddReview();
         services.AddSummary();
-        services.AddQuickstart();
         services.AddSummaryInformation();
         services.AddCreateEnvironment();
 
@@ -55,15 +53,14 @@ public static class ServiceExtensions
         services.AddTransient<PackageCatalogListViewModel>();
         services.AddTransient<AppManagementViewModel>();
         services.AddTransient<AppManagementReviewViewModel>();
+        services.AddTransient<SearchMessageViewModel>();
 
         // Services
-        services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
         services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
         services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
 
-        services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
@@ -164,18 +161,6 @@ public static class ServiceExtensions
         services.AddTransient<SetupTargetViewModel>();
         services.AddTransient<SetupTargetReviewViewModel>();
         services.AddTransient<SetupTargetTaskGroup>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddQuickstart(this IServiceCollection services)
-    {
-        // View models
-        services.AddTransient<QuickstartPlaygroundViewModel>();
-
-        // Services
-        services.AddTransient<DeveloperQuickstartTaskGroup>();
-        services.AddSingleton<IQuickStartProjectService, QuickStartProjectService>();
 
         return services;
     }

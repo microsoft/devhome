@@ -18,7 +18,8 @@
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
     </Page.Resources>
 
-    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer
+        VerticalAlignment="Top">
         <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <StackPanel>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.ExperimentalFeatures}">

@@ -117,7 +117,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (widgetDef.ProviderDefinitionId.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = await BuildWidgetNavItem(widgetDef);
+                        var subItemContent = await BuildWidgetNavItemAsync(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, [.. comSafeCurrentlyPinnedWidgets]);
                         var subItem = new NavigationViewItem
                         {
@@ -148,13 +148,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async Task<Grid> BuildWidgetNavItem(ComSafeWidgetDefinition widgetDefinition)
+    private async Task<Grid> BuildWidgetNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
-        var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
-        return BuildNavItem(image, widgetDefinition.DisplayTitle);
+        return await BuildNavItemAsync(widgetDefinition);
     }
 
-    private Grid BuildNavItem(BitmapImage image, string text)
+    private async Task<Grid> BuildNavItemAsync(ComSafeWidgetDefinition widgetDefinition)
     {
         var itemContent = new Grid
         {
@@ -165,32 +164,26 @@ public sealed partial class AddWidgetDialog : ContentDialog
             },
         };
 
-        if (image is not null)
-        {
-            var itemSquare = new Rectangle()
-            {
-                Width = 16,
-                Height = 16,
-                Margin = new Thickness(0, 0, 8, 0),
-                Fill = new ImageBrush
-                {
-                    ImageSource = image,
-                    Stretch = Stretch.Uniform,
-                },
-            };
-            Grid.SetColumn(itemSquare, 0);
+        var imageBrush = await _widgetIconService.GetBrushForWidgetIconAsync(widgetDefinition, ActualTheme);
 
-            itemContent.Children.Add(itemSquare);
-        }
+        var itemSquare = new Rectangle()
+        {
+            Width = 16,
+            Height = 16,
+            Margin = new Thickness(0, 0, 8, 0),
+            Fill = imageBrush,
+        };
+
+        Grid.SetColumn(itemSquare, 0);
+        itemContent.Children.Add(itemSquare);
 
         var itemText = new TextBlock()
         {
-            Text = text,
+            Text = widgetDefinition.DisplayTitle,
             TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center,
         };
         Grid.SetColumn(itemText, 1);
-
         itemContent.Children.Add(itemText);
 
         return itemContent;
@@ -272,8 +265,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 if (widgetItem.Tag is ComSafeWidgetDefinition widgetDefinition)
                 {
-                    var image = await _widgetIconService.GetIconFromCacheAsync(widgetDefinition, ActualTheme);
-                    widgetItem.Content = BuildNavItem(image, widgetDefinition.DisplayTitle);
+                    widgetItem.Content = await BuildNavItemAsync(widgetDefinition);
                 }
             }
         }

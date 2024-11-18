@@ -21,7 +21,6 @@
     <ProjectReference Include="..\..\..\database\DevHome.Database\DevHome.Database.csproj" />
     <ProjectReference Include="..\..\..\services\DevHome.Services.DesiredStateConfiguration\DevHome.Services.DesiredStateConfiguration.csproj" />
     <ProjectReference Include="..\..\..\services\DevHome.Services.WindowsPackageManager\DevHome.Services.WindowsPackageManager.csproj" />
-    <ProjectReference Include="..\..\RepositoryManagement\DevHome.RepositoryManagement\DevHome.RepositoryManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>
@@ -71,9 +70,6 @@
     <Page Update="Views\Summary\SummaryNeedsRestart.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Styles\QuickstartStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Update="Views\CloneRepoSummaryInformationView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -81,9 +77,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\SetupTargetView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\QuickstartPlaygroundView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Styles\AppManagement_ThemeResources.xaml">
@@ -118,7 +111,6 @@
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
     <None Remove="Styles\AppManagement_ThemeResources.xaml" />
-    <None Remove="Styles\QuickstartStyles.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
     <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
@@ -128,7 +120,6 @@
     <None Remove="Views\EditClonePathDialog.xaml" />
     <None Remove="Views\LoadingView.xaml" />
     <None Remove="Views\MainPageView.xaml" />
-    <None Remove="Views\QuickstartPlaygroundView.xaml" />
     <None Remove="Views\RepoConfigReviewView.xaml" />
     <None Remove="Views\RepoConfigView.xaml" />
     <None Remove="Views\ReviewView.xaml" />
@@ -282,9 +273,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Setup_EndToEnd.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Assets\Setup_QuickstartPlayground.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Setup_RepoConfig.png">

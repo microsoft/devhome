@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using CommunityToolkit.WinUI.Collections;
 using DevHome.Common.Environments.Helpers;
 using DevHome.Common.Environments.Models;
 using DevHome.Common.Environments.Services;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
@@ -395,63 +397,65 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
     {
         _notificationsHelper?.DisplayComputeSystemEnumerationErrors(data);
 
-        // Remove the mappings that failed to load.
-        // The errors are already handled by the notification helper.
-        foreach (var mapping in data.DevIdToComputeSystemMap.Where(kvp =>
-            kvp.Value.Result.Status == ProviderOperationStatus.Failure))
+        var computeSystemListViewModels = new List<ComputeSystemsListViewModel>();
+        var allComputeSystems = new List<ComputeSystemCache>();
+        foreach (var devIdToComputeSystemResultPair in data.DevIdToComputeSystemMap)
         {
-            data.DevIdToComputeSystemMap.Remove(mapping.Key);
-        }
+            // Remove the mappings that failed to load.
+            // The errors are already handled by the notification helper.
+            if (devIdToComputeSystemResultPair.Value.Result.Status == ProviderOperationStatus.Failure)
+            {
+                continue;
+            }
 
-        var curListViewModel = new ComputeSystemsListViewModel(data);
+            var listViewModel = new ComputeSystemsListViewModel(data.ProviderDetails, devIdToComputeSystemResultPair);
+
+            if (listViewModel.ComputeSystems.Count > 0)
+            {
+                computeSystemListViewModels.Add(listViewModel);
+                allComputeSystems.AddRange(listViewModel.ComputeSystems);
+            }
+        }
 
         // Fetch data for all compute systems that support the ApplyConfiguration flag in parallel
         // on thread pool to avoid calling expensive OOP operations on the UI thread.
-        await Parallel.ForEachAsync(curListViewModel.ComputeSystems, async (computeSystem, token) =>
+        await Parallel.ForEachAsync(allComputeSystems, async (computeSystem, token) =>
         {
-            if (computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
-            {
-                await computeSystem.FetchDataAsync();
-            }
+            await computeSystem.FetchDataAsync();
         });
 
         await _dispatcherQueue.EnqueueAsync(async () =>
         {
-            foreach (var computeSystem in curListViewModel.ComputeSystems)
+            foreach (var listViewModel in computeSystemListViewModels)
             {
-                // Remove any cards that don't support the ApplyConfiguration flag.
-                if (!computeSystem.SupportedOperations.Value.HasFlag(ComputeSystemOperations.ApplyConfiguration))
+                foreach (var computeSystem in listViewModel.ComputeSystems)
                 {
-                    continue;
+                    var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
+                    var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(
+                        ComputeSystemManagerObj,
+                        computeSystem,
+                        data.ProviderDetails.ComputeSystemProvider,
+                        packageFullName,
+                        _dispatcherQueue);
+
+                    // Don't show environments that aren't in a state to configure
+                    if (!ShouldShowCard(card.CardState))
+                    {
+                        _log.Information($"{computeSystem.DisplayName} not in valid state." +
+                            $" Current state: {card.CardState}");
+                        continue;
+                    }
+
+                    listViewModel.ComputeSystemCardCollection.Add(card);
                 }
 
-                var packageFullName = data.ProviderDetails.ExtensionWrapper.PackageFullName;
-                var card = await _computeSystemViewModelFactory.CreateCardViewModelAsync(
-                    ComputeSystemManagerObj,
-                    computeSystem,
-                    curListViewModel.Provider,
-                    packageFullName,
-                    _dispatcherQueue);
-
-                // Don't show environments that aren't in a state to configure
-                if (!ShouldShowCard(card.CardState))
+                if (listViewModel.ComputeSystemCardCollection.Count > 0)
                 {
-                    continue;
+                    AddListViewModelToList(listViewModel);
+                    listViewModel.CardSelectionChanged += OnListSelectionChanged;
                 }
-
-                curListViewModel.ComputeSystemCardCollection.Add(card);
-                curListViewModel.CardSelectionChanged += OnListSelectionChanged;
             }
 
-            // Don't add view model to list if it doesn't contain any cards.
-            if (curListViewModel.ComputeSystemCardCollection.Count == 0)
-            {
-                _log.Information($"The {data.ProviderDetails.ComputeSystemProvider.DisplayName} was found but does not contain environments that support configuration");
-                UpdateProviderNames(curListViewModel);
-                return;
-            }
-
-            AddListViewModelToList(curListViewModel);
             ShouldShowShimmerBelowList = true;
         });
     }

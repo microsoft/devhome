@@ -25,6 +25,12 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
+            <Style x:Key="SearchBoxStyle" TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
+                <Setter Property="QueryIcon" Value="Find"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="Width" Value="400"/>
+                <Setter Property="Margin" Value="0,0,0,20"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -58,36 +64,13 @@
                 </Grid.RowDefinitions>
 
                 <!-- Search bar -->
-                <common:ExperimentControl ExperimentKey="AppManagement_SearchBoxPlaceholder" x:Name="SearchBox">
-                    <common:ExperimentControl.Resources>
-                        <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}">
-                            <Setter Property="QueryIcon" Value="Find"/>
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                            <Setter Property="Width" Value="400"/>
-                            <Setter Property="Margin" Value="0,0,0,20"/>
-                        </Style>
-                    </common:ExperimentControl.Resources>
-
-                    <common:ExperimentControl.DefaultContent>
-                        <AutoSuggestBox x:Name="SearchBox_Default" x:Uid="SearchBox" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
-                            <i:Interaction.Behaviors>
-                                <ic:EventTriggerBehavior EventName="TextChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Default.Text, Mode=OneWay}"/>
-                                </ic:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                    </common:ExperimentControl.DefaultContent>
-
-                    <common:ExperimentControl.ExperimentContent>
-                        <AutoSuggestBox x:Name="SearchBox_Experiment" x:Uid="SearchBox_Experiment" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}">
-                            <i:Interaction.Behaviors>
-                                <ic:EventTriggerBehavior EventName="TextChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox_Experiment.Text, Mode=OneWay}"/>
-                                </ic:EventTriggerBehavior>
-                            </i:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                    </common:ExperimentControl.ExperimentContent>
-                </common:ExperimentControl>
+                <AutoSuggestBox x:Name="SearchBox" x:Uid="SearchBox" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}" Style="{StaticResource SearchBoxStyle}">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{x:Bind Path=SearchBox.Text, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </AutoSuggestBox>
 
                 <!-- Main content -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent" AutomationProperties.AccessibilityView="Raw">
@@ -111,6 +94,24 @@
                                         <views:SearchView />
                                     </DataTemplate>
                                 </selectors:AppManagementViewSelector.SearchTemplate>
+                                <!-- Message template -->
+                                <selectors:AppManagementViewSelector.SearchMessageTemplate>
+                                    <DataTemplate x:DataType="viewmodels:SearchMessageViewModel">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock
+                                                Style="{ThemeResource BaseTextBlockStyle}"
+                                                Text="{x:Bind PrimaryMessage, Mode=OneWay}"
+                                                Foreground="{ThemeResource TextFillColorSecondary}"
+                                                TextAlignment="Center"
+                                                TextWrapping="WrapWholeWords"/>
+                                            <TextBlock
+                                                Text="{x:Bind SecondaryMessage, Mode=OneWay}"
+                                                TextAlignment="Center"
+                                                Foreground="{ThemeResource TextFillColorTertiary}"
+                                                TextWrapping="WrapWholeWords"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </selectors:AppManagementViewSelector.SearchMessageTemplate>
                                 <!-- Shimmer search template -->
                                 <selectors:AppManagementViewSelector.ShimmerSearchTemplate>
                                     <DataTemplate>

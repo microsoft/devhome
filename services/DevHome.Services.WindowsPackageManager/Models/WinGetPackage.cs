@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using DevHome.Services.WindowsPackageManager.Contracts;
@@ -79,6 +80,30 @@ internal sealed class WinGetPackage : IWinGetPackage
     {
         var uriOptions = string.IsNullOrEmpty(installVersion) ? null : new WinGetPackageUriOptions(installVersion);
         return new(CatalogName, Id, uriOptions);
+    }
+
+    /// <summary>
+    /// Copies the packages from out-of-proc to in-proc.
+    /// </summary>
+    /// <param name="logger">Logger</param>
+    /// <param name="packageFinder">Package finder</param>
+    /// <param name="packagesOutOfProc">Packages to copy</param>
+    /// <returns>List of in-proc packages</returns>
+    public static List<IWinGetPackage> FromOutOfProc(
+        ILogger logger,
+        IWinGetPackageFinder packageFinder,
+        IList<CatalogPackage> packagesOutOfProc)
+    {
+        // Copy packages from out-of-process in parallel to enhance the performance
+        var perfTimer = Stopwatch.StartNew();
+        logger.LogDebug($"Copying {packagesOutOfProc.Count} packages from out-of-proc to in-proc");
+        var packagesInProc = packagesOutOfProc
+            .AsParallel()
+            .AsOrdered()
+            .Select(p => new WinGetPackage(logger, p, packageFinder.IsElevationRequired(p)))
+            .ToList<IWinGetPackage>();
+        logger.LogDebug($"Finished copying {packagesOutOfProc.Count} packages from out-of-proc to in-proc in: {perfTimer.ElapsedMilliseconds} ms");
+        return packagesInProc;
     }
 
     private PackageVersionInfo GetPackageVersionInfo(CatalogPackage package)

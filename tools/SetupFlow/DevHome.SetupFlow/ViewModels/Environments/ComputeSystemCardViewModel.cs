@@ -72,7 +72,12 @@ public partial class ComputeSystemCardViewModel : ObservableObject
         _dispatcherQueue = dispatcherQueue;
         _computeSystemManager = manager;
         ComputeSystemTitle = computeSystem.DisplayName.Value;
-        ComputeSystemAlternativeTitle = computeSystem.SupplementalDisplayName.Value;
+
+        if (!string.IsNullOrEmpty(computeSystem.SupplementalDisplayName.Value))
+        {
+            ComputeSystemAlternativeTitle = $"({computeSystem.SupplementalDisplayName.Value})";
+        }
+
         ComputeSystem = computeSystem;
         ComputeSystem.StateChanged += _computeSystemManager.OnComputeSystemStateChanged;
         _computeSystemManager.ComputeSystemStateChanged += OnComputeSystemStateChanged;

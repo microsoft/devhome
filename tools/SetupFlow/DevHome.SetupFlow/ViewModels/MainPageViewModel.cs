@@ -38,8 +38,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 {
     private readonly ILogger _log = Log.ForContext("SourceContext", nameof(MainPageViewModel));
 
-    private const string QuickstartPlaygroundFlowFeatureName = "QuickstartPlayground";
-
     private readonly IHost _host;
     private readonly IWinGet _winget;
     private readonly IDSC _dsc;
@@ -59,9 +57,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
-
-    [ObservableProperty]
-    private bool _enableQuickstartPlayground;
 
     private bool _disposedValue;
 
@@ -98,38 +93,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
 
         BannerViewModel = bannerViewModel;
-
-        // If the feature is turned on, it doesn't show up in the configuration section (toggling it off and on again fixes it)
-        // It's because this is constructed after ExperimentalFeaturesViewModel, so the handler isn't added yet.
-        _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.PropertyChanged += ExperimentalFeaturesViewModel_PropertyChanged;
-
-        // Hack around this by setting the property explicitly based on the state of the feature.
-        EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
-    }
-
-    // Create a PropertyChanged handler that we will add to the ExperimentalFeaturesViewModel
-    // to update the EnableQuickstartPlayground property when the feature is enabled/disabled.
-    private void ExperimentalFeaturesViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))
-        {
-            EnableQuickstartPlayground = _host.GetService<IExperimentationService>().ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.IsEnabled;
-        }
     }
 
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {
-            if (disposing)
-            {
-                var experimentationService = _host.GetService<IExperimentationService>();
-                if (experimentationService != null)
-                {
-                    experimentationService.ExperimentalFeatures.FirstOrDefault(f => string.Equals(f.Id, QuickstartPlaygroundFlowFeatureName, StringComparison.Ordinal))!.PropertyChanged -= ExperimentalFeaturesViewModel_PropertyChanged;
-                }
-            }
-
             _disposedValue = true;
         }
     }
@@ -267,7 +236,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
     /// Starts a setup flow that only includes repo config.
     /// </summary>
     [RelayCommand]
-    private void StartRepoConfig(string flowTitle)
+    public void StartRepoConfig(string flowTitle)
     {
         _log.Information("Starting flow for repo config");
         StartSetupFlowForTaskGroups(
@@ -275,13 +244,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase, IDisposable
             "RepoConfig",
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<DevDriveTaskGroup>());
-    }
-
-    [RelayCommand]
-    public void StartQuickstart(string flowTitle)
-    {
-        _log.Information("Starting flow for developer quickstart playground");
-        StartSetupFlowForTaskGroups(flowTitle, "DeveloperQuickstartPlayground", _host.GetService<DeveloperQuickstartTaskGroup>());
     }
 
     /// <summary>

@@ -195,8 +195,8 @@ public partial class DashboardView : ToolPage, IDisposable
 
     private async Task<bool> ValidateDashboardState()
     {
-        // Ensure we're not running as admin. Display an error and don't allow using the Dashboard if we are.
-        if (ViewModel.IsRunningAsAdmin())
+        // Ensure we're not running elevated. Display an error and don't allow using the Dashboard if we are.
+        if (ViewModel.IsRunningElevated())
         {
             _log.Error($"Dev Home is running as admin, can't show Dashboard");
             RunningAsAdminMessageStackPanel.Visibility = Visibility.Visible;
