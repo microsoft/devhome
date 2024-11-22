@@ -12,7 +12,9 @@ namespace DevHome.Dashboard.ViewModels;
 
 internal sealed partial class DashboardBannerViewModel : ObservableObject
 {
+    #pragma warning disable IDE1006 // Naming Styles
     private const string _hideDashboardBannerKey = "HideDashboardBanner";
+    #pragma warning restore IDE1006 // Naming Styles
 
     [ObservableProperty]
     private bool _showDashboardBanner;
