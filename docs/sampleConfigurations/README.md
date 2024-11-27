@@ -8,6 +8,30 @@ Download the *.dsc.yaml files to your local system. They can be executed in Dev 
 
 Several DSC resources may require running in administrator mode. If the configuration is leveraging the [WinGet DSC resource](https://www.powershellgallery.com/packages/Microsoft.WinGet.DSC) to install packages, there are also limitations in some cases specific to the installers that may either require or prohibit installation in administrative context.
 
-## Create your own
+### GitHub projects (Repositories)
+
+Sample configurations have been provided for various GitHub repositories in the [Repositories](https://github.com/microsoft/winget-dsc/tree/main/samples/Repositories) directory. These configurations ideally should be placed in a `.configurations` folder in the root of the project directory. Some DSC resources may have parameters that allow you to pass in a relative file path. The reserved variable `$(WinGetConfigRoot)` can be used to specify the full path of the configuration file. An example of how to use that variable with a relative file path is shown below:
+
+```yaml
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
+      dependsOn:
+      directives:
+        description: Install required VS workloads from .vsconfig file
+        allowPrerelease: true
+      settings:
+        productId: Microsoft.VisualStudio.Product.Community
+        channelId: VisualStudio.17.Release
+        vsConfigFile: '${WinGetConfigRoot}\..\.vsconfig'
+```
+
+### Learn to Code (Templates)
+
+Sample configurations in [Templates](https://github.com/microsoft/winget-dsc/tree/main/samples/Templates) directory at winget-dsc repo are directly related to the [Windows development paths](https://learn.microsoft.com/windows/dev-environment/#development-paths). These configurations will allow you to automatically set up your device and begin developing in your preferred language quickly.
+
+### Sample DSC Resources (DscResources)
+
+Examples for a few specific DSC Resources are under the [DscResources](https://github.com/microsoft/winget-dsc/tree/main/samples/DscResources) directory at winget-dsc repository.
+
+### Create your own
 
 Writing YAML is a pain. To help you get started creating your own, there is a [sample tool](https://github.com/microsoft/winget-create/blob/main/Tools/WingetCreateMakeDSC.ps1) for authoring in the winget-create repo. It currently only supports adding apps, but give it a try and contribute to make it better!
