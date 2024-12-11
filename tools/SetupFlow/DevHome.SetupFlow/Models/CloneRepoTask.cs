@@ -6,6 +6,7 @@ extern alias Projection;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -227,9 +228,9 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// Clones the repository.
     /// </summary>
     /// <returns>An awaitable operation.</returns>
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return Task.Run(async () =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             try
             {
@@ -296,8 +297,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             WasCloningSuccessful = true;
 
             return TaskFinishedState.Success;
-        }).AsAsyncOperation();
+        });
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
 }
