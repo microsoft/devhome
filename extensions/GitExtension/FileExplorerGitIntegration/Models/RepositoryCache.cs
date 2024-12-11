@@ -3,7 +3,6 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using LibGit2Sharp;
 using Serilog;
 
 namespace FileExplorerGitIntegration.Models;
@@ -11,7 +10,7 @@ namespace FileExplorerGitIntegration.Models;
 internal sealed class RepositoryCache : IDisposable
 {
     private readonly ConcurrentDictionary<string, RepositoryWrapper> _repositoryCache = new();
-    private readonly Serilog.ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryCache));
+    private readonly ILogger _log = Log.ForContext("SourceContext", nameof(RepositoryCache));
     private bool _disposedValue;
 
     public RepositoryWrapper GetRepository(string rootFolder)

@@ -100,9 +100,6 @@ public partial class App : Application, IApp
         }).
         ConfigureServices((context, services) =>
         {
-            // Add databse connection
-            services.AddDatabase(context);
-
             // Add Serilog logging for ILogger.
             services.AddLogging(lb => lb.AddSerilog(dispose: true));
 
@@ -140,7 +137,6 @@ public partial class App : Application, IApp
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
             services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
-            services.AddSingleton<IQuickstartSetupService, QuickstartSetupService>();
             services.AddTransient<AdaptiveCardRenderingService>();
 
             // Core Services
@@ -158,7 +154,6 @@ public partial class App : Application, IApp
             services.AddTransient<ShellPage>();
             services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
-            services.AddTransient<WhatsNewViewModel>();
             services.AddTransient<InitializationViewModel>();
 
             // Settings

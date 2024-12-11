@@ -26,7 +26,7 @@ public class PageService : IPageService
 
     private readonly Dictionary<string, Type> _pages = new();
 
-    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService, IQuickstartSetupService quickstartSetupService)
+    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService)
     {
         // Configure top-level pages from registered tools
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -46,19 +46,17 @@ public class PageService : IPageService
         this.ConfigureCustomizationPages();
 
         // Configure footer pages
-        Configure<WhatsNewViewModel, WhatsNewPage>();
         this.ConfigureExtensionLibraryPages();
         this.ConfigureSettingsPages();
 
         // Configure Experimental Feature pages
         ExperimentalFeature.LocalSettingsService = localSettingsService;
-        ExperimentalFeature.QuickstartSetupService = quickstartSetupService;
         foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;
             var needsFeaturePresenceCheck = experimentalFeature.NeedsFeaturePresenceCheck;
-            var openPageKey = experimentalFeature.OpenPage.Key;
-            var openPageParameter = experimentalFeature.OpenPage.Parameter;
+            var openPageKey = experimentalFeature.OpenPage?.Key ?? string.Empty;
+            var openPageParameter = experimentalFeature.OpenPage?.Parameter ?? string.Empty;
             var isVisible = true;
             foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
             {

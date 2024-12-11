@@ -1,7 +1,0 @@
-{
-  "profiles": {
-    "IfeoTool (Packaged)": {
-      "commandName": "MsixPackage"
-    }
-  }
-}

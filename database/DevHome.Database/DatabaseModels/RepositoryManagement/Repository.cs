@@ -30,6 +30,10 @@ public class Repository
     // This causes any fluent API statements to get ignored.
     public string? RepositoryUri { get; set; }
 
+    public Guid? SourceControlClassId { get; set; }
+
+    public bool HasAssignedSourceControlProvider => SourceControlClassId.GetValueOrDefault() != Guid.Empty;
+
     public DateTime? CreatedUTCDate { get; set; }
 
     public DateTime? UpdatedUTCDate { get; set; }

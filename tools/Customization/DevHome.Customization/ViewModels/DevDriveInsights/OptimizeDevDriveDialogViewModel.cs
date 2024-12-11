@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -220,10 +223,86 @@ public partial class OptimizeDevDriveDialogViewModel : ObservableObject
         }
     }
 
+    private void UpdateOrCreateSubkey(string xmlFilePath, string key, string subkey, string newValue)
+    {
+        XmlDocument doc = new XmlDocument();
+        doc.Load(xmlFilePath);
+
+        XmlNode? keyNode = doc.SelectSingleNode($"{key}");
+        if (keyNode != null)
+        {
+            XmlNode? subkeyNode = keyNode.SelectSingleNode(subkey);
+            if (subkeyNode != null)
+            {
+                // Update the subkey value
+                subkeyNode.InnerText = newValue;
+            }
+            else
+            {
+                // Create the subkey with the new value
+                XmlElement newSubkey = doc.CreateElement(subkey);
+                newSubkey.InnerText = newValue;
+                keyNode.AppendChild(newSubkey);
+            }
+        }
+        else
+        {
+            // Create the key and subkey with the new value
+            XmlElement newKey = doc.CreateElement(key);
+            XmlElement newSubkey = doc.CreateElement(subkey);
+            newSubkey.InnerText = newValue;
+            newKey.AppendChild(newSubkey);
+            if (doc.DocumentElement != null)
+            {
+                doc.DocumentElement.AppendChild(newKey);
+            }
+        }
+
+        doc.Save(xmlFilePath);
+    }
+
+    private void UpdateSettingsXML(string localRepositoryLocation)
+    {
+        int index = ExistingCacheLocation.IndexOf("repository", StringComparison.OrdinalIgnoreCase);
+        var settingsXMLPath = string.Concat(ExistingCacheLocation.AsSpan(0, index), "settings.xml");
+        var key = "settings";
+        var subkey = "localRepository";
+
+        if (File.Exists(settingsXMLPath))
+        {
+            // Update settings.xml with the new repository path
+            UpdateOrCreateSubkey(settingsXMLPath, key, subkey, localRepositoryLocation);
+        }
+        else
+        {
+            // Create the root element
+            XElement root = new XElement(key);
+
+            // Add child element
+            root.Add(new XElement(subkey, localRepositoryLocation));
+
+            // Save the XML document to the specified file path
+            XDocument doc = new XDocument(root);
+            if (index >= 0)
+            {
+                doc.Save(settingsXMLPath);
+            }
+        }
+    }
+
     private void SetEnvironmentVariable(string variableName, string value)
     {
         try
         {
+            if (string.Equals(variableName, "MAVEN_OPTS", StringComparison.OrdinalIgnoreCase))
+            {
+                var existingValue = Environment.GetEnvironmentVariable(variableName, EnvironmentVariableTarget.User);
+                var newValue = (!string.IsNullOrEmpty(existingValue) ? existingValue + " " : string.Empty) + "-Dmaven.repo.local = " + value;
+                Environment.SetEnvironmentVariable(variableName, newValue, EnvironmentVariableTarget.User);
+                UpdateSettingsXML(value);
+                return;
+            }
+
             Environment.SetEnvironmentVariable(variableName, value, EnvironmentVariableTarget.User);
 
             if (string.Equals(variableName, "CARGO_HOME", StringComparison.OrdinalIgnoreCase))

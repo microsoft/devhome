@@ -169,7 +169,7 @@ public class DevSetupAgentIntegrationTest
         Assert.IsTrue(now - time < TimeSpan.FromSeconds(5));
 
         var status = json.GetProperty("Status").GetUInt32();
-        Assert.AreNotEqual(0, status);
+        Assert.AreNotEqual<uint>(0, status);
     }
 
     /// <summary>

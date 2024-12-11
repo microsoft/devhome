@@ -131,6 +131,12 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        await LoadModelAsync();
+    }
+
+    [RelayCommand]
     public async Task SyncButton()
     {
         // Reset the sort and filter
@@ -409,8 +415,7 @@ public partial class LandingPageViewModel : ObservableObject, IDisposable
 
             if (system is ComputeSystemViewModel computeSystemViewModel)
             {
-                var providerName = computeSystemViewModel.ProviderDisplayName;
-                if (providerName != _selectedProvider)
+                if (_selectedProvider.Length > 0 && computeSystemViewModel.ProviderDisplayName != _selectedProvider)
                 {
                     return false;
                 }

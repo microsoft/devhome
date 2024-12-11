@@ -12,6 +12,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisMode>Recommended</AnalysisMode>
     <PlatformTarget>$(Platform)</PlatformTarget>
+    <WindowsSdkPackageVersion>10.0.19041.34</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>

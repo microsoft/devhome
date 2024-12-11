@@ -412,12 +412,12 @@ public class ConfigureTargetTask : ISetupTask
                 applyConfigurationOperation.ConfigurationSetStateChanged += OnApplyConfigurationOperationChanged;
                 applyConfigurationOperation.ActionRequired += OnActionRequired;
 
-                // We'll cancel the operation after 10 minutes. This is arbitrary for now and will need to be adjusted in the future.
+                // We'll cancel the operation after 30 minutes. This is arbitrary for now and will need to be adjusted in the future.
                 // but we'll need to give the user the ability to cancel the operation in the UI as well. This is just a safety net.
                 // More work is needed to give the user the ability to cancel the operation as the capability is not currently available.
                 // in the UI of Dev Home's Loading page.
                 var tokenSource = new CancellationTokenSource();
-                tokenSource.CancelAfter(TimeSpan.FromMinutes(10));
+                tokenSource.CancelAfter(TimeSpan.FromMinutes(30));
 
                 ApplyConfigurationAsyncOperation = applyConfigurationOperation.StartAsync();
                 var result = await ApplyConfigurationAsyncOperation.AsTask().WaitAsync(tokenSource.Token);

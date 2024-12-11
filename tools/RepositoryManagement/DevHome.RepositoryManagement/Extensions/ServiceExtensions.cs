@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.RepositoryManagement.Factories;
+using DevHome.RepositoryManagement.Services;
 using DevHome.RepositoryManagement.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +15,7 @@ public static class ServiceExtensions
     {
         services.AddSingleton<RepositoryManagementMainPageViewModel>();
         services.AddSingleton<RepositoryManagementItemViewModelFactory>();
+        services.AddSingleton<RepositoryEnhancerService>();
 
         return services;
     }

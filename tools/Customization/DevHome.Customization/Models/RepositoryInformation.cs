@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
@@ -21,13 +20,22 @@ public class RepositoryInformation
 
     public string SourceControlProviderPackageDisplayName { get; }
 
-    public RepositoryInformation(string rootpath, string classId)
+    public string RepositoryPathMapping { get; }
+
+    public int Position { get; }
+
+    public int Size { get; }
+
+    public RepositoryInformation(string rootpath, string classId, int position, int size)
     {
         RepositoryRootPath = rootpath;
         SourceControlProviderCLSID = classId;
         var extension = GetExtension(classId);
         SourceControlProviderDisplayName = GetExtensionDisplayName(extension);
         SourceControlProviderPackageDisplayName = GetExtensionPackageDisplayName(extension);
+        RepositoryPathMapping = string.Concat(RepositoryRootPath, " ", SourceControlProviderDisplayName);
+        Position = position;
+        Size = size;
     }
 
     private IExtensionWrapper? GetExtension(string classId)

@@ -33,8 +33,6 @@ public partial class ExperimentalFeature : ObservableObject
 
     public static ILocalSettingsService? LocalSettingsService { get; set; }
 
-    public static IQuickstartSetupService? QuickstartSetupService { get; set; }
-
     public ExperimentalFeature(string id, bool enabledByDefault, bool needsFeaturePresenceCheck, string openPageKey, string openPageParameter, bool visible = true)
     {
         Id = id;
@@ -85,22 +83,12 @@ public partial class ExperimentalFeature : ObservableObject
         await LocalSettingsService!.SaveSettingAsync($"IsSeeker", true);
 
         TelemetryFactory.Get<ITelemetry>().Log("ExperimentalFeature_Toggled_Event", LogLevel.Critical, new ExperimentalFeatureEvent(Id, IsEnabled));
-
-        // To simplify setup for the Quickstart experimental feature, install the associated Dev Home Azure Extension if it's not already present
-        // when that feature is enabled. Those operations will only occur on Canary and Stable builds of Dev Home.
-        if (string.Equals(Id, "QuickstartPlayground", StringComparison.Ordinal) && IsEnabled)
-        {
-            if (!QuickstartSetupService!.IsDevHomeAzureExtensionInstalled())
-            {
-                await QuickstartSetupService!.InstallDevHomeAzureExtensionAsync();
-            }
-        }
     }
 
     [RelayCommand]
     public void Open()
     {
-        if (OpenPageKey != null)
+        if (!string.IsNullOrEmpty(OpenPageKey))
         {
             Application.Current.GetService<INavigationService>().NavigateTo(OpenPageKey, OpenPageParameter);
         }

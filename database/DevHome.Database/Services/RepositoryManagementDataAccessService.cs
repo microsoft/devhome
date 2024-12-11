@@ -21,7 +21,8 @@ public class RepositoryManagementDataAccessService
 
     private readonly DevHomeDatabaseContextFactory _databaseContextFactory;
 
-    public RepositoryManagementDataAccessService(DevHomeDatabaseContextFactory databaseContextFactory)
+    public RepositoryManagementDataAccessService(
+        DevHomeDatabaseContextFactory databaseContextFactory)
     {
         _databaseContextFactory = databaseContextFactory;
     }
@@ -30,20 +31,23 @@ public class RepositoryManagementDataAccessService
     /// Makes a new Repository entity with the provided name and location then saves it
     /// to the database.
     /// </summary>
-    /// <param name="repositoryName">The name of the repository to add.</param>
-    /// <param name="cloneLocation">The local location the repository is cloned to.</param>
     /// <returns>The new repository.  Can return null if the database threw an exception.</returns>
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string repositoryUri)
     {
         return MakeRepository(repositoryName, cloneLocation, string.Empty, repositoryUri);
     }
 
-    public Repository? MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, Uri repositoryUri)
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri)
+    {
+        return MakeRepository(repositoryName, cloneLocation, configurationFileLocationAndName, repositoryUri, null);
+    }
+
+    public Repository MakeRepository(string repositoryName, string cloneLocation, string configurationFileLocationAndName, string repositoryUri, Guid? sourceControlProviderClassId)
     {
         var existingRepository = GetRepository(repositoryName, cloneLocation);
         if (existingRepository != null)
         {
-            _log.Warning($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
+            _log.Information($"A Repository with name {repositoryName} and clone location {cloneLocation} exists in the repository already.");
             return existingRepository;
         }
 
@@ -51,7 +55,8 @@ public class RepositoryManagementDataAccessService
         {
             RepositoryName = repositoryName,
             RepositoryClonePath = cloneLocation,
-            RepositoryUri = repositoryUri.ToString(),
+            RepositoryUri = repositoryUri,
+            SourceControlClassId = sourceControlProviderClassId,
         };
 
         if (!string.IsNullOrEmpty(configurationFileLocationAndName))
@@ -78,7 +83,7 @@ public class RepositoryManagementDataAccessService
             TelemetryFactory.Get<ITelemetry>().Log(
                 "DevHome_Database_Event",
                 LogLevel.Critical,
-                new DatabaseEvent(nameof(MakeRepository), ex));
+                new DevHomeDatabaseEvent(nameof(MakeRepository), ex));
             return new Repository();
         }
 
@@ -142,8 +147,6 @@ public class RepositoryManagementDataAccessService
                 return false;
             }
 
-            // TODO: Figure out a method to update the entity in the database and
-            // the entity in memory.
             // Maybe update the tracking information on repository.  This way
             // EF will catch the change.
             repository.RepositoryClonePath = newLocation;
@@ -157,6 +160,38 @@ public class RepositoryManagementDataAccessService
                 repository.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
                 repositoryToUpdate.ConfigurationFileLocation = Path.Combine(newLocation, configurationFolder ?? string.Empty, configurationFileName ?? string.Empty);
             }
+
+            dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Exception when updating the clone location.");
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "DevHome_Database_Event",
+                LogLevel.Critical,
+                new DatabaseEvent(nameof(UpdateCloneLocation), ex));
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool SetSourceControlId(Repository repository, Guid sourceControlId)
+    {
+        try
+        {
+            using var dbContext = _databaseContextFactory.GetNewContext();
+            var repositoryToUpdate = dbContext.Repositories.Find(repository.RepositoryId);
+            if (repositoryToUpdate == null)
+            {
+                _log.Warning($"{nameof(UpdateCloneLocation)} was called with a RepositoryId of {repository.RepositoryId} and it does not exist in the database.");
+                return false;
+            }
+
+            // TODO: Figure out a method to update the entity in the database and
+            // the entity in memory.
+            repository.SourceControlClassId = sourceControlId;
+            repositoryToUpdate.SourceControlClassId = sourceControlId;
 
             dbContext.SaveChanges();
         }
@@ -214,7 +249,6 @@ public class RepositoryManagementDataAccessService
             }
 
             dbContext.Repositories.Remove(repositoryToRemove);
-
             dbContext.SaveChanges();
         }
         catch (Exception ex)

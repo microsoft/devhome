@@ -14,11 +14,17 @@
     xmlns:winUIBehaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:views="using:DevHome.Common.Views"
-    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    Loaded="OnLoaded">
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
+
     <commonviews:ToolPage.Resources>
         <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Templates/EnvironmentsTemplates.xaml" />
     </commonviews:ToolPage.Resources>
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -31,7 +37,6 @@
         <!-- Adding unshared resources/templates here-->
         <Grid.Resources>
 
-            <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
             <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
 
             <!-- Launch Button template -->
@@ -196,7 +201,8 @@
                 </Grid>
             </DataTemplate>
 
-            <selectors:CardItemTemplateSelector x:Key="CardItemTemplateSelector"
+            <selectors:CardItemTemplateSelector
+                x:Key="CardItemTemplateSelector"
                 ComputeSystemTemplate="{StaticResource ComputeSystemTemplate}"
                 CreateComputeSystemOperationTemplate="{StaticResource CreateComputeSystemOperationTemplate}"/>
 
@@ -235,7 +241,13 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <!-- Search field -->
-            <AutoSuggestBox Grid.Column="0" x:Uid="SearchTextBox" x:Name="SearchTextBox" Width="230" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <AutoSuggestBox
+                Grid.Column="0"
+                x:Uid="SearchTextBox"
+                x:Name="SearchTextBox"
+                Width="230"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="TextChanged">
                         <ic:InvokeCommandAction
@@ -305,7 +317,8 @@
         </Grid>
 
         <!-- Per VM/Compute System card -->
-        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <ScrollViewer Grid.Row="3" Style="{StaticResource EnvironmentScrollViewerStyle}"
+            MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
             <Grid>
                 <StackPanel>
                     <ListView

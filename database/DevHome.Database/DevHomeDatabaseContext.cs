@@ -55,6 +55,7 @@ public class DevHomeDatabaseContext : DbContext
                 repositoryEntity.Property(x => x.CreatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.UpdatedUTCDate).HasDefaultValueSql("datetime()");
                 repositoryEntity.Property(x => x.RepositoryUri).HasDefaultValue(string.Empty);
+                repositoryEntity.Property(x => x.SourceControlClassId).HasDefaultValue(Guid.Empty);
                 repositoryEntity.ToTable("Repository");
             }
         }

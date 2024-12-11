@@ -11,13 +11,15 @@ namespace DevHome.Test.Database;
 [TestClass]
 public class RepositoryTests
 {
-    private const string ConfigurationFileLocation = @"The\Best\Configuration\Location";
-
-    private const string CloneLocation = @"The\Best\File\Location";
+    private const string CloneLocation = @"TestSource\repos";
 
     private const string RepositoryName = "DevHome";
 
+    private const string ConfigurationFileLocation = @".configurations\configuration.dsc.yaml";
+
     private const string RepositoryUri = "https://www.github.com/microsoft/devhome";
+
+    private readonly string _repositoryCloneLocation = Path.Join(CloneLocation, RepositoryName);
 
     [TestInitialize]
     public void ResetDatabase()
@@ -33,6 +35,26 @@ public class RepositoryTests
 
         dbContext.Database.EnsureDeleted();
         dbContext.Database.EnsureCreated();
+
+        if (Directory.Exists(_repositoryCloneLocation))
+        {
+            // Cumbersome, but needed to remove read-only files.
+            foreach (var repositoryFile in Directory.EnumerateFiles(_repositoryCloneLocation, "*", SearchOption.AllDirectories))
+            {
+                File.SetAttributes(repositoryFile, FileAttributes.Normal);
+                File.Delete(repositoryFile);
+            }
+
+            foreach (var repositoryDirectory in Directory.GetDirectories(_repositoryCloneLocation, "*", SearchOption.AllDirectories).Reverse())
+            {
+                Directory.Delete(repositoryDirectory);
+            }
+
+            File.SetAttributes(_repositoryCloneLocation, FileAttributes.Normal);
+            Directory.Delete(_repositoryCloneLocation, false);
+        }
+
+        LibGit2Sharp.Repository.Clone(RepositoryUri, _repositoryCloneLocation);
     }
 
     [TestMethod]
@@ -86,5 +108,6 @@ public class RepositoryTests
         Assert.IsTrue(savedRepository.IsHidden);
         Assert.IsTrue(savedRepository.HasAConfigurationFile);
         Assert.AreEqual(RepositoryUri, savedRepository.RepositoryUri);
+        Assert.IsTrue(savedRepository.HasAConfigurationFile);
     }
 }

@@ -38,7 +38,7 @@ public sealed partial class ShellPage : Page
         PointerPressed += OnPointerPressed;
     }
 
-    private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
 
@@ -47,7 +47,7 @@ public sealed partial class ShellPage : Page
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Right, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoForward));
 
-        await ViewModel.OnLoaded();
+        ViewModel.OnLoaded();
     }
 
     private void OnActualThemeChanged(FrameworkElement sender, object args)
