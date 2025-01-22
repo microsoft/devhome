@@ -292,4 +292,7 @@
   <data name="GPODisabledDevHomeDescription.Text" xml:space="preserve">
     <value>Check with your IT or System Administrator for support.</value>
   </data>
+  <data name="ShellInfoBar.Message" xml:space="preserve">
+    <value>Dev Home will be going away in May 2025 and a subset of its features will be moved to new places. Stay tuned for more information in the following months.</value>
+  </data>
 </root>
