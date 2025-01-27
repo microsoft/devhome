@@ -43,6 +43,7 @@ internal sealed partial class DashboardBannerViewModel : ObservableObject
     }
 
 #if DEBUG
+#pragma warning disable CA1853
     public void ResetDashboardBanner()
     {
         ShowDashboardBanner = true;

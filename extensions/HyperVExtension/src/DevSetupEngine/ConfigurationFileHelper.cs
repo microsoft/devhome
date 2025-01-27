@@ -293,6 +293,7 @@ public class ConfigurationFileHelper
         }
     }
 
+#pragma warning disable CA1859
     public async Task<DevSetupEngineTypes.IApplyConfigurationResult> ApplyConfigurationAsync(string content, IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
     {
         DevSetupEngineTypes.IOpenConfigurationSetResult? openConfigurationSetResult = default;
