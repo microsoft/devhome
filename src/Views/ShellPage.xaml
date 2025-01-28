@@ -120,6 +120,8 @@
             </Grid>
         </NavigationView>
 
+        <InfoBar x:Uid="ShellInfoBar" IsOpen="True" Severity="Error" Margin="20,40,20,10"></InfoBar>
+
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"
