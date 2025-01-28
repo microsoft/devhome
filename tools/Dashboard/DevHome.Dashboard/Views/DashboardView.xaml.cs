@@ -1058,6 +1058,7 @@ public partial class DashboardView : ToolPage, IDisposable
         parent.Children.Insert(index + 1, resetButton);
     }
 
+#pragma warning disable CA1853
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
         var roamingProperties = Windows.Storage.ApplicationData.Current.RoamingSettings.Values;

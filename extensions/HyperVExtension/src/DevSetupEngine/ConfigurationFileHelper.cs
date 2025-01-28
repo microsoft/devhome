@@ -293,6 +293,7 @@ public class ConfigurationFileHelper
         }
     }
 
+#pragma warning disable CA1859
     public async Task<DevSetupEngineTypes.IApplyConfigurationResult> ApplyConfigurationAsync(string content, IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> progress)
     {
 #pragma warning disable CA1859 // Use concrete types when possible for improved performance
