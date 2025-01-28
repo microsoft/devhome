@@ -1,3 +1,5 @@
+# **⚠️ Dev Home will be going away in May 2025 and a subset of its features will be moved to new places. Stay tuned for more information in the following months. ⚠️**
+
 ![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
 # Welcome to the Dev Home repo!
