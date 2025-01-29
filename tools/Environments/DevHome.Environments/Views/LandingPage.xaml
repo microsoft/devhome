@@ -294,7 +294,7 @@
                     x:Uid="SyncEnvironmentsButton"
                     Command="{x:Bind ViewModel.SyncButtonCommand}"
                     Margin="0 3 0 0"
-                    Width="110">
+                    MinWidth="110">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <FontIcon FontSize="16" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE72C;"/>
                         <TextBlock x:Uid="SyncButtonTextBlock" />
