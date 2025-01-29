@@ -5,6 +5,7 @@ extern alias Projection;
 
 using System;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Messaging;
@@ -136,9 +137,9 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
         _setupFlowViewModel.EndSetupFlow -= OnEndSetupFlow;
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.Execute()
     {
-        return Task.Run(() =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, _) =>
         {
             _log.Information("Executing the operation. Waiting to be signalled that the adaptive card session has ended");
 
@@ -193,18 +194,20 @@ public sealed class CreateEnvironmentTask : ISetupTask, IDisposable, IRecipient<
             CreationOperationStarted = true;
 
             _log.Information("Successfully started the creation operation");
+            await Task.CompletedTask;
             return TaskFinishedState.Success;
-        }).AsAsyncOperation();
+        });
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
+    IAsyncOperationWithProgress<TaskFinishedState, TaskProgress> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(() =>
+        return AsyncInfo.Run<TaskFinishedState, TaskProgress>(async (_, progress) =>
         {
             // No admin rights required for this task. This shouldn't ever be invoked since the RequiresAdmin property is always false.
             _log.Error("Admin execution is not required for the create environment task");
+            await Task.CompletedTask;
             return TaskFinishedState.Failure;
-        }).AsAsyncOperation();
+        });
     }
 
     private void Dispose(bool disposing)
