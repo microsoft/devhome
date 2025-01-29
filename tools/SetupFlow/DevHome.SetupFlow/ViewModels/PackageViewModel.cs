@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -150,7 +151,7 @@ public partial class PackageViewModel : ObservableObject
     /// For packages from winget or custom catalogs:
     /// 1. Use package url
     /// 2. Else, use publisher url
-    /// 3. Else, use "https://github.com/microsoft/winget-pkgs"
+    /// 3. Else, use the folder path of the manifest in microsoft/winget-pkgs repository
     ///
     /// For packages from ms store catalog:
     /// 1. Use package url
@@ -174,7 +175,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PublisherUrl;
         }
 
-        return new Uri("https://github.com/microsoft/winget-pkgs");
+        return new Uri(GetWinGetRepositoryManifestPath());
     }
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(this, value);
@@ -259,6 +260,13 @@ public partial class PackageViewModel : ObservableObject
 
         // Source
         return CatalogName;
+    }
+
+    private string GetWinGetRepositoryManifestPath()
+    {
+        var initial = _package.Id.First().ToString().ToLowerInvariant();
+        var packageChildPath = _package.Id.Replace('.', '/');
+        return $"https://github.com/microsoft/winget-pkgs/tree/master/manifests/{initial}/{packageChildPath}";
     }
 
     /// <summary>
