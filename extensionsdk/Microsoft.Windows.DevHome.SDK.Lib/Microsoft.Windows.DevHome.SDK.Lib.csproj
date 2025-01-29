@@ -18,13 +18,6 @@
       <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
   </PropertyGroup>
 
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <ControlFlowGuard>Guard</ControlFlowGuard>
-      <SpectreMitigation>Spectre</SpectreMitigation>
-    </ClCompile>
-  </ItemDefinitionGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
       <PrivateAssets>all</PrivateAssets>
