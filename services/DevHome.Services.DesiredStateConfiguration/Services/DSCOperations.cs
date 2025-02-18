@@ -87,6 +87,7 @@ internal sealed class DSCOperations : IDSCOperations
     /// </summary>
     /// <param name="result">Result of applying the configuration set</param>
     /// <param name="activityId">Activity ID</param>
+    #pragma warning disable CA1859
     private void ReportApplyConfigurationResult(IDSCApplicationResult result, Guid activityId)
     {
         foreach (var unitResult in result.UnitResults)
