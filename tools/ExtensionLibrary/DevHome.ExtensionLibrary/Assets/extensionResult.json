@@ -1,5 +1,5 @@
 {
-  "ProductIds": [ "9NB9M5KZ8SLX", "9NZ845RW19RW", "9MV8F79FGXTR", "9NZCC27PR6N6" ],
+  "ProductIds": [ "9NB9M5KZ8SLX", "9MV8F79FGXTR", "9NZCC27PR6N6" ],
   "Products": [
     {
       "LocalizedProperties": [
@@ -13,20 +13,6 @@
       "ProductId": "9NB9M5KZ8SLX",
       "Properties": {
         "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g"
-      }
-    },
-    {
-      "LocalizedProperties": [
-        {
-          "PublisherName": "Microsoft Corporation",
-          "ProductDescription": "Dev Home Microsoft Game Dev Extension provides Microsoft Game Development integration into the Dev Home experience. This extension provides gaming development package recommendations for Dev Home's machine configuration tool as well as game development widgets for the dashboard. You will need Dev Home installed in order to use this extension.",
-          "ProductTitle": "Microsoft Game Dev Extension (Preview)",
-          "ShortDescription": ""
-        }
-      ],
-      "ProductId": "9NZ845RW19RW",
-      "Properties": {
-        "PackageFamilyName": "Microsoft.DevHomeMicrosoftGameDevExtension_8wekyb3d8bbwe"
       }
     },
     {
@@ -58,5 +44,5 @@
       }
     }
   ],
-  "TotalResultCount": 4
+  "TotalResultCount": 3
 }
